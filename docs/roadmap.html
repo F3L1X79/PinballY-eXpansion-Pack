@@ -255,6 +255,7 @@
 
         <div class="ax row">Faible</div>
         <div class="cell">
+          <a class="chip tr-share" href="#status-icons"><b></b>Icônes d'état</a>
         </div>
         <div class="cell">
         </div>
@@ -316,6 +317,30 @@
               <li>Le logo du pack par une URL GitHub brute ; l'image par table devient une idée à part. Clé <code>discordApplicationId</code> pour remplacer l'ID, décrite seulement dans la config. Un ticket humain d'abord : créer l'application « Virtual Pinball », donner son ID, fournir le logo.</li>
             </ul>
             <p class="ctx">Idée de Félix du 25/10/2026.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-share" id="status-icons" data-track="share" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Icônes d'état à côté de l'horloge de la roue</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">petit</span><span class="tag">UI</span></div>
+          </div>
+          <p>À côté de l'heure, sur la roue, de petites icônes montrent d'un coup d'œil si le Mode hors ligne est activé et si Discord Rich Presence est activé.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Près de l'horloge de la roue (<code>addons/clock.js</code>, livrée). Après <a href="#discord">Discord Rich Presence (n° <span data-ref="discord"></span>)</a>, dont elle lit l'interrupteur</div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Le Mode hors ligne n'est pas un seul interrupteur : c'est un groupe (Update Check, Script Reader Prompt, Discord Rich Presence). L'icône « hors ligne » s'allume-t-elle quand tout est coupé, ou dès qu'un réglage l'est ?</li>
+              <li>Une icône seulement quand c'est activé, ou toujours, barrée quand c'est désactivé ?</li>
+              <li>Discord : l'icône distingue-t-elle « activé » et « activé mais Discord introuvable » (après le Warning Toast) ?</li>
+              <li>Quel dessin, dans le style Steamball de l'horloge (blanc doux, soulignement doré), et lisible à la taille de l'heure ?</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 01/11/2026.</p>
           </details>
         </div>
       </li>
@@ -577,8 +602,10 @@
       <p class="eyebrow">Décisions <span class="count">(la plus récente dépliée)</span></p>
       <div class="panel decisions">
         <details open>
-          <summary>01/11 <span class="count">(3)</span></summary>
+          <summary>01/11 <span class="count">(4)</span></summary>
           <ol>
+            <li><strong>Icônes d'état à côté de l'horloge, juste après Discord</strong>
+              <span>Idée de Félix : sur la roue, à côté de l'heure, l'état du Mode hors ligne et de Discord Rich Presence. Placée 2ᵉ, juste après Discord, dont elle lit l'interrupteur : petite, besoin de la borne, elle passe avant les gros chantiers. Effort petit, impact faible.</span></li>
             <li><strong>Nouvel ordre de la file</strong>
               <span>Ordre choisi par Félix : Discord, les notes et favoris, les scores en ligne PINemHi, Feld, la Mission du foyer, puis l'image de table Discord (de la 2ᵉ à la 6ᵉ place), le mini-jeu, l'API des statistiques, les Challenges adaptés, les thèmes et leur éditeur, Year in Pinball en dernier.</span></li>
             <li><strong>Les Easter eggs sortent de la file publique</strong>
