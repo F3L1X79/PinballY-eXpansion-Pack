@@ -121,10 +121,6 @@ export default function init() {
         if (!isInside(clockWindow.getWindowRect(), backglassRect)) clockWindow.moveTo({ left: backglassRect.left, top: backglassRect.top, ...DEFAULT_SIZE });
     }
 
-    // TEMP #372: each line timed against the Drawn Menus' TEMP lines, until
-    // the cabinet shows no pause menu after "gamestarted" (#386).
-    const tempLog = text => host.log(`[TEMP #372 ${SCRIPT_NAME}] ${host.now().toTimeString().slice(0, 8)}.${String(host.now().getMilliseconds()).padStart(3, "0")} ${text} (mode ${host.getFullUIMode().mode}, menuID ${host.getFullUIMode().menuID})`);
-
     function hide() {
         clearTimers();
         if (!shown) return;
@@ -148,9 +144,7 @@ export default function init() {
         // Again at each game: its title bar was seen back on the cabinet.
         clockWindow.setBorderless(true);
         minuteTick.start();
-        tempLog("before showWindow(true)");
         clockWindow.showWindow(true);
-        tempLog("after showWindow(true)");
         shown = true;
         host.setTimeout(safeHandler(SCRIPT_NAME, () => { if (!launchGoingAhead) hide(); }), 0);
     }));
@@ -164,12 +158,8 @@ export default function init() {
             return;
         }
         clockWindow.setTopmost(true);
-        tempLog("raised at gamestarted");
         raiseTimers = RAISE_DELAYS_MS.map(delay =>
-            host.setTimeout(safeHandler(SCRIPT_NAME, () => {
-                clockWindow.setTopmost(true);
-                tempLog(`raised after ${delay} ms`);
-            }), delay));
+            host.setTimeout(safeHandler(SCRIPT_NAME, () => clockWindow.setTopmost(true)), delay));
     }));
     // "gameover" also fires after Exit Game; "postlaunch" ends a launch that
     // failed or was cancelled before "gamestarted".
