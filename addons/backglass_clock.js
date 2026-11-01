@@ -1,8 +1,9 @@
 // ============================================================
 // Backglass Clock: the time in a small borderless window in front of VPX's
 // backglass while a table runs, black with a thin gold frame, the time
-// underlined in gold like the wheel Clock, redrawn when the minute changes. Shown on "gamestarted", gone on "gameover"; never
-// during a media capture or on a single screen. Off by default.
+// underlined in gold like the wheel Clock, redrawn when the minute changes. Shown on "prelaunch", gone on "gameover"
+// or a failed launch's "postlaunch"; never during a media capture or on a single screen. Off by default.
+// - Never shown while a game runs: that activates PinballY, which opens the pause menu (#386).
 // - Every raise keeps the window's place and never takes VPX's focus.
 // - clientRect isn't in the visible window's units: only its ratio is read.
 // - Moved onto the backglass screen only from outside it: the owner's place sticks.
@@ -54,9 +55,7 @@ export default function init() {
     const layer = clockWindow.createDrawingLayer(LAYER_Z_INDEX);
     let raiseTimers = [];
     let shown = false;
-    // The backglass screen read at the last "prelaunch", or why it couldn't be.
-    let backglassRect = null;
-    let backglassRectProblem = "not read before the game";
+    let launchGoingAhead = false;
 
     function measureTime(text, size) {
         const styled = host.createStyledText({ textAlign: "left", textStyle: { font: TIME_TEXT.font, size, weight: TIME_TEXT.weight } });
@@ -105,56 +104,77 @@ export default function init() {
     }
 
     // A window outside the backglass screen was never placed by the owner:
-    // PinballY opens a new one on the playfield screen.
+    // PinballY opens a new one on the playfield screen. Read before the game:
+    // Force Backglass hides the backglass on "gamestarted".
     function placeOnBackglassScreen() {
+        let backglassRect = null;
+        let problem = "the backglass window has no frame";
+        try {
+            backglassRect = host.getBackglassWindowRect();
+        } catch (error) {
+            problem = `unreadable: ${error.message}`;
+        }
         if (!backglassRect) {
-            host.log(`[${SCRIPT_NAME}] Backglass screen unknown (${backglassRectProblem}): the clock stays where it is.`);
+            host.log(`[${SCRIPT_NAME}] Backglass screen unknown (${problem}): the clock stays where it is.`);
             return;
         }
         if (!isInside(clockWindow.getWindowRect(), backglassRect)) clockWindow.moveTo({ left: backglassRect.left, top: backglassRect.top, ...DEFAULT_SIZE });
     }
 
-    // Read before the game: Force Backglass hides the backglass on "gamestarted".
-    host.on("prelaunch", safeHandler(SCRIPT_NAME, () => {
-        backglassRect = null;
-        try {
-            backglassRect = host.getBackglassWindowRect();
-            if (!backglassRect) backglassRectProblem = "the backglass window has no frame";
-        } catch (error) {
-            backglassRectProblem = `unreadable: ${error.message}`;
-        }
-    }));
+    // TEMP #372: each line timed against the Drawn Menus' TEMP lines, until
+    // the cabinet shows no pause menu after "gamestarted" (#386).
+    const tempLog = text => host.log(`[TEMP #372 ${SCRIPT_NAME}] ${host.now().toTimeString().slice(0, 8)}.${String(host.now().getMilliseconds()).padStart(3, "0")} ${text} (mode ${host.getFullUIMode().mode}, menuID ${host.getFullUIMode().menuID})`);
 
-    // Monitors are counted at each game, since a screen can be plugged in or out.
-    host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
+    function hide() {
         clearTimers();
-        if (host.countMonitors() <= 1 || host.getFullUIMode().capture) return;
+        if (!shown) return;
+        shown = false;
+        clockWindow.showWindow(false);
+        clockWindow.setTopmost(false);
+    }
+
+    // "launchoverlayshow" fires in the same playGame() call as "prelaunch",
+    // unless a later listener cancelled the launch or its thread never started.
+    host.on("launchoverlayshow", safeHandler(SCRIPT_NAME, () => { launchGoingAhead = true; }));
+
+    // Shown here, while no game runs yet (see the header). Monitors are
+    // counted at each launch, since a screen can be plugged in or out.
+    host.on("prelaunch", safeHandler(SCRIPT_NAME, (ev) => {
+        hide();
+        launchGoingAhead = false;
+        if (host.countMonitors() <= 1 || ev.command === host.getBuiltInCommand("CaptureGo")) return;
         // Placed before it shows, so it never flashes on the playfield first.
         placeOnBackglassScreen();
         // Again at each game: its title bar was seen back on the cabinet.
         clockWindow.setBorderless(true);
-        // TEMP #372: does showing the clock activate PinballY, opening the
-        // pause menu? Each line timed against the Drawn Menus' TEMP lines.
-        const tempLog = text => host.log(`[TEMP #372 ${SCRIPT_NAME}] ${host.now().toTimeString().slice(0, 8)}.${String(host.now().getMilliseconds()).padStart(3, "0")} ${text} (mode ${host.getFullUIMode().mode}, menuID ${host.getFullUIMode().menuID})`);
+        minuteTick.start();
         tempLog("before showWindow(true)");
         clockWindow.showWindow(true);
         tempLog("after showWindow(true)");
         shown = true;
-        minuteTick.start();
+        host.setTimeout(safeHandler(SCRIPT_NAME, () => { if (!launchGoingAhead) hide(); }), 0);
+    }));
+
+    // Only raised from here on, which never activates PinballY.
+    host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
+        if (!shown) return;
+        // A capture whose launch command didn't say so: hidden before it records.
+        if (host.getFullUIMode().capture) {
+            hide();
+            return;
+        }
+        clockWindow.setTopmost(true);
+        tempLog("raised at gamestarted");
         raiseTimers = RAISE_DELAYS_MS.map(delay =>
             host.setTimeout(safeHandler(SCRIPT_NAME, () => {
                 clockWindow.setTopmost(true);
                 tempLog(`raised after ${delay} ms`);
             }), delay));
     }));
-    // Also fires after Exit Game.
-    host.on("gameover", safeHandler(SCRIPT_NAME, () => {
-        clearTimers();
-        if (!shown) return;
-        shown = false;
-        clockWindow.showWindow(false);
-        clockWindow.setTopmost(false);
-    }));
+    // "gameover" also fires after Exit Game; "postlaunch" ends a launch that
+    // failed or was cancelled before "gamestarted".
+    host.on("gameover", safeHandler(SCRIPT_NAME, hide));
+    host.on("postlaunch", safeHandler(SCRIPT_NAME, hide));
 
     // Deferred until main.js has finished, like Force Backglass, so the hide
     // wins over PinballY's saved Visible setting for the window.

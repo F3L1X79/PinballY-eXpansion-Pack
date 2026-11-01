@@ -41,7 +41,7 @@ const BUILT_IN_COMMANDS = {
     Instructions: 14, AddFavorite: 15, Help: 16, AboutBox: 17,
     FilterByEra: 18, FilterByManufacturer: 19, FilterBySystem: 20, FilterByCategory: 21, FilterByRating: 22,
     FilterByRecency: 23, FilterByAdded: 24, RemoveFavorite: 25, ResumeGame: 26, KillGame: 27,
-    Options: 28, BatchCaptureStep1: 29, ClearCredits: 30, EnableVideos: 31, MuteVideos: 32,
+    Options: 28, BatchCaptureStep1: 29, ClearCredits: 30, EnableVideos: 31, MuteVideos: 32, CaptureGo: 33,
     // Every filter's command is in this range, PinballY's and the scripts' alike.
     FilterFirst: 900, FilterLast: 949,
 };
@@ -502,7 +502,7 @@ export function createFakePinballYHost({
 
     // The launch events, in the order of docs/pinbally/pinbally-help.md
     // ("Interleaved launch order"), as confirmed on the cabinet.
-    const launchPropertiesOf = game => ({ game, command: BUILT_IN_COMMANDS.PlayGame });
+    const launchPropertiesOf = game => ({ game, command: launch ? launch.command : BUILT_IN_COMMANDS.PlayGame });
     function showOverlayMessage(id) {
         fire("launchoverlaymessage", { id, message: OVERLAY_MESSAGES[id], hideWheelImage: false });
     }
@@ -667,6 +667,8 @@ export function createFakePinballYHost({
     // where its settings put it, else where the cabinet showed a new one,
     // visible, with a title bar until borderlessMode is set. setWindowPos moves and sizes it unless its
     // flags say not to; its client size is the frame's, in other units.
+    // Shown during a game, it activates PinballY, which opens the pause menu
+    // (seen on the cabinet, docs/pinbally/pinbally-help.md, #386).
     // Each showWindow and setWindowPos call is recorded in order.
     function createRawMediaWindow(desc) {
         let rect = { ...(savedMediaWindowRects[desc.configVarPrefix] ?? NEW_MEDIA_WINDOW_RECT) };
@@ -679,6 +681,7 @@ export function createFakePinballYHost({
             showWindow: (shown) => {
                 calls.push({ call: "showWindow", visible: shown });
                 visible = shown;
+                if (shown && runMode) host.openPauseMenu();
             },
             setWindowPos: (after, x, y, width, height, flags) => {
                 calls.push({ call: "setWindowPos", after, x, y, width, height, flags });
@@ -1411,14 +1414,15 @@ export function createFakePinballYHost({
         },
         // PinballY clears the table's cached board (docs/research/high-scores.md),
         // then fires the first launch events during this call, and leaves
-        // the wheel; a cancelled "prelaunch" launches nothing.
-        playGame: (game) => {
+        // the wheel; a cancelled "prelaunch" launches nothing. command.CaptureGo
+        // launches a media capture (LaunchEvent.html).
+        playGame: (game, { command: launchCommand = BUILT_IN_COMMANDS.PlayGame } = {}) => {
             highScoreCache.delete(game.configId);
-            if (fire("prelaunch", { ...launchPropertiesOf(game), overrides: {} }).defaultPrevented) return;
+            if (fire("prelaunch", { game, command: launchCommand, overrides: {} }).defaultPrevented) return;
             launchList.push(game);
             uiMode = "running";
             runMode = "starting";
-            launch = { game, stage: "loading", exitChosen: false };
+            launch = { game, stage: "loading", exitChosen: false, command: launchCommand };
             fire("launchoverlayshow", { game });
             showOverlayMessage("init");
         },
@@ -1755,12 +1759,14 @@ export function createFakePinballYHost({
         },
 
         launches: () => [...launchList],
-        // capture: "single" or "batch" for a media capture's game.
+        // capture: "single" or "batch" for a media capture's game; "single"
+        // by default for a game launched with command.CaptureGo.
         gameStarted(game, { capture } = {}) {
+            const capturing = launch && launch.command === BUILT_IN_COMMANDS.CaptureGo;
             openLaunch();
             uiMode = "running";
             runMode = "running";
-            captureMode = capture;
+            captureMode = capture ?? (capturing ? "single" : undefined);
             showOverlayMessage(capture ? "capturing" : "running");
             if (launch) launch.stage = "started";
             fire("gamestarted", launchPropertiesOf(game));

@@ -1,8 +1,8 @@
 // ============================================================
 // Backglass Clock, through main.js on the fake PinballY globals: with no
-// backglass screen to read (a game started without "prelaunch", or a
-// backglass window with no frame), the window stays where it is and one
-// line says why, never an error.
+// backglass screen to read (a backglass window with no frame), the window
+// stays where it is and one line says why, never an error. A game started
+// without "prelaunch" gets no clock.
 // ============================================================
 
 import { test } from "node:test";
@@ -26,18 +26,16 @@ test("without the backglass screen's place the Backglass Clock stays where it is
     const before = clock.windowRect();
     const clockLines = () => fake.logLines().filter(line => line.includes("[BackglassClock]"));
 
-    // No "prelaunch" read: the game started some other way.
+    // No "prelaunch": the game started some other way, too late to show it.
+    fake.gameStarted(TABLE);
+    assert.equal(clock.isVisible(), false, "not shown during the game");
+    fake.gameOver(TABLE);
+
+    fake.playGame(TABLE);
     fake.gameStarted(TABLE);
     assert.equal(clock.isVisible(), true, "still shown");
     assert.deepEqual(clock.windowRect(), before, "not moved");
-    assert.equal(clockLines().length, 1);
-    fake.gameOver(TABLE);
-
-    // A backglass window with no frame.
-    fake.playGame(TABLE);
-    fake.gameStarted(TABLE);
-    assert.deepEqual(clock.windowRect(), before, "not moved");
-    assert.equal(clockLines().length, 2, "one line for this game");
-    assert.match(clockLines()[1], /no frame/);
+    assert.equal(clockLines().length, 1, "one line for this game");
+    assert.match(clockLines()[0], /no frame/);
     assertNoErrorLogged(fake);
 });

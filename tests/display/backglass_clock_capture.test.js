@@ -1,6 +1,6 @@
 // ============================================================
-// Backglass Clock during a media capture, through main.js on the fake
-// PinballY globals: the window is never shown nor raised, so no frozen
+// Backglass Clock during a media capture (launched with command.CaptureGo),
+// through main.js on the fake PinballY globals: never shown nor raised, so no frozen
 // time is recorded into a table's backglass video.
 // ============================================================
 
@@ -21,8 +21,8 @@ test("a media capture never shows the Backglass Clock", async () => {
     await import("../../main.js");
     await settle();
     const [clock] = fake.mediaWindows();
-    fake.playGame(TABLE);
-    fake.gameStarted(TABLE, { capture: "single" });
+    fake.playGame(TABLE, { command: command.CaptureGo });
+    fake.gameStarted(TABLE);
     fake.advanceTime(3 * 60 * 1000);
     fake.gameOver(TABLE);
     await settle();

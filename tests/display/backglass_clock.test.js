@@ -1,7 +1,8 @@
 // ============================================================
 // Backglass Clock, through main.js on the fake PinballY globals: its own
-// borderless window, hidden at startup, shown and raised in front at
-// "gamestarted", raised again on a schedule and at each minute, the time
+// borderless window, hidden at startup, shown at "prelaunch" (never during
+// the game: that opens the pause menu, #386), raised in front at
+// "gamestarted", again on a schedule and at each minute, the time
 // drawn on a fixed-height canvas, then hidden and lowered at "gameover".
 // ============================================================
 
@@ -45,11 +46,14 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
 
     clock.showBorders();
     fake.playGame(TABLE);
-    fake.gameStarted(TABLE);
-    assert.equal(clock.isVisible(), true, "shown at gamestarted");
+    assert.equal(clock.isVisible(), true, "shown as the table launches, before the game runs");
     assert.equal(clock.borderlessMode(), true, "borderless again at each game, even if its borders came back");
     const topmostCount = () => clock.calls().filter(entry => entry.after === "TOPMOST").length;
-    const raisedAt = topmostCount() === 1 ? [0] : [];
+    const beforeStart = topmostCount();
+    fake.gameStarted(TABLE);
+    assert.ok(!fake.shownMenus().some(menu => menu.id === "pause game"), "never shown during the game, so PinballY opens no pause menu");
+    assert.equal(clock.isVisible(), true);
+    const raisedAt = topmostCount() > beforeStart ? [0] : [];
     for (let second = 1; second <= 45; second++) {
         const before = topmostCount();
         fake.advanceTime(1000);
@@ -82,7 +86,7 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
     clock.resize({ width: 320, height: 110 });
     fake.advanceTime(60 * 1000);
     assert.deepEqual(layer.canvasSize(), wide, "the same canvas for the same ratio at another size");
-    assert.equal(topmostCount(), raisedAt.length + 2, "raised at each minute");
+    assert.equal(topmostCount(), beforeStart + raisedAt.length + 2, "raised at each minute");
 
     const beforeEnd = clock.calls().length;
     fake.gameOver(TABLE);
