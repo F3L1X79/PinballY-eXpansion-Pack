@@ -953,6 +953,10 @@ export default {
         packUpdateFailed: (version, logPath) => `L'aggiornamento alla v${version} non è riuscito: la versione precedente resta al suo posto. Dettagli in ${logPath}`,
     },
     releaseHighlights: {
+        "1.1.0": [
+            "Avvia un tavolo a caso direttamente dal menu principale.",
+            "Durante una partita, lo schermo del backglass mostra ora l'orario.",
+        ],
         "1.0.0": [
             "Versione 1.0: la prima versione pubblica dell'Expansion Pack.",
             "Menu e messaggi sono più leggibili e stanno nello schermo fin dal primo secondo.",

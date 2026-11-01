@@ -2,6 +2,15 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.1.0 (2026-11-01)
+
+- **Random table**: Launch a random table straight from the main menu, under Play.
+- **Profiles**: an Admin Profile marks a Profile as Admin or Child from the cabinet, in Manage profiles; the first Admin Profile marks itself. A menu line that can't be used now shows why.
+- **Backglass Clock**: the time in a small box on the backglass screen during a game, in front of VPX's backglass.
+- **vpxtool**: installed and kept up to date from the Expansion Pack Settings, downloaded from its author; when it is missing or too old, a prompt at startup offers it instead of an error.
+- **Offline Mode**: a new group in the Expansion Pack Settings turns off the Update Check and the vpxtool offer, for a cabinet without internet.
+- **Small touches**: the Pack Update shows "Downloading the update" under the loader; the Daily Streak line on the Welcome Screen is larger and set apart from the greeting.
+
 ## v1.0.0 (2026-10-29)
 
 First public release of the Expansion Pack, for PinballY 1.1.0 Beta 10 or later.

@@ -890,6 +890,10 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.1.0": [
+            "Launch a random table straight from the main menu.",
+            "During a game, the time now shows on the backglass screen.",
+        ],
         "1.0.0": [
             "Version 1.0: the Expansion Pack's first public release.",
             "Menus and messages are easier to read, and fit the screen from the very first second.",

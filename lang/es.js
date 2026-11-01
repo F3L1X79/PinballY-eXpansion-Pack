@@ -955,6 +955,10 @@ export default {
         packUpdateFailed: (version, logPath) => `La actualización a v${version} ha fallado: la versión anterior sigue en su sitio. Detalles en ${logPath}`,
     },
     releaseHighlights: {
+        "1.1.0": [
+            "Lanza una mesa al azar directamente desde el menú principal.",
+            "Durante una partida, la hora aparece ahora en la pantalla del backglass.",
+        ],
         "1.0.0": [
             "Versión 1.0: la primera versión pública del Expansion Pack.",
             "Los menús y los mensajes se leen mejor y caben en la pantalla desde el primer segundo.",

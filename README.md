@@ -1,3 +1,5 @@
+<img src="docs/images/logo.png" alt="PinballY Expansion Pack logo" width="160">
+
 # PinballY Expansion Pack
 
 *[🇫🇷 Version française](README.fr.md)*
