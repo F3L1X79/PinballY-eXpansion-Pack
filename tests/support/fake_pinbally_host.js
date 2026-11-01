@@ -711,6 +711,8 @@ export function createFakePinballYHost({
             layers: () => [...ownLayers],
             // The owner resizing it by hand: PinballY tells no script.
             resize({ width, height }) { rect = { ...rect, right: rect.left + width, bottom: rect.top + height }; },
+            // The owner showing its borders from its right-click menu (UsageTips.html).
+            showBorders() { rawWindow.borderlessMode = false; },
         });
         return rawWindow;
     }

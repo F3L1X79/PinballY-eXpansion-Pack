@@ -43,9 +43,11 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
     assert.equal(clock.showMediaWhenRunningFlag(), true);
     assert.deepEqual(clock.calls(), [{ call: "showWindow", visible: false }], "hidden at startup");
 
+    clock.showBorders();
     fake.playGame(TABLE);
     fake.gameStarted(TABLE);
     assert.equal(clock.isVisible(), true, "shown at gamestarted");
+    assert.equal(clock.borderlessMode(), true, "borderless again at each game, even if its borders came back");
     const topmostCount = () => clock.calls().filter(entry => entry.after === "TOPMOST").length;
     const raisedAt = topmostCount() === 1 ? [0] : [];
     for (let second = 1; second <= 45; second++) {

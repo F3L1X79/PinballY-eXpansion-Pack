@@ -244,18 +244,17 @@
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
+          <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
         </div>
         <div class="cell">
           <a class="chip tr-profiles" href="#ratings"><b></b>Notes, favoris, masquées</a>
           <a class="chip tr-profiles" href="#year-in-pinball"><b></b>Year in Pinball</a>
           <a class="chip tr-share" href="#themes"><b></b>Thèmes</a>
-          <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
+          <a class="chip tr-play" href="#feld"><b></b>Feld</a>
         </div>
 
         <div class="ax row">Faible</div>
         <div class="cell">
-          <a class="chip tr-play" href="#easter-eggs"><b></b>Easter eggs</a>
-          <a class="chip tr-play" href="#feld"><b></b>Feld</a>
         </div>
         <div class="cell">
         </div>
@@ -321,29 +320,6 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-share" id="discord-table-image" data-track="share" data-rank="gold">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Image de la table dans Discord Rich Presence</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen-gros</span></div>
-          </div>
-          <p>Pendant une partie, la grande image du statut Discord montre la table jouée au lieu du logo du pack, comme Dolphin montre la jaquette du jeu.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après <a href="#discord">Discord Rich Presence (n° <span data-ref="discord"></span>)</a>, qu'elle complète</div>
-          <details>
-            <summary>Questions ouvertes (3)</summary>
-            <ul>
-              <li>Discord n'affiche qu'une image publique par URL : les images de la roue sont locales. Dolphin héberge son propre serveur de jaquettes, indexé par l'ID universel du jeu ; nos tables n'ont qu'un <code>ipdbId</code> parfois rempli.</li>
-              <li>Quelle source : les photos d'IPDB (URL imprévisible depuis l'ID, accord à demander), le Virtual Pinball Spreadsheet (une image par table, rapprochement par nom, fabricant et année, téléchargement), ou un hébergement à nous ? À établir en <code>/research</code>.</li>
-              <li>Une table sans image trouvée garde le logo du pack.</li>
-            </ul>
-            <p class="ctx">Reportée du grill de Discord Rich Presence du 30/10/2026.</p>
-          </details>
-        </div>
-      </li>
-
       <li draggable="true" tabindex="0" class="item tr-profiles" id="ratings" data-track="profiles" data-rank="platinum">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -389,41 +365,16 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-play" id="easter-eggs" data-track="play" data-rank="bronze">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Easter eggs : une rare apparition au lancement, et son succès secret</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">UI</span></div>
-          </div>
-          <p>Un ou deux easter eggs tirés au hasard : par exemple une petite image qui apparaît au lancement avec une chance sur 1000, et un Secret Achievement de la famille Surprises débloqué par le Profile qui l'a vue.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Reprend le tracker des Surprises (<code>common/achievements/surprises.js</code>, livré) et le style Steamball. Ses textes sont traduits tout de suite dans les six langues</div>
-          <details>
-            <summary>Questions ouvertes (5)</summary>
-            <ul>
-              <li>« Au lancement » : au démarrage de PinballY, ou au lancement d'une table (bien plus fréquent, donc vu plus souvent à 1 sur 1000) ?</li>
-              <li>Quelle image, où (roue, backglass, DMD, topper), combien de temps, et avec quel mouvement (une seule fois, pas d'animation sans fin) ?</li>
-              <li>Le second easter egg : une autre image, ou un autre déclencheur (une combinaison de boutons, une date) ?</li>
-              <li>Qui débloque le succès : le Profile actif au moment de l'apparition ; et au démarrage, avant le choix du Profile ?</li>
-              <li>Un réglage pour forcer l'apparition, utile pour la vérifier sur la borne ?</li>
-            </ul>
-            <p class="ctx">Idée de Félix du 20/10/2026.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="feld" data-track="play" data-rank="bronze">
+      <li draggable="true" tabindex="0" class="item tr-play" id="feld" data-track="play" data-rank="platinum">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
             <h3>Feld</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span></div>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">gros</span></div>
           </div>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links"><a href="../.scratch/feld.md">.scratch/feld.md</a></div>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code> · <a href="../.scratch/feld.md">.scratch/feld.md</a></div>
         </div>
       </li>
 
@@ -453,27 +404,48 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-play" id="mini-game" data-track="play" data-rank="gold">
+      <li draggable="true" tabindex="0" class="item tr-share" id="discord-table-image" data-track="share" data-rank="gold">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Image de la table dans Discord Rich Presence</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen-gros</span></div>
+          </div>
+          <p>Pendant une partie, la grande image du statut Discord montre la table jouée au lieu du logo du pack, comme Dolphin montre la jaquette du jeu.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après <a href="#discord">Discord Rich Presence (n° <span data-ref="discord"></span>)</a>, qu'elle complète</div>
+          <details>
+            <summary>Questions ouvertes (3)</summary>
+            <ul>
+              <li>Discord n'affiche qu'une image publique par URL : les images de la roue sont locales. Dolphin héberge son propre serveur de jaquettes, indexé par l'ID universel du jeu ; nos tables n'ont qu'un <code>ipdbId</code> parfois rempli.</li>
+              <li>Quelle source : les photos d'IPDB (URL imprévisible depuis l'ID, accord à demander), le Virtual Pinball Spreadsheet (une image par table, rapprochement par nom, fabricant et année, téléchargement), ou un hébergement à nous ? À établir en <code>/research</code>.</li>
+              <li>Une table sans image trouvée garde le logo du pack.</li>
+            </ul>
+            <p class="ctx">Reportée du grill de Discord Rich Presence du 30/10/2026.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="mini-game" data-track="play" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
             <h3>Un mini-jeu aux boutons de flipper, avec son record par Profile</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen-gros</span><span class="tag">UI</span></div>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
           </div>
-          <p>Un petit jeu à un ou deux boutons, dans l'esprit de Flappy Bird ou du dinosaure de Chrome, lancé depuis le menu principal : un flipper pour sauter ou battre des ailes, l'autre pour se baisser. Un record par Profile, et des Achievements pour un score atteint.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (fluidité sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Les boutons se prennent par <code>keydown</code> annulé, comme dans les Drawn Menus ; les sprites sont des calques déplacés par <code>setPos</code>, sans redessin à chaque image. Entrée ajoutée par <code>getMainMenu().add(...)</code>. Après les <a href="#easter-eggs">Easter eggs (n° <span data-ref="easter-eggs"></span>)</a>, autre touche ludique de la famille Jeu et succès</div>
+          <p>Une fusée monte entre des astéroïdes : le flipper gauche et le flipper droit la font passer d'un couloir à l'autre, sur cinq couloirs, de plus en plus vite. Lancée depuis le menu principal, avec un record par Profile et des Achievements pour un score atteint.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Entrée ajoutée par <code>getMainMenu().add(...)</code>. Après <a href="#feld">Feld (n° <span data-ref="feld"></span>)</a>, qui le précède</div>
           <details>
-            <summary>Questions ouvertes (5)</summary>
+            <summary>Questions ouvertes (3)</summary>
             <ul>
-              <li>Quel jeu : sauter des obstacles (dinosaure, un seul bouton), voler entre des tuyaux (Flappy Bird), ou un jeu propre au flipper (une bille à renvoyer avec les deux flippers) ?</li>
-              <li>PinballY tient-il 30 images par seconde avec <code>setTimeout</code> et des calques déplacés, sur l'écran de jeu en portrait ? À mesurer en <code>/prototype</code> sur la borne.</li>
-              <li>Quel écran : l'écran de jeu, ou le DMD (128 × 32, un dinosaure y serait à sa place) ?</li>
+              <li>L'entrée de menu : toujours visible, ou seulement à certaines conditions ?</li>
               <li>Le jeu tourne tant qu'on joue : est-ce une exception à la règle « pas d'animation sans fin », puisqu'il s'arrête à la défaite et que le joueur le relance ?</li>
               <li>Le record : dans les Profile Stats, et un classement de la maison entre Profiles ?</li>
             </ul>
-            <p class="ctx">Idée de Félix du 25/10/2026.</p>
+            <p class="ctx">Idée de Félix du 25/10/2026 ; la fusée remplace Flappy Bird et le dinosaure de Chrome le 01/11/2026.</p>
           </details>
         </div>
       </li>
@@ -605,6 +577,17 @@
       <p class="eyebrow">Décisions <span class="count">(la plus récente dépliée)</span></p>
       <div class="panel decisions">
         <details open>
+          <summary>01/11 <span class="count">(3)</span></summary>
+          <ol>
+            <li><strong>Nouvel ordre de la file</strong>
+              <span>Ordre choisi par Félix : Discord, les notes et favoris, les scores en ligne PINemHi, Feld, la Mission du foyer, puis l'image de table Discord (de la 2ᵉ à la 6ᵉ place), le mini-jeu, l'API des statistiques, les Challenges adaptés, les thèmes et leur éditeur, Year in Pinball en dernier.</span></li>
+            <li><strong>Les Easter eggs sortent de la file publique</strong>
+              <span>Demandé par Félix : leurs détails restent hors du dépôt, pour garder la surprise. Feld passe à un effort gros, impact moyen.</span></li>
+            <li><strong>Le mini-jeu devient une fusée, après Feld</strong>
+              <span>Idée de Félix : une fusée qui monte entre des astéroïdes, sur cinq couloirs, aux flippers gauche et droit, de plus en plus vite ; elle remplace Flappy Bird et le dinosaure de Chrome. Effort moyen-gros → moyen, impact moyen.</span></li>
+          </ol>
+        </details>
+        <details>
           <summary>30/10 <span class="count">(5)</span></summary>
           <ol>
             <li><strong>vpxtool installé et à jour livré : spec #373 close</strong>
