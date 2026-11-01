@@ -16,6 +16,6 @@ Each PinballY start asks GitHub, in the background, for the latest release; a ne
 
 ## Consequences
 
-- A newer Pack Version reaches the screen one start late.
+- A newer Pack Version reaches the Update Prompt one start late; only a Status Icon on the wheel, which takes no button, shows it from the start that found it until the Pack Update.
 - The first install stays manual (extract the release zip into `Scripts\`, add the import line); only updates are automatic.
 - A cabinet installed with git (`ExpansionPack\.git`) never asks GitHub: `git pull` updates it.

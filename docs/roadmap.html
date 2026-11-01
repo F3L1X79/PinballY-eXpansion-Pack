@@ -255,7 +255,7 @@
 
         <div class="ax row">Faible</div>
         <div class="cell">
-          <a class="chip tr-share" href="#status-icons"><b></b>Icônes d'état</a>
+          <a class="chip tr-share" href="#status-icons"><b></b>Status Icons</a>
         </div>
         <div class="cell">
         </div>
@@ -326,19 +326,20 @@
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
-            <h3>Icônes d'état à côté de l'horloge de la roue</h3>
+            <h3>Status Icons à côté de l'horloge de la roue</h3>
             <div class="tags"><span class="tag track">Diffusion</span><span class="tag">petit</span><span class="tag">UI</span></div>
           </div>
-          <p>À côté de l'heure, sur la roue, de petites icônes montrent d'un coup d'œil si le Mode hors ligne est activé et si Discord Rich Presence est activé.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Près de l'horloge de la roue (<code>addons/clock.js</code>, livrée). Après <a href="#discord">Discord Rich Presence (n° <span data-ref="discord"></span>)</a>, dont elle lit l'interrupteur</div>
+          <p>À droite de l'heure, sur la roue, des Status Icons (nouveau terme) n'apparaissent que pendant que leur état dure : le logo Discord blanc quand la borne est réellement publique sur Discord (pour tous), une flèche dorée quand une Pack Update attend, une flèche circulaire barrée quand l'Update Check est coupé (ces deux-là pour qui voit les entrées de configuration). Grillé le 01/11/2026.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="here">tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/to-tickets</code> → <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/391">Spec #391</a> · Un Add-on à part, près de l'horloge de la roue (<code>addons/clock.js</code>, livrée). L'icône Discord après <a href="#discord">Discord Rich Presence (n° <span data-ref="discord"></span>)</a>, dont elle lit l'état « public »</div>
           <details>
-            <summary>Questions ouvertes (4)</summary>
+            <summary>Décisions du grill (5)</summary>
             <ul>
-              <li>Le Mode hors ligne n'est pas un seul interrupteur : c'est un groupe (Update Check, Script Reader Prompt, Discord Rich Presence). L'icône « hors ligne » s'allume-t-elle quand tout est coupé, ou dès qu'un réglage l'est ?</li>
-              <li>Une icône seulement quand c'est activé, ou toujours, barrée quand c'est désactivé ?</li>
-              <li>Discord : l'icône distingue-t-elle « activé » et « activé mais Discord introuvable » (après le Warning Toast) ?</li>
-              <li>Quel dessin, dans le style Steamball de l'horloge (blanc doux, soulignement doré), et lisible à la taille de l'heure ?</li>
+              <li>Un voyant de vie privée (« ce qui se joue est visible dehors »), sur la roue seule : jamais pendant une partie ni sur la Backglass Clock.</li>
+              <li>Pas d'icône « Mode hors ligne » : il reste un groupe de réglages, sans état « hors ligne ».</li>
+              <li>Discord : l'icône suit la connexion réelle, pas l'interrupteur (rien pendant les 3 essais, après le Warning Toast ni en mode attract). Absente veut dire éteint ; jamais d'icône barrée pour « désactivé ».</li>
+              <li>La flèche dorée apparaît dès le démarrage qui trouve la Pack Version et reste jusqu'à la Pack Update, « Plus tard » compris : la conséquence de l'ADR 0018 est amendée, sa décision (l'Update Prompt au démarrage suivant) reste. Aucune icône de mise à jour sur une installation git.</li>
+              <li>Emplacement fixe à droite de l'heure (ne bouge pas avec la largeur de l'heure), ordre Discord puis mises à jour, même place sans l'horloge ; un seul fondu quand un état change sur la roue.</li>
             </ul>
             <p class="ctx">Idée de Félix du 01/11/2026.</p>
           </details>
@@ -602,8 +603,10 @@
       <p class="eyebrow">Décisions <span class="count">(la plus récente dépliée)</span></p>
       <div class="panel decisions">
         <details open>
-          <summary>01/11 <span class="count">(4)</span></summary>
+          <summary>01/11 <span class="count">(5)</span></summary>
           <ol>
+            <li><strong>Status Icons grillées : spec #391</strong>
+              <span>Un voyant de vie privée sur la roue seule : le logo Discord blanc tant que la borne est réellement publique, et, pour qui voit les entrées de configuration, une flèche dorée quand une Pack Update attend (dès le démarrage qui la trouve, la conséquence de l'ADR 0018 est amendée) et une flèche barrée quand l'Update Check est coupé. Pas d'icône « Mode hors ligne ». Nouveau terme Status Icon au glossaire. Effort et impact inchangés.</span></li>
             <li><strong>Icônes d'état à côté de l'horloge, juste après Discord</strong>
               <span>Idée de Félix : sur la roue, à côté de l'heure, l'état du Mode hors ligne et de Discord Rich Presence. Placée 2ᵉ, juste après Discord, dont elle lit l'interrupteur : petite, besoin de la borne, elle passe avant les gros chantiers. Effort petit, impact faible.</span></li>
             <li><strong>Nouvel ordre de la file</strong>

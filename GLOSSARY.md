@@ -25,7 +25,7 @@ Replacing the installed eXpansion Pack with a newer Pack Version while PinballY 
 _Avoid_: upgrade, patch, install (installing is the first, manual copy)
 
 **Update Check**:
-The question the pack asks GitHub in the background at each start: is there a newer Pack Version? A newer one is remembered for the next start, where the Update Prompt offers it; nothing shows at the start that found it. It can be turned off in the Offline Mode, and a pack installed with git is never checked.
+The question the pack asks GitHub in the background at each start: is there a newer Pack Version? A newer one is remembered for the next start, where the Update Prompt offers it; at the start that found it, only a Status Icon shows it. It can be turned off in the Offline Mode, and a pack installed with git is never checked.
 _Avoid_: update notification, version check
 
 **Offline Mode**:
@@ -116,6 +116,10 @@ _Avoid_: underlay (PinballY's name for the image layer that carries it), wheel c
 **Backglass Clock**:
 The time shown on a small black plaque with a gold frame, in the wheel's clock look (soft white, a gold underline), at the top right of the backglass screen from a table's launch until its game ends, in front of the table's own backglass, where neither Windows nor the wheel's clock can be seen. Off unless the owner turns it on. Shown as "horloge du backglass" in French.
 _Avoid_: game clock, overlay clock, the clock (that is the wheel's)
+
+**Status Icon**:
+A small icon beside the wheel's clock, shown only while the state it stands for lasts, and never over a game: Discord Rich Presence actually showing the cabinet publicly, to everyone; and, only to whoever sees the setup entries, the Update Check turned off, or a newer Pack Version waiting to be installed. Absent means the state is off; there is no crossed-out icon. Shown as "icône d'état" in French.
+_Avoid_: indicator, badge (that is the Profile's), notification
 
 ### Profiles
 
