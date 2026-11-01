@@ -255,6 +255,7 @@
 
         <div class="ax row">Faible</div>
         <div class="cell">
+          <a class="chip tr-share" href="#clock-placement"><b></b>Placer l'horloge</a>
           <a class="chip tr-share" href="#status-icons"><b></b>Status Icons</a>
         </div>
         <div class="cell">
@@ -296,6 +297,32 @@
     </div>
 
     <ol class="queue">
+
+      <li draggable="true" tabindex="0" class="item tr-share" id="clock-placement" data-track="share" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Placer l'horloge du backglass depuis la roue</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">petit</span><span class="tag">UI</span></div>
+          </div>
+          <p>Une ligne « Placer l'horloge du backglass » dans les Expansion Pack Settings montre la Backglass Clock seule sur l'écran du backglass, hors partie, avec ses bords Windows : le propriétaire la déplace et la redimensionne à la souris, sans menu pause ni B2S devant. Un Dialog sur l'écran de la roue propose « Terminé » et « Remettre à la place par défaut » (en haut à droite). Grillé le 01/11/2026.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Reprend la Backglass Clock (<code>addons/backglass_clock.js</code>, livrée) ; remplace le ticket #389 (taille fixée par le pack), fermé</div>
+          <details>
+            <summary>Décisions du grill (6)</summary>
+            <ul>
+              <li>La ligne, sous l'interrupteur de l'horloge, n'apparaît que si l'horloge est activée et qu'il y a au moins deux écrans ; nouveau terme Backglass Clock Placement.</li>
+              <li>Pendant le placement : l'heure réelle, redessinée chaque minute, au premier plan, avec la barre de titre et les bords Windows ; sans bords et cachée à la fin. Une horloge hors de l'écran du backglass va d'abord à la place par défaut.</li>
+              <li>Le Dialog est sur l'écran de la roue ; « Remettre à la place par défaut » le garde ouvert ; Exit vaut Terminé ; on revient sur la ligne du placement dans les réglages.</li>
+              <li>La place par défaut passe en haut à droite de l'écran du backglass, avec la marge d'angle de l'horloge de la roue, à la première partie comme au placement.</li>
+              <li>Le mode attract termine le placement en gardant la place.</li>
+              <li>Rien ne change en partie (un clic y ouvre toujours le menu pause) : le guide renvoie au placement.</li>
+            </ul>
+            <p class="ctx">Constat de Félix du 01/11/2026 : depuis #386, l'horloge passe derrière le backglass quand on veut la redimensionner en partie. Avant, le menu pause ouvert à chaque partie gardait PinballY devant.</p>
+          </details>
+        </div>
+      </li>
 
       <li draggable="true" tabindex="0" class="item tr-share" id="discord" data-track="share" data-rank="gold">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
@@ -603,8 +630,12 @@
       <p class="eyebrow">Décisions <span class="count">(la plus récente dépliée)</span></p>
       <div class="panel decisions">
         <details open>
-          <summary>01/11 <span class="count">(5)</span></summary>
+          <summary>01/11 <span class="count">(7)</span></summary>
           <ol>
+            <li><strong>Placer l'horloge du backglass, en tête de file</strong>
+              <span>Depuis #386 (l'horloge affichée au <code>prelaunch</code>, plus de partie en pause), un clic sur l'horloge en partie ouvre le menu pause et elle repasse derrière le backglass : impossible de la redimensionner. Grillé : un placement hors partie depuis les Expansion Pack Settings. 1ᵉʳ devant Discord, qui attend le ticket humain #380 : régression ressentie sur la borne, effort petit, impact faible.</span></li>
+            <li><strong>Spec #387 close : #388 et #389 fermés</strong>
+              <span>#388 (la plaque dans le style de l'horloge de la roue) dépassé par les retouches de Félix (filet fin au bord) ; seule l'ombre portée de l'heure reste, au ticket #395. #389 (taille fixée par le pack) contredit le placement, où le propriétaire redimensionne ; sa place en haut à droite passe au placement.</span></li>
             <li><strong>Status Icons grillées : spec #391</strong>
               <span>Un voyant de vie privée sur la roue seule : le logo Discord blanc tant que la borne est réellement publique, et, pour qui voit les entrées de configuration, une flèche dorée quand une Pack Update attend (dès le démarrage qui la trouve, la conséquence de l'ADR 0018 est amendée) et une flèche barrée quand l'Update Check est coupé. Pas d'icône « Mode hors ligne ». Nouveau terme Status Icon au glossaire. Effort et impact inchangés.</span></li>
             <li><strong>Icônes d'état à côté de l'horloge, juste après Discord</strong>

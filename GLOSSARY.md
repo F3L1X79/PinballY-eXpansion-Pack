@@ -117,6 +117,10 @@ _Avoid_: underlay (PinballY's name for the image layer that carries it), wheel c
 The time shown on a small black plaque with a gold frame, in the wheel's clock look (soft white, a gold underline), at the top right of the backglass screen from a table's launch until its game ends, in front of the table's own backglass, where neither Windows nor the wheel's clock can be seen. Off unless the owner turns it on. Shown as "horloge du backglass" in French.
 _Avoid_: game clock, overlay clock, the clock (that is the wheel's)
 
+**Backglass Clock Placement**:
+The screen opened from the Expansion Pack Settings, outside a game, that shows the Backglass Clock alone on the backglass screen with its Windows borders so the owner moves and resizes it with the mouse, then confirms in a Dialog on the wheel screen. Shown as "placement de l'horloge du backglass" in French.
+_Avoid_: clock editor, clock setup
+
 **Status Icon**:
 A small icon beside the wheel's clock, shown only while the state it stands for lasts, and never over a game: Discord Rich Presence actually showing the cabinet publicly, to everyone; and, only to whoever sees the setup entries, the Update Check turned off, or a newer Pack Version waiting to be installed. Absent means the state is off; there is no crossed-out icon. Shown as "icône d'état" in French.
 _Avoid_: indicator, badge (that is the Profile's), notification
