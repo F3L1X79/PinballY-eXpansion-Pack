@@ -665,8 +665,6 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
     // open, with fewer "menuclose" than openings and nothing left to
     // resume, so ours comes down instead of covering the screen for good.
     host.on("postlaunch", safeHandler(SCRIPT_NAME, () => {
-        // TEMP #372: a native menu really open, or a "menuclose" never sent.
-        if (shown && shown.keepNative) host.log(`[TEMP #372 ${SCRIPT_NAME}] the "${shown.id}" menu closes at postlaunch, ${shown.nativeOpenings} native opening(s) never closed.`);
         if (shown && shown.keepNative) close();
     }));
 

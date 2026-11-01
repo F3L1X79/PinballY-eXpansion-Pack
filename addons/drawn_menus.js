@@ -24,15 +24,6 @@ const isNativeMenuId = id => id.startsWith("media drop") || id === "confirm dele
 const FILTER_MENU_IDS = FILTER_GROUPS.map(group => group.menuId);
 const PAUSE_MENU_ID = "pause game";
 
-// TEMP #372: diagnostic of the pause menu held open during a game, to
-// remove once the cabinet's log has answered. Timed to the millisecond.
-function tempLog(text) {
-    const now = new Date();
-    const time = `${now.toTimeString().slice(0, 8)}.${String(now.getMilliseconds()).padStart(3, "0")}`;
-    const ui = mainWindow.getUIMode();
-    logfile.log(`[TEMP #372 ${SCRIPT_NAME}] ${time} ${text} (mode ${ui.mode}, runMode ${ui.runMode}, menuID ${ui.menuID}, capture ${ui.capture})`);
-}
-
 export default function init() {
     const drawnMenus = getDrawnMenus();
     // Created now, for its "menuopen" listener to run before ours.
@@ -47,26 +38,10 @@ export default function init() {
     // Fires on every command, a menu's entries' included.
     mainWindow.on("command", safeHandler(SCRIPT_NAME, ev => {
         lastCommand = ev.id;
-        // TEMP #372
-        if ([command.PauseGame, resumeGame, command.KillGame].includes(ev.id)) tempLog(`command ${ev.id}`);
-    }));
-
-    // TEMP #372: the game's steps, the pause menu's closes, and the presses
-    // PinballY hears in the foreground during a game (Start while loading).
-    for (const name of ["prelaunch", "gamestarted", "gameover", "postlaunch"]) {
-        mainWindow.on(name, safeHandler(SCRIPT_NAME, () => tempLog(name)));
-    }
-    mainWindow.on("menuclose", safeHandler(SCRIPT_NAME, ev => {
-        if (ev.id === PAUSE_MENU_ID) tempLog(`menuclose "${ev.id}", Drawn Menu still open: ${drawnMenus.isOpen()}`);
-    }));
-    mainWindow.on("commandbuttondown", safeHandler(SCRIPT_NAME, ev => {
-        if (mainWindow.getUIMode().runMode) tempLog(`commandbuttondown "${ev.command}" in the foreground`);
     }));
 
     // Fires when any menu opens, after every other Add-on edited its entries.
     mainWindow.on("menuopen", safeHandler(SCRIPT_NAME, ev => {
-        // TEMP #372
-        if (ev.id === PAUSE_MENU_ID) tempLog(`menuopen "${ev.id}", Drawn Menu already open: ${drawnMenus.isOpen()}`);
         // As a native menu replaces another, the new menu replaces a Drawn
         // one; draw() closes it itself, seeing first whether it is the same
         // menu shown again. A pack menu shown natively by the module stays
