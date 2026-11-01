@@ -31,6 +31,15 @@ It is **off by default**, like the Backglass Clock: turn it on with `ADD_ON_MENU
 - A clock, a gold arc under the wheel (the Wheel Arc) and a richer status line.
 - The active Profile's badge with its Player Level, the week's Challenge Card and the Mastery Bar.
 
+## Status Icons
+
+Small icons sit right of the wheel's clock, on its line, as tall as its digits. Each one shows only while what it stands for lasts, and only to whoever sees the setup entries (an [Admin Profile](settings.md#admin-profile), or anyone while no Profile is marked):
+
+- A gold arrow pointing down: a newer version of the pack is waiting (see [Updates](updates.md)).
+- A white circular arrow, crossed out: the pack update check is turned off.
+
+They keep their place when the minute changes and when the clock is turned off, hide during a game, and follow the active Profile after Change Player. An icon that comes or goes while you are on the wheel fades once. Turn them off with "Status Icons" in the wheel screen group of **eXpansion Pack Settings**, or `ADD_ON_STATUS_ICONS=false`.
+
 ## Launches, waits and sounds
 
 - Launches without a black flash, with a gold comet turning while you wait, the step under way written in gold beneath it while a table launches or closes ("Loading…", "Returning to tables…"): during a launch, at startup, while a high score board is read and while the Profile Stats, the Household Stats, the Achievement List or the Avatar Frame list get ready.

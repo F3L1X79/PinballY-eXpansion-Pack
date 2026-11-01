@@ -2,7 +2,8 @@
 // Update Check: at each start, unless it is off or the pack folder is a git
 // checkout, one background GET of the latest GitHub release. A newer Pack
 // Version with its zip and SHA-256 digest is remembered in the update state,
-// an equal or older one forgets it; nothing shows (docs/adr/0018).
+// an equal or older one forgets it; only the Status Icons show it, from this
+// start, through onUpdateCheckDone (docs/adr/0018).
 // - Started by main.js whatever config.addOns says: never an Add-on.
 // - A failure (offline, 403/429, a bad reply) is one log line, not an error.
 // ============================================================
@@ -100,6 +101,20 @@ export function runUpdateCheck(host, state, { enabled }) {
         safeHandler(SCRIPT_NAME, error => log(`No answer from GitHub: ${error.message || "no reason given"}.`)));
 }
 
+// Whether this start runs without the check, the setting being off; a git
+// checkout is never checked anyway.
+export const isUpdateCheckOff = host => !config.updateCheck && !isGitCheckout(host);
+
+const checkDoneListeners = [];
+
+// listener() runs once this start's reply or failure is handled, so the
+// Status Icons show what it remembered or forgot right away; never while
+// the request stays unanswered.
+export function onUpdateCheckDone(listener) {
+    checkDoneListeners.push(listener);
+}
+
 export function startUpdateCheck() {
-    runUpdateCheck(createPinballYHost(), getUpdateState(), { enabled: config.updateCheck });
+    runUpdateCheck(createPinballYHost(), getUpdateState(), { enabled: config.updateCheck })
+        .then(safeHandler(SCRIPT_NAME, () => { for (const listener of checkDoneListeners) listener(); }));
 }

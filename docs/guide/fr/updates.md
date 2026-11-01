@@ -8,6 +8,8 @@
 
 S'il y en a une, le démarrage suivant ouvre l'invite de mise à jour avant tout le reste, titrée « Mise à jour disponible » : « La version vX.Y.Z de l'eXpansion Pack est disponible. », avec « Mettre à jour » et « Plus tard ». Elle attend un démarrage où le dernier joueur voit les entrées de configuration (un [Profil admin](settings.md#profil-admin), ou n'importe qui tant qu'aucun Profil n'est marqué).
 
+Du démarrage qui l'a trouvée jusqu'à la mise à jour, une flèche dorée pointée vers le bas se tient à côté de l'horloge de la roue (voir [Icônes d'état](interface.md#icônes-détat)), pour les mêmes joueurs. Elle disparaît si GitHub dit plus tard que cette version n'est plus plus récente.
+
 ## Mettre à jour
 
 « Mettre à jour » télécharge et vérifie la nouvelle version, la comète dorée tournant sur la roue assombrie avec « Téléchargement de la mise à jour… » en dessous et les boutons bloqués pendant ce temps, puis ferme PinballY, remplace le dossier du pack par le nouveau, et relance PinballY. Le démarrage suivant l'annonce sous « Mise à jour terminée » : « eXpansion Pack mis à jour en vX.Y.Z », puis, après une ligne vide, la liste des nouveautés, un tiret par phrase, dans la langue de la borne. Après un saut de plusieurs versions, les nouveautés de chaque version sautée sont aussi listées, les plus récentes d'abord, cinq phrases au plus. Une version de correction sans nouveauté pour les joueurs n'affiche que la première ligne.
@@ -27,7 +29,7 @@ Sont conservés :
 
 ## Plus tard
 
-« Plus tard » n'est plus demandé pour cette version : « Mettre à jour en vX.Y.Z » reste dans **Réglages du pack** jusqu'à la mise à jour.
+« Plus tard » n'est plus demandé pour cette version : « Mettre à jour en vX.Y.Z » reste dans **Réglages du pack** jusqu'à la mise à jour, et la flèche dorée reste à côté de l'horloge.
 
 ## Garder vpxtool à jour
 
@@ -35,7 +37,7 @@ Chaque version du pack nomme la version de vpxtool avec laquelle elle a été es
 
 ## Couper la recherche
 
-Réglez « Recherche de mises à jour du pack » sur « Désactivé » dans le groupe Mode hors ligne des **Réglages du pack**, ou écrivez `UPDATE_CHECK=false` dans `.env.local` : la borne ne contacte alors jamais GitHub.
+Réglez « Recherche de mises à jour du pack » sur « Désactivé » dans le groupe Mode hors ligne des **Réglages du pack**, ou écrivez `UPDATE_CHECK=false` dans `.env.local` : la borne ne contacte alors jamais GitHub. Dès le démarrage suivant, une flèche circulaire blanche, barrée, se tient à côté de l'horloge de la roue pour le rappeler, à qui voit les entrées de configuration (voir [Icônes d'état](interface.md#icônes-détat)).
 
 Un pack installé avec git n'est jamais vérifié ni mis à jour : lancez `git pull` dans `Scripts\ExpansionPack`.
 

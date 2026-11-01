@@ -115,6 +115,8 @@ export const DEFAULTS = {
         ratingPrompt: true,
         profilePicker: true,
         clock: true,
+        // Icons beside the clock: a Pack Update waiting, the Update Check off.
+        statusIcons: true,
         wheelArc: true,
         challenges: true,
         tableMastery: true,

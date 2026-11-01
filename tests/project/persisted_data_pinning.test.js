@@ -635,3 +635,8 @@ test(".env.local keeps the OFFER_VPXTOOL key", () => {
     assert.equal(DEFAULTS.offerVpxtool, true);
     assert.equal(applyEnvOverrides(DEFAULTS, "OFFER_VPXTOOL=false\n").config.offerVpxtool, false);
 });
+
+test(".env.local keeps the ADD_ON_STATUS_ICONS key", () => {
+    assert.equal(DEFAULTS.addOns.statusIcons, true);
+    assert.equal(applyEnvOverrides(DEFAULTS, "ADD_ON_STATUS_ICONS=false\n").config.addOns.statusIcons, false);
+});

@@ -815,6 +815,11 @@ export default {
                 whenOn: "Die Uhrzeit oben links auf dem Bildschirm.",
                 whenOff: "Sonst ändert sich nichts.",
             },
+            statusIcons: {
+                name: "Statussymbole",
+                whenOn: "Neben der Uhr ein goldener Pfeil, solange eine Aktualisierung des Packs wartet, ein durchgestrichener Pfeil, solange die Update-Prüfung des Packs aus ist.",
+                whenOff: "Sonst ändert sich nichts.",
+            },
             wheelArc: {
                 name: "Wheel-Bogen",
                 whenOn: "Ein goldener Bogen unter dem Wheel, außer Sie verwenden ein eigenes Underlay.",

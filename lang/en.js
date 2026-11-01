@@ -739,6 +739,11 @@ export default {
                 whenOn: "The time at the top left of the screen.",
                 whenOff: "Nothing else changes.",
             },
+            statusIcons: {
+                name: "Status Icons",
+                whenOn: "Beside the clock, a gold arrow while a pack update is waiting, a crossed arrow while the pack update check is off.",
+                whenOff: "Nothing else changes.",
+            },
             wheelArc: {
                 name: "Wheel Arc",
                 whenOn: "A gold arc under the wheel, unless you use your own underlay.",

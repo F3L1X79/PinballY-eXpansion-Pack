@@ -8,6 +8,8 @@ At each start, PinballY asks GitHub in the background whether a newer version of
 
 When there is one, the next start opens the Update Prompt before anything else, titled "Update available": "eXpansion Pack vX.Y.Z is available.", with "Update now" and "Later". It waits for a start where the last player sees the setup entries (an [Admin Profile](settings.md#admin-profile), or anyone while no Profile is marked).
 
+From the start that found it until the update is done, a gold arrow pointing down sits beside the wheel's clock (see [Status Icons](interface.md#status-icons)), for the same players. It goes if GitHub later says that version is no longer newer.
+
 ## Update now
 
 "Update now" downloads and checks the new version, the gold comet turning over the dimmed wheel with "Downloading the update…" beneath it and the buttons blocked meanwhile, then closes PinballY, swaps the pack's folder for the new one, and starts PinballY again. The next start says so under "Update complete": "eXpansion Pack updated to vX.Y.Z", then, after a blank line, what is new as a list, one dash per sentence, in the cabinet's language. After a jump over several versions, the news of each version on the way is listed too, newest first, five sentences at most. A fix release with nothing new for the players shows the first line alone.
@@ -27,7 +29,7 @@ These are kept:
 
 ## Later
 
-"Later" is not asked again for that version: "Update to vX.Y.Z" stays in **eXpansion Pack Settings** until you update.
+"Later" is not asked again for that version: "Update to vX.Y.Z" stays in **eXpansion Pack Settings** until you update, and the gold arrow stays beside the clock.
 
 ## Keeping vpxtool up to date
 
@@ -35,7 +37,7 @@ Each version of the pack names the vpxtool version it was tried with. At each st
 
 ## Turning the check off
 
-Set "Pack update check" to "Off" in the Offline Mode group of **eXpansion Pack Settings**, or write `UPDATE_CHECK=false` in `.env.local`: the cabinet then never contacts GitHub.
+Set "Pack update check" to "Off" in the Offline Mode group of **eXpansion Pack Settings**, or write `UPDATE_CHECK=false` in `.env.local`: the cabinet then never contacts GitHub. From the next start, a white circular arrow, crossed out, sits beside the wheel's clock as a reminder, for whoever sees the setup entries (see [Status Icons](interface.md#status-icons)).
 
 A pack installed with git is never checked nor offered updates: run `git pull` in `Scripts\ExpansionPack`.
 

@@ -815,6 +815,11 @@ export default {
                 whenOn: "A hora no canto superior esquerdo da tela.",
                 whenOff: "Nada mais muda.",
             },
+            statusIcons: {
+                name: "Ícones de estado",
+                whenOn: "Ao lado do relógio, uma seta dourada enquanto uma atualização do pack espera, uma seta riscada enquanto a busca de atualizações está desativada.",
+                whenOff: "Nada mais muda.",
+            },
             wheelArc: {
                 name: "Arco dourado",
                 whenOn: "Um arco dourado sob a roleta, a menos que você use seu próprio fundo.",

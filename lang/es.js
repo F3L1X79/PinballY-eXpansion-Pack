@@ -816,6 +816,11 @@ export default {
                 whenOn: "La hora arriba a la izquierda de la pantalla.",
                 whenOff: "No cambia nada más.",
             },
+            statusIcons: {
+                name: "Iconos de estado",
+                whenOn: "Junto al reloj, una flecha dorada mientras espera una actualización del pack, una flecha tachada mientras la búsqueda de actualizaciones está desactivada.",
+                whenOff: "No cambia nada más.",
+            },
             wheelArc: {
                 name: "Arco dorado",
                 whenOn: "Un arco dorado bajo la rueda, salvo si usas tu propio fondo.",

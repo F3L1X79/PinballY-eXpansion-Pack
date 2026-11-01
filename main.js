@@ -39,6 +39,7 @@ import * as hiddenTables from "./addons/hidden_tables.js";
 import * as menuCleanup from "./addons/menu_cleanup.js";
 import * as profilePicker from "./addons/profile_picker.js";
 import * as clock from "./addons/clock.js";
+import * as statusIcons from "./addons/status_icons.js";
 import * as wheelArc from "./addons/wheel_arc.js";
 import * as seamlessLaunchOverlay from "./addons/seamless_launch_overlay.js";
 import * as forceBackglass from "./addons/force_backglass.js";
@@ -84,7 +85,7 @@ import * as launchEventsTrace from "./addons/launch_events_trace.js";
 const SCRIPTS = [
     // Interface: translations, then the launch events trace (debugging,
     // LOG_LAUNCH_EVENTS), status line, menu cleanup, menus, filters,
-    // Profile picker, clock, Wheel Arc, launch overlay.
+    // Profile picker, clock, Status Icons, Wheel Arc, launch overlay.
     { key: "uiTranslation", module: uiTranslation },
     { key: "launchEventsTrace", module: launchEventsTrace },
     { key: "statusLineInfo", module: statusLineInfo },
@@ -97,6 +98,7 @@ const SCRIPTS = [
     { key: "hiddenTables", module: hiddenTables },
     { key: "profilePicker", module: profilePicker },
     { key: "clock", module: clock },
+    { key: "statusIcons", module: statusIcons },
     { key: "wheelArc", module: wheelArc },
     { key: "seamlessLaunchOverlay", module: seamlessLaunchOverlay },
 
