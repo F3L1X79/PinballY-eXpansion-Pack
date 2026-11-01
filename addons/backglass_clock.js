@@ -27,9 +27,12 @@ const LAYER_Z_INDEX = 100;
 // PinballY stretches this canvas over the whole window; its width follows
 // the window's aspect ratio, so the text keeps its proportions.
 const CANVAS_HEIGHT = 200;
-const FRAME_THICKNESS = 2;
+const FRAME_THICKNESS = 1;
 // Between the frame and the time's ends.
-const TEXT_MARGIN = 8 * FRAME_THICKNESS;
+const TEXT_MARGIN = 16;
+// Segoe UI's empty space above the digits, as a share of its line height
+// (ascent 2210, cap height 1434, descent 514, in font units).
+const CAP_TOP = (2210 - 1434) / (2210 + 514);
 // The wheel Clock's font, and its underline at the same scale to the text.
 const TIME_TEXT = Object.freeze({ size: 52, minSize: 8, weight: 600, font: "Segoe UI" });
 const UNDERLINE = Object.freeze({ thickness: 4, gap: 7 });
@@ -77,8 +80,10 @@ export default function init() {
             let size = TIME_TEXT.size;
             while (size > TIME_TEXT.minSize && measureTime(text, size).width > width) size--;
             const measured = measureTime(text, size);
-            // The time and its underline, centred together in the box.
-            const top = (CANVAS_HEIGHT - measured.height - UNDERLINE.gap - UNDERLINE.thickness) / 2;
+            // The digits and the underline, centred together in the box.
+            const capTop = CAP_TOP * measured.height;
+            const visibleHeight = measured.height - capTop + UNDERLINE.gap + UNDERLINE.thickness;
+            const top = (CANVAS_HEIGHT - visibleHeight) / 2 - capTop;
             oneLine(host, dc, text, {
                 ...TIME_TEXT, size, minSize: size, x: TEXT_MARGIN, y: top, width,
                 color: CLOCK_COLORS.text, align: "center", cut: false,
