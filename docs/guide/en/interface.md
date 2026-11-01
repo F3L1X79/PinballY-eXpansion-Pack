@@ -39,7 +39,7 @@ It is **off by default**, like the Backglass Clock: turn it on with `ADD_ON_MENU
 
 ## Backglass Clock
 
-While a table runs, the Backglass Clock shows the time in a small black box with a thin gold frame, in front of VPX's backglass, in the same format as the wheel's clock. It appears when the game starts, changes when the minute does, and goes when the game ends. It never shows on a single-screen cabinet or while PinballY captures a table's media.
+While a table runs, the Backglass Clock shows the time in a small black box with a thin gold frame, underlined in gold like the wheel clock, in front of VPX's backglass, in the same format as the wheel's clock. It appears when the game starts, changes when the minute does, and goes when the game ends. It never shows on a single-screen cabinet or while PinballY captures a table's media.
 
 It is **off by default**: turn it on in the eXpansion Pack Settings or with `ADD_ON_BACKGLASS_CLOCK=true`. At its first game, the box opens at the top left of the backglass screen. Move and resize it like PinballY's other windows; PinballY remembers where you put it, the box stays there from then on as long as it is on the backglass screen (anywhere else, it goes back to the top left at the next game), and the time grows with it. A backglass set to stay in front (B2S "FormToFront" on) may hide it.
 

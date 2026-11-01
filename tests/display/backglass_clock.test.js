@@ -16,6 +16,7 @@ const TABLE = { id: 1, configId: "Medieval Madness", title: "Medieval Madness", 
 const KEEP_PLACE_NO_FOCUS = 0x1 | 0x2 | 0x10;
 const BLACK = 0xFF000000;
 const SOFT_WHITE = 0xFFDCDCDC;
+const GOLD = 0xFFE8B84A;
 const OWNER_PLACE = { left: 2600, top: 40, right: 3000, bottom: 340 };
 
 test("during a game the Backglass Clock shows the time in front, raised on a schedule, and goes at the end", async () => {
@@ -57,10 +58,16 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
     const [layer] = clock.layers();
     assert.equal(clock.layers().length, 1);
     assert.deepEqual(layer.texts(), [lang.clock.time(21, 48)], "the time alone, redrawn when the minute changed");
-    assert.equal(layer.fills()[0], BLACK, "a black box");
-    assert.equal(layer.frames().length, 1, "a thin frame");
-    assert.equal(layer.strokes().find(stroke => "text" in stroke).color, SOFT_WHITE);
+    assert.deepEqual(layer.fills(), [GOLD, BLACK, GOLD], "a black box in a gold frame, the time underlined in gold");
     const canvas = layer.canvasSize();
+    const [frame, box, underline] = layer.strokes().filter(stroke => "fill" in stroke).map(stroke => stroke.rect);
+    const sides = [box.x - frame.x, box.y - frame.y,
+        frame.x + frame.width - box.x - box.width, frame.y + frame.height - box.y - box.height];
+    assert.ok(sides.every(side => side === sides[0] && side > 0 && side <= canvas.height / 50), "a thin frame, as thick on all four sides");
+    const time = layer.strokes().find(stroke => "text" in stroke);
+    assert.equal(time.color, SOFT_WHITE);
+    assert.ok(time.rect.height < canvas.height / 2, "the time well inside the box");
+    assert.ok(underline.y > time.rect.y && underline.width < box.width, "the underline below the time, as wide as it");
     assert.ok(canvas.height < 400, "its own fixed-height canvas, stretched over the window");
     assert.ok(Math.abs(canvas.width / canvas.height - 400 / 300) < 0.02, "as wide as the window's aspect ratio");
 

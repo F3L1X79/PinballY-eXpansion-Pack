@@ -1,7 +1,7 @@
 // ============================================================
 // Backglass Clock: the time in a small borderless window in front of VPX's
-// backglass while a table runs, black with a thin gold frame, redrawn when
-// the minute changes. Shown on "gamestarted", gone on "gameover"; never
+// backglass while a table runs, black with a thin gold frame, the time
+// underlined in gold like the wheel Clock, redrawn when the minute changes. Shown on "gamestarted", gone on "gameover"; never
 // during a media capture or on a single screen. Off by default.
 // - Every raise keeps the window's place and never takes VPX's focus.
 // - clientRect isn't in the visible window's units: only its ratio is read.
@@ -11,7 +11,7 @@
 import lang from "../common/core/i18n.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
-import { oneLine } from "../common/drawing/steamball_drawing.js";
+import { UNBOUNDED, oneLine } from "../common/drawing/steamball_drawing.js";
 import { CLOCK_COLORS, clockTextOf, createMinuteTick } from "../common/clock/minute_tick.js";
 
 const SCRIPT_NAME = "BackglassClock";
@@ -26,11 +26,13 @@ const DEFAULT_SIZE = Object.freeze({ width: 320, height: 110 });
 const LAYER_Z_INDEX = 100;
 // PinballY stretches this canvas over the whole window; its width follows
 // the window's aspect ratio, so the text keeps its proportions.
-const CANVAS_HEIGHT = 100;
+const CANVAS_HEIGHT = 200;
 const FRAME_THICKNESS = 2;
 // Between the frame and the time's ends.
-const TEXT_MARGIN = 3 * FRAME_THICKNESS;
-const TIME_TEXT = Object.freeze({ size: 44, minSize: 8, weight: 600, font: "Segoe UI" });
+const TEXT_MARGIN = 8 * FRAME_THICKNESS;
+// The wheel Clock's font, and its underline at the same scale to the text.
+const TIME_TEXT = Object.freeze({ size: 52, minSize: 8, weight: 600, font: "Segoe UI" });
+const UNDERLINE = Object.freeze({ thickness: 4, gap: 7 });
 const BLACK = 0xFF000000;
 
 const isInside = (inner, outer) => inner.left >= outer.left && inner.top >= outer.top
@@ -53,18 +55,36 @@ export default function init() {
     let backglassRect = null;
     let backglassRectProblem = "not read before the game";
 
+    function measureTime(text, size) {
+        const styled = host.createStyledText({ textAlign: "left", textStyle: { font: TIME_TEXT.font, size, weight: TIME_TEXT.weight } });
+        styled.add(text);
+        return styled.measure(UNBOUNDED);
+    }
+
     function draw() {
         const { width, height } = clockWindow.getClientSize();
         const ratio = width > 0 && height > 0 ? width / height : 1;
         const canvasWidth = Math.max(Math.round(CANVAS_HEIGHT * ratio), 1);
         layer.draw(dc => {
-            dc.fillRect(0, 0, canvasWidth, CANVAS_HEIGHT, BLACK);
-            dc.frameRect(0, 0, canvasWidth, CANVAS_HEIGHT, FRAME_THICKNESS, CLOCK_COLORS.gold);
+            // Two fills rather than frameRect, which centres its line on the
+            // canvas edge: GDI+ then keeps more of the left and top sides.
+            dc.fillRect(0, 0, canvasWidth, CANVAS_HEIGHT, CLOCK_COLORS.gold);
+            dc.fillRect(FRAME_THICKNESS, FRAME_THICKNESS, canvasWidth - 2 * FRAME_THICKNESS,
+                CANVAS_HEIGHT - 2 * FRAME_THICKNESS, BLACK);
+            const text = clockTextOf(host.now());
+            const width = canvasWidth - 2 * TEXT_MARGIN;
             // The size goes down until the time fits inside the frame, never cut.
-            oneLine(host, dc, clockTextOf(host.now()), {
-                ...TIME_TEXT, x: TEXT_MARGIN, y: 0, width: canvasWidth - 2 * TEXT_MARGIN, height: CANVAS_HEIGHT,
+            let size = TIME_TEXT.size;
+            while (size > TIME_TEXT.minSize && measureTime(text, size).width > width) size--;
+            const measured = measureTime(text, size);
+            // The time and its underline, centred together in the box.
+            const top = (CANVAS_HEIGHT - measured.height - UNDERLINE.gap - UNDERLINE.thickness) / 2;
+            oneLine(host, dc, text, {
+                ...TIME_TEXT, size, minSize: size, x: TEXT_MARGIN, y: top, width,
                 color: CLOCK_COLORS.text, align: "center", cut: false,
             });
+            dc.fillRect(Math.round((canvasWidth - measured.width) / 2), Math.round(top + measured.height + UNDERLINE.gap),
+                Math.round(measured.width), UNDERLINE.thickness, CLOCK_COLORS.gold);
         }, canvasWidth, CANVAS_HEIGHT);
     }
 
