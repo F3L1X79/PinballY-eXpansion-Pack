@@ -643,9 +643,9 @@ export default {
         },
     },
 
-    // The Expansion Pack Settings, from the Operator Menu (see common/settings/).
+    // The eXpansion Pack Settings, from the Operator Menu (see common/settings/).
     expansionPackSettings: {
-        menuEntry: "Expansion Pack Settings",
+        menuEntry: "eXpansion Pack Settings",
         on: "On",
         off: "Off",
         // An Add-on's line in the list, by its name and state.
@@ -840,19 +840,19 @@ export default {
     packUpdates: {
         promptTitle: "Update available",
         // Names the newer Pack Version the Update Check found.
-        prompt: (version) => `Expansion Pack v${version} is available.`,
+        prompt: (version) => `eXpansion Pack v${version} is available.`,
         updateNow: "Update now",
         later: "Later",
         updateFailedTitle: "Update not possible",
-        updateFailed: "The Expansion Pack stays as it is.",
+        updateFailed: "The eXpansion Pack stays as it is.",
         // Under the Loader while the Pack Update helper gets ready.
         downloadingUpdate: "Downloading the update…",
         ok: "OK",
         // At the first start on the Pack Version an update installed.
         updatedTitle: "Update complete",
-        updated: (version) => `Expansion Pack updated to v${version}`,
+        updated: (version) => `eXpansion Pack updated to v${version}`,
         // The title of the Error Toast of an update that failed.
-        toastTitle: "Expansion Pack",
+        toastTitle: "eXpansion Pack",
     },
     // The Script Reader (vpxtool): its Dialog, its install's wait and result (see common/table_roms/).
     scriptReader: {
@@ -862,22 +862,22 @@ export default {
         install: "Install",
         noThanks: "No thanks",
         // After what vpxtool is, before the owner answers.
-        later: "You can also install it later from the Expansion Pack Settings, or by hand.",
+        later: "You can also install it later from the eXpansion Pack Settings, or by hand.",
         // Under the Loader while the install helper works.
         downloading: "Downloading…",
         ok: "OK",
         installedTitle: "vpxtool installed",
         installed: (version) => `vpxtool v${version} is installed: each table's ROM now fills in by itself.`,
         failedTitle: "Install not possible",
-        failed: "vpxtool could not be installed; nothing has changed. You can try again from the Expansion Pack Settings.",
+        failed: "vpxtool could not be installed; nothing has changed. You can try again from the eXpansion Pack Settings.",
         // The same Dialog, wait and result for an older vpxtool.
         updateTitle: (installed, version) => `vpxtool v${installed} → v${version}`,
         update: "Update",
-        updateLater: "You can also update it later from the Expansion Pack Settings, or by hand.",
+        updateLater: "You can also update it later from the eXpansion Pack Settings, or by hand.",
         updatedTitle: "vpxtool updated",
         updated: (version) => `vpxtool is updated to v${version}.`,
         updateFailedTitle: "Update not possible",
-        updateFailed: "vpxtool could not be updated; nothing has changed. You can try again from the Expansion Pack Settings.",
+        updateFailed: "vpxtool could not be updated; nothing has changed. You can try again from the eXpansion Pack Settings.",
     },
     // The Error Toast: a failure the player would not see otherwise, under the table's name.
     errorToast: {
@@ -895,7 +895,7 @@ export default {
             "During a game, the time now shows on the backglass screen.",
         ],
         "1.0.0": [
-            "Version 1.0: the Expansion Pack's first public release.",
+            "Version 1.0: the eXpansion Pack's first public release.",
             "Menus and messages are easier to read, and fit the screen from the very first second.",
             "After each update, this message now tells you what's new.",
         ],

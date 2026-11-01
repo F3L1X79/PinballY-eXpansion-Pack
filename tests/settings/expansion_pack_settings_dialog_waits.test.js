@@ -1,5 +1,5 @@
 // ============================================================
-// The Expansion Pack Settings through main.js with every Add-on off, Drawn
+// The eXpansion Pack Settings through main.js with every Add-on off, Drawn
 // Menus included: a wheel dialog submitted while the drawn list is open
 // waits for it to close, the restart question, and the Operator Menu it goes back to.
 // ============================================================
@@ -23,7 +23,7 @@ test("a wheel dialog waits for the drawn list, even with Drawn Menus off", async
 
     fake.openOperatorMenu();
     // The native Operator Menu closes back to the wheel mode.
-    fake.selectMenuItem("Expansion Pack Settings");
+    fake.selectMenuItem("eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
     assert.ok(isDrawnMenuShown(fake));
 

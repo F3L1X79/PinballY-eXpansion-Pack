@@ -17,7 +17,7 @@ test("the success dialog and its Release Highlights read in French", async () =>
 
     assert.deepEqual([readDrawnMenu(fake).title, readDrawnMenu(fake).message], [
         "Mise à jour terminée",
-        `Expansion Pack mis à jour en v${PACK_VERSION}\n\n- Les Défis durent maintenant une semaine.`,
+        `eXpansion Pack mis à jour en v${PACK_VERSION}\n\n- Les Défis durent maintenant une semaine.`,
     ]);
     assert.deepEqual(drawnMenuLines(fake), ["OK"]);
     chooseEntry(fake, "OK");

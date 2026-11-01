@@ -1,5 +1,5 @@
 // ============================================================
-// The Language page of the Expansion Pack Settings, through main.js: the six
+// The Language page of the eXpansion Pack Settings, through main.js: the six
 // languages in their own names, the saved one marked, choosing one rewriting
 // the LANGUAGE line of .env.local and "on restart" in the list; Cancel, Back
 // and Exit change nothing; the screens stay in the running language.
@@ -19,7 +19,7 @@ const fake = createFakePinballYHost({ now: new Date(2026, 9, 22, 20, 0, 0) });
 function openList() {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 }
 

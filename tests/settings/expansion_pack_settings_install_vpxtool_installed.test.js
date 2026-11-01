@@ -1,5 +1,5 @@
 // ============================================================
-// No "Install vpxtool" line in the Expansion Pack Settings, through main.js,
+// No "Install vpxtool" line in the eXpansion Pack Settings, through main.js,
 // while vpxtool.exe is already in the tools folder with Table ROMs on.
 // ============================================================
 

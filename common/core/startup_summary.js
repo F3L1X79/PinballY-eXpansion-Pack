@@ -46,7 +46,7 @@ export function writeStartupSummary(host, { language, addOns, profileCount }) {
     const version = host.getPinballYVersion();
     const offAddOns = Object.keys(addOns).filter(key => addOns[key] === false);
     const profiles = profileCount === null ? "Profiles unknown" : `${profileCount} Profiles`;
-    const pack = `Expansion Pack v${PACK_VERSION}${isGitCheckout(host) ? " (git checkout)" : ""}`;
+    const pack = `eXpansion Pack v${PACK_VERSION}${isGitCheckout(host) ? " (git checkout)" : ""}`;
     host.log(`${LOG_PREFIX} Started: ${pack}, PinballY ${version.display}, build ${version.build}, language ${language}, `
         + `Add-ons off: ${offAddOns.length === 0 ? "none" : offAddOns.join(", ")}, `
         + `${profiles}, ${host.getVisibleTables().length} tables`);

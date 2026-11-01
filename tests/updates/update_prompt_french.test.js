@@ -25,7 +25,7 @@ test("the Update Prompt reads in French", async () => {
     await settle();
     fake.advanceTime(OPEN_OVER_MS);
 
-    assert.deepEqual([readDrawnMenu(fake).title, readDrawnMenu(fake).message], ["Mise à jour disponible", "La version v9.0.0 de l'Expansion Pack est disponible."]);
+    assert.deepEqual([readDrawnMenu(fake).title, readDrawnMenu(fake).message], ["Mise à jour disponible", "La version v9.0.0 de l'eXpansion Pack est disponible."]);
     assert.deepEqual(drawnMenuLines(fake), ["Mettre à jour", "Plus tard"]);
     assertNoErrorLogged(fake);
 });

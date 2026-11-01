@@ -66,7 +66,7 @@ test("the requested version running says so once, ahead of the Update Prompt", (
     assert.equal(dialogs.length, 1);
     assert.equal(dialogs[0].priority, DIALOG_PRIORITY.UPDATE_RESULT);
     assert.ok(dialogs[0].priority < DIALOG_PRIORITY.UPDATE_PROMPT);
-    assert.deepEqual([dialogs[0].title, dialogs[0].message], ["Update complete", `Expansion Pack updated to v${PACK_VERSION}`]);
+    assert.deepEqual([dialogs[0].title, dialogs[0].message], ["Update complete", `eXpansion Pack updated to v${PACK_VERSION}`]);
     assert.deepEqual(dialogs[0].buttons.map(button => button.label), ["OK"]);
     assert.equal(requestedIn(fake), PACK_VERSION, "kept until it shows");
 
@@ -81,7 +81,7 @@ test("the Release Highlights of the versions on the way follow the line as a das
         releaseHighlights: { "0.0.1": ["Already there."], "0.0.2": ["Older news."], [PACK_VERSION]: ["Fresh news.", "More news."] },
     });
 
-    assert.equal(dialogs[0].message, `Expansion Pack updated to v${PACK_VERSION}\n\n- Fresh news.\n- More news.\n- Older news.`);
+    assert.equal(dialogs[0].message, `eXpansion Pack updated to v${PACK_VERSION}\n\n- Fresh news.\n- More news.\n- Older news.`);
     dialogs[0].onShown();
     assert.deepEqual(JSON.parse(fake.readFile(STATE_FILE)), { version: 1 });
     assertNoErrorLogged(fake);
@@ -93,7 +93,7 @@ test("another version running brings an Error Toast pointing to the helper's log
     assert.equal(dialogs.length, 0);
     assert.equal(toasts.length, 1);
     assert.equal(toasts[0].kind, TOAST_KIND.ERROR);
-    assert.equal(toasts[0].title, "Expansion Pack");
+    assert.equal(toasts[0].title, "eXpansion Pack");
     assert.equal(toasts[0].description, `The update to v9.0.0 failed: the previous version is still in place. Details in ${LOG_HINT}`);
     assert.equal(toasts[0].isStale(), false);
     assert.deepEqual(errorLines(fake), [`[UpdateResult] ERROR Pack Update to 9.0.0 failed, still on ${PACK_VERSION}: see ${LOG_HINT}`]);

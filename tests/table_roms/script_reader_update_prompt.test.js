@@ -25,7 +25,7 @@ test("an older vpxtool remembered: the prompt offers the update, and the Setting
 
     assert.deepEqual(start.dialog, {
         title: "vpxtool v0.37.1 → v0.38.0",
-        message: "vpxtool reads each table's script so that its ROM fills in by itself. Written by Francis De Brabandere, under the Apache-2.0 licence, downloaded from github.com/francisdb/vpxtool. You can also update it later from the Expansion Pack Settings, or by hand.",
+        message: "vpxtool reads each table's script so that its ROM fills in by itself. Written by Francis De Brabandere, under the Apache-2.0 licence, downloaded from github.com/francisdb/vpxtool. You can also update it later from the eXpansion Pack Settings, or by hand.",
         lines: ["Update", "No thanks"],
     });
 

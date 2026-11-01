@@ -23,7 +23,7 @@ test("the success dialog lists the Release Highlights of the skipped versions to
     });
 
     assert.deepEqual(readDrawnMenu(fake).message.split("\n"), [
-        `Expansion Pack updated to v${PACK_VERSION}`, "",
+        `eXpansion Pack updated to v${PACK_VERSION}`, "",
         "- Fresh news.", "- More fresh news.", "- Older news.", "- More older news.", "- Oldest news.",
     ]);
     chooseEntry(fake, "OK");

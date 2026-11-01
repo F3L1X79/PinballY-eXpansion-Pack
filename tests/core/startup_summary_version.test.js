@@ -27,7 +27,7 @@ function packLinesFor(pinballYVersion, setup = SETUP, seed = () => {}) {
 
 test("Beta 9 is warned as older than the minimum", () => {
     assert.deepEqual(packLinesFor(versionOf("1.1.0 (Beta 9)", "1.1.0-beta.9+9001.20230101T1200", 9001)), [
-        `[ExpansionPack] Started: Expansion Pack v${PACK_VERSION}, PinballY 1.1.0 (Beta 9), build 9001, language en, `
+        `[ExpansionPack] Started: eXpansion Pack v${PACK_VERSION}, PinballY 1.1.0 (Beta 9), build 9001, language en, `
             + "Add-ons off: none, 1 Profiles, 0 tables",
         "[ExpansionPack] WARNING: PinballY 1.1.0 (Beta 9) is older than 1.1.0 Beta 10, the minimum this pack needs.",
     ]);
@@ -60,14 +60,14 @@ test("Beta 10 itself, and a version in an unknown format, get no warning", () =>
 test("Add-ons off are listed in config order, and a Profile store that failed reads as unknown", () => {
     const [line] = packLinesFor(BETA_10_VERSION,
         { language: "de", addOns: { clock: false, wheelArc: true, menuCleanup: false }, profileCount: null });
-    assert.equal(line, `[ExpansionPack] Started: Expansion Pack v${PACK_VERSION}, PinballY 1.1.0 (Beta 10), build 10086, language de, `
+    assert.equal(line, `[ExpansionPack] Started: eXpansion Pack v${PACK_VERSION}, PinballY 1.1.0 (Beta 10), build 10086, language de, `
         + "Add-ons off: clock, menuCleanup, Profiles unknown, 0 tables");
 });
 
 test("a git checkout follows the Pack Version, a .git folder or a worktree's .git file", () => {
     for (const seed of [f => f.addFolder(GIT_PATH), f => f.addFile(GIT_PATH, "gitdir: C:/repo/.git/worktrees/pack")]) {
         const [line] = packLinesFor(BETA_10_VERSION, SETUP, seed);
-        assert.equal(line, `[ExpansionPack] Started: Expansion Pack v${PACK_VERSION} (git checkout), PinballY 1.1.0 (Beta 10), `
+        assert.equal(line, `[ExpansionPack] Started: eXpansion Pack v${PACK_VERSION} (git checkout), PinballY 1.1.0 (Beta 10), `
             + "build 10086, language en, Add-ons off: none, 1 Profiles, 0 tables");
     }
 });

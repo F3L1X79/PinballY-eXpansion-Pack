@@ -6,11 +6,11 @@
 
 At each start, PinballY asks GitHub in the background whether a newer version of the pack is out, without slowing the start down; offline, it only writes one line in `PinballY.log`.
 
-When there is one, the next start opens the Update Prompt before anything else, titled "Update available": "Expansion Pack vX.Y.Z is available.", with "Update now" and "Later". It waits for a start where the last player sees the setup entries (an [Admin Profile](settings.md#admin-profile), or anyone while no Profile is marked).
+When there is one, the next start opens the Update Prompt before anything else, titled "Update available": "eXpansion Pack vX.Y.Z is available.", with "Update now" and "Later". It waits for a start where the last player sees the setup entries (an [Admin Profile](settings.md#admin-profile), or anyone while no Profile is marked).
 
 ## Update now
 
-"Update now" downloads and checks the new version, the gold comet turning over the dimmed wheel with "Downloading the update…" beneath it and the buttons blocked meanwhile, then closes PinballY, swaps the pack's folder for the new one, and starts PinballY again. The next start says so under "Update complete": "Expansion Pack updated to vX.Y.Z", then, after a blank line, what is new as a list, one dash per sentence, in the cabinet's language. After a jump over several versions, the news of each version on the way is listed too, newest first, five sentences at most. A fix release with nothing new for the players shows the first line alone.
+"Update now" downloads and checks the new version, the gold comet turning over the dimmed wheel with "Downloading the update…" beneath it and the buttons blocked meanwhile, then closes PinballY, swaps the pack's folder for the new one, and starts PinballY again. The next start says so under "Update complete": "eXpansion Pack updated to vX.Y.Z", then, after a blank line, what is new as a list, one dash per sentence, in the cabinet's language. After a jump over several versions, the news of each version on the way is listed too, newest first, five sentences at most. A fix release with nothing new for the players shows the first line alone.
 
 These are kept:
 
@@ -22,12 +22,12 @@ These are kept:
 
 ## When an update fails
 
-- A download that fails before PinballY closes is told at once under "Update not possible": "The Expansion Pack stays as it is."
+- A download that fails before PinballY closes is told at once under "Update not possible": "The eXpansion Pack stays as it is."
 - If the update failed after PinballY closed, the previous version is still in place, and a "Problem" toast tells whoever sees the setup entries where to read why (see [Troubleshooting](troubleshooting.md)).
 
 ## Later
 
-"Later" is not asked again for that version: "Update to vX.Y.Z" stays in **Expansion Pack Settings** until you update.
+"Later" is not asked again for that version: "Update to vX.Y.Z" stays in **eXpansion Pack Settings** until you update.
 
 ## Keeping vpxtool up to date
 
@@ -35,7 +35,7 @@ Each version of the pack names the vpxtool version it was tried with. At each st
 
 ## Turning the check off
 
-Set "Pack update check" to "Off" in the Offline Mode group of **Expansion Pack Settings**, or write `UPDATE_CHECK=false` in `.env.local`: the cabinet then never contacts GitHub.
+Set "Pack update check" to "Off" in the Offline Mode group of **eXpansion Pack Settings**, or write `UPDATE_CHECK=false` in `.env.local`: the cabinet then never contacts GitHub.
 
 A pack installed with git is never checked nor offered updates: run `git pull` in `Scripts\ExpansionPack`.
 

@@ -31,7 +31,7 @@ const UNSHIPPED_SOUNDS = Object.freeze({
 const SOUND_SETTINGS = [...Object.keys(SHIPPED_SOUNDS), ...Object.keys(UNSHIPPED_SOUNDS)];
 const NO_SOUNDS = Object.fromEntries(SOUND_SETTINGS.map(key => [key, ""]));
 
-// Also what the Expansion Pack Settings parse a fresh read of .env.local
+// Also what the eXpansion Pack Settings parse a fresh read of .env.local
 // against; frozen below, addOns included, so never changed.
 export const DEFAULTS = {
     // --- Set these for your setup ---

@@ -23,7 +23,7 @@ test("the Script Reader Prompt comes after the Update Prompt and before the Star
         seed: f => f.addFile(UPDATE_STATE_FILE, JSON.stringify({ version: 1, latestRelease: RELEASE })),
     });
     const { fake, lang } = start;
-    assert.equal(start.dialog.message, "Expansion Pack v9.0.0 is available.");
+    assert.equal(start.dialog.message, "eXpansion Pack v9.0.0 is available.");
 
     await answer(start, "Later");
     fake.advanceTime(OPEN_OVER_MS);

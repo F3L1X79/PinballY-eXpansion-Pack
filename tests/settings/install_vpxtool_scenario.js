@@ -2,7 +2,7 @@
 // The "Install vpxtool" line's start: main.js on the fake host with Drawn
 // Menus and Table ROMs on (or off), vpxtool missing (or as the test says),
 // one VPX table to read and the Script Reader install helper in tools\;
-// then, past any Script Reader Prompt's Exit, the Expansion Pack Settings opened from the Operator
+// then, past any Script Reader Prompt's Exit, the eXpansion Pack Settings opened from the Operator
 // Menu. Never loaded by PinballY.
 // ============================================================
 
@@ -23,7 +23,7 @@ export const SCRIPT_READER = {
 };
 export const DIALOG = {
     title: "vpxtool v0.38.0",
-    message: "vpxtool reads each table's script so that its ROM fills in by itself. Written by Francis De Brabandere, under the Apache-2.0 licence, downloaded from github.com/francisdb/vpxtool. You can also install it later from the Expansion Pack Settings, or by hand.",
+    message: "vpxtool reads each table's script so that its ROM fills in by itself. Written by Francis De Brabandere, under the Apache-2.0 licence, downloaded from github.com/francisdb/vpxtool. You can also install it later from the eXpansion Pack Settings, or by hand.",
     lines: ["Install", "No thanks"],
 };
 // What the Table ROMs Add-on logs at init without vpxtool: not this scenario's doing.
@@ -42,7 +42,7 @@ export const romnameRuns = fake => fake.programRuns().filter(run => run.program 
 export function openSettings(fake) {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 }
 

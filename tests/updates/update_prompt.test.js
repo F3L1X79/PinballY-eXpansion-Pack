@@ -46,7 +46,7 @@ test("a newer remembered version is asked about ahead of the Startup Screen, and
 
     assert.equal(submitted.length, 1);
     assert.ok(submitted[0].priority < DIALOG_PRIORITY.STARTUP_PROMPT);
-    assert.deepEqual([submitted[0].title, submitted[0].message], ["Update available", "Expansion Pack v9.0.0 is available."]);
+    assert.deepEqual([submitted[0].title, submitted[0].message], ["Update available", "eXpansion Pack v9.0.0 is available."]);
     assert.deepEqual(submitted[0].buttons.map(button => button.label), ["Update now", "Later"]);
     assert.equal(offeredIn(fake), undefined, "not marked before it shows");
 

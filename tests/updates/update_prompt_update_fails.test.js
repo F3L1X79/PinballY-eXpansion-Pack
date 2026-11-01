@@ -44,7 +44,7 @@ test("a Pack Update that never gets ready says so at once, and PinballY stays", 
 
     assert.equal(errorLines(fake).length, 1);
     assert.match(errorLines(fake)[0], /^\[PackUpdate\] ERROR Pack Update not possible: .*not ready after 120 s/);
-    assert.deepEqual([readDrawnMenu(fake).title, readDrawnMenu(fake).message], ["Update not possible", "The Expansion Pack stays as it is."]);
+    assert.deepEqual([readDrawnMenu(fake).title, readDrawnMenu(fake).message], ["Update not possible", "The eXpansion Pack stays as it is."]);
     assert.deepEqual(drawnMenuLines(fake), ["OK"]);
     assert.ok(!fake.executedCommands().includes(fake.getBuiltInCommand("Quit")));
     assert.equal(readLoader(fake).shown, false, "the Loader went before the message");

@@ -3,7 +3,7 @@
 // summary, keeps the Adult Tables off a Child Profile's wheel, switches to Guest
 // without the Profile picker, resolves the Startup Screen, restores the quiet wheel's
 // volume, starts the Play Error Toasts, initializes SCRIPTS in order but those off in
-// config.addOns (the Expansion Pack Settings before Drawn Menus), then the Update result, Prompt and Check.
+// config.addOns (the eXpansion Pack Settings before Drawn Menus), then the Update result, Prompt and Check.
 // - A script whose init() throws is logged, Error Log included, and skipped, so the others still load.
 // - LOG_STARTUP_TIMING logs each init time.
 // ============================================================
@@ -212,7 +212,7 @@ function startSettings() {
     try {
         startExpansionPackSettings();
     } catch (error) {
-        logError(SCRIPT_NAME, `ERROR starting the Expansion Pack Settings: ${error.message}`, null, error);
+        logError(SCRIPT_NAME, `ERROR starting the eXpansion Pack Settings: ${error.message}`, null, error);
     }
 }
 

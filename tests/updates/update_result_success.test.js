@@ -1,7 +1,7 @@
 // ============================================================
 // The first start on the Pack Version an update installed, through main.js
 // on the fake host, the check off, no Release Highlights on the way:
-// "Expansion Pack updated to vX.Y.Z" alone shows before the Profile picker,
+// "eXpansion Pack updated to vX.Y.Z" alone shows before the Profile picker,
 // once, over the dimmed wheel without the Loader; the request is cleared.
 // ============================================================
 
@@ -19,7 +19,7 @@ import { startAfterUpdate } from "./update_result_success_scenario.js";
 test("a Pack Update that worked says so once, before the Profile picker", async () => {
     const { fake, lang, settle } = await startAfterUpdate({ previousVersion: "0.0.1", releaseHighlights: { "0.0.1": ["Already there."] } });
 
-    assert.deepEqual([readDrawnMenu(fake).title, readDrawnMenu(fake).message], ["Update complete", `Expansion Pack updated to v${PACK_VERSION}`]);
+    assert.deepEqual([readDrawnMenu(fake).title, readDrawnMenu(fake).message], ["Update complete", `eXpansion Pack updated to v${PACK_VERSION}`]);
     assert.deepEqual(drawnMenuLines(fake), ["OK"]);
     assert.equal(isCarouselOpen(fake, lang), false, "the message comes before the picker");
     assert.equal(requestedVersionOf(fake), undefined, "said once");

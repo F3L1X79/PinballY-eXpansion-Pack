@@ -1,7 +1,7 @@
 // ============================================================
 // The "Update to vX.Y.Z" entry whose helper never gets ready, through
 // main.js: "Update not possible" shows at once with OK, PinballY stays, and
-// the entry is still in the Expansion Pack Settings to try again.
+// the entry is still in the eXpansion Pack Settings to try again.
 // ============================================================
 
 import { test } from "node:test";
@@ -36,7 +36,7 @@ test("setup", async () => {
 test("a Pack Update that never gets ready says so at once, and PinballY stays", async () => {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
     chooseEntry(fake, "Update to v9.0.0");
     fake.advanceTime(1000);
@@ -45,7 +45,7 @@ test("a Pack Update that never gets ready says so at once, and PinballY stays", 
     await settle();
     fake.advanceTime(OPEN_OVER_MS);
 
-    assert.deepEqual([readDrawnMenu(fake).title, readDrawnMenu(fake).message], ["Update not possible", "The Expansion Pack stays as it is."]);
+    assert.deepEqual([readDrawnMenu(fake).title, readDrawnMenu(fake).message], ["Update not possible", "The eXpansion Pack stays as it is."]);
     assert.deepEqual(drawnMenuLines(fake), ["OK"]);
     assert.equal(readLoader(fake).shown, false);
     assert.ok(!fake.executedCommands().includes(fake.getBuiltInCommand("Quit")));
@@ -54,13 +54,13 @@ test("a Pack Update that never gets ready says so at once, and PinballY stays", 
     assert.match(errorLines(fake)[0], /^\[PackUpdate\] ERROR Pack Update not possible: /);
 });
 
-test("after OK, the buttons work again and the entry is still in the Expansion Pack Settings", () => {
+test("after OK, the buttons work again and the entry is still in the eXpansion Pack Settings", () => {
     chooseEntry(fake, "OK");
     fake.advanceTime(OPEN_OVER_MS);
     assert.notEqual(press(fake, "Next").defaultPrevented, true, "the wheel moves again");
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 
     assert.ok(drawnMenuLines(fake).includes("Update to v9.0.0"));

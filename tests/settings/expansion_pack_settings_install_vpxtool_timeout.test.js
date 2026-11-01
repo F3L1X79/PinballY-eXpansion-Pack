@@ -11,7 +11,7 @@ import { readDrawnMenu, press, chooseEntry, squeezed, OPEN_OVER_MS } from "../dr
 import { readLoader } from "../support/loader_reader.js";
 import { startOnSettings, openDialog, errorsAfterStart } from "./install_vpxtool_scenario.js";
 
-const FAILED = "vpxtool could not be installed; nothing has changed. You can try again from the Expansion Pack Settings.";
+const FAILED = "vpxtool could not be installed; nothing has changed. You can try again from the eXpansion Pack Settings.";
 
 let fake;
 

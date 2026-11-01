@@ -12,7 +12,7 @@ test("a failed Pack Update brings its Error Toast with the check on too", async 
     const { fake, errorCards } = await pickAfterFailedUpdate({ updateCheck: true });
 
     assert.equal(errorCards.length, 1);
-    assert.match(errorCards[0].text, /^PROBLEM \| Expansion Pack \| The update to v9\.0\.0 failed/);
+    assert.match(errorCards[0].text, /^PROBLEM \| eXpansion Pack \| The update to v9\.0\.0 failed/);
     assert.equal(requestedVersionOf(fake), undefined, "told once");
     assert.equal(errorLines(fake).length, 1, "only the failure");
 });

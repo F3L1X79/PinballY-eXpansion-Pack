@@ -4,7 +4,7 @@
 
 For the cabinet owner:
 
-- **Expansion Pack Settings**: from the Operator Menu, turn each Add-on on or off by category, pick the startup screen and the language, then restart PinballY in one press.
+- **eXpansion Pack Settings**: from the Operator Menu, turn each Add-on on or off by category, pick the startup screen and the language, then restart PinballY in one press.
 - **Admin Profile**: the setup entries for you alone.
 - **Child Profile**: a wheel without Adult Tables for the kids.
 - **Manage profiles**: mark an Admin Profile or a Child Profile, or start a Profile over (Profile Reset), alone or the whole household at once.
@@ -12,9 +12,9 @@ For the cabinet owner:
 
 Everything stays in one folder, with no change to PinballY itself.
 
-## Expansion Pack Settings
+## eXpansion Pack Settings
 
-**Expansion Pack Settings**, in the Operator Menu, sets the Add-ons, the startup screen, the language and the Offline Mode without editing any file, then restarts PinballY in one press. It also offers "Update to vX.Y.Z" once you answered "Later" to the Update Prompt (see [Updates](updates.md)), and, while the Table ROMs Add-on is on, a vpxtool line (see [Install](install.md#vpxtool) and [Updates](updates.md#keeping-vpxtool-up-to-date)):
+**eXpansion Pack Settings**, in the Operator Menu, sets the Add-ons, the startup screen, the language and the Offline Mode without editing any file, then restarts PinballY in one press. It also offers "Update to vX.Y.Z" once you answered "Later" to the Update Prompt (see [Updates](updates.md)), and, while the Table ROMs Add-on is on, a vpxtool line (see [Install](install.md#vpxtool) and [Updates](updates.md#keeping-vpxtool-up-to-date)):
 
 - "Install vpxtool v0.38.0" while vpxtool is missing;
 - "Update vpxtool (v0.37.1 → v0.38.0)" while yours is older than the version the pack names;

@@ -26,7 +26,7 @@ test("the Update Prompt opens first, and the Profile picker follows Later", asyn
     await settle();
     fake.advanceTime(OPEN_OVER_MS);
 
-    assert.equal(readDrawnMenu(fake).message, "Expansion Pack v9.0.0 is available.");
+    assert.equal(readDrawnMenu(fake).message, "eXpansion Pack v9.0.0 is available.");
     assert.deepEqual(drawnMenuLines(fake), ["Update now", "Later"]);
     assert.equal(readLoader(fake).shown, false, "no Loader turning under the prompt");
     fake.advanceTime(CAROUSEL_OPEN_MS);

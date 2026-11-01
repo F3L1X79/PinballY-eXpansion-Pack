@@ -1,5 +1,5 @@
 // ============================================================
-// The Expansion Pack Settings list through main.js, Drawn Menus on: the
+// The eXpansion Pack Settings list through main.js, Drawn Menus on: the
 // Add-on categories, as in .env.example, each opening its page of Add-ons
 // On / Off as saved in .env.local (read again on each opening), then the
 // Language line; a category's Back returns to its line, Exit on the list to
@@ -60,7 +60,7 @@ function readCategoryPages() {
 function openList() {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 }
 
@@ -101,7 +101,7 @@ test("Exit goes back to the Operator Menu, past the restart question", () => {
     fake.advanceTime(OPEN_OVER_MS);
 
     assert.ok(drawnMenuLines(fake).includes("PinballY Options"));
-    assert.ok(drawnMenuLines(fake).includes("Expansion Pack Settings"));
+    assert.ok(drawnMenuLines(fake).includes("eXpansion Pack Settings"));
     press(fake, "Exit");
     assert.ok(!isDrawnMenuShown(fake));
 });

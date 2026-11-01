@@ -1,5 +1,5 @@
 // ============================================================
-// The Offline Mode group of the Expansion Pack Settings, through main.js:
+// The Offline Mode group of the eXpansion Pack Settings, through main.js:
 // a submenu after the language line holding the Pack update check line,
 // whose page lists On and Off, the saved one marked; choosing saves
 // UPDATE_CHECK at once, shown "on restart", back on its line in the group;
@@ -28,7 +28,7 @@ test("setup", async () => {
 test("Offline Mode comes after the language line as a submenu, with no Update entry when no release is known", () => {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 
     assert.deepEqual(drawnMenuLines(fake).slice(5), ["---", "Startup screen: Profile picker", "Language: English", "Offline Mode", "---", "Back"]);

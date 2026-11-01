@@ -1,5 +1,5 @@
 // ============================================================
-// Leaving the Expansion Pack Settings through main.js: at once when every
+// Leaving the eXpansion Pack Settings through main.js: at once when every
 // saved setting matches the running one; otherwise "Restart now" / "Later",
 // Later (or Exit) back to the Operator Menu, Restart now asking PinballY's
 // restart, logged, then Quit once the helper is ready. Attract mode closes
@@ -26,13 +26,13 @@ const RUNNING_TEXT = Object.keys(config.addOns)
 function openList() {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 }
 
 // Opens the list from the Operator Menu, then the High Scores' category.
 function openPlayersAndProgress() {
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
     chooseEntry(fake, "Players and progress");
     fake.advanceTime(OPEN_OVER_MS);
@@ -55,7 +55,7 @@ function switchAndSave(line) {
     fake.advanceTime(OPEN_OVER_MS);
 }
 
-const isOnOperatorMenu = () => drawnMenuLines(fake).includes("Expansion Pack Settings");
+const isOnOperatorMenu = () => drawnMenuLines(fake).includes("eXpansion Pack Settings");
 
 test("setup", async () => {
     // Never uninstalled: node --test runs each test file in its own process.
@@ -104,7 +104,7 @@ test("Later leaves for the Operator Menu, no restart asked", () => {
 });
 
 test("Exit asks too, and Exit on the question leaves as Later does", () => {
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
     press(fake, "Exit");
     fake.advanceTime(OPEN_OVER_MS);
@@ -117,7 +117,7 @@ test("Exit asks too, and Exit on the question leaves as Later does", () => {
 });
 
 test("attract mode closes the screens without the question", () => {
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
     fake.enterAttractMode();
     fake.advanceTime(OPEN_OVER_MS);

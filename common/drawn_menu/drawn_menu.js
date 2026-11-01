@@ -705,7 +705,7 @@ export function getDrawnMenus() {
 
 let sharedPackMenus = null;
 
-// What shows the pack's own screens (the Expansion Pack Settings): drawn
+// What shows the pack's own screens (the eXpansion Pack Settings): drawn
 // even with the Drawn Menus Add-on off, natively only when drawing fails.
 // That drawn instance is created on its first call, nothing drawn ahead before.
 export function getPackMenus() {

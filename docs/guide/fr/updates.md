@@ -6,11 +6,11 @@
 
 À chaque démarrage, PinballY demande à GitHub, en arrière-plan, si une version plus récente du pack est sortie, sans ralentir le démarrage ; hors ligne, il écrit seulement une ligne dans `PinballY.log`.
 
-S'il y en a une, le démarrage suivant ouvre l'invite de mise à jour avant tout le reste, titrée « Mise à jour disponible » : « La version vX.Y.Z de l'Expansion Pack est disponible. », avec « Mettre à jour » et « Plus tard ». Elle attend un démarrage où le dernier joueur voit les entrées de configuration (un [Profil admin](settings.md#profil-admin), ou n'importe qui tant qu'aucun Profil n'est marqué).
+S'il y en a une, le démarrage suivant ouvre l'invite de mise à jour avant tout le reste, titrée « Mise à jour disponible » : « La version vX.Y.Z de l'eXpansion Pack est disponible. », avec « Mettre à jour » et « Plus tard ». Elle attend un démarrage où le dernier joueur voit les entrées de configuration (un [Profil admin](settings.md#profil-admin), ou n'importe qui tant qu'aucun Profil n'est marqué).
 
 ## Mettre à jour
 
-« Mettre à jour » télécharge et vérifie la nouvelle version, la comète dorée tournant sur la roue assombrie avec « Téléchargement de la mise à jour… » en dessous et les boutons bloqués pendant ce temps, puis ferme PinballY, remplace le dossier du pack par le nouveau, et relance PinballY. Le démarrage suivant l'annonce sous « Mise à jour terminée » : « Expansion Pack mis à jour en vX.Y.Z », puis, après une ligne vide, la liste des nouveautés, un tiret par phrase, dans la langue de la borne. Après un saut de plusieurs versions, les nouveautés de chaque version sautée sont aussi listées, les plus récentes d'abord, cinq phrases au plus. Une version de correction sans nouveauté pour les joueurs n'affiche que la première ligne.
+« Mettre à jour » télécharge et vérifie la nouvelle version, la comète dorée tournant sur la roue assombrie avec « Téléchargement de la mise à jour… » en dessous et les boutons bloqués pendant ce temps, puis ferme PinballY, remplace le dossier du pack par le nouveau, et relance PinballY. Le démarrage suivant l'annonce sous « Mise à jour terminée » : « eXpansion Pack mis à jour en vX.Y.Z », puis, après une ligne vide, la liste des nouveautés, un tiret par phrase, dans la langue de la borne. Après un saut de plusieurs versions, les nouveautés de chaque version sautée sont aussi listées, les plus récentes d'abord, cinq phrases au plus. Une version de correction sans nouveauté pour les joueurs n'affiche que la première ligne.
 
 Sont conservés :
 
@@ -22,7 +22,7 @@ Sont conservés :
 
 ## Quand une mise à jour échoue
 
-- Un téléchargement qui échoue avant la fermeture de PinballY est signalé aussitôt par « Mise à jour impossible » : « L'Expansion Pack reste tel quel. »
+- Un téléchargement qui échoue avant la fermeture de PinballY est signalé aussitôt par « Mise à jour impossible » : « L'eXpansion Pack reste tel quel. »
 - Si la mise à jour a échoué après la fermeture de PinballY, la version précédente reste en place, et un toast « Problème » indique où en lire la raison à qui voit les entrées de configuration (voir [Dépannage](troubleshooting.md)).
 
 ## Plus tard

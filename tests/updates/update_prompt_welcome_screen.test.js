@@ -25,7 +25,7 @@ test("the Welcome Screen waits for the Update Prompt, and follows Later", async 
     });
     await settle();
     fake.advanceTime(OPEN_OVER_MS);
-    assert.equal(readDrawnMenu(fake).message, "Expansion Pack v9.0.0 is available.");
+    assert.equal(readDrawnMenu(fake).message, "eXpansion Pack v9.0.0 is available.");
     fake.advanceTime(WELCOME_SCREEN_OPEN_MS);
     assert.equal(isWelcomeScreenOpen(fake), false, "the Welcome Screen waits for the prompt");
 

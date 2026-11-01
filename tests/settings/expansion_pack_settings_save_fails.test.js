@@ -1,5 +1,5 @@
 // ============================================================
-// A failed Save in the Expansion Pack Settings, through main.js: .env.local
+// A failed Save in the eXpansion Pack Settings, through main.js: .env.local
 // held by another program, the write error logged, "Setting not saved" with
 // OK, then the page back on the choice saved before, the file unchanged;
 // on an Add-on's page and on the Language page.
@@ -30,7 +30,7 @@ test("a Save that cannot write shows \"Setting not saved\", logged, the file unc
     fake.lockFile(ENV_LOCAL);
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
     chooseEntry(fake, "Players and progress");
     fake.advanceTime(OPEN_OVER_MS);

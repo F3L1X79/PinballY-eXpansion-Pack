@@ -1,5 +1,5 @@
 // ============================================================
-// "Update vpxtool" chosen in the Expansion Pack Settings while vpxtool reads
+// "Update vpxtool" chosen in the eXpansion Pack Settings while vpxtool reads
 // a table's script, through main.js on the fake host: the wait shows at once,
 // but the helper replaces vpxtool.exe only once that run has ended, and no
 // other run starts meanwhile.

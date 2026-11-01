@@ -1,4 +1,4 @@
-# PinballY Expansion Pack guide
+# PinballY eXpansion Pack guide
 
 *[🇫🇷 Version française](../fr/index.md)* · [Back to the README](../../../README.md)
 
@@ -16,7 +16,7 @@ This guide describes the version it ships with. For an older version, read the g
 4. [Achievements and Challenges](achievements_and_challenges.md): the weekly Challenges, the Achievements and the Player Level.
 5. [Choosing a table](choosing_a_table.md): the Welcome Screen, the Table of the Day and the Table of the Week, Table Mastery, High Scores, the Random Game and the extra filters.
 6. [Interface](interface.md): PinballY in six languages, the drawn menus, Menu Cleanup, the clock, the launches and the sounds.
-7. [Settings](settings.md): Expansion Pack Settings, `.env.local`, the Admin Profile, the Child Profile and Profile Reset.
+7. [Settings](settings.md): eXpansion Pack Settings, `.env.local`, the Admin Profile, the Child Profile and Profile Reset.
 8. [Troubleshooting](troubleshooting.md): the Error Toast, the Error Log (`errors.log`) and common questions.
 9. [Coming next](coming_next.md): where the pack is heading.
 

@@ -1,5 +1,5 @@
 // ============================================================
-// An Add-on's page in the Expansion Pack Settings, through main.js: its
+// An Add-on's page in the eXpansion Pack Settings, through main.js: its
 // "When on" / "When off" texts, the switch flipping in place, Save shown only
 // while it differs from the saved choice, Save rewriting that one line of
 // .env.local, "on restart" in its category; Cancel, Back and Exit change nothing.
@@ -18,7 +18,7 @@ const fake = createFakePinballYHost({ now: new Date(2026, 9, 22, 20, 0, 0) });
 function openList() {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 }
 

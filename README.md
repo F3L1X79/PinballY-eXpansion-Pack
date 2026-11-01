@@ -1,6 +1,6 @@
-<img src="docs/images/logo.png" alt="PinballY Expansion Pack logo" width="160">
+<img src="docs/images/logo.png" alt="PinballY eXpansion Pack logo" width="160">
 
-# PinballY Expansion Pack
+# PinballY eXpansion Pack
 
 *[🇫🇷 Version française](README.fr.md)*
 
@@ -28,7 +28,7 @@ The Welcome Screen offers the Table of the Day and the Table of the Week: play t
 
 ## Interface
 
-PinballY's menus and messages in English, French, German, Spanish, Italian or Portuguese, drawn in the pack's Steamball look and sorted into sections. A clock, a gold arc under the wheel, launches without a black flash, and sounds you can replace with your own. **Expansion Pack Settings**, in the Operator Menu, turns each Add-on on or off.
+PinballY's menus and messages in English, French, German, Spanish, Italian or Portuguese, drawn in the pack's Steamball look and sorted into sections. A clock, a gold arc under the wheel, launches without a black flash, and sounds you can replace with your own. **eXpansion Pack Settings**, in the Operator Menu, turns each Add-on on or off.
 
 → [Interface](docs/guide/en/interface.md)
 
@@ -43,7 +43,7 @@ Requires **Windows** and **PinballY 1.1.0 Beta 10** or later (plus the *Windows 
    import("./ExpansionPack/main.js").catch(e => logfile.log("ExpansionPack: " + e.message));
    ```
 4. **Restart PinballY.** `PinballY.log` shows one "initialized" line per Add-on; errors are also kept in `Scripts\ExpansionPack\errors.log`.
-5. **Choose your Add-ons**, the startup screen and the language in **Expansion Pack Settings**, in the Operator Menu, then restart PinballY in one press.
+5. **Choose your Add-ons**, the startup screen and the language in **eXpansion Pack Settings**, in the Operator Menu, then restart PinballY in one press.
 
 Everything the pack keeps (settings and Profiles) stays in `Scripts\ExpansionPack`: copy it to back up, delete it and the import line to uninstall. PINemHi 3.6.8, `.env.local` and installing with git: see the [install page](docs/guide/en/install.md).
 

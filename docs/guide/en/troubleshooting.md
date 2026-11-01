@@ -16,7 +16,7 @@ A failure that answers a choice you have just made (a Profile Reset, a Pack Upda
 
 | The message says | What to do |
 |---|---|
-| "vpxtool could not be installed; nothing has changed. You can try again from the Expansion Pack Settings." (or "… updated …" for an update) | The cabinet may be offline, the download may have been cut or blocked by the antivirus, or `vpxtool.exe` may be in use. Your previous `vpxtool.exe`, if any, is still in place. Read `%TEMP%\PinballYExpansionPack\script-reader-install.log`, then try again, or install vpxtool by hand (see [Install](install.md#vpxtool)). |
+| "vpxtool could not be installed; nothing has changed. You can try again from the eXpansion Pack Settings." (or "… updated …" for an update) | The cabinet may be offline, the download may have been cut or blocked by the antivirus, or `vpxtool.exe` may be in use. Your previous `vpxtool.exe`, if any, is still in place. Read `%TEMP%\PinballYExpansionPack\script-reader-install.log`, then try again, or install vpxtool by hand (see [Install](install.md#vpxtool)). |
 
 ## The Error Log (`errors.log`)
 

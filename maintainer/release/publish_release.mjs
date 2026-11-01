@@ -62,6 +62,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     writeFileSync(notes, `${changelogSection(changelog, PACK_VERSION)}\n`);
     run("git", ["archive", "--format=zip", "--prefix=ExpansionPack/", "-o", zip, tag]);
     // --verify-tag: gh would otherwise create a tag the remote doesn't have yet.
-    run("gh", ["release", "create", tag, zip, "--repo", REPOSITORY, "--verify-tag", "--title", `Expansion Pack ${tag}`, "--notes-file", notes]);
+    run("gh", ["release", "create", tag, zip, "--repo", REPOSITORY, "--verify-tag", "--title", `eXpansion Pack ${tag}`, "--notes-file", notes]);
     console.log(`Released ${tag} with ${zip}.`);
 }

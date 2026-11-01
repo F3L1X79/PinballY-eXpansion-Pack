@@ -1,5 +1,5 @@
 // ============================================================
-// The Expansion Pack Settings in French through main.js: "Réglages du pack"
+// The eXpansion Pack Settings in French through main.js: "Réglages du pack"
 // in the Operator Menu, the list's headings, Add-ons and states, the
 // language line in the saved language's own name, the Offline Mode group,
 // the restart question on leaving, an Add-on's page and the Language page.

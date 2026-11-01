@@ -1,4 +1,4 @@
-# Guide de l'Expansion Pack pour PinballY
+# Guide de l'eXpansion Pack pour PinballY
 
 *[🇬🇧 English version](../en/index.md)* · [Retour au README](../../../README.fr.md)
 

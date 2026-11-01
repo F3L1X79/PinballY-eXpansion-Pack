@@ -35,7 +35,7 @@ test("main.js writes one summary line at startup, and no warning on Beta 10", as
 
     const packLines = fake.logLines().filter(line => line.startsWith("[ExpansionPack]"));
     assert.deepEqual(packLines, [
-        `[ExpansionPack] Started: Expansion Pack v${PACK_VERSION}, PinballY 1.1.0 (Beta 10), build 10086, language fr, `
+        `[ExpansionPack] Started: eXpansion Pack v${PACK_VERSION}, PinballY 1.1.0 (Beta 10), build 10086, language fr, `
             + "Add-ons off: clock, menuCleanup, 3 Profiles, 2 tables",
     ]);
     assertNoErrorLogged(fake);

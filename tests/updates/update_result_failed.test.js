@@ -17,7 +17,7 @@ test("a failed Pack Update brings an Error Toast at the next start, even with th
     const { fake, errorCards } = await pickAfterFailedUpdate();
 
     assert.deepEqual(errorCards.map(card => card.text), [
-        `PROBLEM | Expansion Pack | The update to v9.0.0 failed: the previous version is still in place. Details in ${LOG_HINT}`,
+        `PROBLEM | eXpansion Pack | The update to v9.0.0 failed: the previous version is still in place. Details in ${LOG_HINT}`,
     ]);
     assert.equal(requestedVersionOf(fake), undefined, "told once");
     assert.deepEqual(errorLines(fake), [`[UpdateResult] ERROR Pack Update to 9.0.0 failed, still on ${PACK_VERSION}: see ${LOG_HINT}`]);

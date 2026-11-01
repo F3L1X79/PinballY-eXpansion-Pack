@@ -27,7 +27,7 @@ test("a failed update says nothing has changed and keeps the old version remembe
     fake.advanceTime(OPEN_OVER_MS);
     assert.deepEqual(shownDialog(fake), {
         title: "Update not possible",
-        message: "vpxtool could not be updated; nothing has changed. You can try again from the Expansion Pack Settings.",
+        message: "vpxtool could not be updated; nothing has changed. You can try again from the eXpansion Pack Settings.",
         lines: ["OK"],
     });
     chooseEntry(fake, "OK");

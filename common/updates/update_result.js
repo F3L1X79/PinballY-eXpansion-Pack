@@ -1,6 +1,6 @@
 // ============================================================
 // Update result: at init, a Pack Update an earlier start asked for says how
-// it went. The requested Pack Version running shows "Expansion Pack updated
+// it went. The requested Pack Version running shows "eXpansion Pack updated
 // to vX.Y.Z" once, ahead of the Update Prompt, with the Release Highlights
 // of the versions on the way below it; any other version brings an
 // Error Toast pointing to the helper's log (docs/adr/0018).

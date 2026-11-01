@@ -83,7 +83,7 @@ export async function answer({ fake, settle }, choice) {
 }
 
 // A first start, in a child process, where the prompt gets this answer and
-// the Expansion Pack Settings open after it; then the next start, here,
+// the eXpansion Pack Settings open after it; then the next start, here,
 // configured from the .env.local the first left. Returns the first's prompt,
 // .env.local (null when none) and Settings lines (the list's, then the
 // Offline Mode group's), and the next start.
@@ -103,7 +103,7 @@ process.stdout.write(JSON.stringify({ dialog: start.dialog, envLocal: start.fake
     return { firstRun, next };
 }
 
-// The Expansion Pack Settings' list lines, then the Offline Mode group's,
+// The eXpansion Pack Settings' list lines, then the Offline Mode group's,
 // opened from the Operator Menu.
 export function openSettingsLines(fake) {
     openSettings(fake);

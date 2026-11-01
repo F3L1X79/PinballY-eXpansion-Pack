@@ -1,5 +1,5 @@
 // ============================================================
-// The Expansion Pack Settings through main.js with every Add-on off, Drawn
+// The eXpansion Pack Settings through main.js with every Add-on off, Drawn
 // Menus included: the Operator Menu stays native, but the list is drawn,
 // and its Exit, past the drawn restart question, opens the native Operator Menu again.
 // ============================================================
@@ -23,7 +23,7 @@ test("with Drawn Menus off, the list is still drawn and goes back to the native 
     fake.openOperatorMenu();
     assert.equal(fake.currentMenu().id, "operator", "the Operator Menu is native");
     assert.ok(!isDrawnMenuShown(fake));
-    fake.selectMenuItem("Expansion Pack Settings");
+    fake.selectMenuItem("eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 
     assert.equal(fake.currentMenu(), null, "no native menu left");
@@ -41,9 +41,9 @@ test("with Drawn Menus off, the list is still drawn and goes back to the native 
     press(fake, "Exit");
     assert.ok(!isDrawnMenuShown(fake));
     assert.equal(fake.currentMenu().id, "operator", "back to the native Operator Menu");
-    assert.ok(fake.currentMenu().items.some(item => item.title === "Expansion Pack Settings"));
+    assert.ok(fake.currentMenu().items.some(item => item.title === "eXpansion Pack Settings"));
 
-    fake.selectMenuItem("Expansion Pack Settings");
+    fake.selectMenuItem("eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
     fake.enterAttractMode();
     assert.ok(!isDrawnMenuShown(fake), "attract mode closes the list");

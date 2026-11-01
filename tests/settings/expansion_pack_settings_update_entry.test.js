@@ -1,5 +1,5 @@
 // ============================================================
-// The "Update to vX.Y.Z" entry of the Expansion Pack Settings, through
+// The "Update to vX.Y.Z" entry of the eXpansion Pack Settings, through
 // main.js: shown while a newer Pack Version is remembered, it records the
 // requested version, shows the Loader and starts the Pack Update with the
 // remembered URL, digest and version; PinballY quits once the helper is ready.
@@ -37,7 +37,7 @@ test("setup", async () => {
 test("the entry shows before Back while a newer Pack Version is remembered", () => {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 
     assert.deepEqual(drawnMenuLines(fake).slice(-5), ["Offline Mode", "---", "Update to v9.0.0", "---", "Back"]);

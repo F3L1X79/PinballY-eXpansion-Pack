@@ -1,5 +1,5 @@
 // ============================================================
-// The Expansion Pack Settings entry through main.js, with every Add-on off:
+// The eXpansion Pack Settings entry through main.js, with every Add-on off:
 // right after PinballY's Options in the Operator Menu for everyone while no
 // Profile is marked Admin, then for the Admin Profiles only, even when the
 // coin door's service button opens the menu.
@@ -14,7 +14,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 const PROFILES = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 const markAdmin = (fake, name) => fake.addFile(`${PROFILES}\\${name}\\profile.json`, JSON.stringify({ version: 1, isAdmin: true }));
 
-const ENTRY = "Expansion Pack Settings";
+const ENTRY = "eXpansion Pack Settings";
 
 test("the entry follows PinballY Options for whoever sees the setup entries", async () => {
     const fake = createFakePinballYHost({ now: new Date(2026, 9, 22, 20, 0, 0) });

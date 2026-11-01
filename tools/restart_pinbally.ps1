@@ -1,5 +1,5 @@
 # ============================================================
-# Restarts PinballY for the Expansion Pack Settings (common/core/pinbally_host.js
+# Restarts PinballY for the eXpansion Pack Settings (common/core/pinbally_host.js
 # starts it hidden, then runs Quit once the ready file exists).
 # 1. While PinballY is alive: reads its executable, command line and parent.
 # 2. Writes the ready file.

@@ -1,5 +1,5 @@
 // ============================================================
-// The Startup screen line of the Expansion Pack Settings, through main.js:
+// The Startup screen line of the eXpansion Pack Settings, through main.js:
 // its page lists the three Startup Screens, the saved one marked, then
 // Cancel; choosing one saves STARTUP_SCREEN at once, the line then "on
 // restart", and leaving asks Restart now or Later.
@@ -29,7 +29,7 @@ test("setup", async () => {
 test("the Startup screen line comes before the language, with the saved screen", () => {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 
     assert.deepEqual(drawnMenuLines(fake).slice(5, 8), ["---", "Startup screen: Profile picker", "Language: English"]);

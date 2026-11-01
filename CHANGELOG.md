@@ -4,6 +4,7 @@ What changed in each Pack Version of the Expansion Pack, newest first. It starts
 
 ## v1.1.0 (2026-11-01)
 
+- **New name**: the Expansion Pack is now the PinballY eXpansion Pack, on screen and in the guide. Its folder, `ExpansionPack.zip` and the GitHub repository keep their names, so nothing changes for the install or the Pack Update.
 - **Random table**: Launch a random table straight from the main menu, under Play.
 - **Profiles**: an Admin Profile marks a Profile as Admin or Child from the cabinet, in Manage profiles; the first Admin Profile marks itself. A menu line that can't be used now shows why.
 - **Backglass Clock**: the time in a small box on the backglass screen during a game, in front of VPX's backglass.

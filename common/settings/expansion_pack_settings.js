@@ -1,5 +1,5 @@
 // ============================================================
-// Expansion Pack Settings: their entry in the Operator Menu, after PinballY's Options, for whoever
+// eXpansion Pack Settings: their entry in the Operator Menu, after PinballY's Options, for whoever
 // sees the setup entries, opens the list of Add-on categories (their Add-ons as saved in .env.local,
 // read again on each opening, one page per Add-on whose Save rewrites its one line), the Startup screen and
 // Language pages, the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.

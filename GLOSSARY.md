@@ -1,4 +1,4 @@
-# PinballY Expansion Pack
+# PinballY eXpansion Pack
 
 Unofficial add-ons for the PinballY virtual pinball front end, built on its JavaScript scripting API: they help the player choose what to play, reward play with achievements, and polish the interface.
 
@@ -17,11 +17,11 @@ _Avoid_: Discord status, Discord activity, presence
 ### Distribution
 
 **Pack Version**:
-The version number of the Expansion Pack as a whole, raised with each release the owner publishes, and compared with the latest published release to know whether an update exists. Add-ons have no version of their own.
+The version number of the eXpansion Pack as a whole, raised with each release the owner publishes, and compared with the latest published release to know whether an update exists. Add-ons have no version of their own.
 _Avoid_: PinballY version (PinballY's own number), build, release (a release is the published package of one Pack Version)
 
 **Pack Update**:
-Replacing the installed Expansion Pack with a newer Pack Version while PinballY is closed, keeping the Household's Profiles and the owner's settings and files; if it fails, the previous Pack Version stays in place. It belongs to the pack itself, not to an Add-on. Only whoever sees the setup entries is offered one.
+Replacing the installed eXpansion Pack with a newer Pack Version while PinballY is closed, keeping the Household's Profiles and the owner's settings and files; if it fails, the previous Pack Version stays in place. It belongs to the pack itself, not to an Add-on. Only whoever sees the setup entries is offered one.
 _Avoid_: upgrade, patch, install (installing is the first, manual copy)
 
 **Update Check**:
@@ -29,11 +29,11 @@ The question the pack asks GitHub in the background at each start: is there a ne
 _Avoid_: update notification, version check
 
 **Offline Mode**:
-The group of the Expansion Pack Settings where the owner turns off, one by one, what the pack would fetch from the internet or offer to fetch, or would send there: the Update Check, the Script Reader Prompt, and Discord Rich Presence (the same switch as its Add-on's). Turning one off never removes the matching install or update line from the Expansion Pack Settings. Shown as "Mode hors ligne" in French.
+The group of the eXpansion Pack Settings where the owner turns off, one by one, what the pack would fetch from the internet or offer to fetch, or would send there: the Update Check, the Script Reader Prompt, and Discord Rich Presence (the same switch as its Add-on's). Turning one off never removes the matching install or update line from the eXpansion Pack Settings. Shown as "Mode hors ligne" in French.
 _Avoid_: network settings, airplane mode
 
 **Update Prompt**:
-The question shown at startup, before anything else, when a newer Pack Version was found at an earlier start: update now, or later. Asked once per Pack Version; afterwards the update stays available from the Expansion Pack Settings.
+The question shown at startup, before anything else, when a newer Pack Version was found at an earlier start: update now, or later. Asked once per Pack Version; afterwards the update stays available from the eXpansion Pack Settings.
 _Avoid_: update notification, update toast
 
 **Release Highlights**:
@@ -49,7 +49,7 @@ The version of the Script Reader that each Pack Version names as the one to inst
 _Avoid_: latest vpxtool (the pack never follows its author's latest release by itself)
 
 **Script Reader Prompt**:
-The Dialog, shown at startup to whoever sees the setup entries, that offers to install the Script Reader when it is missing, or to update it when it is older than the Script Reader Version, saying what it is for, who wrote it, under which licence and where it comes from. The owner may say no; it is then never asked again, and the install stays available from the Expansion Pack Settings or by hand. The Expansion Pack Settings' install line opens the same Dialog, whose "No thanks" there changes nothing.
+The Dialog, shown at startup to whoever sees the setup entries, that offers to install the Script Reader when it is missing, or to update it when it is older than the Script Reader Version, saying what it is for, who wrote it, under which licence and where it comes from. The owner may say no; it is then never asked again, and the install stays available from the eXpansion Pack Settings or by hand. The eXpansion Pack Settings' install line opens the same Dialog, whose "No thanks" there changes nothing.
 _Avoid_: vpxtool toast, install popup
 
 ### Errors
@@ -76,7 +76,7 @@ _Avoid_: Steamball menu (Steamball is the palette), custom menu, popup (a popup 
 A Drawn Menu that waits for the player's answer about one thing: a gold title, a message, then its answers (the Update Prompt, the Rating Prompt, the first Avatar Frame's prompt, the update and restart results). The pack shows one at a time, only when the wheel is free, the most urgent first.
 _Avoid_: popup (a popup shows information without waiting), alert, message box
 
-**Expansion Pack Settings**:
+**eXpansion Pack Settings**:
 The screens, reached from the Operator Menu by whoever sees its setup entries, where the cabinet's owner turns each Add-on on or off and picks the interface language without editing the configuration by hand. Each Add-on has a page saying what it does and what is lost, there and elsewhere, without it. A choice is kept at once but takes effect only when PinballY restarts, which the screens offer on leaving. They belong to the pack itself, not to an Add-on, so they can never be turned off. Shown as "Réglages du pack" in French.
 _Avoid_: Theme Settings (a theme is a palette), options menu, Pack Settings
 

@@ -1,5 +1,5 @@
 // ============================================================
-// No "Install vpxtool" line in the Expansion Pack Settings, through main.js,
+// No "Install vpxtool" line in the eXpansion Pack Settings, through main.js,
 // while the Table ROMs Add-on is off, vpxtool missing all the same: nothing
 // would read the scripts with it.
 // ============================================================

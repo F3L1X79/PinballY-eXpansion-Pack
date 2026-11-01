@@ -1,6 +1,6 @@
-# Contributing to PinballY Expansion Pack
+# Contributing to PinballY eXpansion Pack
 
-PinballY Expansion Pack is plain JavaScript run as-is by [PinballY](http://mjrnet.org/pinscape/PinballY.php)'s scripting engine: no build step, no dependencies. This guide is for developers and translators; players will find everything they need in the [README](README.md).
+PinballY eXpansion Pack is plain JavaScript run as-is by [PinballY](http://mjrnet.org/pinscape/PinballY.php)'s scripting engine: no build step, no dependencies. This guide is for developers and translators; players will find everything they need in the [README](README.md).
 
 Bugs and ideas: [GitHub issues](https://github.com/F3L1X79/PinballY-Expansion-Pack/issues).
 

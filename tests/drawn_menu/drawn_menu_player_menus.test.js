@@ -258,7 +258,7 @@ test("ticking a category redraws the categories menu in place, the cursor on it"
     fake.advanceTime(OPEN_OVER_MS);
 });
 
-test("the operator menu is drawn, with the Expansion Pack Settings", () => {
+test("the operator menu is drawn, with the eXpansion Pack Settings", () => {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
 

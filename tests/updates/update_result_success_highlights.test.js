@@ -19,9 +19,9 @@ test("the success dialog lists the new version's Release Highlights", async () =
     });
 
     assert.equal(readDrawnMenu(fake).title, "Update complete");
-    assert.equal(readDrawnMenu(fake).message, `Expansion Pack updated to v${PACK_VERSION}\n\n- Challenges now last a whole week.\n- The wheel spins faster.`);
+    assert.equal(readDrawnMenu(fake).message, `eXpansion Pack updated to v${PACK_VERSION}\n\n- Challenges now last a whole week.\n- The wheel spins faster.`);
     assert.deepEqual(dialogMessageBlocks(fake).map(({ text, align }) => [text, align]), [
-        [`Expansion Pack updated to v${PACK_VERSION}`, "center"],
+        [`eXpansion Pack updated to v${PACK_VERSION}`, "center"],
         ["- Challenges now last a whole week.\n- The wheel spins faster.", "left"],
     ]);
     assert.deepEqual(drawnMenuLines(fake), ["OK"]);

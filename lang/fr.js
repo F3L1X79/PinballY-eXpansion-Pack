@@ -919,17 +919,17 @@ export default {
     packUpdates: {
         promptTitle: "Mise à jour disponible",
         // Names the newer Pack Version the Update Check found.
-        prompt: (version) => `La version v${version} de l'Expansion Pack est disponible.`,
+        prompt: (version) => `La version v${version} de l'eXpansion Pack est disponible.`,
         updateNow: "Mettre à jour",
         later: "Plus tard",
         updateFailedTitle: "Mise à jour impossible",
-        updateFailed: "L'Expansion Pack reste tel quel.",
+        updateFailed: "L'eXpansion Pack reste tel quel.",
         // Under the Loader while the Pack Update helper gets ready.
         downloadingUpdate: "Téléchargement de la mise à jour…",
         ok: "OK",
         updatedTitle: "Mise à jour terminée",
-        updated: (version) => `Expansion Pack mis à jour en v${version}`,
-        toastTitle: "Expansion Pack",
+        updated: (version) => `eXpansion Pack mis à jour en v${version}`,
+        toastTitle: "eXpansion Pack",
     },
     scriptReader: {
         dialogTitle: (version) => `vpxtool v${version}`,
@@ -963,7 +963,7 @@ export default {
             "Pendant une partie, l'heure s'affiche maintenant sur l'écran du backglass.",
         ],
         "1.0.0": [
-            "Version 1.0 : la première version publique de l'Expansion Pack.",
+            "Version 1.0 : la première version publique de l'eXpansion Pack.",
             "Menus et messages sont plus lisibles, et tiennent dans l'écran dès la première seconde.",
             "Après chaque mise à jour, ce message présente désormais les nouveautés.",
         ],

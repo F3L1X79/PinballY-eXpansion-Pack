@@ -1,5 +1,5 @@
 // ============================================================
-// "Install vpxtool v0.38.0" in the Expansion Pack Settings, through main.js,
+// "Install vpxtool v0.38.0" in the eXpansion Pack Settings, through main.js,
 // vpxtool missing with Table ROMs on: the line opens the Script Reader
 // Dialog; Install shows the captioned Loader, blocks the buttons and asks
 // the helper for the Script Reader Version; once it answers, the result

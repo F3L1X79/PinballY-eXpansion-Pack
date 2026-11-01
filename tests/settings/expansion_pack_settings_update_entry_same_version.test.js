@@ -30,7 +30,7 @@ test("setup", async () => {
 test("the running Pack Version remembered shows no Update entry", () => {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 
     assert.deepEqual(drawnMenuLines(fake).slice(-3), ["Offline Mode", "---", "Back"]);

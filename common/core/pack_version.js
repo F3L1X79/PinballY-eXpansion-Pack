@@ -1,5 +1,5 @@
 // ============================================================
-// Pack Version: the one place the Expansion Pack's version is written, read
+// Pack Version: the one place the eXpansion Pack's version is written, read
 // by the Update Check and by maintainer/release/publish_release.mjs. Raised
 // before tagging each release vX.Y.Z (see docs/adr/0018).
 // - Releases are plain X.Y.Z: a pre-release or another format is never newer.

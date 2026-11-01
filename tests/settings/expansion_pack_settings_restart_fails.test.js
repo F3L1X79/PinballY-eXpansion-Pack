@@ -32,7 +32,7 @@ test("a restart that never gets ready is logged, shows why, and PinballY stays",
     fake.failNextRestart();
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Expansion Pack Settings");
+    chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
     press(fake, "Exit");
     fake.advanceTime(OPEN_OVER_MS);
