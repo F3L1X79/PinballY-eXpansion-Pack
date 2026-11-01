@@ -1,7 +1,7 @@
 // ============================================================
 // The maintainer's closed_specs.mjs on a throwaway roadmap and a fake gh:
 // the queue items whose spec is closed, and nothing taken from the
-// Decisions section below the queue. Never loaded by PinballY.
+// section below the queue. Never loaded by PinballY.
 // ============================================================
 
 import { test } from "node:test";
@@ -32,7 +32,7 @@ function roadmap(queueItems, closedIssues) {
         ...queueItems,
         "    </ol>",
         "  </section>",
-        "  <!-- ===== Decisions ===== -->",
+        "  <!-- ===== PinballY docs ===== -->",
         `  <li><span>Spec <a href="${ISSUES}/400">#400</a> close.</span></li>`,
     ].join("\n"));
     const bin = join(folder, ".bin");
