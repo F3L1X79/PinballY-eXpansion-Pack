@@ -21,6 +21,7 @@
 5. **Optional: update PINemHi to 3.6.8** (see below).
 6. **Restart PinballY** and check `PinballY.log` (see [First start](#first-start)). The pack then offers to install vpxtool (see below).
 7. **Choose your Add-ons** from **eXpansion Pack Settings** in the Operator Menu: turn each one on or off, pick the startup screen and the language, then restart PinballY in one press.
+8. **Create your Profile**: the pack ships with Guest alone (see [Create a Profile](profiles.md#create-a-profile)).
 
 ## vpxtool
 

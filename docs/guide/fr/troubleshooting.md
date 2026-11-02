@@ -43,9 +43,13 @@ Le journal de PinballY lui-même, dans le dossier de PinballY, ne couvre que la 
 
 **Une table au champ ROM vide n'a plus aucun tableau.** Si vous avez mis PINemHi à jour, la section `[romfind]` de `romfind.ini` doit être ajoutée à la fin de `pinemhi.ini` (voir [Installation](install.md#pinemhi-368)).
 
+**Invité est le seul Profil.** Le pack est livré avec le seul Profil Invité, et un Profil se crée depuis Windows, sous forme de dossier (voir [Créer un Profil](profiles.md#créer-un-profil)).
+
+**J'ai marqué un Profil admin et perdu les entrées de configuration.** Dès qu'un Profil est marqué, les autres, Invité compris, ne les voient plus, et vous êtes peut-être encore sur Invité : choisissez le Profil marqué dans « Changer de joueur », dans le menu principal ou le menu de sortie. PinballY n'ouvre « Changer de joueur » de lui-même que si la borne compte au moins deux Profils sans compter Invité.
+
 **« Gérer les profils » manque au menu de sortie.** Dès qu'un Profil est marqué, l'entrée n'apparaît qu'aux Profils admin ; tant qu'aucun ne l'est, elle apparaît à tous les Profils sauf Invité et les Profils enfants, avec « Devenir admin » pour seule ligne (voir [Profil admin](settings.md#profil-admin)). Elle a aussi besoin du menu de sortie de PinballY : si vous l'avez désactivé dans les options de PinballY, elle ne peut pas apparaître.
 
-**Une marque de Profil (`isAdmin`, `isChild`) reste sans effet.** Elle doit valoir `true` ou `false`, au premier niveau de `profile.json`, avec sa clé écrite exactement ; une marque fautive est ignorée et signalée dans `PinballY.log`. Modifiez `profile.json` PinballY fermé.
+**Une marque de Profil (`isAdmin`, `isChild`) reste sans effet.** Elle doit valoir `true` ou `false`, au premier niveau de `profile.json`, avec sa clé écrite exactement ; une marque fautive est ignorée et signalée dans `PinballY.log`. Modifiez `profile.json` PinballY fermé : s'il tourne, sa prochaine sauvegarde du Profil actif écrase votre modification, sans aucune ligne dans le journal.
 
 **Les confettis ou le feu d'artifice ralentissent la borne.** Coupez-les avec `CONFETTI=false` ou `FIREWORKS=false`.
 

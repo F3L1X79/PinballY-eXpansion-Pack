@@ -196,7 +196,7 @@
         <span class="recap" id="recap" aria-label="Chantiers par effort"></span>
       </div>
       <div class="gauge" aria-hidden="true"><i id="hero-gauge" style="width:0"></i></div>
-      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 01.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
+      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 02.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
     </div>
   </header>
 
@@ -211,6 +211,7 @@
         <div class="cell sweet">
         </div>
         <div class="cell">
+          <a class="chip tr-profiles" href="#create-profile"><b></b>Créer un Profile</a>
           <a class="chip tr-share" href="#pinbally-version"><b></b>Version de PinballY</a>
         </div>
         <div class="cell">
@@ -275,6 +276,29 @@
     </div>
 
     <ol class="queue">
+
+      <li draggable="true" tabindex="0" class="item tr-profiles" id="create-profile" data-track="profiles" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Créer un Profile depuis la borne</h3>
+            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Aujourd'hui, un Profile se crée en ajoutant un dossier dans <code>profiles\</code> depuis Windows, et rien sur la borne ne le dit : un nouveau joueur reste sur Guest, qui ne peut pas devenir Admin Profile. Piste : un emplacement « + » au bout du carrousel Change Player, réservé à qui voit les entrées de configuration, et un nom choisi lettre par lettre aux flippers, comme les initiales d'un high score.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> · Retour d'un utilisateur du forum, 02/11/2026 ; le guide explique déjà la création à la main (<code>docs/guide/en/profiles.md</code>) · Revoit l'ADR 0006, qui part de Profiles créés à la main</div>
+          <details>
+            <summary>À trancher au grill (4)</summary>
+            <ul>
+              <li>La saisie du nom sans clavier : boutons utilisés, jeu de lettres, longueur, accents.</li>
+              <li>Le nom devient un nom de dossier : caractères interdits par Windows, préfixes <code>.</code> et <code>_</code> (dossiers ignorés), nom réservé à Guest, doublons sans tenir compte de la casse.</li>
+              <li>L'Avatar : celui par défaut, ou un choix parmi des images fournies.</li>
+              <li>La suite : basculer sur le nouveau Profile, proposer « Become admin » au premier créé.</li>
+            </ul>
+          </details>
+        </div>
+      </li>
 
       <li draggable="true" tabindex="0" class="item tr-share" id="clock-placement" data-track="share" data-rank="bronze">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>

@@ -21,6 +21,7 @@
 5. **Facultatif : passez PINemHi en 3.6.8** (voir plus bas).
 6. **Redémarrez PinballY** et consultez `PinballY.log` (voir [Premier démarrage](#premier-démarrage)). Le pack propose alors d'installer vpxtool (voir plus bas).
 7. **Choisissez vos Add-ons** dans **Réglages du pack**, depuis le menu opérateur : activez ou désactivez chacun, choisissez l'écran de démarrage et la langue, puis redémarrez PinballY d'une seule pression.
+8. **Créez votre Profil** : le pack est livré avec le seul Profil Invité (voir [Créer un Profil](profiles.md#créer-un-profil)).
 
 ## vpxtool
 

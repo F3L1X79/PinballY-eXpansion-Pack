@@ -16,6 +16,17 @@ Avec « Changer de joueur », chacun prend son Profil et son Avatar, et l'écran
 
 La progression de chaque Profil est enregistrée dans `Scripts\ExpansionPack\profiles`. Un Profil admin garde les entrées de configuration pour lui, un Profil enfant cache les tables pour adultes, et **Gérer les profils**, dans le menu de sortie d'un Profil admin, marque un Profil enfant ou fait repartir un Profil de zéro : voir [Réglages](settings.md).
 
+## Créer un Profil
+
+Le pack est livré avec le seul Profil Invité. Un Profil se crée depuis Windows, pas depuis la borne :
+
+1. Dans `PinballY\Scripts\ExpansionPack\profiles`, créez un dossier vide au nom du joueur : c'est ce nom que la borne affiche. Un nom qui commence par `.` ou `_` est ignoré. Ne copiez pas le dossier d'Invité : la copie reprendrait sa progression, alors qu'un dossier vide part de zéro.
+2. Facultatif : placez dans ce dossier une image PNG ou JPEG carrée nommée `avatar.png` ou `avatar.jpg`. Sans elle, le Profil reçoit l'Avatar par défaut.
+3. Ouvrez **Changer de joueur**, dans le menu principal ou le menu de sortie, et choisissez le nouveau Profil. Inutile de redémarrer PinballY. Tant que vous ne l'avez pas choisi, vous jouez toujours en Invité.
+4. Facultatif : pour garder les entrées de configuration pour vous seul, ouvrez **Gérer les profils** dans le menu de sortie et choisissez **Devenir admin** (voir [Profil admin](settings.md#profil-admin)).
+
+Configurer le pack ne demande pas de Profil admin : tant qu'aucun Profil n'est marqué, tous les Profils, Invité compris, voient les entrées de configuration.
+
 ## Mon profil
 
 <img src="../../images/profile_stats.png" alt="Les statistiques d'un Profil : niveau, maîtrise de la collection, parties, séries, goûts et tables jouées en premier, le plus et en dernier" width="480">

@@ -72,7 +72,7 @@ Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. Keep that 
 
 ## Admin Profile
 
-To keep the setup entries for yourself, make your Profile the first Admin Profile: while no Profile is marked, open **Manage profiles** in the Exit menu (Escape) and choose **Become admin**, its only line. Your Profile is marked at once and the full menu opens. Guest and Child Profiles do not see the entry, since they can never be Admin Profiles. You can also add `"isAdmin": true` at the top level of your Profile's `Scripts\ExpansionPack\profiles\<name>\profile.json`, PinballY closed; editing that file remains the way to undo the mark while it is the only Admin Profile.
+To keep the setup entries for yourself, [create your Profile](profiles.md#create-a-profile) if you only have Guest, pick it in Change Player, and make it the first Admin Profile: while no Profile is marked, open **Manage profiles** in the Exit menu (Escape) and choose **Become admin**, its only line. Your Profile is marked at once and the full menu opens. Guest and Child Profiles do not see the entry, since they can never be Admin Profiles. You can also add `"isAdmin": true` at the top level of your Profile's `Scripts\ExpansionPack\profiles\<name>\profile.json`, PinballY closed; editing that file remains the way to undo the mark while it is the only Admin Profile.
 
 From then on, that Profile marks the others from the cabinet: open **Manage profiles** in the Exit menu, pick a Profile and choose "Admin: no", which turns to "Admin: yes" at once. Choose it again to clear the mark.
 
