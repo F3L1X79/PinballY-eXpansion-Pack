@@ -1,9 +1,9 @@
 // ============================================================
 // Builds the rank emblems from the originals in sources/: the centre gem of
-// each rank recoloured (emerald, sapphire, ruby, topaz) for _plain and _tile,
-// bronze's gem enlarged and its upper feathers cut out, and _missing greyed
+// each rank recoloured (emerald, amethyst, ruby, topaz) for _plain and _tile,
+// each gem enlarged, bronze's upper feathers cut out, and _missing greyed
 // from the finished _plain, so it keeps its very shape. Run with `node maintainer/rank_emblems/generate_emblems.mjs [outDir]`
-// (default assets/images); never by PinballY.
+// (default assets/images, plus the roadmap's copies); never by PinballY.
 // - Gem diamonds are in _plain's pixels; _tile is a same-scale crop, its offset found by matching.
 // ============================================================
 
@@ -15,13 +15,16 @@ import { writePNG, ramp, clamp } from "../avatar_frames/frame_kit.mjs";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SOURCES = path.join(HERE, "sources");
 const OUT = process.argv[2] ?? path.join(HERE, "..", "..", "assets", "images");
+const ROADMAP_OUT = process.argv[2] ?? path.join(HERE, "..", "..", "docs", "roadmap", "emblems");
+// The roadmap's emblems are _plain and _missing without this margin all around.
+const ROADMAP_MARGIN = 22;
 
 // From the gem's darkest facet to its glint.
 const GEMS = {
     emerald: ramp([[0, "#011a08"], [0.35, "#03591f"], [0.65, "#07963a"], [0.9, "#2fd65e"], [1, "#d4ffdc"]]),
-    sapphire: ramp([[0, "#030a2e"], [0.3, "#0c2690"], [0.6, "#2456e0"], [0.85, "#86aaff"], [1, "#f2f6ff"]]),
+    amethyst: ramp([[0, "#2c1052"], [0.3, "#6c30b4"], [0.6, "#a662ec"], [0.85, "#dab6ff"], [1, "#fbf6ff"]]),
     ruby: ramp([[0, "#2a0006"], [0.3, "#82061c"], [0.6, "#d41634"], [0.85, "#ff7484"], [1, "#fff2f4"]]),
-    topaz: ramp([[0, "#3a1400"], [0.3, "#a44a04"], [0.6, "#ec8c18"], [0.85, "#ffcc66"], [1, "#fffaea"]]),
+    topaz: ramp([[0, "#5a2404"], [0.3, "#c86c10"], [0.6, "#f6a832"], [0.85, "#ffdc8c"], [1, "#fffcf0"]]),
 };
 
 // The bronze's upper left wing feather in _plain's pixels, along the groove above the next feather.
@@ -47,13 +50,31 @@ const RANKS = [
     {
         rank: "silver",
         gems: [
-            { color: "sapphire", tips: [[129, 98], [149, 125], [128.5, 154], [109, 125]] },
+            {
+                color: "amethyst",
+                tips: [[129, 98], [153, 125], [128.5, 154], [105, 125]],
+                drawnTips: [[129, 98], [149, 125], [128.5, 154], [109, 125]],
+            },
             // The crest's small gem.
-            { color: "sapphire", tips: [[130, 64], [136, 72.5], [129.5, 79], [123, 72.5]] },
+            { color: "amethyst", tips: [[130, 64], [136, 72.5], [129.5, 79], [123, 72.5]] },
         ],
     },
-    { rank: "gold", gems: [{ color: "ruby", tips: [[128, 98.5], [148.5, 124], [128, 154], [108.5, 124]] }] },
-    { rank: "platinum", gems: [{ color: "topaz", tips: [[128, 103], [150, 134.5], [128, 170], [105, 134.5]] }] },
+    {
+        rank: "gold",
+        gems: [{
+            color: "ruby",
+            tips: [[128, 98.5], [152.5, 124], [128, 154], [104.5, 124]],
+            drawnTips: [[128, 98.5], [148.5, 124], [128, 154], [108.5, 124]],
+        }],
+    },
+    {
+        rank: "platinum",
+        gems: [{
+            color: "topaz",
+            tips: [[128, 103], [154, 134.5], [128, 170], [101, 134.5]],
+            drawnTips: [[128, 103], [150, 134.5], [128, 170], [105, 134.5]],
+        }],
+    },
 ];
 
 // How far the mask stays inside the drawn tips, so the bezel keeps its metal.
@@ -201,6 +222,16 @@ function greyed(image) {
 
 const save = (name, image) => writePNG(path.join(OUT, name), image.width, image.height, image.rgba);
 
+function saveForRoadmap(name, image) {
+    const side = image.width - 2 * ROADMAP_MARGIN;
+    const rgba = Buffer.alloc(side * side * 4);
+    for (let j = 0; j < side; j++) {
+        const from = ((j + ROADMAP_MARGIN) * image.width + ROADMAP_MARGIN) * 4;
+        image.rgba.copy(rgba, j * side * 4, from, from + side * 4);
+    }
+    writePNG(path.join(ROADMAP_OUT, name), side, side, rgba);
+}
+
 for (const { rank, gems, removed = [] } of RANKS) {
     const plain = readPNG(path.join(SOURCES, `rank_${rank}_plain.png`));
     const tile = readPNG(path.join(SOURCES, `rank_${rank}_tile.png`));
@@ -218,5 +249,8 @@ for (const { rank, gems, removed = [] } of RANKS) {
     }
     save(`rank_${rank}_plain.png`, plain);
     save(`rank_${rank}_tile.png`, tile);
-    save(`rank_${rank}_missing.png`, greyed(plain));
+    const missing = greyed(plain);
+    save(`rank_${rank}_missing.png`, missing);
+    saveForRoadmap(`${rank}.png`, plain);
+    saveForRoadmap(`${rank}_missing.png`, missing);
 }
