@@ -44,6 +44,7 @@ import * as wheelArc from "./addons/wheel_arc.js";
 import * as seamlessLaunchOverlay from "./addons/seamless_launch_overlay.js";
 import * as forceBackglass from "./addons/force_backglass.js";
 import * as backglassClock from "./addons/backglass_clock.js";
+import * as discordRichPresence from "./addons/discord_rich_presence.js";
 import * as playLaunchSound from "./addons/play_launch_sound.js";
 import * as sessionStatsTracker from "./addons/session_stats_tracker.js";
 import * as achievementsEngine from "./addons/achievements_engine.js";
@@ -102,10 +103,12 @@ const SCRIPTS = [
     { key: "wheelArc", module: wheelArc },
     { key: "seamlessLaunchOverlay", module: seamlessLaunchOverlay },
 
-    // Game session: windows, Backglass Clock, sound, stats, Table ROMs,
-    // High Scores, achievements, Challenges, Table Mastery, rating.
+    // Game session: windows, Backglass Clock, Discord Rich Presence, sound,
+    // stats, Table ROMs, High Scores, achievements, Challenges, Table
+    // Mastery, rating.
     { key: "forceBackglass", module: forceBackglass },
     { key: "backglassClock", module: backglassClock },
+    { key: "discordRichPresence", module: discordRichPresence },
     { key: "playLaunchSound", module: playLaunchSound },
     { key: "sessionStatsTracker", module: sessionStatsTracker },
     { key: "tableRoms", module: tableRoms },

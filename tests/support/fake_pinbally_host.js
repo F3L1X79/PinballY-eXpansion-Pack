@@ -2,14 +2,15 @@
 // In-memory fake PinballY host for the node tests: the same interface as
 // common/core/pinbally_host.js, plus controls to drive it (clock and timers,
 // tables, wheel, menus, events, attract mode, games, file system, registry,
-// programs, restarts, HTTP replies, PINemHi boards) and inspect what the code did.
+// programs, restarts, HTTP replies, PINemHi boards, a fake Discord) and inspect what the code did.
 // Never loaded by PinballY.
 // - Reproduces only behaviours written in docs/pinbally/ or an ADR.
 // - installGlobals() also exposes it as PinballY's globals, for code not yet on the host.
 // - settle() waits on a real timer for deferred work to run.
 // ============================================================
 
-import { projectFolderOf, mediaWindowOf, backglassRectOf, SWP_NOSIZE, SWP_NOMOVE } from "../../common/core/pinbally_host.js";
+import { projectFolderOf, mediaWindowOf, backglassRectOf, namedPipeOf, SWP_NOSIZE, SWP_NOMOVE } from "../../common/core/pinbally_host.js";
+import { createFakeDiscord } from "./fake_discord.js";
 
 // PinballY's HWND z-order constants (WindowObjects.html), as names a test reads.
 const FAKE_HWND = Object.freeze({ TOP: "TOP", BOTTOM: "BOTTOM", TOPMOST: "TOPMOST", NOTOPMOST: "NOTOPMOST" });
@@ -904,8 +905,29 @@ export function createFakePinballYHost({
         if (!openFileHandles.has(handle)) throw new Error("Not an open file handle.");
         return openFileHandles.get(handle);
     };
+    // Discord's IPC pipes (docs/adr/0022): the fake Discord on each pipe
+    // name, every pipe open tried, and each open pipe handle's Discord.
+    // A pipe opens only for reading and writing, unshared, synchronous.
+    const PIPE_PREFIX = "\\\\?\\pipe\\";
+    const GENERIC_READ_WRITE = (0x80000000 | 0x40000000) >>> 0;
+    const discordPipes = new Map();
+    const pipeOpenList = [];
+    const openPipeHandles = new Map();
+    function openPipe(path, access, share, disposition, flags) {
+        if (access !== GENERIC_READ_WRITE || share !== 0 || disposition !== OPEN_EXISTING || flags !== 0) {
+            throw new Error(`The fake host opens pipes for a synchronous read and write only: ${path}`);
+        }
+        pipeOpenList.push(path);
+        const discord = discordPipes.get(path);
+        if (!discord || !discord.connect()) return INVALID_HANDLE;
+        const id = nextFileHandle++;
+        const handle = { toString: () => id.toString(16) };
+        openPipeHandles.set(handle, discord);
+        return handle;
+    }
     const kernel32 = {
-        CreateFileW(path, access, share, security, disposition) {
+        CreateFileW(path, access, share, security, disposition, flags) {
+            if (path.startsWith(PIPE_PREFIX)) return openPipe(path, access, share, disposition, flags);
             if (access !== GENERIC_READ || share !== FILE_SHARE_READ_WRITE || disposition !== OPEN_EXISTING) {
                 throw new Error(`The fake host opens files for a shared read only: ${path}`);
             }
@@ -921,12 +943,31 @@ export function createFakePinballYHost({
             return 1;
         },
         ReadFile(handle, buffer, count, readCount) {
-            const bytes = openFileOf(handle).subarray(0, count);
+            const bytes = openPipeHandles.has(handle) ? openPipeHandles.get(handle).read(count) : openFileOf(handle).subarray(0, count);
+            if (!bytes) return 0;
             buffer.set(bytes);
             readCount.value = bytes.length;
             return 1;
         },
+        PeekNamedPipe(handle, buffer, bufferSize, bytesRead, totalBytesAvailable) {
+            if (!openPipeHandles.has(handle)) throw new Error("Not an open pipe handle.");
+            const waiting = openPipeHandles.get(handle).bytesWaiting();
+            if (waiting === null) return 0;
+            totalBytesAvailable.value = waiting;
+            return 1;
+        },
+        WriteFile(handle, buffer, count, writtenCount) {
+            if (!openPipeHandles.has(handle)) throw new Error("The fake host writes to pipes only.");
+            if (!openPipeHandles.get(handle).write(buffer.subarray(0, count))) return 0;
+            writtenCount.value = count;
+            return 1;
+        },
         CloseHandle(handle) {
+            if (openPipeHandles.has(handle)) {
+                openPipeHandles.get(handle).disconnect();
+                openPipeHandles.delete(handle);
+                return 1;
+            }
             openFileOf(handle);
             openFileHandles.delete(handle);
             return 1;
@@ -1441,6 +1482,11 @@ export function createFakePinballYHost({
         installScriptReader,
         httpGet: (url, headers = {}) => sendHttp("GET", url, headers),
         readRegistryValue: (path) => (registryValues.has(path) ? registryValues.get(path) : null),
+        openPipe: (name) => {
+            const handle = kernel32.CreateFileW(name, GENERIC_READ_WRITE, 0, null, OPEN_EXISTING, 0, null);
+            return handle === INVALID_HANDLE ? null : namedPipeOf(kernel32, handle, () => ({ value: 0 }));
+        },
+        getProcessId: () => FAKE_PINBALLY_PID,
         files: fileSystem,
         log: (text) => { logLines.push(text); },
 
@@ -1532,6 +1578,16 @@ export function createFakePinballYHost({
         fileReads: () => [...fileReadList],
         // Kernel32 file handles not closed yet.
         openFileHandleCount: () => openFileHandles.size,
+        // Starts a fake Discord (tests/support/fake_discord.js) on
+        // \\?\pipe\discord-ipc-<pipeNumber>, and returns it.
+        startDiscord({ pipeNumber = 0, holdReady = false } = {}) {
+            const discord = createFakeDiscord({ holdReady });
+            discordPipes.set(`${PIPE_PREFIX}discord-ipc-${pipeNumber}`, discord);
+            return discord;
+        },
+        // Every pipe open tried, through either host, by name.
+        pipeOpens: () => [...pipeOpenList],
+        openPipeHandleCount: () => openPipeHandles.size,
         setTables(newTables) { allTables = newTables.map(withMedia); },
         highScoreSets: () => highScoreSetList.map(set => ({ configId: set.configId, lines: set.lines && [...set.lines] })),
         gameUpdates: () => gameUpdateList.map(update => ({ configId: update.configId, changes: { ...update.changes } })),
@@ -1918,7 +1974,7 @@ export function createFakePinballYHost({
                 // Only User32's GetSystemMetrics, for the monitor count
                 // (SM_CMONITORS), and Shell32's ShellExecuteW, for cmd.exe
                 // and the restart helper run hidden, and Kernel32's file
-                // reads and process id; any other DLL throws. create() gives a native
+                // reads, Discord's pipes and process id; any other DLL throws. create() gives a native
                 // variable for an out parameter.
                 dllImport: {
                     bind: (dllName) => {

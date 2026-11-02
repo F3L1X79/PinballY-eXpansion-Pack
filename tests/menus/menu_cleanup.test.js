@@ -41,9 +41,9 @@ function assertCleanedMainMenu(firstBlock) {
 }
 const exitMenuTitles = () => titlesOf(() => fake.openExitMenu());
 
-test("Menu Cleanup and the Backglass Clock are the only Add-ons off by default", () => {
+test("Menu Cleanup, the Backglass Clock and Discord Rich Presence are the only Add-ons off by default", () => {
     const offByDefault = Object.entries(config.addOns).filter(([, isOn]) => !isOn).map(([key]) => key);
-    assert.deepEqual(offByDefault.sort(), ["backglassClock", "menuCleanup"]);
+    assert.deepEqual(offByDefault.sort(), ["backglassClock", "discordRichPresence", "menuCleanup"]);
 });
 
 test("turned on, Menu Cleanup lightens the menus for every Profile, Admin included", async () => {

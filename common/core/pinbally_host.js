@@ -1,7 +1,7 @@
 ﻿// ============================================================
 // Production PinballY host: the single seam through which the shared modules
 // reach PinballY (settings, clock, timers, tables, wheel, menus, layers,
-// custom windows, sounds, files, programs, restart, HTTP, registry, logfile.log).
+// custom windows, sounds, files, programs, restart, HTTP, registry, pipes, logfile.log).
 // Every call passes straight through to PinballY's globals; tests use
 // tests/support/fake_pinbally_host.js. No side effects on import.
 // ============================================================
@@ -22,6 +22,8 @@ const SHELL_EXECUTE_MAX_ERROR = 32;
 // CreateFileW's arguments for a read that leaves the file open to other
 // readers and writers, so VPX never finds it busy.
 const GENERIC_READ = 0x80000000;
+// As an unsigned DWORD: a bitwise OR alone gives a negative number.
+const GENERIC_READ_WRITE = (GENERIC_READ | 0x40000000) >>> 0;
 const FILE_SHARE_READ_WRITE = 0x1 | 0x2;
 const OPEN_EXISTING = 3;
 const FILE_ATTRIBUTE_NORMAL = 0x80;
@@ -117,6 +119,55 @@ function openUtf8Stream() {
 
 // INVALID_HANDLE_VALUE, (HANDLE)-1, as a hexadecimal string on 32 or 64 bits.
 const isInvalidHandle = handle => /^(0x)?f+$/i.test(handle.toString());
+
+// A named pipe opened on a synchronous handle (docs/adr/0022): every call
+// returns at once, and null or false means the pipe is gone. createNative:
+// dllImport.create. Shared with the fake host, which passes its own kernel32.
+export function namedPipeOf(kernel32, handle, createNative) {
+    return {
+        // The bytes waiting to be read; PeekNamedPipe never waits.
+        bytesWaiting: () => {
+            const total = createNative("DWORD");
+            return kernel32.PeekNamedPipe(handle, null, 0, null, total, null) ? total.value : null;
+        },
+        // Exactly count bytes, which bytesWaiting() must have reported first:
+        // ReadFile would wait for missing ones, freezing PinballY.
+        read: (count) => {
+            const bytes = new Uint8Array(count);
+            const readCount = createNative("DWORD");
+            return kernel32.ReadFile(handle, bytes, count, readCount, null) && readCount.value === count ? bytes : null;
+        },
+        // A Uint8Array in one write.
+        write: (bytes) => {
+            const writtenCount = createNative("DWORD");
+            return Boolean(kernel32.WriteFile(handle, bytes, bytes.length, writtenCount, null)) && writtenCount.value === bytes.length;
+        },
+        close: () => { kernel32.CloseHandle(handle); },
+    };
+}
+
+// Opens a named pipe by name, null when it cannot be opened at once: never
+// WaitNamedPipeW, which would freeze PinballY up to its timeout. No
+// GetLastError either: PinballY never saves it, so "not found" and "busy"
+// are one and the same.
+function createPipeOpener() {
+    // Bound on the first open, then kept.
+    let kernel32 = null;
+    return (name) => {
+        if (!kernel32) {
+            kernel32 = dllImport.bind("Kernel32.dll", `
+                HANDLE WINAPI CreateFileW(LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPVOID lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
+                BOOL WINAPI PeekNamedPipe(HANDLE hNamedPipe, LPVOID lpBuffer, DWORD nBufferSize, DWORD *lpBytesRead, DWORD *lpTotalBytesAvail, DWORD *lpBytesLeftThisMessage);
+                BOOL WINAPI ReadFile(HANDLE hFile, UINT8 *lpBuffer, DWORD nNumberOfBytesToRead, DWORD *lpNumberOfBytesRead, LPVOID lpOverlapped);
+                BOOL WINAPI WriteFile(HANDLE hFile, UINT8 *lpBuffer, DWORD nNumberOfBytesToWrite, DWORD *lpNumberOfBytesWritten, LPVOID lpOverlapped);
+                BOOL WINAPI CloseHandle(HANDLE hObject);
+            `);
+        }
+        // Unshared, no FILE_FLAG_OVERLAPPED: a synchronous handle.
+        const handle = kernel32.CreateFileW(name, GENERIC_READ_WRITE, 0, null, OPEN_EXISTING, 0, null);
+        return isInvalidHandle(handle) ? null : namedPipeOf(kernel32, handle, type => dllImport.create(type));
+    };
+}
 
 // A whole file's bytes, read through kernel32: ADODB.Stream and
 // Scripting.FileSystemObject only read text. The handle is closed before
@@ -370,18 +421,15 @@ function createScriptReaderInstaller(files, startHidden) {
 // the cabinet). The helper reads PinballY's command line while it is alive,
 // so Quit runs only once its ready file exists; onFailed after readyTimeoutMs
 // without it (docs/adr/0017).
-function createHelperQuitter(files, startHidden, { helperName, fileBaseName, readyTimeoutMs, errorLabel }) {
-    // Bound on the first start, then kept.
-    let kernel32 = null;
+function createHelperQuitter(files, startHidden, getProcessId, { helperName, fileBaseName, readyTimeoutMs, errorLabel }) {
     // helperArgs: the helper's own arguments after the common ones, { name: value }.
     return ({ onQuitting, onFailed }, helperArgs = {}) => {
         const folder = preparePackTemporaryFolder(files);
         const readyPath = `${folder}\\${fileBaseName}-ready`;
         // Left by an earlier start that never quit.
         if (files.fileExists(readyPath)) files.deleteFile(readyPath);
-        if (!kernel32) kernel32 = dllImport.bind("Kernel32.dll", "DWORD WINAPI GetCurrentProcessId();");
         startHidden("powershell.exe", helperParameters(helperName, {
-            ParentPid: Number(kernel32.GetCurrentProcessId()), ReadyFile: readyPath, LogFile: `${folder}\\${fileBaseName}.log`, ...helperArgs,
+            ParentPid: getProcessId(), ReadyFile: readyPath, LogFile: `${folder}\\${fileBaseName}.log`, ...helperArgs,
         }, errorLabel));
         let waitedMs = 0;
         const poll = setInterval(() => {
@@ -420,6 +468,12 @@ export function createPinballYHost() {
     let mediaPlayer = null;
     // Bound on the first monitor count, then kept.
     let user32 = null;
+    // Bound on the first process id asked, then kept.
+    let processKernel32 = null;
+    const getProcessId = () => {
+        if (!processKernel32) processKernel32 = dllImport.bind("Kernel32.dll", "DWORD WINAPI GetCurrentProcessId();");
+        return Number(processKernel32.GetCurrentProcessId());
+    };
     const files = createFileSystem();
     const startHidden = createHiddenStarter();
 
@@ -590,14 +644,14 @@ export function createPinballYHost() {
         // Quits PinballY for a helper to start it again, as it was started;
         // onQuitting() runs right before Quit, onFailed(error) instead when
         // the helper cannot get ready, PinballY then staying open.
-        restartPinballY: createHelperQuitter(files, startHidden, {
+        restartPinballY: createHelperQuitter(files, startHidden, getProcessId, {
             helperName: RESTART_HELPER_NAME, fileBaseName: "restart", readyTimeoutMs: RESTART_READY_TIMEOUT_MS, errorLabel: "restart helper",
         }),
         // Quits PinballY, as restartPinballY() does, for the Pack Update
         // helper to download zipUrl, check its sha256 and install packVersion
         // over the pack folder, then start PinballY again.
         startPackUpdate: (() => {
-            const quitForHelper = createHelperQuitter(files, startHidden, {
+            const quitForHelper = createHelperQuitter(files, startHidden, getProcessId, {
                 helperName: PACK_UPDATE_HELPER_NAME, fileBaseName: PACK_UPDATE_FILE_BASE_NAME, readyTimeoutMs: PACK_UPDATE_READY_TIMEOUT_MS, errorLabel: "Pack Update helper",
             });
             return ({ zipUrl, sha256, packVersion, onQuitting, onFailed }) => quitForHelper({ onQuitting, onFailed }, {
@@ -634,6 +688,10 @@ export function createPinballYHost() {
             }
             return String(value);
         },
+        // A named pipe ("\\\\?\\pipe\\..."), null when it cannot be opened at
+        // once; see namedPipeOf() for its calls.
+        openPipe: createPipeOpener(),
+        getProcessId,
         files,
         log: (text) => { logfile.log(text); },
     };

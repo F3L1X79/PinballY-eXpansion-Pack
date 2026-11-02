@@ -640,3 +640,10 @@ test(".env.local keeps the ADD_ON_STATUS_ICONS key", () => {
     assert.equal(DEFAULTS.addOns.statusIcons, true);
     assert.equal(applyEnvOverrides(DEFAULTS, "ADD_ON_STATUS_ICONS=false\n").config.addOns.statusIcons, false);
 });
+
+test(".env.local keeps the ADD_ON_DISCORD_RICH_PRESENCE and DISCORD_APPLICATION_ID keys", () => {
+    assert.equal(DEFAULTS.addOns.discordRichPresence, false);
+    assert.equal(applyEnvOverrides(DEFAULTS, "ADD_ON_DISCORD_RICH_PRESENCE=true\n").config.addOns.discordRichPresence, true);
+    assert.equal(DEFAULTS.discordApplicationId, "");
+    assert.equal(applyEnvOverrides(DEFAULTS, "DISCORD_APPLICATION_ID=123\n").config.discordApplicationId, "123");
+});

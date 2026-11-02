@@ -619,6 +619,11 @@ export default {
         everyFailed: (count, names) => `Profils réinitialisés : ${count}. Impossible de réinitialiser ${names.join(", ")}. Voir le journal pour les détails.`,
     },
 
+    // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).
+    discordRichPresence: {
+        choosingTable: "Choisit une table",
+    },
+
     // The clock at the top left of the wheel screen.
     clock: {
         time: (hours, minutes) => `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`,
@@ -882,6 +887,11 @@ export default {
             backglassClock: {
                 name: "Horloge du backglass",
                 whenOn: "L'heure dans un petit cadre sur l'écran du backglass pendant une partie.",
+                whenOff: "Rien d'autre ne change.",
+            },
+            discordRichPresence: {
+                name: "Discord Rich Presence",
+                whenOn: "Votre compte Discord montre publiquement la table jouée et depuis combien de temps ; lancez Discord avant PinballY.",
                 whenOff: "Rien d'autre ne change.",
             },
             seamlessLaunchOverlay: {

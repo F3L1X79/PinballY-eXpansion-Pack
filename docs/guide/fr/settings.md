@@ -27,6 +27,12 @@ Le groupe **Mode hors ligne** réunit ce qui contacte internet, ou propose de le
 - **Recherche de mises à jour du pack** : PinballY demande à GitHub, à chaque démarrage, si une version plus récente du pack existe (`UPDATE_CHECK`).
 - **Proposer vpxtool** : le pack peut proposer d'installer ou de mettre à jour vpxtool (`OFFER_VPXTOOL`).
 
+## Discord Rich Presence
+
+Discord Rich Presence montre, sur le compte Discord ouvert sur le PC de la borne, ce que fait la borne : « Choisit une table » sur la roue, et pendant une partie le nom de la table et depuis combien de temps elle dure, sous le nom « Virtual Pinball » avec le logo du pack. **C'est public** : vos amis Discord et les membres de vos serveurs le voient. Rien d'autre n'est envoyé : aucun nom de profil, jamais la table sélectionnée sur la roue, rien d'autre de votre PC. Une table adulte montre son nom comme toute autre table.
+
+Il est **désactivé par défaut** : activez-le dans les Réglages du pack, sous « Lancer et jouer une table », ou avec `ADD_ON_DISCORD_RICH_PRESENCE=true`. Lancez Discord avant PinballY : le pack ne le lance jamais et ne le cherche qu'une fois, au démarrage ; si Discord ne tourne pas à ce moment-là, ou se ferme pendant la session, le statut reste vide jusqu'au prochain démarrage de PinballY (la raison est dans `PinballY.log`).
+
 ## `.env.local`
 
 Tous les autres réglages se trouvent dans `Scripts\ExpansionPack\.env.local`, un `CLÉ=valeur` par ligne (UTF-8). Copiez `ExpansionPack\.env.example` et n'écrivez que ceux que vous changez, par exemple :
@@ -60,7 +66,7 @@ ADD_ON_CLOCK=false
 | `LOG_UNTRANSLATED_MENU_TITLES` | `false` | `true` écrit chaque titre de menu PinballY non traduit dans `PinballY.log`. |
 | `LOG_LAUNCH_EVENTS` | `false` | `true` écrit chaque événement de lancement dans `PinballY.log`, horodaté à la milliseconde, pour vérifier leur ordre sur la borne. |
 
-Chaque fonctionnalité se désactive aussi avec sa clé `ADD_ON_*`, par exemple `ADD_ON_CLOCK=false` ou `ADD_ON_CHALLENGES=false`. Seuls le nettoyage des menus et l'horloge du backglass (`ADD_ON_BACKGLASS_CLOCK`, l'heure sur l'écran du backglass pendant une partie, voir [Interface](interface.md#horloge-du-backglass)) sont désactivés par défaut. Chaque clé est décrite dans [.env.example](../../../.env.example).
+Chaque fonctionnalité se désactive aussi avec sa clé `ADD_ON_*`, par exemple `ADD_ON_CLOCK=false` ou `ADD_ON_CHALLENGES=false`. Seuls le nettoyage des menus, l'horloge du backglass (`ADD_ON_BACKGLASS_CLOCK`, l'heure sur l'écran du backglass pendant une partie, voir [Interface](interface.md#horloge-du-backglass)) et Discord Rich Presence (`ADD_ON_DISCORD_RICH_PRESENCE`, voir [plus haut](#discord-rich-presence)) sont désactivés par défaut. Chaque clé est décrite dans [.env.example](../../../.env.example).
 
 La progression de chaque Profil est enregistrée dans `Scripts\ExpansionPack\profiles`. Gardez ce dossier quand vous réinstallez ou mettez à jour le pack, et vous retrouvez votre progression.
 

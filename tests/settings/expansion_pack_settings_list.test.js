@@ -38,7 +38,7 @@ const categoryPages = ({ achievements = ON, clock = ON, menuCleanup = "Off" } = 
     ],
     "Launching and playing a table": [
         "[LAUNCHING AND PLAYING A TABLE]",
-        `Backglass: ${ON}`, "Backglass Clock: Off", `Launch overlay: ${ON}`, `Launch sound: ${ON}`, `Rating prompt: ${ON}`, `Table ROMs: ${ON}`, "---", "Back",
+        `Backglass: ${ON}`, "Backglass Clock: Off", "Discord Rich Presence: Off", `Launch overlay: ${ON}`, `Launch sound: ${ON}`, `Rating prompt: ${ON}`, `Table ROMs: ${ON}`, "---", "Back",
     ],
     "Debugging": ["[DEBUGGING]", `Launch events trace: ${ON}`, "---", "Back"],
 });

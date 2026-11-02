@@ -27,6 +27,12 @@ The **Offline Mode** group holds what reaches, or offers to reach, the internet,
 - **Pack update check**: PinballY asks GitHub for a newer version of the pack at each start (`UPDATE_CHECK`).
 - **Offer vpxtool**: the pack may offer to install or update vpxtool (`OFFER_VPXTOOL`).
 
+## Discord Rich Presence
+
+Discord Rich Presence shows, on the Discord account signed in on the cabinet's PC, what the cabinet is doing: "Choosing a table" on the wheel, and during a game the table's name and how long the game has lasted, under the name "Virtual Pinball" with the pack's logo. **This is public**: your Discord friends and the members of your servers see it. Nothing else is sent: no Profile name, never the table under the wheel's selection, nothing else from your PC. An Adult Table shows its name like any other table.
+
+It is **off by default**: turn it on in the eXpansion Pack Settings, under "Launching and playing a table", or with `ADD_ON_DISCORD_RICH_PRESENCE=true`. Start Discord before PinballY: the pack never starts it, and looks for it only once, at startup; if Discord is not running then, or closes during the session, the status stays empty until PinballY restarts (the reason is in `PinballY.log`).
+
 ## `.env.local`
 
 Every other setting lives in `Scripts\ExpansionPack\.env.local`, one `KEY=value` per line (UTF-8). Copy `ExpansionPack\.env.example` and only write the ones you change, for example:
@@ -60,7 +66,7 @@ ADD_ON_CLOCK=false
 | `LOG_UNTRANSLATED_MENU_TITLES` | `false` | `true` writes each untranslated PinballY menu title to `PinballY.log`. |
 | `LOG_LAUNCH_EVENTS` | `false` | `true` writes each launch event to `PinballY.log` with a millisecond timestamp, to check their order on the cabinet. |
 
-Every feature can also be turned off with its `ADD_ON_*` key, for example `ADD_ON_CLOCK=false` or `ADD_ON_CHALLENGES=false`. Only Menu Cleanup and the Backglass Clock (`ADD_ON_BACKGLASS_CLOCK`, the time on the backglass screen during a game, see [Interface](interface.md#backglass-clock)) are off by default. Each key is described in [.env.example](../../../.env.example).
+Every feature can also be turned off with its `ADD_ON_*` key, for example `ADD_ON_CLOCK=false` or `ADD_ON_CHALLENGES=false`. Only Menu Cleanup, the Backglass Clock (`ADD_ON_BACKGLASS_CLOCK`, the time on the backglass screen during a game, see [Interface](interface.md#backglass-clock)) and Discord Rich Presence (`ADD_ON_DISCORD_RICH_PRESENCE`, see [above](#discord-rich-presence)) are off by default. Each key is described in [.env.example](../../../.env.example).
 
 Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. Keep that folder when you reinstall or update the pack, and you get your progress back.
 

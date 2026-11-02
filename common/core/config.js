@@ -81,6 +81,9 @@ export const DEFAULTS = {
     // false = the pack never offers to install or update vpxtool; the
     // install line stays in the Settings. In the Settings' Offline Mode group.
     offerVpxtool: true,
+    // The Discord application whose name and art Discord Rich Presence
+    // shows; empty for the pack's.
+    discordApplicationId: "",
     // true = every PinballY menu title shown without a translation is written
     // to the PinballY log (for a new PinballY version or a new language).
     logUntranslatedMenuTitles: false,
@@ -91,8 +94,9 @@ export const DEFAULTS = {
     // --- Add-ons ---
 
     // Set any Add-on to false to keep it from starting. Menu Cleanup is off
-    // by default, as it removes PinballY entries others may want, and so is
-    // the Backglass Clock, as it covers a corner of every table's backglass.
+    // by default, as it removes PinballY entries others may want, the
+    // Backglass Clock, as it covers a corner of every table's backglass, and
+    // Discord Rich Presence, as it makes the tables played public.
     addOns: {
         uiTranslation: true,
         statusLineInfo: true,
@@ -101,6 +105,8 @@ export const DEFAULTS = {
         forceBackglass: true,
         // The time in front of VPX's backglass while a table runs, on two screens or more.
         backglassClock: false,
+        // The table being played, on the Discord account signed in on this PC.
+        discordRichPresence: false,
         customMenuCommands: true,
         // "Launch a random table" in the main menu, under Play.
         randomGame: true,

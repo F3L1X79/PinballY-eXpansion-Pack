@@ -616,6 +616,11 @@ export default {
         everyFailed: (count, names) => `Profili azzerati: ${count}. Impossibile azzerare: ${names.join(", ")}. Consulta il log per i dettagli.`,
     },
 
+    // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).
+    discordRichPresence: {
+        choosingTable: "Sceglie un tavolo",
+    },
+
     // The clock at the top left of the wheel screen.
     clock: {
         time: (hours, minutes) => `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`,
@@ -877,6 +882,11 @@ export default {
             backglassClock: {
                 name: "Orologio del backglass",
                 whenOn: "L'ora in un piccolo riquadro sullo schermo del backglass durante la partita.",
+                whenOff: "Nient'altro cambia.",
+            },
+            discordRichPresence: {
+                name: "Discord Rich Presence",
+                whenOn: "Il tuo account Discord mostra pubblicamente il tavolo giocato e da quanto tempo; avvia Discord prima di PinballY.",
                 whenOff: "Nient'altro cambia.",
             },
             seamlessLaunchOverlay: {
