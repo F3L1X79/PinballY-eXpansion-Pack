@@ -4,7 +4,7 @@
 // and _missing greyed from the recoloured _plain, so it keeps its very shape.
 // Run with `node maintainer/rank_emblems/generate_emblems.mjs [outDir]`
 // (default assets/images); never by PinballY.
-// - Gem diamonds are in _plain's pixels; _tile's are mapped through both alpha boxes.
+// - Gem diamonds are in _plain's pixels; _tile is a same-scale crop, its offset found by matching.
 // ============================================================
 
 import path from "node:path";
@@ -36,7 +36,7 @@ const RANKS = [
         ],
     },
     { rank: "gold", gems: [{ color: "ruby", tips: [[128, 100], [147, 124], [128, 152], [110, 124]] }] },
-    { rank: "platinum", gems: [{ color: "topaz", tips: [[128, 103], [150, 134.5], [128.5, 167], [105, 134.5]] }] },
+    { rank: "platinum", gems: [{ color: "topaz", tips: [[128, 103], [150, 134.5], [128, 170], [105, 134.5]] }] },
 ];
 
 // How far the mask stays inside the drawn tips, so the bezel keeps its metal.
@@ -67,18 +67,27 @@ function coverage(x, y, pts) {
     return hits / (SUBSAMPLES * SUBSAMPLES);
 }
 
-function alphaBox({ width, height, rgba }) {
-    let [x0, y0, x1, y1] = [width, height, 0, 0];
-    for (let j = 0; j < height; j++) {
-        for (let i = 0; i < width; i++) {
-            if (rgba[(j * width + i) * 4 + 3] < 128) continue;
-            x0 = Math.min(x0, i);
-            y0 = Math.min(y0, j);
-            x1 = Math.max(x1, i + 1);
-            y1 = Math.max(y1, j + 1);
+// _tile is _plain cropped at the same scale: where _plain's pixel (x, y) is
+// in _tile, found by matching the patch around the centre gem.
+function cropOffset(plain, tile, [cx, cy]) {
+    const PATCH = 24;
+    const SEARCH = 48;
+    const at = (image, x, y) => (y * image.width + x) * 4;
+    let best = { dx: 0, dy: 0, cost: Infinity };
+    for (let dy = -SEARCH; dy <= 0; dy++) {
+        for (let dx = -SEARCH; dx <= 0; dx++) {
+            let cost = 0;
+            for (let j = -PATCH; j < PATCH && cost < best.cost; j++) {
+                for (let i = -PATCH; i < PATCH; i++) {
+                    const p = at(plain, cx + i, cy + j);
+                    const t = at(tile, cx + i + dx, cy + j + dy);
+                    for (let k = 0; k < 3; k++) cost += Math.abs(plain.rgba[p + k] - tile.rgba[t + k]);
+                }
+            }
+            if (cost < best.cost) best = { dx, dy, cost };
         }
     }
-    return { x0, y0, x1, y1 };
+    return best;
 }
 
 // The gem's own darkest and brightest, so each ramp spans its whole facets.
@@ -131,11 +140,10 @@ const save = (name, image) => writePNG(path.join(OUT, name), image.width, image.
 for (const { rank, gems } of RANKS) {
     const plain = readPNG(path.join(SOURCES, `rank_${rank}_plain.png`));
     const tile = readPNG(path.join(SOURCES, `rank_${rank}_tile.png`));
-    const [from, to] = [alphaBox(plain), alphaBox(tile)];
-    const toTile = ([x, y]) => [
-        to.x0 + (x - from.x0) * (to.x1 - to.x0) / (from.x1 - from.x0),
-        to.y0 + (y - from.y0) * (to.y1 - to.y0) / (from.y1 - from.y0),
-    ];
+    // Matched on the original pixels, before any gem is recoloured.
+    const { dx, dy, cost } = cropOffset(plain, tile, [128, 128]);
+    console.log(`${rank}: _tile is _plain moved by (${dx}, ${dy}), mean difference ${(cost / (48 * 48 * 3)).toFixed(1)}`);
+    const toTile = ([x, y]) => [x + dx, y + dy];
     for (const { color, tips } of gems) {
         recolourGem(plain, tips, GEMS[color]);
         recolourGem(tile, tips.map(toTile), GEMS[color]);
