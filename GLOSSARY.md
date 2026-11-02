@@ -128,8 +128,12 @@ _Avoid_: indicator, badge (that is the Profile's), notification
 ### Profiles
 
 **Profile**:
-The identity a player picks so that their plays and Achievements count for them; no password, anyone can pick any Profile from the main menu. The active Profile stays active across restarts until another one is picked, unless the Profile picker is turned off: Guest is then active at startup. Plays count only for the active Profile, even when several people share one game.
+The identity a player picks so that their plays and Achievements count for them; no password, anyone can pick any Profile from the main menu. The active Profile stays active across restarts until another one is picked, unless the Profile picker is turned off: Guest is then active at startup. Plays count only for the active Profile, even when several people share one game. It is created from the Profile picker's last slot by whoever sees the setup entries, or by hand in Windows.
 _Avoid_: account, user, login
+
+**Name Entry**:
+The screen, opened from the Profile picker's last slot, where a new Profile's name is put together with the flippers, one character at a time, under a few lines explaining how the name can be changed afterwards; while the Household is empty, one more line says that this Profile will become an Admin Profile and must then be picked. The only drawn screen with no Exit Button, its choices being the characters: Exit alone goes back to the Profile picker. Never a toast, since it waits for the player. Shown as "Saisie du nom" in French.
+_Avoid_: virtual keyboard, onscreen keyboard (it has no keys), high score entry
 
 **Guest**:
 The Profile that always exists and cannot be removed; it is the active Profile until another one is picked, and whenever the Profile picker is turned off. Its plays, Achievements and Challenge progress stay its own when a player who played as Guest creates a Profile: nothing moves over.
@@ -140,7 +144,7 @@ Every Profile of the cabinet except Guest, Child Profiles included, whether or n
 _Avoid_: family, all players, users
 
 **Admin Profile**:
-A Profile marked as one of those who look after the cabinet: only Admin Profiles see the setup entries of the menus, and only they mark Profiles as Admin or Child Profiles and reset them, from the Exit menu. While no Profile is marked, every Profile sees everything, and the active Profile can make itself the first Admin Profile. The last Admin Profile cannot lose its mark from the cabinet. Guest is never one, nor is a Child Profile.
+A Profile marked as one of those who look after the cabinet: only Admin Profiles see the setup entries of the menus, and only they mark Profiles as Admin or Child Profiles and reset them, from the Exit menu. While no Profile is marked, every Profile sees everything, and the active Profile can make itself the first Admin Profile; the first Profile created with Name Entry in an empty Household becomes one by itself. The last Admin Profile cannot lose its mark from the cabinet. Guest is never one, nor is a Child Profile.
 _Avoid_: administrator, operator (the operator is whoever holds the coin door key)
 
 **Child Profile**:

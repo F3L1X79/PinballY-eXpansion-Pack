@@ -222,6 +222,7 @@
         <div class="cell sweet">
         </div>
         <div class="cell">
+          <a class="chip tr-profiles" href="#avatar-choice"><b></b>Choisir son Avatar</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
         </div>
@@ -285,17 +286,22 @@
             <h3>Créer un Profile depuis la borne</h3>
             <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span><span class="tag">UI</span></div>
           </div>
-          <p>Aujourd'hui, un Profile se crée en ajoutant un dossier dans <code>profiles\</code> depuis Windows, et rien sur la borne ne le dit : un nouveau joueur reste sur Guest, qui ne peut pas devenir Admin Profile. Piste : un emplacement « + » au bout du carrousel Change Player, réservé à qui voit les entrées de configuration, et un nom choisi lettre par lettre aux flippers, comme les initiales d'un high score.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> · Retour d'un utilisateur du forum, 02/11/2026 ; le guide explique déjà la création à la main (<code>docs/guide/en/profiles.md</code>) · Revoit l'ADR 0006, qui part de Profiles créés à la main</div>
+          <p>Un emplacement « + » au bout du Profile picker, réservé à qui voit les entrées de configuration, ouvre Name Entry : un panneau explicatif et un nom composé caractère par caractère aux flippers. Le premier Profile créé dans une Household vide devient Admin Profile. Grillé le 02/11/2026.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="here">spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/to-spec</code> · Retour d'un utilisateur du forum, 02/11/2026 ; le guide explique déjà la création à la main (<code>docs/guide/en/profiles.md</code>) · ADR 0023, qui complète l'ADR 0020</div>
           <details>
-            <summary>À trancher au grill (4)</summary>
+            <summary>Décisions du grill (8)</summary>
             <ul>
-              <li>La saisie du nom sans clavier : boutons utilisés, jeu de lettres, longueur, accents.</li>
-              <li>Le nom devient un nom de dossier : caractères interdits par Windows, préfixes <code>.</code> et <code>_</code> (dossiers ignorés), nom réservé à Guest, doublons sans tenir compte de la casse.</li>
-              <li>L'Avatar : celui par défaut, ou un choix parmi des images fournies.</li>
-              <li>La suite : basculer sur le nouveau Profile, proposer « Become admin » au premier créé.</li>
+              <li>Le « + » suit le dernier Profile, aussi quand le Profile picker est le Startup Screen, et le picker s'ouvre toujours sur le Profile actif. Pas d'invite sur une borne vierge.</li>
+              <li>Name Entry est un écran dessiné centré, au-dessus du Profile picker assombri : titre, explications, nom saisi, anneau, raison d'un refus, et le pied de page Button Hints des autres écrans (Prev/Next, Select, Exit : Retour). Pas d'Exit Button.</li>
+              <li>L'anneau : <code>A…Z · a…z · - · ← · OK</code>, sans accents ni espace. Il démarre sur <code>A</code>, saute sur <code>a</code> après le premier caractère, puis reste sur le dernier choisi. Un appui maintenu accélère. Pas de clavier physique.</li>
+              <li>De 1 à 12 caractères. Les explications disent de renommer le dossier dans Windows pour un nom plus long ou accentué, avant de jouer : les High Scores sont liés au nom.</li>
+              <li>OK est grisé, avec sa raison, pour Guest et son nom traduit, <code>CON</code>, <code>PRN</code>, <code>AUX</code>, <code>NUL</code> et un doublon, sans tenir compte de la casse. Le trait d'union ne peut ni commencer le nom ni se doubler, et il est retiré en fin de nom.</li>
+              <li>La création se limite à un dossier vide, sans bascule : le Profile picker revient sur le nouveau Profile, à choisir avec Select, pour qu'un Admin Profile puisse créer le Profile de son enfant.</li>
+              <li>Le premier Profile créé dans une Household vide devient Admin Profile (ADR 0023), annoncé par une ligne jaune tant que la Household est vide. Une création à la main ne marque rien.</li>
+              <li>Exit revient sur le « + », l'attract mode ferme tout, rien n'est créé. Un dossier impossible à créer laisse l'écran ouvert avec un message d'une phrase et une ligne dans l'Error Log.</li>
             </ul>
+            <p class="ctx">À vérifier sur la borne : <code>CreateFolder</code> et le rendu de l'anneau. L'Avatar reste celui par défaut : voir « Choisir son Avatar depuis la borne ».</p>
           </details>
         </div>
       </li>
@@ -395,6 +401,27 @@
               <li>La Pack Update doit-elle tenir compte de la version de PinballY (ne pas proposer une Pack Version qui exige un PinballY plus récent) ?</li>
             </ul>
             <p class="ctx">Idée de Félix du 01/11/2026 : la prochaine version de PinballY apportera sûrement des breaking changes. Impact fort, car tout le pack peut échouer au chargement (comme avec un <code>?.</code> refusé par ChakraCore).</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-profiles" id="avatar-choice" data-track="profiles" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Choisir son Avatar depuis la borne</h3>
+            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Choisir ou changer l'Avatar de n'importe quel Profile parmi des images fournies, sans passer par Windows. Les Profiles créés depuis la borne ont tous l'Avatar par défaut, donc la même image dans le Profile picker.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> · Reporté du grill de « Créer un Profile depuis la borne », 02/11/2026</div>
+          <details>
+            <summary>À trancher au grill (2)</summary>
+            <ul>
+              <li>Quelles images fournir : les images <code>default_scores</code> veulent dire Default Score sur le High Score Board, donc elles prêteraient à confusion.</li>
+              <li>Où se fait le choix (Profile Stats, près du cadre ?), et qui peut changer l'Avatar d'un autre Profile.</li>
+            </ul>
           </details>
         </div>
       </li>
