@@ -26,7 +26,7 @@ const GEMS = {
 
 // Each gem's diamond as top, right, bottom, left tips in _plain's pixels.
 const RANKS = [
-    { rank: "bronze", gems: [{ color: "emerald", tips: [[128, 97], [145, 121], [128, 149], [111.5, 121]] }] },
+    { rank: "bronze", gems: [{ color: "emerald", tips: [[128, 96.5], [147, 121], [128, 151], [109.5, 121]] }] },
     {
         rank: "silver",
         gems: [
@@ -35,7 +35,7 @@ const RANKS = [
             { color: "sapphire", tips: [[130, 64], [136, 72.5], [129.5, 79], [123, 72.5]] },
         ],
     },
-    { rank: "gold", gems: [{ color: "ruby", tips: [[128, 100], [147, 124], [128, 152], [110, 124]] }] },
+    { rank: "gold", gems: [{ color: "ruby", tips: [[128, 98.5], [148.5, 124], [128, 154], [108.5, 124]] }] },
     { rank: "platinum", gems: [{ color: "topaz", tips: [[128, 103], [150, 134.5], [128, 170], [105, 134.5]] }] },
 ];
 
