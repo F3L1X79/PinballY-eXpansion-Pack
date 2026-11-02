@@ -1,9 +1,9 @@
 // ============================================================
 // Profile picker: "Change Player" (main menu, exit menu, Welcome Screen),
 // or the Startup Screen, opens a drawn carousel of the Profiles' Avatars;
-// Select or Launch switches Profile, Exit closes it. Also shows the active
-// Profile's badge at the top right of the wheel, and greets the Profile on
-// each pick when the Welcome Screen Add-on is off.
+// Select or Launch switches Profile, Exit closes it; its last slot, the "+",
+// opens Name Entry. Also shows the active Profile's badge at the top right of
+// the wheel, and greets the Profile on each pick when the Welcome Screen is off.
 // - As the Startup Screen only, a drawn dialog of the wheel dialog module, which the Welcome Screen follows.
 // - Swallows every button through "commandbuttondown" while open.
 // - Layers are drawn ahead and kept: each draw blocks PinballY 20 to 45 ms on the cabinet.
@@ -16,6 +16,8 @@ import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { displayNameOf } from "../common/profiles/profile_name.js";
+import { seesSetupEntries } from "../common/profiles/setup_entries.js";
+import { createNameEntry } from "../common/profiles/name_entry.js";
 import { getMainMenu, MAIN_MENU_POSITION } from "../common/menus/main_menu.js";
 import { getWheelDialogs, DIALOG_PRIORITY } from "../common/core/wheel_dialog.js";
 import { getStartupScreen, notifyStartupPickerDone, STARTUP_SCREEN } from "../common/core/startup_screen.js";
@@ -23,6 +25,7 @@ import { getStartupVeil } from "../common/drawing/startup_veil.js";
 import { getQuietWheel } from "../common/core/quiet_wheel.js";
 import { registerChangePlayer } from "../common/profiles/change_player.js";
 import { drawShadowedText } from "../common/drawing/shadowed_text.js";
+import { STEAMBALL_COLORS } from "../common/drawing/steamball_palette.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
 import { getShownPlayerLevel } from "../common/levels/shown_player_level.js";
 import { drawLevelPip, levelPipOn, drawAvatarFrame, avatarFrameSide, AVATAR_FRAME_MARGIN } from "../common/drawing/steamball_drawing.js";
@@ -112,6 +115,10 @@ const BADGE_NAME = Object.freeze({ size: 14, weight: 600 });
 const GREETING = Object.freeze({ delayMs: 500, grownSize: 260, growMs: 250, holdMs: 700, fadeMs: 550 });
 const GREETING_TEXT = Object.freeze({ size: 28, weight: 700, gap: 24 });
 const FRAME_MS = 16;
+// The "+" slot, last of the carousel, which opens Name Entry. Not a Profile:
+// a symbol keys its layers, so a folder named "+" keeps its own.
+const NEW_PROFILE_SLOT = Object.freeze({ name: Symbol("new profile slot") });
+const NEW_PROFILE_ART = Object.freeze({ background: STEAMBALL_COLORS.tile, armLength: 120, armWidth: 20 });
 
 export default function init() {
     const { profiles: TEXT } = lang;
@@ -120,6 +127,9 @@ export default function init() {
     const shownPlayerLevel = getShownPlayerLevel();
     const profileRewards = getProfileRewards();
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
+    // Before this Add-on's own button listener, which then sees each press
+    // Name Entry took as handled.
+    const nameEntry = createNameEntry(host, { profileStore, drawingAhead: getDrawingAhead() });
     const hiddenLayer = zIndex => {
         const layer = host.createDrawingLayer(zIndex);
         layer.alpha = 0;
@@ -138,8 +148,9 @@ export default function init() {
     badgeLayer.setScale({ ySpan: BADGE.height / BADGE_REFERENCE_HEIGHT });
     badgeLayer.setPos(0, 0, "top right");
 
-    // The Profiles shown and the highlighted one's index; null when closed.
-    let profiles = null;
+    // The slots shown (the Profiles, then the "+" for whoever sees it) and
+    // the highlighted one's index; null when closed.
+    let slots = null;
     let highlighted = 0;
     // The window's layout size, taken from the background layer, which
     // spans the whole window: the other layers are placed in its pixels.
@@ -159,9 +170,9 @@ export default function init() {
     const avatarLayers = new Map();
     const nameLayers = new Map();
     const pipLayers = new Map();
-    // The Profiles to draw ahead, and whether the window must be measured
-    // and the Profiles read again first.
-    let aheadProfiles = [];
+    // The slots to draw ahead, and whether the window must be measured and
+    // the Profiles read again first.
+    let aheadSlots = [];
     let isAheadStale = true;
     // How far, in slots, the Avatars still sit from their places while they
     // glide (positive: to the right); 0 at rest.
@@ -198,6 +209,9 @@ export default function init() {
         framePaths = new Map(listed.map(profile => [profile.name, profileRewards.wornImageOf(profile.name, FRAMED_AVATAR_SIDE)]));
         return listed;
     }
+
+    // The Profiles read afresh, then the "+" for whoever sees the setup entries.
+    const readSlots = () => [...readProfiles(), ...(seesSetupEntries(profileStore) ? [NEW_PROFILE_SLOT] : [])];
 
     const framePathOf = profile => framePaths.get(profile.name) || null;
     const isFramed = () => [...framePaths.values()].some(path => path !== null);
@@ -264,13 +278,28 @@ export default function init() {
     const avatarSignature = profile => JSON.stringify([profile.avatarPath, framePathOf(profile)]);
     const avatarSideOf = profile => (framePathOf(profile) ? FRAMED_AVATAR_SIDE : AVATAR_SIDE);
     const isActive = profile => profile.name === profileStore.getActiveProfile().name;
+    const slotNameOf = slot => (slot === NEW_PROFILE_SLOT ? TEXT.newProfile : displayNameOf(slot));
     // The canvas spans the window's width.
-    const nameSignature = profile => JSON.stringify([displayNameOf(profile), isActive(profile), layout.width, layout.height]);
+    const nameSignature = profile => JSON.stringify([slotNameOf(profile), isActive(profile), layout.width, layout.height]);
+    const levelOf = slot => (slot === NEW_PROFILE_SLOT ? null : shownPlayerLevel.getOf(slot.name));
+
+    function drawNewProfileArt(dc, side) {
+        const { background, armLength, armWidth } = NEW_PROFILE_ART;
+        const frame = AVATAR_ART.plainFrame;
+        dc.fillRect(0, 0, side, side, COLORS.neighbourFrame);
+        dc.fillRect(frame, frame, side - 2 * frame, side - 2 * frame, background);
+        dc.fillRect((side - armLength) / 2, (side - armWidth) / 2, armLength, armWidth, COLORS.text);
+        dc.fillRect((side - armWidth) / 2, (side - armLength) / 2, armWidth, armLength, COLORS.text);
+    }
 
     function avatarLayer(profile) {
         const framePath = framePathOf(profile);
         const side = avatarSideOf(profile);
         return signedLayer(avatarLayers, profile.name, AVATAR_Z_INDEX, avatarSignature(profile), side, side, dc => {
+            if (profile === NEW_PROFILE_SLOT) {
+                drawNewProfileArt(dc, side);
+                return;
+            }
             if (!framePath) {
                 dc.fillRect(0, 0, side, side, COLORS.neighbourFrame);
                 dc.drawImage(profile.avatarPath, AVATAR_ART.plainFrame, AVATAR_ART.plainFrame, AVATAR_ART.image, AVATAR_ART.image);
@@ -285,7 +314,7 @@ export default function init() {
 
     // null when the Profile has no level to show.
     function pipLayer(profile) {
-        const level = shownPlayerLevel.getOf(profile.name);
+        const level = levelOf(profile);
         if (level === null) return null;
         return signedLayer(pipLayers, profile.name, PIP_Z_INDEX, String(level), PIP_CANVAS.width, PIP_CANVAS.height, dc => {
             drawLevelPip(host, dc, level, PIP_CANVAS.width / 2, PIP_CANVAS.height / 2, PIP_ART.size);
@@ -294,7 +323,7 @@ export default function init() {
 
     function nameLayer(profile) {
         return signedLayer(nameLayers, profile.name, TOP_Z_INDEX, nameSignature(profile), layout.width, NAME_LAYER_HEIGHT, dc => {
-            drawShadowedText(host, dc, NAME, isActive(profile) ? COLORS.gold : COLORS.text, displayNameOf(profile), 0);
+            drawShadowedText(host, dc, NAME, isActive(profile) ? COLORS.gold : COLORS.text, slotNameOf(profile), 0);
         });
     }
 
@@ -359,7 +388,7 @@ export default function init() {
 
     // The highlighted name, once the Avatars are at rest.
     function placeName() {
-        const current = glide === 0 ? profiles[highlighted] : null;
+        const current = glide === 0 ? slots[highlighted] : null;
         for (const [name, { layer }] of nameLayers) {
             if ((!current || name !== current.name) && layer.alpha !== 0) layer.alpha = 0;
         }
@@ -373,19 +402,19 @@ export default function init() {
 
     // Runs on every frame of a glide: shows, moves and hides layers only.
     function placeCarousel() {
-        const count = profiles.length;
+        const count = slots.length;
         const centerY = layout.height * ROW_HEIGHT_RATIO;
-        const shownProfiles = new Map(shownOffsets(count)
-            .map(offset => [profiles[((highlighted + offset) % count + count) % count], offset]));
-        const shownNames = new Set([...shownProfiles.keys()].map(profile => profile.name));
+        const shownSlots = new Map(shownOffsets(count)
+            .map(offset => [slots[((highlighted + offset) % count + count) % count], offset]));
+        const shownNames = new Set([...shownSlots.keys()].map(slot => slot.name));
         for (const records of [avatarLayers, pipLayers]) {
             for (const [name, { layer }] of records) {
                 if (!shownNames.has(name) && layer.alpha !== 0) layer.alpha = 0;
             }
         }
-        for (const [profile, offset] of shownProfiles) {
-            const slot = slotAt(offset + glide);
-            placeAvatar(profile, layout.width / 2 + slot.centerOffset, centerY, slot.size, slot.opacity, offset === 0);
+        for (const [slot, offset] of shownSlots) {
+            const look = slotAt(offset + glide);
+            placeAvatar(slot, layout.width / 2 + look.centerOffset, centerY, look.size, look.opacity, offset === 0);
         }
         placeName();
     }
@@ -405,7 +434,7 @@ export default function init() {
         });
     }
 
-    const isShowing = () => profiles !== null || greetingDelayTimer !== null || greetingTimer !== null;
+    const isShowing = () => slots !== null || greetingDelayTimer !== null || greetingTimer !== null;
 
     // One step of the drawing ahead, only while nothing is shown, so it
     // never makes the carousel or the greeting stutter: the Profiles are
@@ -414,7 +443,7 @@ export default function init() {
     function drawAheadStep() {
         if (isShowing()) return false;
         if (isAheadStale) {
-            aheadProfiles = readProfiles();
+            aheadSlots = readSlots();
             measure();
             isAheadStale = false;
             return true;
@@ -425,18 +454,18 @@ export default function init() {
                 return true;
             }
         }
-        for (const profile of aheadProfiles) {
-            if (!isDrawn(avatarLayers, profile.name, avatarSignature(profile))) {
-                avatarLayer(profile);
+        for (const slot of aheadSlots) {
+            if (!isDrawn(avatarLayers, slot.name, avatarSignature(slot))) {
+                avatarLayer(slot);
                 return true;
             }
-            if (!isDrawn(nameLayers, profile.name, nameSignature(profile))) {
-                nameLayer(profile);
+            if (!isDrawn(nameLayers, slot.name, nameSignature(slot))) {
+                nameLayer(slot);
                 return true;
             }
-            const level = shownPlayerLevel.getOf(profile.name);
-            if (level !== null && !isDrawn(pipLayers, profile.name, String(level))) {
-                pipLayer(profile);
+            const level = levelOf(slot);
+            if (level !== null && !isDrawn(pipLayers, slot.name, String(level))) {
+                pipLayer(slot);
                 return true;
             }
         }
@@ -554,7 +583,7 @@ export default function init() {
     // Greets the restored Profile once the wheel is free: no menu, no
     // dialog on screen or waiting, and no carousel.
     function greetAtStartupIfFree() {
-        if (!startupGreetingPending || profiles || greetingDelayTimer !== null) return;
+        if (!startupGreetingPending || slots || greetingDelayTimer !== null) return;
         if (isWheelFree()) greetAfterPause({ atStartup: true });
     }
 
@@ -579,7 +608,7 @@ export default function init() {
     // from where the Avatars are.
     function move(direction) {
         navigationSound.play();
-        highlighted = (highlighted + direction + profiles.length) % profiles.length;
+        highlighted = (highlighted + direction + slots.length) % slots.length;
         glide += direction;
         if (glideTimer === null) {
             glideLastMs = host.now().getTime();
@@ -611,9 +640,9 @@ export default function init() {
         // A native menu left open would stay stuck behind the carousel.
         if (host.getUIMode() === "menu") host.doCommand(host.getBuiltInCommand("MenuReturn"));
         quietWheel.hold(SCRIPT_NAME);
-        profiles = readProfiles();
+        slots = readSlots();
         const activeName = profileStore.getActiveProfile().name;
-        highlighted = Math.max(0, profiles.findIndex(profile => profile.name === activeName));
+        highlighted = Math.max(0, slots.findIndex(slot => slot.name === activeName));
         if (isLayoutStale()) measure();
         // Here rather than on the first move, which it would slow down.
         navigationSound.load();
@@ -640,7 +669,7 @@ export default function init() {
     function close({ isFollowed = false } = {}) {
         stopGlide();
         windowWatch.stop();
-        profiles = null;
+        slots = null;
         stopGreeting();
         markAheadStale();
         releaseStartupDialog();
@@ -652,7 +681,7 @@ export default function init() {
     // at once: the window watch follows PinballY laying the window out.
     function openAtStartup(closeDialog) {
         closeStartupDialog = closeDialog;
-        if (!profiles) open();
+        if (!slots) open();
         startupVeil.hideLoader();
     }
 
@@ -681,11 +710,19 @@ export default function init() {
         stopGlide();
         placeCarousel();
         windowWatch.stop();
-        profiles = null;
+        slots = null;
         profileStore.switchTo(chosen.name);
         releaseStartupDialog();
         quietWheel.release(SCRIPT_NAME, { atOnce: true });
         greetAfterPause({ atStartup });
+    }
+
+    // Name Entry created a Profile: the carousel, still open under it, comes
+    // back on it, and no switch happens, so an Admin Profile stays itself to mark it.
+    function showCreated(name) {
+        slots = readSlots();
+        highlighted = Math.max(0, slots.findIndex(slot => slot.name === name));
+        placeCarousel();
     }
 
     // Exit keeps the active Profile; at startup it is welcomed or greeted
@@ -717,13 +754,20 @@ export default function init() {
     // Fires on every mapped button press; drives the carousel while it is open.
     host.on("commandbuttondown", safeHandler(SCRIPT_NAME, ev => {
         // A press already handled may be the one that opened it, from a Drawn Menu.
-        if (!profiles || ev.defaultPrevented) return;
+        if (!slots || ev.defaultPrevented) return;
         // Swallowed first, so a failing switch still never reaches the wheel.
         ev.preventDefault();
         if (ev.command === "Next" || ev.command === "Prev") {
             move(ev.command === "Next" ? 1 : -1);
-        } else if (ev.command === "Select" || ev.command === "Launch") {
-            pick(profiles[highlighted]);
+            return;
+        }
+        // The button held on Name Entry's OK or Exit must not pick a Profile
+        // or close the carousel that just came back.
+        if (ev.repeat) return;
+        if (ev.command === "Select" || ev.command === "Launch") {
+            const chosen = slots[highlighted];
+            if (chosen === NEW_PROFILE_SLOT) nameEntry.open(showCreated);
+            else pick(chosen);
         } else if (ev.command === "Exit") {
             exit();
         }
@@ -755,7 +799,7 @@ export default function init() {
         badgeLayer.alpha = 0;
         startupGreetingPending = false;
         stopGreeting();
-        if (isStartupPending && !profiles) dropStartup();
+        if (isStartupPending && !slots) dropStartup();
     }));
     // Fires back on the wheel, after a game, a menu or a dialog.
     host.on("wheelmode", safeHandler(SCRIPT_NAME, () => {

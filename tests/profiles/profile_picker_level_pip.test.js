@@ -30,7 +30,7 @@ test("each Avatar of the carousel shows its Profile's level", async () => {
     });
     fake.advanceTime(ALL_TOASTS_MS);
     await openCarousel(fake);
-    assert.deepEqual(carouselPips(fake), ["1", "2"], "Guest's 1, Alice's 2 though not active");
+    assert.deepEqual(carouselPips(fake), ["1", "2"], "Guest's 1, Alice's 2 though not active, none on the + beside them");
 
     assert.deepEqual(errorLines(fake), []);
 });

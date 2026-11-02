@@ -577,6 +577,16 @@ export default {
         pickerTitle: "Chi gioca?",
         pickerHint: "Flipper: scorri · Start: scegli · Exit: annulla",
         guestName: "Ospite",
+        // The Profile picker's last slot, and the screen it opens.
+        newProfile: "Nuovo profilo",
+        nameEntry: {
+            title: "Dai un nome al tuo profilo",
+            lines: [
+                "12 caratteri al massimo.",
+                "Per un nome più lungo o con accenti, rinomina la cartella in Windows prima di giocare.",
+            ],
+            ok: "OK",
+        },
         greeting: name => `Ciao ${name}!`,
     },
 

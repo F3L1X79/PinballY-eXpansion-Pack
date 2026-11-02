@@ -26,6 +26,8 @@ test("once drawn ahead, the carousel opens and moves without drawing", async () 
     const names = ["Alice", "Bob", "Chloe", "Dan", "Eve", "Finn"];
     for (const name of names) fake.addFolder(`${PROFILES_FOLDER}\\${name}`);
     fake.addFile(`${PROFILES_FOLDER}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: "Bob" }));
+    // Alice is an Admin Profile, so Bob has no "+" slot and the ring holds Profiles only.
+    fake.addFile(`${PROFILES_FOLDER}\\Alice\\profile.json`, JSON.stringify({ version: 1, plays: {}, notified: [], isAdmin: true }));
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = key === "profilePicker";

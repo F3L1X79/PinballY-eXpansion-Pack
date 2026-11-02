@@ -18,7 +18,22 @@ La progression de chaque Profil est enregistrée dans `Scripts\ExpansionPack\pro
 
 ## Créer un Profil
 
-Le pack est livré avec le seul Profil Invité. Un Profil se crée depuis Windows, pas depuis la borne :
+Le pack est livré avec le seul Profil Invité. Un Profil se crée depuis la borne ou depuis Windows.
+
+### Depuis la borne
+
+Ouvrez **Changer de joueur** : sa dernière place, après le dernier Profil, est **Nouveau profil**, le « + ». Elle apparaît à tout le monde tant qu'aucun Profil n'est admin, Invité compris ; dès qu'il y en a un, aux Profils admin seulement.
+
+1. Choisissez le « + » avec Select ou Launch : la saisie du nom s'ouvre.
+2. Parcourez l'anneau de caractères avec les flippers, en maintenant l'un d'eux pour continuer. Select ou Launch choisit le caractère sous le marqueur : `A` à `Z`, `a` à `z`, `-`, `←` pour effacer le dernier caractère, et `OK`.
+3. Choisissez `OK`. `OK` reste grisé tant que le nom est vide.
+4. « Changer de joueur » revient sur le nouveau Profil, à sa place dans l'ordre alphabétique. Vous êtes toujours sur votre ancien Profil : appuyez sur Select pour choisir le nouveau.
+
+Exit revient sur le « + » sans rien créer. Sur une borne laissée inactive, le mode attract ferme la saisie du nom et « Changer de joueur », sans rien créer non plus.
+
+Un nom compte 12 caractères au maximum, sans accents, espaces ni chiffres. Pour un nom plus long ou accentué, renommez le dossier du Profil dans Windows, **avant de jouer** : renommer garde les parties et les Succès du Profil, mais ses meilleurs scores et ses records perdus suivent le nom, et renommer le dossier du Profil actif repart sur Invité.
+
+### Depuis Windows
 
 1. Dans `PinballY\Scripts\ExpansionPack\profiles`, créez un dossier vide au nom du joueur : c'est ce nom que la borne affiche. Un nom qui commence par `.` ou `_` est ignoré. Ne copiez pas le dossier d'Invité : la copie reprendrait sa progression, alors qu'un dossier vide part de zéro.
 2. Facultatif : placez dans ce dossier une image PNG ou JPEG carrée nommée `avatar.png` ou `avatar.jpg`. Sans elle, le Profil reçoit l'Avatar par défaut.

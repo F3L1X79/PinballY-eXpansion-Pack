@@ -43,7 +43,7 @@ PinballY's own log, in the PinballY folder, covers the current session only. At 
 
 **A table with an empty ROM field has no board at all.** If you updated PINemHi, the `[romfind]` section of `romfind.ini` must be appended to `pinemhi.ini` (see [Install](install.md#pinemhi-368)).
 
-**Guest is the only Profile.** The pack ships with Guest alone, and a Profile is created from Windows, as a folder (see [Create a Profile](profiles.md#create-a-profile)).
+**Guest is the only Profile.** The pack ships with Guest alone. Create a Profile from **Change Player**, with its last slot, the "+", or from Windows, as a folder (see [Create a Profile](profiles.md#create-a-profile)).
 
 **I marked a Profile as admin and lost the setup entries.** Once a Profile is marked, the others, Guest included, no longer see them, and you may still be on Guest: pick the marked Profile in Change Player, in the main menu or the Exit menu. PinballY opens Change Player by itself only once the cabinet has two Profiles or more besides Guest.
 

@@ -46,7 +46,8 @@ test("the Welcome Screen plays the greeting sound as it appears, at startup and 
     fake.openMenu("main", [{ title: "Play", cmd: fake.getBuiltInCommand("PlayGame") }]);
     fake.selectMenuItem(lang.profiles.menuEntry);
     await settle();
-    press(fake, "Next");
+    // Towards Alice: Next leads to the "+".
+    press(fake, "Prev");
     fake.advanceTime(GLIDE_OVER_MS);
     press(fake, "Select");
     await settle();

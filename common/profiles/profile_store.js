@@ -444,6 +444,13 @@ export function createProfileStore(host) {
         }, profile.name);
     }
 
+    // An empty folder already reads as a Profile starting from zero, and the
+    // readers list the folders afresh: nothing to write, nobody to tell.
+    function createProfile(name) {
+        files.createFolder(`${profilesFolder}\\${name}`);
+        log(`The Profile "${name}" was created.`);
+    }
+
     function switchTo(name) {
         const profile = findProfile(name);
         if (!profile) throw new Error(`No Profile named "${name}".`);
@@ -512,6 +519,7 @@ export function createProfileStore(host) {
         // The same Profiles by name only, without checking their Avatars.
         listProfileNames,
         getActiveProfile: () => ({ ...publicProfile(activeProfile), data: activeData }),
+        createProfile,
         switchTo,
         getProfileData: () => activeData,
         // The named Profile's data, to read only: change it with updateProfileData.

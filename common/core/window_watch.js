@@ -40,9 +40,11 @@ export function createWindowWatch(host, scriptName) {
     // onChange(previous, next): view sizes as { width, height }. It returns
     // false when the screen could not follow yet (its layers not resized
     // with the view): the watch tells it again on the next ticks.
-    function start(onChange) {
+    // laidOutFor: the view size of a screen that took time to get ready, so
+    // a change meanwhile is told at once; the current size by default.
+    function start(onChange, laidOutFor = null) {
         stop();
-        followedSize = readViewSize(host, scriptName);
+        followedSize = laidOutFor || readViewSize(host, scriptName);
         if (followedSize === null) return;
         let retries = 0;
         timer = host.setInterval(safeHandler(scriptName, () => {

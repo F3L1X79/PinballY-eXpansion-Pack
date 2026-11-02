@@ -26,9 +26,9 @@ test("a missing frame image is logged once and the Avatar shows plain", async ()
         fake.openMenu("main", [{ title: "Play", cmd: fake.getBuiltInCommand("PlayGame") }]);
         fake.selectMenuItem(lang.profiles.menuEntry);
         const avatars = fake.drawingLayers().filter(layer => layer.zIndex === AVATAR_Z && layer.alpha > 0);
-        assert.equal(avatars.length, 1);
-        assert.equal(shownFrame(avatars[0]), null);
-        assert.ok(avatars[0].images().some(path => path.endsWith("default_avatar.png")));
+        assert.equal(avatars.length, 2, "Guest and the +");
+        assert.deepEqual(avatars.map(shownFrame), [null, null]);
+        assert.ok(avatars.some(avatar => avatar.images().some(path => path.endsWith("default_avatar.png"))));
         fake.fire("commandbuttondown", { command: "Exit", repeat: false });
         fake.advanceTime(DRAWN_AHEAD_MS);
     }

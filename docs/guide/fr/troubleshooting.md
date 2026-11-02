@@ -43,7 +43,7 @@ Le journal de PinballY lui-même, dans le dossier de PinballY, ne couvre que la 
 
 **Une table au champ ROM vide n'a plus aucun tableau.** Si vous avez mis PINemHi à jour, la section `[romfind]` de `romfind.ini` doit être ajoutée à la fin de `pinemhi.ini` (voir [Installation](install.md#pinemhi-368)).
 
-**Invité est le seul Profil.** Le pack est livré avec le seul Profil Invité, et un Profil se crée depuis Windows, sous forme de dossier (voir [Créer un Profil](profiles.md#créer-un-profil)).
+**Invité est le seul Profil.** Le pack est livré avec le seul Profil Invité. Créez un Profil depuis **Changer de joueur**, avec sa dernière place, le « + », ou depuis Windows, sous forme de dossier (voir [Créer un Profil](profiles.md#créer-un-profil)).
 
 **J'ai marqué un Profil admin et perdu les entrées de configuration.** Dès qu'un Profil est marqué, les autres, Invité compris, ne les voient plus, et vous êtes peut-être encore sur Invité : choisissez le Profil marqué dans « Changer de joueur », dans le menu principal ou le menu de sortie. PinballY n'ouvre « Changer de joueur » de lui-même que si la borne compte au moins deux Profils sans compter Invité.
 

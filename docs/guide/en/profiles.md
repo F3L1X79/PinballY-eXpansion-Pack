@@ -18,7 +18,22 @@ Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. An Admin P
 
 ## Create a Profile
 
-The pack ships with Guest alone. A Profile is created from Windows, not from the cabinet:
+The pack ships with Guest alone. A Profile is created from the cabinet or from Windows.
+
+### From the cabinet
+
+Open **Change Player**: its last slot, after the last Profile, is **New profile**, the "+". It shows for everyone while no Profile is an Admin Profile, Guest included; once one is, only for Admin Profiles.
+
+1. Choose the "+" with Select or Launch: Name Entry opens.
+2. Move along the ring of characters with the flippers, and hold one to keep going. Select or Launch chooses the character under the marker: `A` to `Z`, `a` to `z`, `-`, `←` to erase the last character, and `OK`.
+3. Choose `OK`. `OK` stays grey while the name is empty.
+4. Change Player comes back on the new Profile, in its alphabetical place. You are still on your former Profile: press Select to pick the new one.
+
+Exit goes back to the "+" with nothing created. On a cabinet left idle, attract mode closes Name Entry and Change Player, with nothing created either.
+
+A name has 12 characters at most, without accents, spaces or digits. For a longer or accented name, rename the Profile's folder in Windows, **before playing**: a rename keeps the Profile's plays and Achievements, but its High Scores and Lost Records follow the name, and renaming the active Profile's folder restarts on Guest.
+
+### From Windows
 
 1. In `PinballY\Scripts\ExpansionPack\profiles`, create an empty folder named after the player: the cabinet shows that name. A name starting with `.` or `_` is ignored. Don't copy Guest's folder: the copy would carry over Guest's progress, while an empty folder starts from zero.
 2. Optional: put a square PNG or JPEG named `avatar.png` or `avatar.jpg` in that folder. Without it, the Profile gets the default Avatar.

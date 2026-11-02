@@ -23,7 +23,7 @@ test("no frame on the badge nor in the carousel with Table Mastery off", async (
     fake.openMenu("main", [{ title: "Play", cmd: fake.getBuiltInCommand("PlayGame") }]);
     fake.selectMenuItem(lang.profiles.menuEntry);
     const avatars = fake.drawingLayers().filter(layer => layer.zIndex === AVATAR_Z && layer.alpha > 0);
-    assert.equal(avatars.length, 1);
-    assert.equal(shownFrame(avatars[0]), null);
+    assert.equal(avatars.length, 2, "Guest and the +");
+    assert.deepEqual(avatars.map(shownFrame), [null, null]);
     assert.deepEqual(errorLines(fake), []);
 });

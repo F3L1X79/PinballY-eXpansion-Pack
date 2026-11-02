@@ -471,6 +471,16 @@ export default {
         pickerTitle: "Who's playing?",
         pickerHint: "Flippers: browse · Start: choose · Exit: cancel",
         guestName: "Guest",
+        // The Profile picker's last slot, and the screen it opens.
+        newProfile: "New profile",
+        nameEntry: {
+            title: "Name your profile",
+            lines: [
+                "12 characters at most.",
+                "For a longer or accented name, rename the folder in Windows, before playing.",
+            ],
+            ok: "OK",
+        },
         greeting: name => `Hi ${name}!`,
     },
 

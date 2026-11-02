@@ -46,9 +46,9 @@ test("each Avatar of the carousel wears its own frame, drawn ahead, inside the g
     assert.equal(avatarDrawings(), drawnAhead, "no Avatar drawn on opening");
 
     const avatars = shownLayers(fake, AVATAR_Z);
-    assert.equal(avatars.length, 3);
+    assert.equal(avatars.length, 4);
     const frames = avatars.map(layer => shownFrame(layer)).map(frame => frame && `${frame.tier}/${frame.size}`);
-    assert.deepEqual([...frames].sort(), ["1/384", "3/384", null], "Guest's, Alice's, and none for Bob");
+    assert.deepEqual([...frames].sort(), ["1/384", "3/384", null, null], "Guest's, Alice's, and none for Bob nor the +");
 
     // The highlighted Avatar, the largest: Guest, the active Profile.
     const boxes = avatars.map(layer => ({ layer, box: boxOf(fake, layer) })).sort((a, b) => (b.box.right - b.box.left) - (a.box.right - a.box.left));

@@ -78,7 +78,8 @@ test("picking a Profile greets it with its Avatar and a sound, then fades out", 
     assert.equal(press(fake, "Next").defaultPrevented, false, "never keeps the buttons");
 
     config.profileGreetingSoundFile = "";
-    pick(1);
+    // Past the "+", last of the carousel, to wrap round to Guest.
+    pick(2);
     fake.advanceTime(PAUSE_OVER_MS);
     assert.ok(visibleTexts(fake).includes(lang.profiles.greeting(lang.profiles.guestName)), "Guest by its translated name");
     assert.equal(fake.soundsPlayed().length, soundsBefore + 1, "no sound when the setting is empty");

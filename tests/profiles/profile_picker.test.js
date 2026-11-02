@@ -25,6 +25,9 @@ async function start({ enabled = true, activeProfile = "Bob" } = {}) {
     const fake = createFakePinballYHost();
     for (const name of ["Alice", "Bob"]) fake.addFolder(`${PROFILES_FOLDER}\\${name}`);
     fake.addFile(CABINET_FILE, JSON.stringify({ version: 1, activeProfile }));
+    // Alice is an Admin Profile, so the Profile active here has no "+" slot
+    // (tests/profiles/new_profile_slot.test.js) and the carousel holds Profiles only.
+    fake.addFile(`${PROFILES_FOLDER}\\Alice\\profile.json`, JSON.stringify({ version: 1, plays: {}, notified: [], isAdmin: true }));
     // Never uninstalled: node --test runs each test file in its own process,
     // and main.js is imported once per process.
     fake.installGlobals();
