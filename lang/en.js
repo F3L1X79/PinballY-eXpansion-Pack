@@ -524,6 +524,12 @@ export default {
     // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).
     discordRichPresence: {
         choosingTable: "Choosing a table",
+        warningTitle: "Discord Rich Presence",
+        warning: "Discord not found: the table being played won't show on Discord. Start Discord before PinballY.",
+    },
+    // The Warning Toast: something the owner turned on that won't work this session.
+    warningToast: {
+        header: "Warning",
     },
 
     // The clock at the top left of the wheel screen.

@@ -18,6 +18,14 @@ Un échec qui répond à un choix que vous venez de faire (une réinitialisation
 |---|---|
 | « vpxtool n'a pas pu être installé ; rien n'a changé. Vous pouvez réessayer depuis les Réglages du pack. » (ou « … mis à jour … » pour une mise à jour) | La borne est peut-être hors ligne, le téléchargement a pu être coupé ou bloqué par l'antivirus, ou `vpxtool.exe` est en cours d'utilisation. Votre ancien `vpxtool.exe`, s'il y en avait un, est toujours en place. Lisez `%TEMP%\PinballYExpansionPack\script-reader-install.log`, puis réessayez, ou installez vpxtool à la main (voir [Installation](install.md#vpxtool)). |
 
+## Le toast « Avertissement »
+
+Quand quelque chose que vous avez activé ne fonctionnera pas pour le reste de la session, le pack le dit une seule fois avec un toast ambre, le titre « Avertissement » et un panneau d'avertissement. Ce n'est pas un échec du pack : il n'est donc pas écrit dans le journal des erreurs. Comme tous les toasts, il attend la roue, après l'écran d'accueil et le choix du Profil, et n'interrompt jamais une partie.
+
+| Le toast dit | Qui le voit | Quoi faire |
+|---|---|---|
+| « Discord introuvable : la table jouée n'apparaîtra pas sur Discord. Lancez Discord avant PinballY. » | Le Profil actif, quel qu'il soit, une fois par session. | Lancez Discord avant PinballY, puis redémarrez PinballY. Le pack essaie trois fois pendant les 30 premières secondes, et cesse d'essayer si Discord se ferme ou refuse la connexion ensuite (voir [Discord Rich Presence](settings.md#discord-rich-presence)). |
+
 ## Le journal des erreurs (`errors.log`)
 
 PinballY recrée `PinballY.log` à chaque lancement : le pack écrit donc aussi chaque erreur qu'il rencontre dans son propre journal des erreurs, qui survit aux redémarrages :

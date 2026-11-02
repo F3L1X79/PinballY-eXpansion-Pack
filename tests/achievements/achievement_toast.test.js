@@ -171,6 +171,37 @@ test("an Error Toast waits behind the other kinds, in its copper red and warning
     assert.ok(errorCard.fills().includes(STEAMBALL_COLORS.errorAccent), "the accent bar in copper red");
 });
 
+test("a Warning Toast waits behind the other kinds, in amber with its warning sign, silent, and never celebrates", () => {
+    const fake = createFakePinballYHost();
+    fake.installGlobals();
+    fake.addFile(SOUND_FILE);
+    const starts = [];
+    const toasts = createAchievementToasts(fake, { soundFile: SOUND_FILE, confettiShower: { start: () => starts.push("shower"), endsAtMs: () => null, onStopped() {} } });
+    toasts.submit({ kind: TOAST_KIND.WARNING, title: "warning", description: "", celebrate: true, onShown() {} });
+    submitOne(toasts, "achievement");
+    fake.advanceTime(3 * SETTLE_MS);
+
+    assert.deepEqual(cardsOnScreen(fake), ["achievement", "warning"], "the bad news comes last");
+    assert.deepEqual(starts, []);
+    assert.deepEqual(fake.soundsPlayed(), [SOUND_FILE], "the Achievement's alone");
+    const warningCard = fake.drawingLayers().find(layer => layer.texts()[1] === "warning");
+    assert.equal(warningCard.texts()[0], lang.warningToast.header.toLocaleUpperCase());
+    assert.deepEqual(warningCard.images(), [`${ASSETS}\\warning_sign.png`]);
+    assert.ok(warningCard.fills().includes(STEAMBALL_COLORS.warningAccent), "the accent bar in amber");
+    assert.ok(!warningCard.fills().includes(STEAMBALL_COLORS.errorAccent), "never the Error Toast's colour");
+});
+
+test("a Warning Toast holds at least 10 s, like an Error Toast", () => {
+    const fake = createFakePinballYHost();
+    fake.installGlobals();
+    const toasts = createAchievementToasts(fake, { toastSeconds: 4 });
+    toasts.submit({ kind: TOAST_KIND.WARNING, title: "warning", description: "", onShown() {} });
+    fake.advanceTime(9900);
+    assert.deepEqual(cardsOnScreen(fake), ["warning"], "still there after the 4 s of the others");
+    fake.advanceTime(SETTLE_MS + ARRIVAL_GAP_MS);
+    assert.deepEqual(cardsOnScreen(fake), []);
+});
+
 test("a Level Toast starts the Fireworks when it starts, and failing ones never stop it", () => {
     const fake = createFakePinballYHost();
     fake.installGlobals();

@@ -1,7 +1,8 @@
 // ============================================================
-// Maintainer's tool, never loaded by PinballY. Paints the Error Toast's
-// warning sign, a copper red triangle with the exclamation mark cut out, as
-// a 128 x 128 PNG with alpha, flat like the trophy and the Challenge target.
+// Maintainer's tool, never loaded by PinballY. Paints the warning signs of
+// the Error Toast (copper red) and the Warning Toast (amber), a triangle with
+// the exclamation mark cut out, as 128 x 128 PNGs with alpha, flat like the
+// trophy and the Challenge target.
 // Run: node maintainer/error_toast/generate_warning_sign.mjs
 // ============================================================
 
@@ -10,14 +11,15 @@ import zlib from "node:zlib";
 import { fileURLToPath } from "node:url";
 import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 
-const OUTPUT = fileURLToPath(new URL("../../assets/images/error_warning.png", import.meta.url));
+const SIGNS = [
+    { file: "error_warning.png", accent: STEAMBALL_COLORS.errorAccent },
+    { file: "warning_sign.png", accent: STEAMBALL_COLORS.warningAccent },
+];
 const SIZE = 128;
 // 4 x 4 samples a pixel, for smooth edges.
 const SAMPLES = 4;
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const TRUECOLOR_WITH_ALPHA = 6;
-const ACCENT = STEAMBALL_COLORS.errorAccent;
-const RGB = [(ACCENT >>> 16) & 0xFF, (ACCENT >>> 8) & 0xFF, ACCENT & 0xFF];
 
 const APEX = [64, 10];
 const BASE_LEFT = [6, 116];
@@ -39,7 +41,8 @@ function insideMark([x, y]) {
 }
 
 // Straight RGBA bytes: the accent everywhere, its coverage in the alpha.
-function paint() {
+function paint(accent) {
+    const rgb = [(accent >>> 16) & 0xFF, (accent >>> 8) & 0xFF, accent & 0xFF];
     const pixels = Buffer.alloc(SIZE * SIZE * 4);
     for (let py = 0; py < SIZE; py++) {
         for (let px = 0; px < SIZE; px++) {
@@ -51,7 +54,7 @@ function paint() {
                 }
             }
             const offset = (py * SIZE + px) * 4;
-            [pixels[offset], pixels[offset + 1], pixels[offset + 2]] = RGB;
+            [pixels[offset], pixels[offset + 1], pixels[offset + 2]] = rgb;
             pixels[offset + 3] = Math.round(255 * covered / (SAMPLES * SAMPLES));
         }
     }
@@ -80,6 +83,9 @@ function encodePng(pixels) {
     return Buffer.concat([PNG_SIGNATURE, chunk("IHDR", header), chunk("IDAT", zlib.deflateSync(raw, { level: 9 })), chunk("IEND", Buffer.alloc(0))]);
 }
 
-const png = encodePng(paint());
-fs.writeFileSync(OUTPUT, png);
-console.log(`${OUTPUT}: ${Math.round(png.length / 1024)} KB.`);
+for (const { file, accent } of SIGNS) {
+    const output = fileURLToPath(new URL(`../../assets/images/${file}`, import.meta.url));
+    const png = encodePng(paint(accent));
+    fs.writeFileSync(output, png);
+    console.log(`${output}: ${Math.round(png.length / 1024)} KB.`);
+}

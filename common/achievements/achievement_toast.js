@@ -2,11 +2,11 @@
 // Achievement Toast: announces each unlocked Achievement with a small card
 // in the bottom-right corner, on a non-blocking drawing layer (see
 // docs/adr/0003). Also shows the Challenge, Mastery, Level, High Score,
-// Frame and Error Toasts, which share its queue. Cards stack, at most five on screen.
+// Frame, Error and Warning Toasts, which share its queue. Cards stack, at most five on screen.
 // - Toasts wait during a game and while a drawn dialog is open (docs/adr/0011).
 // - A celebrated toast starts the Confetti Shower, a Level Toast the Fireworks.
 // - A Level Toast waits until a second before the shower ends.
-// - An Error Toast comes last, holds at least 10 s, plays no sound, never celebrates.
+// - An Error or Warning Toast comes last, holds at least 10 s, plays no sound, never celebrates.
 // ============================================================
 
 import lang from "../core/i18n.js";
@@ -34,8 +34,8 @@ const MAX_CARDS = 5;
 // A Level Toast and its Fireworks start this long before a falling
 // Confetti Shower's end, so the celebrations follow each other without a gap.
 const LEVEL_TOAST_SHOWER_LEAD_MS = 1000;
-// An Error Toast holds at least this long: a whole sentence to read.
-const ERROR_TOAST_MIN_HOLD_MS = 10000;
+// An Error or Warning Toast holds at least this long: a whole sentence to read.
+const BAD_NEWS_MIN_HOLD_MS = 10000;
 
 // Card look at scale 1, validated with a prototype in PinballY; sizes in
 // pixels, fonts in points. The player's scale multiplies all of them.
@@ -79,8 +79,10 @@ const COLORS = Object.freeze({
 
 export const TOAST_KIND = Object.freeze({
     ACHIEVEMENT: "achievement", CHALLENGE: "challenge", MASTERY: "mastery", LEVEL: "level", HIGH_SCORE: "highScore", FRAME: "frame",
-    ERROR: "error",
+    ERROR: "error", WARNING: "warning",
 });
+
+const isBadNews = toast => toast.kind === TOAST_KIND.ERROR || toast.kind === TOAST_KIND.WARNING;
 
 // Icons in the pack's assets folder, drawn by absolute path: drawImage
 // resolves relative paths from the PinballY folder, not the pack's.
@@ -121,6 +123,13 @@ const KIND_LOOKS = Object.freeze({
         accent: STEAMBALL_COLORS.errorAccent,
         iconFile: "assets\\images\\error_warning.png",
         header: () => lang.errorToast.header,
+    },
+    // Something the owner turned on that won't work this session: the Error
+    // Toast's look in amber, since it is no failure of the pack.
+    [TOAST_KIND.WARNING]: {
+        accent: STEAMBALL_COLORS.warningAccent,
+        iconFile: "assets\\images\\warning_sign.png",
+        header: () => lang.warningToast.header,
     },
 });
 
@@ -276,7 +285,7 @@ export function createAchievementToasts(host, {
     }
 
     // Every other card holds as long from its arrival, so the oldest leaves first.
-    const holdMsOf = toast => (toast.kind === TOAST_KIND.ERROR ? Math.max(ERROR_TOAST_MIN_HOLD_MS, holdMs) : holdMs);
+    const holdMsOf = toast => (isBadNews(toast) ? Math.max(BAD_NEWS_MIN_HOLD_MS, holdMs) : holdMs);
 
     function placeLayer(card) {
         card.layer.alpha = card.alpha;
@@ -381,16 +390,15 @@ export function createAchievementToasts(host, {
         };
         cards.push(card);
         placeLayer(card);
-        const isError = toast.kind === TOAST_KIND.ERROR;
         host.setTimeout(safeHandler(SCRIPT_NAME, () => startLeaving(card)), holdMsOf(toast));
         arrivalOpen = false;
         host.setTimeout(safeHandler(SCRIPT_NAME, openArrival), ARRIVAL_GAP_MS);
         // Animated before onShown, so a failing callback never leaves the card stuck on screen.
         startFrames();
-        // A failure never sounds like a success.
-        if (toast.celebrate && !isError) celebrate();
+        // Bad news never sounds like a success.
+        if (toast.celebrate && !isBadNews(toast)) celebrate();
         if (toast.kind === TOAST_KIND.LEVEL) startFireworks();
-        if (!isError) playSound();
+        if (!isBadNews(toast)) playSound();
         toast.onShown();
     }
 
@@ -419,20 +427,21 @@ export function createAchievementToasts(host, {
     // High Score Toast that number only, a Frame Toast the image of its
     // frame (imagePath, null when missing), header (optional) replaces the
     // kind's, and extraLine (optional) shows under the description, in the
-    // accent, growing the card. An Error Toast waits behind every other
-    // kind: the bad news comes last.
+    // accent, growing the card. An Error or Warning Toast waits behind every
+    // other kind: the bad news comes last.
     function submit(toast) {
-        if (toast.kind === TOAST_KIND.ERROR) {
-            // Joins the queue a moment later: a Play's Achievements are
-            // checked a tick after it, when the wheel may already be back.
+        if (isBadNews(toast)) {
+            // Joins the queue a moment later, to come after the other kinds: a
+            // Play's Achievements are checked a tick after it, when the wheel
+            // may already be back.
             host.setTimeout(safeHandler(SCRIPT_NAME, () => {
                 waiting.push(toast);
                 showNext();
             }), ARRIVAL_GAP_MS);
             return;
         }
-        const firstError = waiting.findIndex(waitingToast => waitingToast.kind === TOAST_KIND.ERROR);
-        waiting.splice(firstError === -1 ? waiting.length : firstError, 0, toast);
+        const firstBadNews = waiting.findIndex(isBadNews);
+        waiting.splice(firstBadNews === -1 ? waiting.length : firstBadNews, 0, toast);
         safeShowNext();
     }
 

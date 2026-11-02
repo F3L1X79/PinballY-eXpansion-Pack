@@ -31,7 +31,7 @@ Le groupe **Mode hors ligne** réunit ce qui contacte internet, ou propose de le
 
 Discord Rich Presence montre, sur le compte Discord ouvert sur le PC de la borne, ce que fait la borne : « Choisit une table » sur la roue, et pendant une partie le nom de la table et depuis combien de temps elle dure, sous le nom « Virtual Pinball » avec le logo du pack. **C'est public** : vos amis Discord et les membres de vos serveurs le voient. Rien d'autre n'est envoyé : aucun nom de profil, jamais la table sélectionnée sur la roue, rien d'autre de votre PC. Une table adulte montre son nom comme toute autre table.
 
-Il est **désactivé par défaut** : activez-le dans les Réglages du pack, sous « Lancer et jouer une table », ou avec `ADD_ON_DISCORD_RICH_PRESENCE=true`. Lancez Discord avant PinballY : le pack ne le lance jamais et ne le cherche qu'une fois, au démarrage ; si Discord ne tourne pas à ce moment-là, ou se ferme pendant la session, le statut reste vide jusqu'au prochain démarrage de PinballY (la raison est dans `PinballY.log`).
+Il est **désactivé par défaut** : activez-le dans les Réglages du pack, sous « Lancer et jouer une table », ou avec `ADD_ON_DISCORD_RICH_PRESENCE=true`. Lancez Discord avant PinballY : le pack ne le lance jamais et le cherche trois fois, à 15 secondes d'intervalle, au démarrage ; si Discord ne tourne toujours pas, ou se ferme pendant la session, un [toast « Avertissement »](troubleshooting.md#le-toast-avertissement) le dit une seule fois et le statut reste vide jusqu'au prochain démarrage de PinballY (la raison est dans `PinballY.log`).
 
 ## `.env.local`
 

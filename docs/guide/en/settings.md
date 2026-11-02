@@ -31,7 +31,7 @@ The **Offline Mode** group holds what reaches, or offers to reach, the internet,
 
 Discord Rich Presence shows, on the Discord account signed in on the cabinet's PC, what the cabinet is doing: "Choosing a table" on the wheel, and during a game the table's name and how long the game has lasted, under the name "Virtual Pinball" with the pack's logo. **This is public**: your Discord friends and the members of your servers see it. Nothing else is sent: no Profile name, never the table under the wheel's selection, nothing else from your PC. An Adult Table shows its name like any other table.
 
-It is **off by default**: turn it on in the eXpansion Pack Settings, under "Launching and playing a table", or with `ADD_ON_DISCORD_RICH_PRESENCE=true`. Start Discord before PinballY: the pack never starts it, and looks for it only once, at startup; if Discord is not running then, or closes during the session, the status stays empty until PinballY restarts (the reason is in `PinballY.log`).
+It is **off by default**: turn it on in the eXpansion Pack Settings, under "Launching and playing a table", or with `ADD_ON_DISCORD_RICH_PRESENCE=true`. Start Discord before PinballY: the pack never starts it, and looks for it three times, 15 seconds apart, at startup; if Discord is not running by then, or closes during the session, a [Warning toast](troubleshooting.md#the-warning-toast-warning-toast) says so once and the status stays empty until PinballY restarts (the reason is in `PinballY.log`).
 
 ## `.env.local`
 

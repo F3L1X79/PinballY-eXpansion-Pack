@@ -18,6 +18,14 @@ A failure that answers a choice you have just made (a Profile Reset, a Pack Upda
 |---|---|
 | "vpxtool could not be installed; nothing has changed. You can try again from the eXpansion Pack Settings." (or "… updated …" for an update) | The cabinet may be offline, the download may have been cut or blocked by the antivirus, or `vpxtool.exe` may be in use. Your previous `vpxtool.exe`, if any, is still in place. Read `%TEMP%\PinballYExpansionPack\script-reader-install.log`, then try again, or install vpxtool by hand (see [Install](install.md#vpxtool)). |
 
+## The "Warning" toast (Warning Toast)
+
+When something you turned on will not work for the rest of the session, the pack says so once with an amber toast, the header "Warning" and a warning sign. It is not a failure of the pack, so it is not written to the Error Log. Like every toast, it waits for the wheel, after the Welcome Screen and the Profile picker, and never interrupts a game.
+
+| The toast says | Who sees it | What to do |
+|---|---|---|
+| "Discord not found: the table being played won't show on Discord. Start Discord before PinballY." | The active Profile, whoever it is, once per session. | Start Discord before PinballY, then restart PinballY. The pack tries three times in the first 30 seconds, and stops trying if Discord closes or refuses the connection later (see [Discord Rich Presence](settings.md#discord-rich-presence)). |
+
 ## The Error Log (`errors.log`)
 
 PinballY starts a new `PinballY.log` at each launch, so the pack also writes every error it meets to its own Error Log, which survives restarts:

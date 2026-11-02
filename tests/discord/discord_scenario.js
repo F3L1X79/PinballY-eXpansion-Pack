@@ -6,6 +6,7 @@
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import { OPCODE } from "../support/fake_discord.js";
+import { toastDrawings } from "../achievements/achievement_toast_reader.js";
 import config from "../../common/core/config.js";
 
 export const NOW = new Date(2026, 10, 1, 21, 0, 0);
@@ -24,6 +25,12 @@ export const PLAYBOY = {
 };
 // Longer than the client's poll interval: every waiting frame is read.
 export const POLL_MS = 1000;
+// The time between two startup tries, and the pipes each one goes through.
+export const TRY_GAP_MS = 15000;
+export const PIPES_PER_TRY = 10;
+// Long enough for a toast with nothing in its way to be drawn.
+export const TOAST_ARRIVAL_MS = 1000;
+export const WARNING_CARD = "WARNING | Discord Rich Presence | Discord not found: the table being played won't show on Discord. Start Discord before PinballY.";
 
 // discord: { pipeNumber, holdReady } for a fake Discord, null for none;
 // profiles: { name: profile.json data } added before the start;
@@ -37,7 +44,6 @@ export async function startDiscordScenario({ discord = {}, tables = [MARS, PLAYB
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = key === "discordRichPresence";
-    config.language = "en";
     config.adultCategory = "NSFW";
     config.discordApplicationId = applicationId;
     const { getProfileStore } = await import("../../common/profiles/profile_store.js");
@@ -55,6 +61,9 @@ export const handshakes = discord => discord.frames().filter(frame => frame.opco
 
 // Every frame's payload as written, to look for what must never be sent.
 export const everythingSent = discord => discord.frames().map(frame => JSON.stringify(frame.payload)).join("\n");
+
+// Every toast card drawn so far, one per card, as "HEADER | title | description".
+export const toastCardsDrawn = fake => toastDrawings(fake).filter(drawing => drawing.texts.length > 0).map(drawing => drawing.texts.join(" | "));
 
 // A game of the table, from its start to the wheel, elapsedMs long.
 export async function playGame(fake, table, elapsedMs = 5 * 60 * 1000) {

@@ -630,6 +630,11 @@ export default {
     // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).
     discordRichPresence: {
         choosingTable: "Wählt einen Tisch",
+        warningTitle: "Discord Rich Presence",
+        warning: "Discord nicht gefunden: Der gespielte Tisch wird nicht auf Discord angezeigt. Starten Sie Discord vor PinballY.",
+    },
+    warningToast: {
+        header: "Warnung",
     },
 
     // The clock at the top left of the wheel screen.

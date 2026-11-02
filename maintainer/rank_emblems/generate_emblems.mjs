@@ -24,7 +24,7 @@ const GEMS = {
     emerald: ramp([[0, "#011a08"], [0.35, "#03591f"], [0.65, "#07963a"], [0.9, "#2fd65e"], [1, "#d4ffdc"]]),
     amethyst: ramp([[0, "#2c1052"], [0.3, "#6c30b4"], [0.6, "#a662ec"], [0.85, "#dab6ff"], [1, "#fbf6ff"]]),
     ruby: ramp([[0, "#2a0006"], [0.3, "#82061c"], [0.6, "#d41634"], [0.85, "#ff7484"], [1, "#fff2f4"]]),
-    topaz: ramp([[0, "#5a2404"], [0.3, "#c86c10"], [0.6, "#f6a832"], [0.85, "#ffdc8c"], [1, "#fffcf0"]]),
+    topaz: ramp([[0, "#3e1500"], [0.35, "#a8500a"], [0.55, "#f09a22"], [0.75, "#ffd47a"], [1, "#fffdf2"]]),
 };
 
 // The bronze's upper left wing feather in _plain's pixels, along the groove above the next feather.
@@ -71,7 +71,7 @@ const RANKS = [
         rank: "platinum",
         gems: [{
             color: "topaz",
-            tips: [[128, 103], [154, 134.5], [128, 170], [101, 134.5]],
+            tips: [[128, 103], [153, 134.5], [128, 170], [103, 134.5]],
             drawnTips: [[128, 103], [150, 134.5], [128, 170], [105, 134.5]],
         }],
     },
