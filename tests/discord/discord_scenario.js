@@ -23,6 +23,15 @@ export const PLAYBOY = {
     id: 2, configId: "Playboy (Stern 2002)", title: "Playboy", manufacturer: "Stern", year: 2002,
     categories: ["NSFW"], isConfigured: true, isHidden: false,
 };
+// In every scenario's tables: by default both Period Tables, locked there so
+// that the tables a scenario plays are never one of them by a random pick.
+export const MEDIEVAL = {
+    id: 4, configId: "Medieval Madness (Williams 1997)", title: "Medieval Madness", manufacturer: "Williams", year: 1997,
+    categories: [], isConfigured: true, isHidden: false,
+};
+// NOW's day and the Monday of its week.
+const DAY_PERIOD = "2026-11-01";
+const WEEK_PERIOD = "2026-10-26";
 // Longer than the client's poll interval: every waiting frame is read.
 export const POLL_MS = 1000;
 // The time between two startup tries, and the pipes each one goes through.
@@ -34,9 +43,16 @@ export const WARNING_CARD = "WARNING | Discord Rich Presence | Discord not found
 
 // discord: { pipeNumber, holdReady } for a fake Discord, null for none;
 // profiles: { name: profile.json data } added before the start;
-// applicationId: config.discordApplicationId.
-export async function startDiscordScenario({ discord = {}, tables = [MARS, PLAYBOY], profiles = {}, applicationId = "" } = {}) {
-    const fake = createFakePinballYHost({ now: NOW, tables });
+// applicationId: config.discordApplicationId;
+// dayTable, weekTable: the current Table of the Day and Table of the Week.
+export async function startDiscordScenario({ discord = {}, tables = [MARS, PLAYBOY], profiles = {}, applicationId = "", dayTable = MEDIEVAL, weekTable = MEDIEVAL } = {}) {
+    const fake = createFakePinballYHost({ now: NOW, tables: [...tables, MEDIEVAL] });
+    fake.addFile(`${PROFILES}\\cabinet.json`, JSON.stringify({
+        version: 1,
+        activeProfile: "guest",
+        tableOfTheDay: { configId: dayTable.configId, period: DAY_PERIOD },
+        tableOfTheWeek: { configId: weekTable.configId, period: WEEK_PERIOD },
+    }));
     for (const [name, data] of Object.entries(profiles)) {
         fake.addFile(`${PROFILES}\\${name}\\profile.json`, JSON.stringify({ version: 1, ...data }));
     }

@@ -631,6 +631,8 @@ export default {
     // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).
     discordRichPresence: {
         choosingTable: "Eligiendo una mesa",
+        tableOfTheDay: "Mesa del día",
+        tableOfTheWeek: "Mesa de la semana",
         warningTitle: "Discord Rich Presence",
         warning: "Discord no encontrado: la mesa jugada no aparecerá en Discord. Inicia Discord antes de PinballY.",
     },

@@ -11,7 +11,7 @@ A self-contained feature that `main.js` starts at launch and that the player can
 _Avoid_: plugin, script (a script is just a `.js` file)
 
 **Discord Rich Presence**:
-What the Discord account signed in on the cabinet's PC shows publicly while PinballY runs: the table being played and for how long, or that a table is being chosen on the wheel; nothing during attract mode, and never a Profile's name. Off until the owner turns it on and accepts, each time, a Dialog saying what becomes public. The pack never starts Discord itself. Discord's own name for it, kept in every language.
+What the Discord account signed in on the cabinet's PC shows publicly while PinballY runs: the table being played and for how long, with "Table of the Day" or "Table of the Week" when it is one, or that a table is being chosen on the wheel; nothing during attract mode, and never a Profile's name. Off until the owner turns it on and accepts, each time, a Dialog saying what becomes public. The pack never starts Discord itself. Discord's own name for it, kept in every language.
 _Avoid_: Discord status, Discord activity, presence
 
 ### Distribution
