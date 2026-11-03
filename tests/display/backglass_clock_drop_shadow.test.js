@@ -54,7 +54,10 @@ test("during a game the Backglass Clock's time has the wheel clock's drop shadow
     assert.equal(time.weight, wheelTime.weight);
 
     const canvas = layer.canvasSize();
-    const [, box, underline] = layer.strokes().filter(stroke => "fill" in stroke).map(stroke => stroke.rect);
+    const rects = layer.strokes().filter(stroke => "fill" in stroke).map(stroke => stroke.rect);
+    const lastBand = rects.at(-2);
+    const underline = rects.at(-1);
+    const box = { x: rects[1].x, y: rects[1].y, width: rects[1].width, height: lastBand.y + lastBand.height - rects[1].y };
     assert.equal(time.align, "center");
     assert.equal(time.rect.x + time.rect.width / 2, canvas.width / 2, "the time centred in the box");
     assert.ok(Math.abs(underline.x + underline.width / 2 - canvas.width / 2) <= 1, "its underline centred too");

@@ -15,7 +15,8 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 const TABLE = { id: 1, configId: "Medieval Madness", title: "Medieval Madness", manufacturer: "Williams", year: 1997 };
 // SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE: never moved, never focused.
 const KEEP_PLACE_NO_FOCUS = 0x1 | 0x2 | 0x10;
-const BLACK = 0xFF000000;
+const PANEL_TOP = 0xFF2A3547;
+const PANEL = 0xFF171D27;
 const SOFT_WHITE = 0xFFDCDCDC;
 const GOLD = 0xFFE8B84A;
 const OWNER_PLACE = { left: 2600, top: 40, right: 3000, bottom: 340 };
@@ -64,9 +65,18 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
     const [layer] = clock.layers();
     assert.equal(clock.layers().length, 1);
     assert.deepEqual(layer.texts(), [lang.clock.time(21, 48), lang.clock.time(21, 48)], "the time alone with its shadow, redrawn when the minute changed");
-    assert.deepEqual(layer.fills(), [GOLD, BLACK, GOLD], "a black box in a gold frame, the time underlined in gold");
+    const fills = layer.fills();
+    assert.equal(fills[0], GOLD, "a gold frame");
+    assert.equal(fills.at(-1), GOLD, "the time underlined in gold");
+    assert.equal(fills[1], PANEL_TOP, "the box starts at the Steamball panel's top colour");
+    assert.ok(Math.abs((fills.at(-2) & 0xFF) - (PANEL & 0xFF)) <= 1, "and ends at the panel's colour");
+    assert.ok(fills.length > 4, "a gradient, in bands");
     const canvas = layer.canvasSize();
-    const [frame, box, underline] = layer.strokes().filter(stroke => "fill" in stroke).map(stroke => stroke.rect);
+    const rects = layer.strokes().filter(stroke => "fill" in stroke).map(stroke => stroke.rect);
+    const [frame, firstBand] = rects;
+    const lastBand = rects.at(-2);
+    const underline = rects.at(-1);
+    const box = { x: firstBand.x, y: firstBand.y, width: firstBand.width, height: lastBand.y + lastBand.height - firstBand.y };
     const sides = [box.x - frame.x, box.y - frame.y,
         frame.x + frame.width - box.x - box.width, frame.y + frame.height - box.y - box.height];
     assert.ok(sides.every(side => side === sides[0] && side > 0 && side <= canvas.height / 50), "a thin frame, as thick on all four sides");

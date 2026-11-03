@@ -1,6 +1,6 @@
 // ============================================================
 // Backglass Clock: the time in a small borderless window in front of VPX's
-// backglass while a table runs, black with a thin gold frame, the time drawn
+// backglass while a table runs, the Steamball panel's blue gradient in a thin gold frame, the time drawn
 // like the wheel Clock's (drop shadow, gold underline), redrawn when the minute changes.
 // Shown on "prelaunch", gone on "gameover" or a failed launch's "postlaunch";
 // never during a media capture or on a single screen. Off by default.
@@ -13,7 +13,8 @@
 import lang from "../common/core/i18n.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
-import { UNBOUNDED } from "../common/drawing/steamball_drawing.js";
+import { UNBOUNDED, fillGradient } from "../common/drawing/steamball_drawing.js";
+import { STEAMBALL_COLORS } from "../common/drawing/steamball_palette.js";
 import { drawShadowedText, measureShadowedText } from "../common/drawing/shadowed_text.js";
 import { CLOCK_COLORS, clockTextOf, createMinuteTick } from "../common/clock/minute_tick.js";
 import { TIME_TEXT } from "../common/clock/wheel_clock_layout.js";
@@ -40,7 +41,6 @@ const CAP_TOP = (2210 - 1434) / (2210 + 514);
 // The wheel Clock's underline, at the same scale to the text.
 const TIME_SIZE = Object.freeze({ start: 52, min: 8 });
 const UNDERLINE = Object.freeze({ thickness: 4, gap: 7 });
-const BLACK = 0xFF000000;
 
 const isInside = (inner, outer) => inner.left >= outer.left && inner.top >= outer.top
     && inner.right <= outer.right && inner.bottom <= outer.bottom;
@@ -71,8 +71,8 @@ export default function init() {
             // Two fills rather than frameRect, which centres its line on the
             // canvas edge: GDI+ then keeps more of the left and top sides.
             dc.fillRect(0, 0, canvasWidth, CANVAS_HEIGHT, CLOCK_COLORS.gold);
-            dc.fillRect(FRAME_THICKNESS, FRAME_THICKNESS, canvasWidth - 2 * FRAME_THICKNESS,
-                CANVAS_HEIGHT - 2 * FRAME_THICKNESS, BLACK);
+            fillGradient(dc, FRAME_THICKNESS, FRAME_THICKNESS, canvasWidth - 2 * FRAME_THICKNESS,
+                CANVAS_HEIGHT - 2 * FRAME_THICKNESS, STEAMBALL_COLORS.panelTop, STEAMBALL_COLORS.panel);
             const text = clockTextOf(host.now());
             const width = canvasWidth - 2 * TEXT_MARGIN;
             // The size goes down until the time fits inside the frame, never cut.

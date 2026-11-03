@@ -114,7 +114,7 @@ _Avoid_: underlay (PinballY's name for the image layer that carries it), wheel c
 ### Time
 
 **Backglass Clock**:
-The time shown on a small black plaque with a gold frame, in the wheel's clock look (soft white, a drop shadow, a gold underline), on the backglass screen, at its top left until the owner places it, from a table's launch until its game ends, in front of the table's own backglass, where neither Windows nor the wheel's clock can be seen. Off unless the owner turns it on. Shown as "horloge du backglass" in French.
+The time shown on a small plaque with the Steamball panel gradient and a gold frame, in the wheel's clock look (soft white, a drop shadow, a gold underline), on the backglass screen, at its top left until the owner places it, from a table's launch until its game ends, in front of the table's own backglass, where neither Windows nor the wheel's clock can be seen. Off unless the owner turns it on. Shown as "horloge du backglass" in French.
 _Avoid_: game clock, overlay clock, the clock (that is the wheel's)
 
 **Backglass Clock Placement**:
