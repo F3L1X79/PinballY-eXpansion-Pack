@@ -28,9 +28,9 @@ L'écran d'accueil propose la table du jour et la table de la semaine : jouez-le
 
 ## Interface
 
-Les menus et messages de PinballY en français, anglais, allemand, espagnol, italien ou portugais, dessinés dans le style Steamball du pack et rangés en sections. Une horloge, un arc doré sous la roue, des lancements sans flash noir, et des sons que vous pouvez remplacer par les vôtres. **Réglages du pack**, dans le menu opérateur, active ou désactive chaque Add-on.
+Les menus et messages de PinballY en français, anglais, allemand, espagnol, italien ou portugais, dessinés dans le style Steamball du pack et rangés en sections. Une horloge, un arc doré sous la roue, des lancements sans flash noir, et des sons que vous pouvez remplacer par les vôtres. **Discord Rich Presence**, une fois activé, montre à vos amis Discord la table que vous jouez et depuis combien de temps. **Réglages du pack**, dans le menu opérateur, active ou désactive chaque Add-on.
 
-→ [Interface](docs/guide/fr/interface.md)
+→ [Interface](docs/guide/fr/interface.md) · [Discord Rich Presence](docs/guide/fr/settings.md#discord-rich-presence)
 
 ## Installation
 

@@ -28,9 +28,9 @@ The Welcome Screen offers the Table of the Day and the Table of the Week: play t
 
 ## Interface
 
-PinballY's menus and messages in English, French, German, Spanish, Italian or Portuguese, drawn in the pack's Steamball look and sorted into sections. A clock, a gold arc under the wheel, launches without a black flash, and sounds you can replace with your own. **eXpansion Pack Settings**, in the Operator Menu, turns each Add-on on or off.
+PinballY's menus and messages in English, French, German, Spanish, Italian or Portuguese, drawn in the pack's Steamball look and sorted into sections. A clock, a gold arc under the wheel, launches without a black flash, and sounds you can replace with your own. **Discord Rich Presence**, once you turn it on, shows your Discord friends the table you are playing and for how long. **eXpansion Pack Settings**, in the Operator Menu, turns each Add-on on or off.
 
-→ [Interface](docs/guide/en/interface.md)
+→ [Interface](docs/guide/en/interface.md) · [Discord Rich Presence](docs/guide/en/settings.md#discord-rich-presence)
 
 ## Install
 
