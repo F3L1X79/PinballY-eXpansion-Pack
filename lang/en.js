@@ -479,6 +479,8 @@ export default {
                 "12 characters at most.",
                 "For a longer or accented name, rename the folder in Windows, before playing.",
             ],
+            // Only while the Household is empty.
+            firstProfileLine: "This first profile will be an admin profile instead of Guest: pick it afterwards to keep the setup entries.",
             ok: "OK",
             // Why a name cannot be used, under the ring.
             refusals: {

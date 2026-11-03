@@ -47,9 +47,10 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
     const windowWatch = createWindowWatch(host, SCRIPT_NAME);
     const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: Z_INDEX.backdrop - 2, drawingAhead });
     // The open screen, null when closed: the name so far and why it is
-    // refused, the Profiles listed at the opening, whether its folder just
-    // failed, the current character's index, what OK hands the name to, the
-    // window it is laid out for and its layers (null marker while getting ready).
+    // refused, the Profiles listed at the opening, the first Profile's notice (null
+    // once the Household has a Profile), whether its folder just failed, the current
+    // character's index, what OK hands the name to, the window it is laid out
+    // for and its layers (null marker while getting ready).
     let shown = null;
 
     const isOkGreyed = () => shown.refusal !== null;
@@ -73,7 +74,7 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
             layer.draw(dc => {
                 const size = dc.getSize();
                 const referenceWidth = REFERENCE_HEIGHT * size.width / size.height;
-                const geometry = layoutNameEntry(referenceWidth, TEXT.lines.length);
+                const geometry = layoutNameEntry(referenceWidth, TEXT.lines.length + (shown.notice === null ? 0 : 1));
                 drawBackdrop(dc, size, REFERENCE_HEIGHT, geometry.panel);
                 measured = { size, referenceWidth, geometry };
             });
@@ -125,7 +126,7 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
             },
             () => {
                 const { lines } = shown.geometry;
-                drawPiece(Z_INDEX.texts, lines, dc => drawLines(host, dc, TEXT.lines, lines.w), shown.fixedLayers);
+                drawPiece(Z_INDEX.texts, lines, dc => drawLines(host, dc, TEXT.lines, shown.notice, lines.w), shown.fixedLayers);
             },
             () => {
                 const { name } = shown.geometry;
@@ -231,8 +232,9 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
         navigationSound.load();
         // Read before the screen counts as open, so a failed read leaves it closed.
         const listedNames = profileStore.listProfileNames();
+        const notice = profileStore.isHouseholdEmpty() ? TEXT.firstProfileLine : null;
         shown = {
-            name: "", refusal: NAME_REFUSAL.EMPTY, listedNames, hasFolderFailed: false, cursor: 0, onCreated, isPreparing: true, opacity: 0,
+            name: "", refusal: NAME_REFUSAL.EMPTY, listedNames, notice, hasFolderFailed: false, cursor: 0, onCreated, isPreparing: true, opacity: 0,
             view: null, size: null, referenceWidth: 0, geometry: null, backdrop: null, fixedLayers: [], ringLayers: [], nameLayer: null, reasonLayer: null, marker: null,
         };
         opening.begin();

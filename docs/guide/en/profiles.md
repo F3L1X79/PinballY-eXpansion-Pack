@@ -37,6 +37,8 @@ Whatever the letter case, Name Entry refuses Guest's name, `guest` or as your la
 
 If the folder cannot be created, Name Entry stays open with your name and says so in one sentence: check the `profiles` folder in Windows and try again. The error is in the Error Log.
 
+**The first Profile.** While the cabinet has no Profile besides Guest, Name Entry shows one more line, in yellow: the Profile you create becomes an Admin Profile instead of Guest. Pick it as soon as Change Player comes back on it: until you do, you stay on Guest, which no longer sees the setup entries nor the "+". If its mark cannot be saved, the Profile is kept, the error is in the Error Log, and you can still pick it and choose **Become admin** in **Manage profiles**. A Profile created once the cabinet has another one gets no mark, even if none of them is an Admin Profile, and neither does a first Profile created from Windows.
+
 ### From Windows
 
 1. In `PinballY\Scripts\ExpansionPack\profiles`, create an empty folder named after the player: the cabinet shows that name. A name starting with `.` or `_` is ignored. Don't copy Guest's folder: the copy would carry over Guest's progress, while an empty folder starts from zero.

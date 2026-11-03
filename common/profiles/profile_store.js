@@ -5,7 +5,7 @@
 // switch, update and Play (onPlay, ADR 0008). Handles the Profile Reset.
 // Listens to "gamestarted" / "gameover"; tells of a Play it could not save or log (onPlayFailed).
 // - Every write is whole: tmp, backup, rename; a broken or newer file comes back from its backup.
-// - isAdmin and isChild: by hand or setMark, which writes true or removes the key (ADR 0020).
+// - isAdmin and isChild: by hand or setMark, which writes true or removes the key (ADR 0020); a first Profile created gets isAdmin (ADR 0023).
 // - Other cabinet-level files sit next to cabinet.json; no Profile Reset touches them.
 // - Another Profile's profile.json is read afresh on each call, but once per withCachedReads run.
 // ============================================================
@@ -442,17 +442,33 @@ export function createProfileStore(host) {
         }, profile.name);
     }
 
+    // Guest is always listed, and is not part of the Household.
+    const isHouseholdEmpty = () => listProfileNames().length === 1;
+
     // An empty folder already reads as a Profile starting from zero, and the
-    // readers list the folders afresh: nothing to write, nobody to tell.
+    // readers list the folders afresh: nothing to write, nobody to tell, but
+    // for the first Profile of an empty Household, marked here only (ADR 0023).
     // Returns the name created; throws, creating nothing, on a refused name.
     // guestNameShown: Guest's name in the current language, as the store reads no text.
     function createProfile(name, guestNameShown) {
         const refusal = nameRefusal(name, { listedNames: listProfileNames(), guestNameShown });
         if (refusal) throw new Error(`The name "${name}" cannot be used (${refusal}).`);
         const createdName = withoutTrailingHyphen(name);
+        const isFirstProfile = isHouseholdEmpty();
         files.createFolder(`${profilesFolder}\\${createdName}`);
         log(`The Profile "${createdName}" was created.`);
+        if (isFirstProfile) markFirstProfile(createdName);
         return createdName;
+    }
+
+    // A mark that cannot be saved keeps the Profile: with no Admin Profile,
+    // everyone still sees the setup entries and Manage profiles offers the mark.
+    function markFirstProfile(profileName) {
+        try {
+            setMark(profileName, "isAdmin", true);
+        } catch (error) {
+            logHandlerError(SCRIPT_NAME, error);
+        }
     }
 
     function switchTo(name) {
@@ -523,6 +539,8 @@ export function createProfileStore(host) {
         // The same Profiles by name only, without checking their Avatars.
         listProfileNames,
         getActiveProfile: () => ({ ...publicProfile(activeProfile), data: activeData }),
+        // Whether the Household has no Profile; re-read on every call.
+        isHouseholdEmpty,
         createProfile,
         switchTo,
         getProfileData: () => activeData,

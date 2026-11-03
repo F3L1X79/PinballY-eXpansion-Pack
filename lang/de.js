@@ -586,6 +586,7 @@ export default {
                 "Höchstens 12 Zeichen.",
                 "Für einen längeren Namen oder einen mit Akzenten benennen Sie den Ordner in Windows um, bevor Sie spielen.",
             ],
+            firstProfileLine: "Dieses erste Profil wird statt Gast Admin: Wählen Sie es danach aus, um die Konfigurationseinträge zu behalten.",
             ok: "OK",
             refusals: {
                 guest: "Dieser Name gehört dem Profil Gast.",

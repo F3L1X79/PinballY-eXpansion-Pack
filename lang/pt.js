@@ -586,6 +586,7 @@ export default {
                 "No máximo 12 caracteres.",
                 "Para um nome mais longo ou com acentos, renomeie a pasta no Windows antes de jogar.",
             ],
+            firstProfileLine: "Este primeiro perfil será admin em vez de Convidado: escolha-o depois para manter as entradas de configuração.",
             ok: "OK",
             refusals: {
                 guest: "Este nome é o do perfil Convidado.",

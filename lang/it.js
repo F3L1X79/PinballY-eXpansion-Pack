@@ -585,6 +585,7 @@ export default {
                 "12 caratteri al massimo.",
                 "Per un nome più lungo o con accenti, rinomina la cartella in Windows prima di giocare.",
             ],
+            firstProfileLine: "Questo primo profilo sarà admin al posto di Ospite: sceglilo poi per mantenere le voci di configurazione.",
             ok: "OK",
             refusals: {
                 guest: "Questo nome è quello del profilo Ospite.",

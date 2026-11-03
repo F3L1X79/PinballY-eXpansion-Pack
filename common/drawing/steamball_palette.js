@@ -30,6 +30,8 @@ export const STEAMBALL_COLORS = Object.freeze({
     challengeAccentLit: 0xFFB8FFF0,
     // The High Score Toast's accent, apart from the Ranks' metals and the Challenges' teal.
     highScoreAccent: 0xFFB07CF0,
+    // A line to read before going on, such as Name Entry's on the first Profile; yellower than the title's gold.
+    notice: 0xFFFFE14A,
     // News the player would rather not hear, such as a Lost Record.
     alert: 0xFFE8644A,
     // The Error Toast's copper red, darker than the alert so a failure never

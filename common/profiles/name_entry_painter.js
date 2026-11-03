@@ -57,11 +57,11 @@ export function drawTitle(host, dc, title, w, h) {
     oneLine(host, dc, title, { x: 0, y: 0, width: w, height: h, size: LOOK.titleSize, weight: 700, color: COLORS.gold, font: FONTS.display, align: "center" });
 }
 
-// The explanation lines, each in its own room.
-export function drawLines(host, dc, lines, w) {
-    lines.forEach((line, index) => {
-        text(host, dc, line, { x: 0, y: index * (LOOK.lineH + LOOK.lineGap), width: w, height: LOOK.lineH, size: LOOK.lineSize, color: COLORS.description, align: "center" });
-    });
+// The explanation lines, each in its own room, then the notice in yellow, if any.
+export function drawLines(host, dc, lines, notice, w) {
+    const drawLine = (line, index, color) => text(host, dc, line, { x: 0, y: index * (LOOK.lineH + LOOK.lineGap), width: w, height: LOOK.lineH, size: LOOK.lineSize, color, align: "center" });
+    lines.forEach((line, index) => drawLine(line, index, COLORS.description));
+    if (notice !== null) drawLine(notice, lines.length, COLORS.notice);
 }
 
 // The name being entered, nothing but its box while empty.

@@ -37,6 +37,8 @@ Quelle que soit la casse, la saisie du nom refuse le nom d'Invité, `guest` ou t
 
 Si le dossier ne peut pas être créé, la saisie du nom reste ouverte avec votre nom et le dit en une phrase : vérifiez le dossier `profiles` dans Windows et réessayez. L'erreur est dans le journal des erreurs.
 
+**Le premier Profil.** Tant que la borne n'a aucun Profil en plus d'Invité, la saisie du nom affiche une ligne de plus, en jaune : le Profil que vous créez devient Profil admin à la place d'Invité. Choisissez-le dès que « Changer de joueur » revient sur lui : d'ici là, vous restez sur Invité, qui ne voit plus ni les entrées de configuration ni le « + ». Si sa marque ne peut pas être enregistrée, le Profil est gardé, l'erreur est dans le journal des erreurs, et vous pouvez toujours le choisir puis prendre **Devenir admin** dans **Gérer les profils**. Un Profil créé quand la borne en a déjà un ne reçoit aucune marque, même si aucun n'est admin, pas plus qu'un premier Profil créé depuis Windows.
+
 ### Depuis Windows
 
 1. Dans `PinballY\Scripts\ExpansionPack\profiles`, créez un dossier vide au nom du joueur : c'est ce nom que la borne affiche. Un nom qui commence par `.` ou `_` est ignoré. Ne copiez pas le dossier d'Invité : la copie reprendrait sa progression, alors qu'un dossier vide part de zéro.

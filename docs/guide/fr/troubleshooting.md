@@ -55,6 +55,8 @@ Le journal de PinballY lui-même, dans le dossier de PinballY, ne couvre que la 
 
 **J'ai marqué un Profil admin et perdu les entrées de configuration.** Dès qu'un Profil est marqué, les autres, Invité compris, ne les voient plus, et vous êtes peut-être encore sur Invité : choisissez le Profil marqué dans « Changer de joueur », dans le menu principal ou le menu de sortie. PinballY n'ouvre « Changer de joueur » de lui-même que si la borne compte au moins deux Profils sans compter Invité.
 
+**J'ai créé mon premier Profil et Invité a perdu les entrées de configuration, et le « + ».** Le premier Profil créé depuis la borne devient Profil admin, comme le dit la ligne jaune de la saisie du nom, et vous êtes toujours sur Invité : choisissez le nouveau Profil dans « Changer de joueur », dans le menu principal ou le menu de sortie (voir [Créer un Profil](profiles.md#créer-un-profil)).
+
 **« Gérer les profils » manque au menu de sortie.** Dès qu'un Profil est marqué, l'entrée n'apparaît qu'aux Profils admin ; tant qu'aucun ne l'est, elle apparaît à tous les Profils sauf Invité et les Profils enfants, avec « Devenir admin » pour seule ligne (voir [Profil admin](settings.md#profil-admin)). Elle a aussi besoin du menu de sortie de PinballY : si vous l'avez désactivé dans les options de PinballY, elle ne peut pas apparaître.
 
 **Une marque de Profil (`isAdmin`, `isChild`) reste sans effet.** Elle doit valoir `true` ou `false`, au premier niveau de `profile.json`, avec sa clé écrite exactement ; une marque fautive est ignorée et signalée dans `PinballY.log`. Modifiez `profile.json` PinballY fermé : s'il tourne, sa prochaine sauvegarde du Profil actif écrase votre modification, sans aucune ligne dans le journal.

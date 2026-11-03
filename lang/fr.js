@@ -588,6 +588,7 @@ export default {
                 "12 caractères au maximum.",
                 "Pour un nom plus long ou accentué, renommez le dossier dans Windows, avant de jouer.",
             ],
+            firstProfileLine: "Ce premier profil sera admin à la place d'Invité : choisissez-le ensuite pour garder les entrées de configuration.",
             ok: "OK",
             refusals: {
                 guest: "Ce nom est celui du profil Invité.",
