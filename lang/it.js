@@ -840,7 +840,7 @@ export default {
             },
             statusIcons: {
                 name: "Icone di stato",
-                whenOn: "Accanto all'orologio, una freccia dorata quando un aggiornamento del pack è in attesa, una freccia barrata quando il controllo aggiornamenti è disattivato.",
+                whenOn: "Accanto all'orologio, il simbolo di Discord quando il cabinato è pubblico su Discord, una freccia dorata quando un aggiornamento del pack è in attesa, una freccia barrata quando il controllo aggiornamenti è disattivato.",
                 whenOff: "Nient'altro cambia.",
             },
             wheelArc: {

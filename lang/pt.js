@@ -841,7 +841,7 @@ export default {
             },
             statusIcons: {
                 name: "Ícones de estado",
-                whenOn: "Ao lado do relógio, uma seta dourada enquanto uma atualização do pack espera, uma seta riscada enquanto a busca de atualizações está desativada.",
+                whenOn: "Ao lado do relógio, o símbolo do Discord enquanto a máquina está pública no Discord, uma seta dourada enquanto uma atualização do pack espera, uma seta riscada enquanto a busca de atualizações está desativada.",
                 whenOff: "Nada mais muda.",
             },
             wheelArc: {

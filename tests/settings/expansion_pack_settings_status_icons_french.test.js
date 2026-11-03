@@ -35,7 +35,7 @@ test("the Status Icons' page speaks French", async () => {
     chooseEntry(fake, "Icônes d'état : Activé");
     fake.advanceTime(OPEN_OVER_MS);
     assert.equal(squeezed(readDrawnMenu(fake).message), squeezed(
-        "Activé : À côté de l'horloge, une flèche dorée quand une mise à jour du pack attend, une flèche barrée quand la recherche de mises à jour est désactivée."
+        "Activé : À côté de l'horloge, le symbole de Discord quand la borne est publique sur Discord, une flèche dorée quand une mise à jour du pack attend, une flèche barrée quand la recherche de mises à jour est désactivée."
         + "\nDésactivé : Rien d'autre ne change."));
     assert.deepEqual(drawnMenuLines(fake), ["Icônes d'état : Activé", "Annuler"]);
     assertNoErrorLogged(fake);

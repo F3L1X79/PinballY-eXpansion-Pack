@@ -842,7 +842,7 @@ export default {
             },
             statusIcons: {
                 name: "Iconos de estado",
-                whenOn: "Junto al reloj, una flecha dorada mientras espera una actualización del pack, una flecha tachada mientras la búsqueda de actualizaciones está desactivada.",
+                whenOn: "Junto al reloj, el símbolo de Discord mientras la máquina es pública en Discord, una flecha dorada mientras espera una actualización del pack, una flecha tachada mientras la búsqueda de actualizaciones está desactivada.",
                 whenOff: "No cambia nada más.",
             },
             wheelArc: {

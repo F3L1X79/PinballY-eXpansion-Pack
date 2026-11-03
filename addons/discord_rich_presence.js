@@ -26,8 +26,8 @@ const SHIPPED_APPLICATION_ID = "1566536566082506823";
 // So that Discord starting a little after PinballY at boot is still found.
 const STARTUP_TRIES = 3;
 const TRY_GAP_MS = 15000;
-// The pack's 1024x1024 logo, shown by Discord from its public URL.
-const LOGO_URL = "https://raw.githubusercontent.com/F3L1X79/PinballY-Expansion-Pack/main/assets/images/discord_logo.png";
+// The pack's square logo, shown by Discord from its public URL.
+const LOGO_URL = "https://raw.githubusercontent.com/F3L1X79/PinballY-Expansion-Pack/main/docs/images/logo.png";
 
 const choosingTableActivity = () => ({ details: lang.discordRichPresence.choosingTable, assets: { large_image: LOGO_URL } });
 

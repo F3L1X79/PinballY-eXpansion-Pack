@@ -10,24 +10,44 @@ import assert from "node:assert/strict";
 export const STATUS_ICONS_Z = 4500;
 export const PACK_UPDATE_WAITING = "packUpdateWaiting";
 export const UPDATE_CHECK_OFF = "updateCheckOff";
+export const DISCORD = "discord";
+export const DISCORD_SYMBOL_FILE = "assets\\images\\discord_symbol.png";
 
 // The clock's gold for a waiting Pack Update, its soft white for the
 // Update Check off; the drop shadow is left out.
 const ICON_OF_COLOR = { 0xE8B84A: PACK_UPDATE_WAITING, 0xDCDCDC: UPDATE_CHECK_OFF };
 
-// The Status Icons' layer: the clock's draws text, theirs never does.
-export function statusIconsLayer(fake) {
+// The clock's draws text, the Status Icons' two layers never do: the drawn
+// glyphs', then the Discord symbol's, an image fading only with its layer.
+function iconLayers(fake) {
     const layers = fake.drawingLayers().filter(layer => layer.zIndex === STATUS_ICONS_Z && layer.texts().length === 0);
-    assert.ok(layers.length <= 1, "one Status Icons layer at most");
-    return layers[0] || null;
+    assert.ok(layers.length <= 2, "two Status Icons layers at most");
+    return layers;
+}
+
+export const statusIconsLayer = fake => iconLayers(fake)[0] || null;
+export const discordSymbolLayer = fake => iconLayers(fake)[1] || null;
+
+// How many times the Discord symbol was drawn so far.
+export const symbolDrawings = fake => fake.drawings().filter(drawing => drawing.images.some(image => image.endsWith(DISCORD_SYMBOL_FILE))).length;
+
+// The Discord symbol as shownIcons() reads it, its alpha being its layer's.
+function discordIcon(fake) {
+    const layer = discordSymbolLayer(fake);
+    const stroke = layer && layer.strokes().find(({ image }) => image && image.endsWith(DISCORD_SYMBOL_FILE));
+    if (!stroke) return null;
+    const { x, y, width, height } = stroke.rect;
+    return { icon: DISCORD, left: x, top: y, bottom: y + height, right: x + width, alpha: Math.round(layer.alpha * 0xFF) };
 }
 
 // The icons drawn, left to right: { icon, left, top, bottom, alpha }, alpha
-// being the icon's own opacity (0 to 255), the layer's left aside.
+// being the icon's own opacity (0 to 255), the glyphs' layer's left aside.
 export function shownIcons(fake) {
     const layer = statusIconsLayer(fake);
     if (!layer) return [];
     const icons = new Map();
+    const discord = discordIcon(fake);
+    if (discord) icons.set(DISCORD, discord);
     for (const stroke of layer.strokes()) {
         if (!("fill" in stroke)) continue;
         const icon = ICON_OF_COLOR[(stroke.fill >>> 0) & 0xFFFFFF];

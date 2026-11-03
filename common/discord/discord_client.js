@@ -3,6 +3,7 @@
 // first of \\?\pipe\discord-ipc-0 to -9, shakes hands, then reads every
 // waiting frame on each tick of a host interval, answering PING with PONG.
 // The latest activity asked is sent once READY is read, then at each change.
+// Says whether the cabinet is public now, for the Status Icons.
 // - Never a read before the bytes are waiting, never a wait for the pipe: PinballY's UI thread.
 // - A CLOSE frame, an evt "ERROR" reply or a failed call ends the connection for good.
 // - The READY's user object is API Data: never kept nor logged.
@@ -34,6 +35,18 @@ function frameOf(opcode, payloadBytes) {
     return frame;
 }
 
+let isPublic = false;
+const publicChangeListeners = [];
+
+// Whether Discord shows the cabinet publicly now: connected after READY, with
+// an activity. Never with Discord Rich Presence off, no client being created.
+export const isCabinetPublicOnDiscord = () => isPublic;
+
+// listener() runs at each change of isCabinetPublicOnDiscord().
+export function onCabinetPublicChange(listener) {
+    publicChangeListeners.push(listener);
+}
+
 // scriptName: whose name a failed tick is logged under; onLost(reason):
 // once, when an open connection ends.
 export function createDiscordClient(host, { scriptName, applicationId, onLost }) {
@@ -46,10 +59,18 @@ export function createDiscordClient(host, { scriptName, applicationId, onLost })
     let activity;
     let nextNonce = 1;
 
+    function updatePublic() {
+        const isPublicNow = pipe !== null && isReady && Boolean(activity);
+        if (isPublicNow === isPublic) return;
+        isPublic = isPublicNow;
+        for (const listener of publicChangeListeners) listener();
+    }
+
     function lose(reason) {
         host.clearInterval(poll);
         pipe.close();
         pipe = null;
+        updatePublic();
         onLost(reason);
     }
 
@@ -85,6 +106,7 @@ export function createDiscordClient(host, { scriptName, applicationId, onLost })
         if (cmd === "DISPATCH" && evt === "READY" && !isReady) {
             isReady = true;
             if (activity !== undefined) sendActivity();
+            updatePublic();
         }
     }
 
@@ -144,6 +166,7 @@ export function createDiscordClient(host, { scriptName, applicationId, onLost })
         setActivity(newActivity) {
             activity = newActivity;
             if (pipe && isReady) sendActivity();
+            updatePublic();
         },
     };
 }

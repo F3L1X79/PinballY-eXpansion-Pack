@@ -841,7 +841,7 @@ export default {
             },
             statusIcons: {
                 name: "Statussymbole",
-                whenOn: "Neben der Uhr ein goldener Pfeil, solange eine Aktualisierung des Packs wartet, ein durchgestrichener Pfeil, solange die Update-Prüfung des Packs aus ist.",
+                whenOn: "Neben der Uhr das Discord-Symbol, solange der Automat auf Discord öffentlich ist, ein goldener Pfeil, solange eine Aktualisierung des Packs wartet, ein durchgestrichener Pfeil, solange die Update-Prüfung des Packs aus ist.",
                 whenOff: "Sonst ändert sich nichts.",
             },
             wheelArc: {

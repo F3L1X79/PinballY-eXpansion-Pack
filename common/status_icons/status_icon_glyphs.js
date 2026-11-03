@@ -8,7 +8,10 @@
 import { CLOCK_COLORS } from "../clock/minute_tick.js";
 import { SHADOW } from "../drawing/shadowed_text.js";
 
+// In the row's order. Discord's is its official symbol, an image: never one
+// of the glyphs below.
 export const STATUS_ICON = Object.freeze({
+    DISCORD: "discord",
     PACK_UPDATE_WAITING: "packUpdateWaiting",
     UPDATE_CHECK_OFF: "updateCheckOff",
 });

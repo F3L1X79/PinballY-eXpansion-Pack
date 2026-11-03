@@ -767,7 +767,7 @@ export default {
             },
             statusIcons: {
                 name: "Status Icons",
-                whenOn: "Beside the clock, a gold arrow while a pack update is waiting, a crossed arrow while the pack update check is off.",
+                whenOn: "Beside the clock, Discord's symbol while the cabinet is public on Discord, a gold arrow while a pack update is waiting, a crossed arrow while the pack update check is off.",
                 whenOff: "Nothing else changes.",
             },
             wheelArc: {

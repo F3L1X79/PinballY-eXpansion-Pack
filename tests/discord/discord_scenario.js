@@ -13,7 +13,7 @@ export const NOW = new Date(2026, 10, 1, 21, 0, 0);
 export const PROFILES = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 // The "Virtual Pinball" application's ID (#380).
 export const SHIPPED_APPLICATION_ID = "1566536566082506823";
-export const LOGO_URL = "https://raw.githubusercontent.com/F3L1X79/PinballY-Expansion-Pack/main/assets/images/discord_logo.png";
+export const LOGO_URL = "https://raw.githubusercontent.com/F3L1X79/PinballY-Expansion-Pack/main/docs/images/logo.png";
 export const MARS = {
     id: 1, configId: "Attack from Mars (Bally 1995)", title: "Attack from Mars", manufacturer: "Bally", year: 1995,
     categories: [], isConfigured: true, isHidden: false,
@@ -44,9 +44,11 @@ export const WARNING_CARD = "WARNING | Discord Rich Presence | Discord not found
 // discord: { pipeNumber, holdReady } for a fake Discord, null for none;
 // profiles: { name: profile.json data } added before the start;
 // applicationId: config.discordApplicationId;
-// dayTable, weekTable: the current Table of the Day and Table of the Week.
-export async function startDiscordScenario({ discord = {}, tables = [MARS, PLAYBOY], profiles = {}, applicationId = "", dayTable = MEDIEVAL, weekTable = MEDIEVAL } = {}) {
+// dayTable, weekTable: the current Table of the Day and Table of the Week;
+// addOns: the Add-ons on; settings: config values; seed(fake): before the start.
+export async function startDiscordScenario({ discord = {}, tables = [MARS, PLAYBOY], profiles = {}, applicationId = "", dayTable = MEDIEVAL, weekTable = MEDIEVAL, addOns = ["discordRichPresence"], settings = {}, seed = () => {} } = {}) {
     const fake = createFakePinballYHost({ now: NOW, tables: [...tables, MEDIEVAL] });
+    seed(fake);
     fake.addFile(`${PROFILES}\\cabinet.json`, JSON.stringify({
         version: 1,
         activeProfile: "guest",
@@ -59,9 +61,10 @@ export async function startDiscordScenario({ discord = {}, tables = [MARS, PLAYB
     const fakeDiscord = discord ? fake.startDiscord(discord) : null;
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
-    for (const key of Object.keys(config.addOns)) config.addOns[key] = key === "discordRichPresence";
+    for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);
     config.adultCategory = "NSFW";
     config.discordApplicationId = applicationId;
+    Object.assign(config, settings);
     const { getProfileStore } = await import("../../common/profiles/profile_store.js");
     await import("../../main.js");
     await settle();
