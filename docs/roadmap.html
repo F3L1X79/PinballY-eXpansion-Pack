@@ -310,18 +310,18 @@
             <h3>Se préparer à la prochaine version de PinballY</h3>
             <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen</span></div>
           </div>
-          <p>Savoir sur quelle version de PinballY tourne la borne, prévenir le propriétaire quand elle n'a pas été testée avec le pack, et repérer à l'avance ce que la prochaine version va casser.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">research</span><i>›</i><span class="here">grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de la ligne WARNING de <code>common/core/startup_summary.js</code> (livrée : minimum et dernière version testée, tous deux 1.1.0 Beta 10, journal seul) · Proche des Status Icons (<code>addons/status_icons.js</code>, livrées)</div>
+          <p>Prévenir chaque Admin Profile, une fois, quand la version de PinballY installée n'est pas celle avec laquelle le pack a été testé, et retirer des tables les non configurées, que le scan récursif de la Beta 11 va multiplier.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">research</span><i>›</i><span class="done">grill</span><i>›</i><span class="here">spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de la ligne WARNING de <code>common/core/startup_summary.js</code> et de <code>docs/research/pinbally-next-version.md</code> · Suite : <a href="#pinbally-release-day">Le jour où une nouvelle version de PinballY sort</a></div>
           <details>
-            <summary>Questions ouvertes (4)</summary>
+            <summary>Décisions du grill</summary>
             <ul>
-              <li>Qu'est-ce qui change depuis la Beta 10 (commits et versions publiées de PinballY) : ChakraCore, <code>systemInfo</code>, événements, menus natifs, <code>dllImport</code>, <code>SystemClasses.js</code> ? À établir en <code>/research</code>, avec la liste des endroits du pack touchés.</li>
-              <li>Comment prévenir hors du journal : un Warning Toast au démarrage, une Status Icon, une ligne dans les réglages du pack ? Une fois par version, ou à chaque démarrage ?</li>
-              <li>Une version plus ancienne que le minimum : prévenir seulement, ou couper les Add-ons qui en dépendent ?</li>
-              <li>La Pack Update doit-elle tenir compte de la version de PinballY (ne pas proposer une Pack Version qui exige un PinballY plus récent) ?</li>
+              <li>Un Dialog, le PinballY Version Notice : jamais d'icône ni de ligne de réglage, et jamais de surveillance en ligne des versions publiées.</li>
+              <li>Une fois par version, pour chaque Admin Profile qui devient actif ; une seule fois sur une borne sans Admin Profile. Juste après l'Update Prompt.</li>
+              <li>Le numéro de build ne compte pas. Une version illisible compte comme non testée, une version trop ancienne prévient sans rien couper.</li>
+              <li>Filtrer <code>isConfigured</code> dans <code>getVisibleTables</code>, en ticket de cette spec. Une entrée du guide pour le cas où PinballY coupe tout le JavaScript.</li>
             </ul>
-            <p class="ctx">Idée de Félix du 01/11/2026 : la prochaine version de PinballY apportera sûrement des breaking changes. Impact fort, car tout le pack peut échouer au chargement (comme avec un <code>?.</code> refusé par ChakraCore).</p>
+            <p class="ctx">Idée de Félix du 01/11/2026. La recherche n'a trouvé aucune rupture annoncée pour la Beta 11, d'où l'impact ramené de fort à moyen.</p>
           </details>
         </div>
       </li>
@@ -613,7 +613,7 @@
               <li>Relire le diff amont depuis la dernière version testée (<code>compare/&lt;version&gt;...&lt;nouvelle&gt;</code>) et mettre à jour la recherche.</li>
               <li>Sur la borne, avant et après l'installation : le nombre de tables et la version de <code>ChakraCore.dll</code>.</li>
               <li>Sur la borne, après l'installation : la ligne <code>[ExpansionPack] Started:</code> (<code>display</code>, <code>build</code>), et si l'installeur a écrasé <code>Scripts\System\</code>.</li>
-              <li>Jouer une partie complète, puis relever <code>LAST_TESTED_VERSION</code> (<code>build</code> compris) et publier une Pack Version.</li>
+              <li>Jouer une partie complète, puis relever <code>LAST_TESTED_VERSION</code> et publier une Pack Version.</li>
               <li>Question ouverte : si le pack doit exiger cette version, relever le minimum et empêcher la Pack Update sur un PinballY trop ancien ? Il faudrait un champ dans chaque release et un lecteur livré avant le premier relèvement.</li>
             </ul>
             <p class="ctx">Décidé le 03/11/2026 au grill de « Se préparer à la prochaine version de PinballY » : rien n'exige ce blocage aujourd'hui. En fin de file à la demande de Félix, car l'entrée dort jusqu'à la prochaine version.</p>

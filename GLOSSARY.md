@@ -20,6 +20,18 @@ _Avoid_: Discord status, Discord activity, presence
 The version number of the eXpansion Pack as a whole, raised with each release the owner publishes, and compared with the latest published release to know whether an update exists. Add-ons have no version of their own.
 _Avoid_: PinballY version (PinballY's own number), build, release (a release is the published package of one Pack Version)
 
+**PinballY Version**:
+The version PinballY itself announces, such as 1.1.0 (Beta 10). The build number behind it does not count.
+_Avoid_: Pack Version (the eXpansion Pack's own number), build
+
+**Tested PinballY Version**:
+The PinballY Version that each Pack Version names as tried on the maintainer's cabinet. An older one still at or above the pack's minimum is not a problem and is never reported.
+_Avoid_: latest PinballY (the pack never looks at what PinballY has published), supported version
+
+**PinballY Version Notice**:
+The Dialog that tells the cabinet's PinballY Version is newer than the Tested PinballY Version, unreadable, or older than the pack's minimum; it has one answer, "Got it". Shown once per PinballY Version to each Admin Profile, when it becomes active and the wheel is free, or, on a cabinet with no Admin Profile, once to the first active Profile, Guest included. It belongs to the pack itself and can never be turned off. It is raised by what is installed, never by what PinballY has published. Shown as "Avis de version de PinballY" in French.
+_Avoid_: PinballY warning (a Warning Toast is something else), version prompt (it asks nothing), update notification
+
 **Pack Update**:
 Replacing the installed eXpansion Pack with a newer Pack Version while PinballY is closed, keeping the Household's Profiles and the owner's settings and files; if it fails, the previous Pack Version stays in place. It belongs to the pack itself, not to an Add-on. Only whoever sees the setup entries is offered one.
 _Avoid_: upgrade, patch, install (installing is the first, manual copy)
