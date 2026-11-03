@@ -43,6 +43,7 @@ const STARTUP_SCREEN_MENU_ID = "expansionPackSettingsStartupScreen";
 const OFFLINE_MODE_MENU_ID = "expansionPackSettingsOfflineMode";
 const UPDATE_CHECK_MENU_ID = "expansionPackSettingsUpdateCheck";
 const OFFER_VPXTOOL_MENU_ID = "expansionPackSettingsOfferVpxtool";
+const DISCORD_RICH_PRESENCE_MENU_ID = "expansionPackSettingsDiscordRichPresence";
 const SCRIPT_READER_MENU_ID = "expansionPackSettingsScriptReader";
 const DISCORD_CONSENT_MENU_ID = "expansionPackSettingsDiscordConsent";
 const NOT_SAVED_MENU_ID = "expansionPackSettingsNotSaved";
@@ -70,19 +71,34 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     const addOnCommands = new Map([...groupOfAddOn.keys()]
         .map(key => [key, host.allocateCommand(`expansionPackSettings_${key}`)]));
     const addOnOfCommand = new Map([...addOnCommands].map(([key, cmd]) => [cmd, key]));
-    // The settings picked on a page of choices and saved at once, in the
-    // list's order: each by its config key, its choices' names in their
-    // order, and its value as compared (a language whatever its case, as
-    // i18n.js reads it), offline when its line is in the Offline Mode group.
-    // One command for its line, one per choice. A switch's choices are keyed
-    // "true" / "false": String turns the saved boolean into one of them.
+    // The settings picked on a page of choices and saved at once (but for
+    // asksConsent's On from off), in the list's order: each by its config key,
+    // its choices' names in their order, and its value as compared (a language
+    // whatever its case, as i18n.js reads it), offline when its line is in the
+    // Offline Mode group. One command for its line, one per choice. A switch's
+    // choices are keyed "true" / "false": String turns the saved boolean into
+    // one of them. Discord Rich Presence's key only names its commands, the
+    // Add-on's own page having that name; keyPath and read are the Add-on's value.
     const ON_OFF = { true: TEXT.on, false: TEXT.off };
     const choiceSettings = [
         { key: "startupScreen", menuId: STARTUP_SCREEN_MENU_ID, names: TEXT.startupScreenNames, line: TEXT.startupScreenLine, normalize: String },
         { key: "language", menuId: LANGUAGE_MENU_ID, names: TEXT.languageNames, line: TEXT.languageLine, normalize: value => String(value).toLowerCase() },
         { key: "updateCheck", menuId: UPDATE_CHECK_MENU_ID, names: ON_OFF, line: TEXT.updateCheckLine, normalize: String, offline: true },
         { key: "offerVpxtool", menuId: OFFER_VPXTOOL_MENU_ID, names: ON_OFF, line: TEXT.offerVpxtoolLine, normalize: String, offline: true },
+        {
+            key: "offlineDiscordRichPresence",
+            keyPath: "addOns.discordRichPresence",
+            read: ({ addOns }) => addOns.discordRichPresence,
+            menuId: DISCORD_RICH_PRESENCE_MENU_ID,
+            names: ON_OFF,
+            line: state => TEXT.addOnLine(TEXT.addOns.discordRichPresence.name, state),
+            normalize: String,
+            offline: true,
+            asksConsent: true,
+        },
     ].map(setting => ({
+        keyPath: setting.key,
+        read: settings => settings[setting.key],
         ...setting,
         lineCommand: host.allocateCommand(`expansionPackSettings_${setting.key}`),
         choiceCommands: new Map(Object.keys(setting.names)
@@ -114,11 +130,11 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     const stateOf = value => (value ? TEXT.on : TEXT.off);
 
     const addOnDiffers = (saved, key) => saved.addOns[key] !== running.addOns[key];
-    const choiceDiffers = (saved, { key, normalize }) => normalize(saved[key]) !== normalize(running[key]);
+    const choiceDiffers = (saved, { read, normalize }) => normalize(read(saved)) !== normalize(read(running));
 
     // A value the pack does not know shows as written.
     const choiceLineOf = (saved, setting) => {
-        const name = setting.names[setting.normalize(saved[setting.key])] || saved[setting.key];
+        const name = setting.names[setting.normalize(setting.read(saved))] || setting.read(saved);
         return { title: setting.line(choiceDiffers(saved, setting) ? TEXT.onRestart(name) : name), cmd: setting.lineCommand };
     };
 
@@ -295,10 +311,10 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     }
 
     // Each choice by its name (a language in its own), the saved one marked;
-    // choosing one saves it.
+    // choosing one saves it, through saveChoice.
     function openChoicePage(setting) {
         page = null;
-        const saved = setting.normalize(readSaved()[setting.key]);
+        const saved = setting.normalize(setting.read(readSaved()));
         getMenus().show(setting.menuId, [
             ...[...setting.choiceCommands].map(([value, cmd]) => ({ title: setting.names[value], cmd, radio: value === saved })),
             SEPARATOR,
@@ -349,8 +365,12 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         else saveAddOn();
     }
 
+    // Choosing On while saved on keeps it without asking again.
     function saveChoice({ setting, value }) {
-        save(setting.key, value, { onSaved: () => backToLine(setting), reopen: () => openChoicePage(setting) });
+        const saveValue = () => save(setting.keyPath, value, { onSaved: () => backToLine(setting), reopen: () => openChoicePage(setting) });
+        const turnsOn = value === "true" && setting.normalize(setting.read(readSaved())) !== "true";
+        if (setting.asksConsent && turnsOn) openDiscordConsent(saveValue, () => openChoicePage(setting));
+        else saveValue();
     }
 
     // Fires when any menu opens, with a fresh item list each time, the

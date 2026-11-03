@@ -54,7 +54,7 @@ test("choosing Off saves OFFER_VPXTOOL at once, shown on restart on its line", (
 
     assert.equal(fake.readFile(ENV_LOCAL), "LANGUAGE=en\r\nOFFER_VPXTOOL=false\r\n");
     assert.ok(fake.logLines().includes("[ExpansionPackSettings] Saved OFFER_VPXTOOL=false in .env.local."));
-    assert.deepEqual(drawnMenuLines(fake), ["[OFFLINE MODE]", "Pack update check: On", "Offer vpxtool: Off (on restart)", "---", "Back"]);
+    assert.deepEqual(drawnMenuLines(fake), ["[OFFLINE MODE]", "Pack update check: On", "Offer vpxtool: Off (on restart)", "Discord Rich Presence: Off", "---", "Back"]);
     assert.equal(highlightedEntry(fake), "Offer vpxtool: Off (on restart)");
     assert.equal(config.offerVpxtool, true, "the running setting stays until PinballY restarts");
 });

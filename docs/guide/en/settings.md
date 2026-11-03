@@ -26,12 +26,13 @@ The **Offline Mode** group holds what reaches, or offers to reach, the internet,
 
 - **Pack update check**: PinballY asks GitHub for a newer version of the pack at each start (`UPDATE_CHECK`).
 - **Offer vpxtool**: the pack may offer to install or update vpxtool (`OFFER_VPXTOOL`).
+- **Discord Rich Presence**: Discord shows the table being played on your account, the very same switch as the Add-on's under "Launching and playing a table", with the same consent Dialog (see [below](#discord-rich-presence)).
 
 ## Discord Rich Presence
 
 Discord Rich Presence shows, on the Discord account signed in on the cabinet's PC, what the cabinet is doing: "Choosing a table" on the wheel, during a game the table's name, how long the game has lasted and, when it is one, "Table of the Day" or "Table of the Week", under the name "Virtual Pinball" with the pack's logo, and nothing during attract mode, so a cabinet left on overnight shows nothing. **This is public**: your Discord friends and the members of your servers see it. Nothing else is sent: no Profile name, never the table under the wheel's selection, nothing else from your PC. An Adult Table shows its name like any other table.
 
-It is **off by default**: turn it on in the eXpansion Pack Settings, under "Launching and playing a table", or with `ADD_ON_DISCORD_RICH_PRESENCE=true`. Turning it on in the Settings asks for your consent every time, in a Dialog that says what becomes public, the cursor on "Cancel": only "Turn on" saves it. Turning it off never asks. Start Discord before PinballY: the pack never starts it, and looks for it three times, 15 seconds apart, at startup; if Discord is not running by then, or closes during the session, a [Warning toast](troubleshooting.md#the-warning-toast-warning-toast) says so once and the status stays empty until PinballY restarts (the reason is in `PinballY.log`).
+It is **off by default**: turn it on in the eXpansion Pack Settings, under "Launching and playing a table" or in the Offline Mode group, or with `ADD_ON_DISCORD_RICH_PRESENCE=true`. Turning it on in the Settings asks for your consent every time, in a Dialog that says what becomes public, the cursor on "Cancel": only "Turn on" saves it. Turning it off never asks. Start Discord before PinballY: the pack never starts it, and looks for it three times, 15 seconds apart, at startup; if Discord is not running by then, or closes during the session, a [Warning toast](troubleshooting.md#the-warning-toast-warning-toast) says so once and the status stays empty until PinballY restarts (the reason is in `PinballY.log`).
 
 ## `.env.local`
 

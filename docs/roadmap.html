@@ -244,7 +244,6 @@
           <a class="chip tr-share" href="#pinemhi-online"><b></b>Scores en ligne PINemHi</a>
           <a class="chip tr-share" href="#stats-api"><b></b>API des stats</a>
           <a class="chip tr-share" href="#theme-editor"><b></b>Éditeur de palette</a>
-          <a class="chip tr-share" href="#discord"><b></b>Discord</a>
           <a class="chip tr-share" href="#discord-table-image"><b></b>Image de table Discord</a>
         </div>
       </div>
@@ -332,30 +331,6 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-share" id="discord" data-track="share" data-rank="gold">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Discord Rich Presence : la table jouée dans le statut Discord</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen-gros</span></div>
-          </div>
-          <p>Quand Discord a été lancé avant PinballY, le compte Discord de la borne montre « Virtual Pinball », la table jouée et le temps écoulé (et « Table du jour » ou « Table de la semaine »), « Choisit une table » sur la roue, rien en mode attract ; jamais de nom de Profile. Désactivé par défaut, un Dialog de consentement à chaque activation. Grillé le 30/10/2026.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">research</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/379">Spec #379</a>, tickets #380 (humain : application et logo) à #385 ; sa ligne du Mode hors ligne (#385) attend le ticket #374 · Research : <code>docs/research/discord-rich-presence.md</code> (faisable sans bibliothèque ; une seule application, celle de Félix, dont l'ID est dans le dépôt comme chez Dolphin, risque §2(d) accepté). Avant l'<a href="#stats-api">API des statistiques (n° <span data-ref="stats-api"></span>)</a> : il lit les données du pack de l'intérieur, sans l'attendre</div>
-          <details>
-            <summary>Décisions du grill (4)</summary>
-            <ul>
-              <li>3 essais à 15 s d'intervalle au démarrage ; ensuite, Discord introuvable, fermé ou qui refuse : un Warning Toast ambre (nouveau terme), une fois, après le Startup Screen, puis plus aucun essai jusqu'au redémarrage. Le pack ne lance jamais Discord.</li>
-              <li>Le nom des Adult Tables n'est pas masqué ; jamais de nom de Profile ni d'autre donnée personnelle.</li>
-              <li>Un seul interrupteur, montré dans « Lancer et jouer » et dans le Mode hors ligne ; le Dialog de consentement a son curseur sur Annuler.</li>
-              <li>Le logo du pack par une URL GitHub brute ; l'image par table devient une idée à part. Clé <code>discordApplicationId</code> pour remplacer l'ID, décrite seulement dans la config. Un ticket humain d'abord : créer l'application « Virtual Pinball », donner son ID, fournir le logo.</li>
-            </ul>
-            <p class="ctx">Idée de Félix du 25/10/2026.</p>
-          </details>
-        </div>
-      </li>
-
       <li draggable="true" tabindex="0" class="item tr-share" id="status-icons" data-track="share" data-rank="bronze">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -366,7 +341,7 @@
           </div>
           <p>À droite de l'heure, sur la roue, des Status Icons (nouveau terme) n'apparaissent que pendant que leur état dure : le logo Discord blanc quand la borne est réellement publique sur Discord (pour tous), une flèche dorée quand une Pack Update attend, une flèche circulaire barrée quand l'Update Check est coupé (ces deux-là pour qui voit les entrées de configuration). Grillé le 01/11/2026.</p>
           <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/391">Spec #391</a>, tickets #392 (icônes de mise à jour), #393 (humain : symbole Discord blanc et sa charte), #394 (icône Discord, après #381 et #383) · Un Add-on à part, près de l'horloge de la roue (<code>addons/clock.js</code>, livrée). L'icône Discord après <a href="#discord">Discord Rich Presence (n° <span data-ref="discord"></span>)</a>, dont elle lit l'état « public »</div>
+          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/391">Spec #391</a>, tickets #392 (icônes de mise à jour), #393 (humain : symbole Discord blanc et sa charte), #394 (icône Discord, après #381 et #383) · Un Add-on à part, près de l'horloge de la roue (<code>addons/clock.js</code>, livrée). L'icône Discord lit l'état « public » de Discord Rich Presence (livré)</div>
           <details>
             <summary>Décisions du grill (5)</summary>
             <ul>
@@ -520,7 +495,7 @@
           </div>
           <p>Pendant une partie, la grande image du statut Discord montre la table jouée au lieu du logo du pack, comme Dolphin montre la jaquette du jeu.</p>
           <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après <a href="#discord">Discord Rich Presence (n° <span data-ref="discord"></span>)</a>, qu'elle complète</div>
+          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Complète Discord Rich Presence (livré)</div>
           <details>
             <summary>Questions ouvertes (3)</summary>
             <ul>

@@ -35,11 +35,11 @@ test("Offline Mode comes after the language line as a submenu, with no Update en
     assert.ok(markedEntries(fake, "submenu").includes("Offline Mode"));
 });
 
-test("the group lists its two switches under its heading, the cursor on the first", () => {
+test("the group lists its three switches under its heading, the cursor on the first", () => {
     chooseEntry(fake, "Offline Mode");
     fake.advanceTime(OPEN_OVER_MS);
 
-    assert.deepEqual(drawnMenuLines(fake), ["[OFFLINE MODE]", "Pack update check: On", "Offer vpxtool: On", "---", "Back"]);
+    assert.deepEqual(drawnMenuLines(fake), ["[OFFLINE MODE]", "Pack update check: On", "Offer vpxtool: On", "Discord Rich Presence: Off", "---", "Back"]);
     assert.equal(highlightedEntry(fake), "Pack update check: On");
 });
 
@@ -58,7 +58,7 @@ test("choosing Off saves UPDATE_CHECK at once, shown on restart on its line in t
 
     assert.equal(fake.readFile(ENV_LOCAL), "UPDATE_CHECK=false\r\n");
     assert.ok(fake.logLines().includes("[ExpansionPackSettings] Saved UPDATE_CHECK=false in .env.local."));
-    assert.deepEqual(drawnMenuLines(fake), ["[OFFLINE MODE]", "Pack update check: Off (on restart)", "Offer vpxtool: On", "---", "Back"]);
+    assert.deepEqual(drawnMenuLines(fake), ["[OFFLINE MODE]", "Pack update check: Off (on restart)", "Offer vpxtool: On", "Discord Rich Presence: Off", "---", "Back"]);
     assert.equal(highlightedEntry(fake), "Pack update check: Off (on restart)");
     assert.equal(config.updateCheck, true, "the running setting stays until PinballY restarts");
     assert.deepEqual(errorLines(fake), []);

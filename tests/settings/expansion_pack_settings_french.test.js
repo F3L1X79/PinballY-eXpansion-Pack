@@ -43,7 +43,7 @@ test("the list speaks French", async () => {
     press(fake, "Select");
     fake.advanceTime(OPEN_OVER_MS);
     assert.deepEqual(drawnMenuLines(fake), [
-        "[MODE HORS LIGNE]", "Recherche de mises à jour du pack : Activé", "Proposer vpxtool : Activé", "---", "Retour",
+        "[MODE HORS LIGNE]", "Recherche de mises à jour du pack : Activé", "Proposer vpxtool : Activé", "Discord Rich Presence : Désactivé", "---", "Retour",
     ]);
     chooseEntry(fake, "Retour");
     fake.advanceTime(OPEN_OVER_MS);

@@ -106,6 +106,7 @@ export const DEFAULTS = {
         // The time in front of VPX's backglass while a table runs, on two screens or more.
         backglassClock: false,
         // The table being played, on the Discord account signed in on this PC.
+        // Also in the Settings' Offline Mode group.
         discordRichPresence: false,
         customMenuCommands: true,
         // "Launch a random table" in the main menu, under Play.
