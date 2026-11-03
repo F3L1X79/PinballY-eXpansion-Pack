@@ -63,14 +63,14 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
 
     const [layer] = clock.layers();
     assert.equal(clock.layers().length, 1);
-    assert.deepEqual(layer.texts(), [lang.clock.time(21, 48)], "the time alone, redrawn when the minute changed");
+    assert.deepEqual(layer.texts(), [lang.clock.time(21, 48), lang.clock.time(21, 48)], "the time alone with its shadow, redrawn when the minute changed");
     assert.deepEqual(layer.fills(), [GOLD, BLACK, GOLD], "a black box in a gold frame, the time underlined in gold");
     const canvas = layer.canvasSize();
     const [frame, box, underline] = layer.strokes().filter(stroke => "fill" in stroke).map(stroke => stroke.rect);
     const sides = [box.x - frame.x, box.y - frame.y,
         frame.x + frame.width - box.x - box.width, frame.y + frame.height - box.y - box.height];
     assert.ok(sides.every(side => side === sides[0] && side > 0 && side <= canvas.height / 50), "a thin frame, as thick on all four sides");
-    const time = layer.strokes().find(stroke => "text" in stroke);
+    const time = layer.strokes().findLast(stroke => "text" in stroke);
     assert.equal(time.color, SOFT_WHITE);
     assert.ok(time.rect.height < canvas.height / 2, "the time well inside the box");
     assert.ok(underline.y > time.rect.y && underline.width < box.width, "the underline below the time, as wide as it");
@@ -80,7 +80,7 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
     // The owner resizing the box: the canvas follows its ratio, never its size.
     clock.resize({ width: 640, height: 220 });
     fake.advanceTime(60 * 1000);
-    assert.deepEqual(layer.texts(), [lang.clock.time(21, 49)], "every minute");
+    assert.deepEqual(layer.texts(), [lang.clock.time(21, 49), lang.clock.time(21, 49)], "every minute");
     const wide = layer.canvasSize();
     assert.ok(Math.abs(wide.width / wide.height - 640 / 220) < 0.02);
     clock.resize({ width: 320, height: 110 });
@@ -96,7 +96,7 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
     ], "hidden and lowered at gameover");
     fake.advanceTime(10 * 60 * 1000);
     assert.equal(clock.calls().length, beforeEnd + 2, "no raise left after the game");
-    assert.deepEqual(layer.texts(), [lang.clock.time(21, 50)], "no redraw on the wheel");
+    assert.deepEqual(layer.texts(), [lang.clock.time(21, 50), lang.clock.time(21, 50)], "no redraw on the wheel");
 
     assert.ok(clock.calls().filter(entry => entry.call === "setWindowPos").every(entry => entry.flags === KEEP_PLACE_NO_FOCUS),
         "never moved, sized or focused");

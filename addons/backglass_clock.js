@@ -1,8 +1,9 @@
 // ============================================================
 // Backglass Clock: the time in a small borderless window in front of VPX's
-// backglass while a table runs, black with a thin gold frame, the time
-// underlined in gold like the wheel Clock, redrawn when the minute changes. Shown on "prelaunch", gone on "gameover"
-// or a failed launch's "postlaunch"; never during a media capture or on a single screen. Off by default.
+// backglass while a table runs, black with a thin gold frame, the time drawn
+// like the wheel Clock's (drop shadow, gold underline), redrawn when the minute changes.
+// Shown on "prelaunch", gone on "gameover" or a failed launch's "postlaunch";
+// never during a media capture or on a single screen. Off by default.
 // - Never shown while a game runs: that activates PinballY, which opens the pause menu (#386).
 // - Every raise keeps the window's place and never takes VPX's focus.
 // - clientRect isn't in the visible window's units: only its ratio is read.
@@ -12,8 +13,10 @@
 import lang from "../common/core/i18n.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
-import { UNBOUNDED, oneLine } from "../common/drawing/steamball_drawing.js";
+import { UNBOUNDED } from "../common/drawing/steamball_drawing.js";
+import { drawShadowedText, measureShadowedText } from "../common/drawing/shadowed_text.js";
 import { CLOCK_COLORS, clockTextOf, createMinuteTick } from "../common/clock/minute_tick.js";
+import { TIME_TEXT } from "../common/clock/wheel_clock_layout.js";
 
 const SCRIPT_NAME = "BackglassClock";
 
@@ -34,8 +37,8 @@ const TEXT_MARGIN = 16;
 // Segoe UI's empty space above the digits, as a share of its line height
 // (ascent 2210, cap height 1434, descent 514, in font units).
 const CAP_TOP = (2210 - 1434) / (2210 + 514);
-// The wheel Clock's font, and its underline at the same scale to the text.
-const TIME_TEXT = Object.freeze({ size: 52, minSize: 8, weight: 600, font: "Segoe UI" });
+// The wheel Clock's underline, at the same scale to the text.
+const TIME_SIZE = Object.freeze({ start: 52, min: 8 });
 const UNDERLINE = Object.freeze({ thickness: 4, gap: 7 });
 const BLACK = 0xFF000000;
 
@@ -57,11 +60,8 @@ export default function init() {
     let shown = false;
     let launchGoingAhead = false;
 
-    function measureTime(text, size) {
-        const styled = host.createStyledText({ textAlign: "left", textStyle: { font: TIME_TEXT.font, size, weight: TIME_TEXT.weight } });
-        styled.add(text);
-        return styled.measure(UNBOUNDED);
-    }
+    const timeStyle = size => ({ size, weight: TIME_TEXT.weight });
+    const measureTime = (text, size) => measureShadowedText(host, timeStyle(size), text, UNBOUNDED);
 
     function draw() {
         const { width, height } = clockWindow.getClientSize();
@@ -76,17 +76,16 @@ export default function init() {
             const text = clockTextOf(host.now());
             const width = canvasWidth - 2 * TEXT_MARGIN;
             // The size goes down until the time fits inside the frame, never cut.
-            let size = TIME_TEXT.size;
-            while (size > TIME_TEXT.minSize && measureTime(text, size).width > width) size--;
+            let size = TIME_SIZE.start;
+            while (size > TIME_SIZE.min && measureTime(text, size).width > width) size--;
             const measured = measureTime(text, size);
             // The digits and the underline, centred together in the box.
             const capTop = CAP_TOP * measured.height;
             const visibleHeight = measured.height - capTop + UNDERLINE.gap + UNDERLINE.thickness;
             const top = (CANVAS_HEIGHT - visibleHeight) / 2 - capTop;
-            oneLine(host, dc, text, {
-                ...TIME_TEXT, size, minSize: size, x: TEXT_MARGIN, y: top, width,
-                color: CLOCK_COLORS.text, align: "center", cut: false,
-            });
+            // Centred across the whole canvas: the margins keep a time that
+            // only just fits from wrapping on rounding.
+            drawShadowedText(host, dc, timeStyle(size), CLOCK_COLORS.text, text, top, { width: canvasWidth });
             dc.fillRect(Math.round((canvasWidth - measured.width) / 2), Math.round(top + measured.height + UNDERLINE.gap),
                 Math.round(measured.width), UNDERLINE.thickness, CLOCK_COLORS.gold);
         }, canvasWidth, CANVAS_HEIGHT);

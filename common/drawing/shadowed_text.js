@@ -1,7 +1,7 @@
 // ============================================================
 // Text with a soft drop shadow, drawn into a drawing layer's context, so
 // it reads over any background video: the Profile picker, its badge, the
-// clock and its Status Icons share the same look. No side effects on import.
+// clock, its Status Icons and the Backglass Clock share the same look. No side effects on import.
 // ============================================================
 
 const FONT = "Segoe UI";
