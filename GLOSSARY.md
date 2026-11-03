@@ -63,7 +63,7 @@ A toast like the Error Toast, but amber, that says in one sentence that somethin
 _Avoid_: Error Toast (for a failure of the pack), alert
 
 **Error Log**:
-The file, kept in the pack's folder and through every Pack Update, where every error the pack meets is written down with its date and Pack Version, so that it can still be read after PinballY has restarted; PinballY's own log starts afresh at each launch. It belongs to the pack itself and can never be turned off. The Error Toast never refers the player to it.
+The file, kept in the pack's folder and through every Pack Update, where every error the pack meets is written down with its date and Pack Version, so that it can still be read after PinballY has restarted; PinballY's own log starts afresh at each launch. It belongs to the pack itself and can never be turned off. The Error Toast never refers the player to it. Shown as "journal des erreurs" in French.
 _Avoid_: logfile, PinballY.log (PinballY's own log, which keeps only the current session)
 
 ### Menus

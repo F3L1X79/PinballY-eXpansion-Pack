@@ -35,7 +35,7 @@ Un nom compte 12 caractères au maximum, sans accents, espaces ni chiffres. Pour
 
 Quelle que soit la casse, la saisie du nom refuse le nom d'Invité, `guest` ou tel que votre langue l'affiche, les noms que Windows se réserve (`CON`, `PRN`, `AUX`, `NUL`) et le nom d'un Profil déjà listé, et écrit pourquoi sous l'anneau. Rien d'autre n'est refusé : un Profil mis de côté en `_Max` ou un Profil supprimé laisse son nom libre. Un tiret ne fait rien au début d'un nom ou juste après un autre, et un tiret final est retiré : « Max- » est créé sous le nom « Max ».
 
-Si le dossier ne peut pas être créé, la saisie du nom reste ouverte avec votre nom et le dit en une phrase : vérifiez le dossier `profiles` dans Windows et réessayez. L'erreur est dans le journal d'erreurs.
+Si le dossier ne peut pas être créé, la saisie du nom reste ouverte avec votre nom et le dit en une phrase : vérifiez le dossier `profiles` dans Windows et réessayez. L'erreur est dans le journal des erreurs.
 
 ### Depuis Windows
 
