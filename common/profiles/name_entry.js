@@ -3,6 +3,7 @@
 // Profile's name is put together with the flippers on a ring of characters.
 // OK creates the Profile and hands its name back; Exit and attract mode
 // create nothing. Opens directly: the player asked for it. Writes one folder.
+// - A folder that cannot be created keeps the screen open with a message, logged, with no Error Toast.
 // - Moving along the ring only moves layers: each draw blocks PinballY 20 to 45 ms on the cabinet.
 // - Swallows every button through "commandbuttondown" while open.
 // - Registered before the Profile picker's listener, which then sees each press as handled.
@@ -10,7 +11,7 @@
 // ============================================================
 
 import lang from "../core/i18n.js";
-import { safeHandler } from "../core/safe_handler.js";
+import { safeHandler, logHandlerError } from "../core/safe_handler.js";
 import { createNavigationSound } from "../core/navigation_sound.js";
 import { createWindowWatch, readViewSize, sameSize, sizeText } from "../core/window_watch.js";
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
@@ -19,14 +20,16 @@ import { createScreenOpening } from "../drawing/screen_opening.js";
 import { drawBackdrop, drawButtonHintsBand, EXIT_BUTTON_LOOK } from "../drawing/steamball_drawing.js";
 import { buttonHintGroupsOf, FLIPPER_HINT } from "../drawing/button_hints.js";
 import {
-    NAME_ENTRY_Z_INDEX as Z_INDEX, REFERENCE_HEIGHT, layoutNameEntry, cellRectOf, drawTitle, drawLines, drawName, drawCharacter,
+    NAME_ENTRY_Z_INDEX as Z_INDEX, REFERENCE_HEIGHT, layoutNameEntry, cellRectOf, drawTitle, drawLines, drawName, drawReason, drawCharacter,
 } from "./name_entry_painter.js";
+import { NAME_REFUSAL, nameRefusal } from "./profile_name_rules.js";
 
 const SCRIPT_NAME = "NameEntry";
 
 const MAX_NAME_LENGTH = 12;
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const LOWER_A = LETTERS.length;
+const HYPHEN = "-";
 // A left arrow, by its code so the file stays plain ASCII, without a BOM.
 const ERASE_ARROW = String.fromCharCode(0x2190);
 // The strip's characters fade away from the current one, by this much per place.
@@ -35,20 +38,28 @@ const HIDDEN_SPAN = Object.freeze({ xSpan: 0.001, ySpan: 0.001 });
 
 // drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js).
 export function createNameEntry(host, { profileStore, drawingAhead }) {
-    const { profiles: { nameEntry: TEXT } } = lang;
+    const { profiles: { nameEntry: TEXT, guestName } } = lang;
     // A character, or what erasing and OK show, in the ring's order.
-    const RING = [...LETTERS, ...LETTERS.toLowerCase(), "-", ERASE_ARROW, TEXT.ok];
+    const RING = [...LETTERS, ...LETTERS.toLowerCase(), HYPHEN, ERASE_ARROW, TEXT.ok];
     const ERASE = RING.length - 2;
     const OK = RING.length - 1;
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
     const windowWatch = createWindowWatch(host, SCRIPT_NAME);
     const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: Z_INDEX.backdrop - 2, drawingAhead });
-    // The open screen, null when closed: the name so far, the current
-    // character's index, what OK hands the name to, the window it is laid out
-    // for and its layers (null marker while getting ready).
+    // The open screen, null when closed: the name so far and why it is
+    // refused, the Profiles listed at the opening, whether its folder just
+    // failed, the current character's index, what OK hands the name to, the
+    // window it is laid out for and its layers (null marker while getting ready).
     let shown = null;
 
-    const isOkGreyed = () => shown.name === "";
+    const isOkGreyed = () => shown.refusal !== null;
+    const refusalOf = name => nameRefusal(name, { listedNames: shown.listedNames, guestNameShown: guestName });
+
+    // The failed folder's message takes the reason's place; an empty name has no reason to give.
+    function reasonText() {
+        if (shown.hasFolderFailed) return TEXT.folderFailed;
+        return shown.refusal === null || shown.refusal === NAME_REFUSAL.EMPTY ? "" : TEXT.refusals[shown.refusal];
+    }
 
     // Draws the backdrop, which measures the window the layout depends on.
     // A draw that throws leaves no window-sized layer behind, which PinballY
@@ -96,6 +107,7 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
     }
 
     const drawNameOn = rect => dc => drawName(host, dc, shown.name, rect.w, rect.h);
+    const drawReasonOn = rect => dc => drawReason(host, dc, reasonText(), rect.w, rect.h);
     const drawCharacterOn = (index, rect) => dc => drawCharacter(host, dc, RING[index], index === OK && isOkGreyed(), rect.w, rect.h);
 
     function useBackdrop({ layer, view, size, referenceWidth, geometry }) {
@@ -118,6 +130,10 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
             () => {
                 const { name } = shown.geometry;
                 shown.nameLayer = drawPiece(Z_INDEX.name, name, drawNameOn(name), shown.fixedLayers);
+            },
+            () => {
+                const { reason } = shown.geometry;
+                shown.reasonLayer = drawPiece(Z_INDEX.reason, reason, drawReasonOn(reason), shown.fixedLayers);
             },
             () => {
                 const { buttonHints } = shown.geometry;
@@ -213,9 +229,11 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
         if (shown) return;
         // Here rather than on the first move, which it would slow down.
         navigationSound.load();
+        // Read before the screen counts as open, so a failed read leaves it closed.
+        const listedNames = profileStore.listProfileNames();
         shown = {
-            name: "", cursor: 0, onCreated, isPreparing: true, opacity: 0,
-            view: null, size: null, referenceWidth: 0, geometry: null, backdrop: null, fixedLayers: [], ringLayers: [], nameLayer: null, marker: null,
+            name: "", refusal: NAME_REFUSAL.EMPTY, listedNames, hasFolderFailed: false, cursor: 0, onCreated, isPreparing: true, opacity: 0,
+            view: null, size: null, referenceWidth: 0, geometry: null, backdrop: null, fixedLayers: [], ringLayers: [], nameLayer: null, reasonLayer: null, marker: null,
         };
         opening.begin();
         const steps = [() => useBackdrop(drawBackdropLayer()), ...pieceSteps()];
@@ -238,10 +256,21 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
         });
     }
 
+    const redrawReason = () => redraw(shown.reasonLayer, shown.geometry.reason, drawReasonOn(shown.geometry.reason));
+
     function setName(name) {
-        const wasOkGreyed = isOkGreyed();
         shown.name = name;
         redraw(shown.nameLayer, shown.geometry.name, drawNameOn(shown.geometry.name));
+        checkName();
+    }
+
+    // Checks the name again, drawing the reason and OK only if they changed.
+    function checkName() {
+        const wasOkGreyed = isOkGreyed();
+        const previousReason = reasonText();
+        shown.refusal = refusalOf(shown.name);
+        shown.hasFolderFailed = false;
+        if (reasonText() !== previousReason) redrawReason();
         if (isOkGreyed() === wasOkGreyed) return;
         const rect = cellRectOf(shown.geometry, 0);
         redraw(shown.ringLayers[OK], rect, drawCharacterOn(OK, rect));
@@ -249,10 +278,25 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
 
     function create() {
         const { name, onCreated } = shown;
-        profileStore.createProfile(name);
+        // A folder added in Windows since the opening is a refused name, not a failure.
+        shown.listedNames = profileStore.listProfileNames();
+        checkName();
+        if (isOkGreyed()) return;
+        let createdName;
+        try {
+            createdName = profileStore.createProfile(name, guestName);
+        } catch (error) {
+            // It answers what the player just chose, on the screen: no Error Toast.
+            logHandlerError(SCRIPT_NAME, error);
+            shown.hasFolderFailed = true;
+            redrawReason();
+            return;
+        }
         close();
-        onCreated(name);
+        onCreated(createdName);
     }
+
+    const isMisplacedHyphen = (character, name) => character === HYPHEN && (name === "" || name.endsWith(HYPHEN));
 
     // Only what changed is drawn again. The cursor stays on the character
     // chosen, for double letters, except after a first capital.
@@ -262,7 +306,7 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
             if (!isOkGreyed()) create();
         } else if (cursor === ERASE) {
             if (name !== "") setName(name.slice(0, -1));
-        } else if (name.length < MAX_NAME_LENGTH) {
+        } else if (name.length < MAX_NAME_LENGTH && !isMisplacedHyphen(RING[cursor], name)) {
             setName(name + RING[cursor]);
             if (name === "") {
                 shown.cursor = LOWER_A;

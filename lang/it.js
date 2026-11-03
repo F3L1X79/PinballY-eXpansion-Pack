@@ -586,6 +586,12 @@ export default {
                 "Per un nome più lungo o con accenti, rinomina la cartella in Windows prima di giocare.",
             ],
             ok: "OK",
+            refusals: {
+                guest: "Questo nome è quello del profilo Ospite.",
+                reserved: "Windows riserva questo nome per sé.",
+                taken: "Un profilo ha già questo nome.",
+            },
+            folderFailed: "Non è stato possibile creare la cartella di questo profilo: controlla la cartella profiles in Windows e riprova.",
         },
         greeting: name => `Ciao ${name}!`,
     },

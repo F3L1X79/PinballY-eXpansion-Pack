@@ -480,6 +480,13 @@ export default {
                 "For a longer or accented name, rename the folder in Windows, before playing.",
             ],
             ok: "OK",
+            // Why a name cannot be used, under the ring.
+            refusals: {
+                guest: "That name belongs to the Guest profile.",
+                reserved: "Windows keeps that name for itself.",
+                taken: "A profile already has that name.",
+            },
+            folderFailed: "This profile's folder could not be created: check the profiles folder in Windows, then try again.",
         },
         greeting: name => `Hi ${name}!`,
     },

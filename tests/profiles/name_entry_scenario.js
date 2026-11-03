@@ -9,10 +9,12 @@ import assert from "node:assert/strict";
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import { shownLayers } from "../support/shown_layers.js";
 import { layerUnderMarker } from "../support/selection_marker_reader.js";
+import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 import { NAME_ENTRY_Z_INDEX as Z } from "../../common/profiles/name_entry_painter.js";
 import config from "../../common/core/config.js";
 
 export const PROFILES_FOLDER = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
+const ERASE_ARROW = String.fromCharCode(0x2190);
 // The carousel's background, its Avatars, then the gold frame and names.
 const PICKER_Z_RANGE = [6500, 6502];
 // Past the startup greeting and the drawing ahead.
@@ -24,7 +26,7 @@ export const NAME_ENTRY_OPEN_MS = 600;
 const markedProfile = marks => JSON.stringify({ version: 1, plays: {}, notified: [], ...marks });
 
 // profiles: the Household's folders; admins, children: those of them marked.
-export async function startOnWheel({ profiles = ["Alice", "Bob"], admins = [], children = [], activeProfile = "Bob", fakeOptions = {} } = {}) {
+export async function startOnWheel({ profiles = ["Alice", "Bob"], admins = [], children = [], activeProfile = "Bob", language = "en", fakeOptions = {} } = {}) {
     const fake = createFakePinballYHost(fakeOptions);
     for (const name of profiles) fake.addFolder(`${PROFILES_FOLDER}\\${name}`);
     for (const name of admins) fake.addFile(`${PROFILES_FOLDER}\\${name}\\profile.json`, markedProfile({ isAdmin: true }));
@@ -34,7 +36,7 @@ export async function startOnWheel({ profiles = ["Alice", "Bob"], admins = [], c
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = key === "profilePicker";
-    config.language = "en";
+    config.language = language;
     config.startupScreen = "wheel";
 
     const { default: lang } = await import("../../common/core/i18n.js");
@@ -73,6 +75,7 @@ export function step(fake, command) {
 export const isNameEntryOpen = fake => shownLayers(fake, Z.backdrop).length > 0;
 export const nameEntryTexts = fake => shownLayers(fake, Z.texts).flatMap(layer => layer.texts());
 export const nameShown = fake => shownLayers(fake, Z.name).flatMap(layer => layer.texts()).join("");
+export const reasonShown = fake => shownLayers(fake, Z.reason).flatMap(layer => layer.texts()).join("");
 export const ringLayers = fake => shownLayers(fake, Z.ring);
 const xOf = layer => layer.position().x;
 // The characters shown on the strip, left to right.
@@ -107,6 +110,24 @@ export function enter(fake, character) {
 
 export function enterName(fake, name) {
     for (const character of name) enter(fake, character);
+}
+
+// Erases the whole name with the arrow.
+export function eraseName(fake) {
+    moveTo(fake, ERASE_ARROW);
+    while (nameShown(fake) !== "") press(fake, "Select");
+}
+
+// Enters the name, finds it refused for that reason with OK greyed and doing nothing, and erases it.
+export function assertRefused(fake, name, reason) {
+    enterName(fake, name);
+    assert.equal(reasonShown(fake), reason, name);
+    moveTo(fake, "OK");
+    assert.equal(colorOf(fake, "OK"), STEAMBALL_COLORS.dim, `OK is greyed on ${name}`);
+    press(fake, "Select");
+    assert.equal(isNameEntryOpen(fake), true, `OK does nothing on ${name}`);
+    eraseName(fake);
+    assert.equal(reasonShown(fake), "", "an empty name shows no reason");
 }
 
 // Opens Name Entry from the highlighted "+".

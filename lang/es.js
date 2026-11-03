@@ -588,6 +588,12 @@ export default {
                 "Para un nombre más largo o con acentos, cambia el nombre de la carpeta en Windows antes de jugar.",
             ],
             ok: "OK",
+            refusals: {
+                guest: "Ese nombre es el del perfil Invitado.",
+                reserved: "Windows se reserva ese nombre.",
+                taken: "Ya hay un perfil con ese nombre.",
+            },
+            folderFailed: "No se pudo crear la carpeta de este perfil: revisa la carpeta profiles en Windows y vuelve a intentarlo.",
         },
         greeting: name => `¡Hola ${name}!`,
     },

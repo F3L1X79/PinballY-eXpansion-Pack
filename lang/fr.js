@@ -589,6 +589,12 @@ export default {
                 "Pour un nom plus long ou accentué, renommez le dossier dans Windows, avant de jouer.",
             ],
             ok: "OK",
+            refusals: {
+                guest: "Ce nom est celui du profil Invité.",
+                reserved: "Windows se réserve ce nom.",
+                taken: "Un profil porte déjà ce nom.",
+            },
+            folderFailed: "Le dossier de ce profil n'a pas pu être créé : vérifiez le dossier profiles dans Windows, puis réessayez.",
         },
         greeting: name => `Salut ${name} !`,
     },

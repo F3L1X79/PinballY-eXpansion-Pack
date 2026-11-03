@@ -587,6 +587,12 @@ export default {
                 "Para um nome mais longo ou com acentos, renomeie a pasta no Windows antes de jogar.",
             ],
             ok: "OK",
+            refusals: {
+                guest: "Este nome é o do perfil Convidado.",
+                reserved: "O Windows reserva este nome para si.",
+                taken: "Já existe um perfil com este nome.",
+            },
+            folderFailed: "Não foi possível criar a pasta deste perfil: verifique a pasta profiles no Windows e tente novamente.",
         },
         greeting: name => `Olá ${name}!`,
     },

@@ -13,11 +13,10 @@
 import { safeHandler, logHandlerError } from "../core/safe_handler.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { markRefusal } from "./setup_entries.js";
+import { GUEST_NAME, nameRefusal, sameName, withoutTrailingHyphen } from "./profile_name_rules.js";
 
 const SCRIPT_NAME = "ProfileStore";
 
-// Also the folder name; any letter case is Guest.
-const GUEST_NAME = "guest";
 // Bumped only for a breaking format change (ADR 0016), never for an added
 // field: a missing one is read as empty. A newer file is set aside.
 const PROFILE_VERSION = 1;
@@ -26,11 +25,10 @@ const PLAY_LOG_VERSION = 1;
 // Still images only: PinballY keeps an animated image locked while it shows it.
 const AVATAR_FILES = ["avatar.png", "avatar.jpg"];
 
-const isGuestName = name => name.toLowerCase() === GUEST_NAME;
+const isGuestName = name => sameName(name, GUEST_NAME);
 // A player parks or hides a Profile by renaming its folder.
 const isIgnoredFolder = name => name.startsWith(".") || name.startsWith("_");
 const isRecord = value => value !== null && typeof value === "object" && !Array.isArray(value);
-const sameName = (a, b) => a.toLowerCase() === b.toLowerCase();
 const pad = number => String(number).padStart(2, "0");
 
 // Local time, readable in the file: "2026-09-24T21:10:00".
@@ -446,9 +444,15 @@ export function createProfileStore(host) {
 
     // An empty folder already reads as a Profile starting from zero, and the
     // readers list the folders afresh: nothing to write, nobody to tell.
-    function createProfile(name) {
-        files.createFolder(`${profilesFolder}\\${name}`);
-        log(`The Profile "${name}" was created.`);
+    // Returns the name created; throws, creating nothing, on a refused name.
+    // guestNameShown: Guest's name in the current language, as the store reads no text.
+    function createProfile(name, guestNameShown) {
+        const refusal = nameRefusal(name, { listedNames: listProfileNames(), guestNameShown });
+        if (refusal) throw new Error(`The name "${name}" cannot be used (${refusal}).`);
+        const createdName = withoutTrailingHyphen(name);
+        files.createFolder(`${profilesFolder}\\${createdName}`);
+        log(`The Profile "${createdName}" was created.`);
+        return createdName;
     }
 
     function switchTo(name) {

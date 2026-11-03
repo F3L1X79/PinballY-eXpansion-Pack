@@ -26,12 +26,16 @@ Open **Change Player**: its last slot, after the last Profile, is **New profile*
 
 1. Choose the "+" with Select or Launch: Name Entry opens.
 2. Move along the ring of characters with the flippers, and hold one to keep going. Select or Launch chooses the character under the marker: `A` to `Z`, `a` to `z`, `-`, `←` to erase the last character, and `OK`.
-3. Choose `OK`. `OK` stays grey while the name is empty.
+3. Choose `OK`. `OK` stays grey while the name is empty or refused.
 4. Change Player comes back on the new Profile, in its alphabetical place. You are still on your former Profile: press Select to pick the new one.
 
 Exit goes back to the "+" with nothing created. On a cabinet left idle, attract mode closes Name Entry and Change Player, with nothing created either.
 
 A name has 12 characters at most, without accents, spaces or digits. For a longer or accented name, rename the Profile's folder in Windows, **before playing**: a rename keeps the Profile's plays and Achievements, but its High Scores and Lost Records follow the name, and renaming the active Profile's folder restarts on Guest.
+
+Whatever the letter case, Name Entry refuses Guest's name, `guest` or as your language shows it, the names Windows reserves (`CON`, `PRN`, `AUX`, `NUL`) and the name of a Profile already listed, and writes why under the ring. Nothing else is refused: a Profile set aside as `_Max` or a removed one leaves its name free. A hyphen does nothing at the start of a name or right after another one, and a hyphen at the end is dropped: "Max-" is created as "Max".
+
+If the folder cannot be created, Name Entry stays open with your name and says so in one sentence: check the `profiles` folder in Windows and try again. The error is in the Error Log.
 
 ### From Windows
 

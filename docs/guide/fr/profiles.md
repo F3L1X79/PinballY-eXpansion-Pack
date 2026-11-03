@@ -26,12 +26,16 @@ Ouvrez **Changer de joueur** : sa dernière place, après le dernier Profil, est
 
 1. Choisissez le « + » avec Select ou Launch : la saisie du nom s'ouvre.
 2. Parcourez l'anneau de caractères avec les flippers, en maintenant l'un d'eux pour continuer. Select ou Launch choisit le caractère sous le marqueur : `A` à `Z`, `a` à `z`, `-`, `←` pour effacer le dernier caractère, et `OK`.
-3. Choisissez `OK`. `OK` reste grisé tant que le nom est vide.
+3. Choisissez `OK`. `OK` reste grisé tant que le nom est vide ou refusé.
 4. « Changer de joueur » revient sur le nouveau Profil, à sa place dans l'ordre alphabétique. Vous êtes toujours sur votre ancien Profil : appuyez sur Select pour choisir le nouveau.
 
 Exit revient sur le « + » sans rien créer. Sur une borne laissée inactive, le mode attract ferme la saisie du nom et « Changer de joueur », sans rien créer non plus.
 
 Un nom compte 12 caractères au maximum, sans accents, espaces ni chiffres. Pour un nom plus long ou accentué, renommez le dossier du Profil dans Windows, **avant de jouer** : renommer garde les parties et les Succès du Profil, mais ses meilleurs scores et ses records perdus suivent le nom, et renommer le dossier du Profil actif repart sur Invité.
+
+Quelle que soit la casse, la saisie du nom refuse le nom d'Invité, `guest` ou tel que votre langue l'affiche, les noms que Windows se réserve (`CON`, `PRN`, `AUX`, `NUL`) et le nom d'un Profil déjà listé, et écrit pourquoi sous l'anneau. Rien d'autre n'est refusé : un Profil mis de côté en `_Max` ou un Profil supprimé laisse son nom libre. Un tiret ne fait rien au début d'un nom ou juste après un autre, et un tiret final est retiré : « Max- » est créé sous le nom « Max ».
+
+Si le dossier ne peut pas être créé, la saisie du nom reste ouverte avec votre nom et le dit en une phrase : vérifiez le dossier `profiles` dans Windows et réessayez. L'erreur est dans le journal d'erreurs.
 
 ### Depuis Windows
 

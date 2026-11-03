@@ -587,6 +587,12 @@ export default {
                 "Für einen längeren Namen oder einen mit Akzenten benennen Sie den Ordner in Windows um, bevor Sie spielen.",
             ],
             ok: "OK",
+            refusals: {
+                guest: "Dieser Name gehört dem Profil Gast.",
+                reserved: "Windows behält sich diesen Namen vor.",
+                taken: "Ein Profil trägt bereits diesen Namen.",
+            },
+            folderFailed: "Der Ordner dieses Profils konnte nicht erstellt werden: Prüfen Sie den Ordner profiles in Windows und versuchen Sie es erneut.",
         },
         greeting: name => `Hallo ${name}!`,
     },

@@ -268,6 +268,7 @@ export function createFakePinballYHost({
     // Restarts asked so far, and how many of the next ones never get ready.
     let restartCount = 0;
     let failingRestartCount = 0;
+    let failingFolderCreationCount = 0;
     // Every Pack Update asked, in order: { zipUrl, sha256, packVersion },
     // and how many of the next ones never get ready.
     const packUpdateList = [];
@@ -875,6 +876,10 @@ export function createFakePinballYHost({
             fileOperationList.push({ operation: "delete", path });
         },
         createFolder(folderPath) {
+            if (failingFolderCreationCount > 0) {
+                failingFolderCreationCount--;
+                throw new Error(`Permission denied: ${folderPath}`);
+            }
             requireParentFolder(withoutTrailingSlash(folderPath));
             folders.add(withoutTrailingSlash(folderPath));
         },
@@ -1494,6 +1499,8 @@ export function createFakePinballYHost({
         restartsAsked: () => restartCount,
         // The next restart asked never gets ready.
         failNextRestart() { failingRestartCount++; },
+        // The next folder created throws, as Windows does on a denied folder.
+        failNextFolderCreation() { failingFolderCreationCount++; },
         // Every Pack Update asked, through either host: { zipUrl, sha256, packVersion }.
         packUpdatesAsked: () => packUpdateList.map(update => ({ ...update })),
         // The next Pack Update asked never gets ready.

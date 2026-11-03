@@ -9,7 +9,7 @@ import { STEAMBALL_COLORS as COLORS, STEAMBALL_FONTS as FONTS } from "../drawing
 import { text, oneLine, fillGradient, buttonHintsFooterRectOf, EXIT_AND_HINTS_METRICS as EXIT_AND_HINTS } from "../drawing/steamball_drawing.js";
 
 // Above the Profile picker's layers, which stay open under it.
-export const NAME_ENTRY_Z_INDEX = Object.freeze({ backdrop: 6512, texts: 6513, name: 6514, ring: 6515, buttonHints: 6516, marker: 6517 });
+export const NAME_ENTRY_Z_INDEX = Object.freeze({ backdrop: 6512, texts: 6513, name: 6514, ring: 6515, buttonHints: 6516, marker: 6517, reason: 6518 });
 
 export const REFERENCE_HEIGHT = 1920;
 
@@ -20,7 +20,9 @@ const LOOK = Object.freeze({
     // Room for a line that wraps once in the narrowest window.
     lineSize: 24, lineH: 72, lineGap: 8,
     nameGap: 32, nameH: 104, nameSize: 48,
-    ringGap: 44, cell: 96, cellGap: 16, characterSize: 40, ringBottomGap: 44,
+    ringGap: 44, cell: 96, cellGap: 16, characterSize: 40,
+    // Room for a sentence that wraps once.
+    reasonGap: 16, reasonH: 72, reasonSize: 24, reasonBottomGap: 16,
     // The strip never shows fewer characters, however narrow the window.
     minCellsShown: 3,
 });
@@ -33,8 +35,8 @@ const CELL_STEP = LOOK.cell + LOOK.cellGap;
 export function layoutNameEntry(referenceWidth, lineCount) {
     const w = Math.min(Math.round(referenceWidth * LOOK.widthShare), LOOK.maxWidth);
     const linesH = lineCount * (LOOK.lineH + LOOK.lineGap);
-    const h = LOOK.pad + LOOK.titleH + LOOK.titleGap + linesH + LOOK.nameGap + LOOK.nameH + LOOK.ringGap + LOOK.cell + LOOK.ringBottomGap
-        + EXIT_AND_HINTS.footerH;
+    const h = LOOK.pad + LOOK.titleH + LOOK.titleGap + linesH + LOOK.nameGap + LOOK.nameH + LOOK.ringGap + LOOK.cell
+        + LOOK.reasonGap + LOOK.reasonH + LOOK.reasonBottomGap + EXIT_AND_HINTS.footerH;
     const panel = { x: Math.round((referenceWidth - w) / 2), y: Math.round((REFERENCE_HEIGHT - h) / 2), w, h };
     const x = panel.x + LOOK.pad;
     const innerW = w - 2 * LOOK.pad;
@@ -44,7 +46,8 @@ export function layoutNameEntry(referenceWidth, lineCount) {
     const fitting = Math.floor((innerW + LOOK.cellGap) / CELL_STEP);
     const cellsShown = Math.max(LOOK.minCellsShown, fitting % 2 === 1 ? fitting : fitting - 1);
     const ringMiddle = { x: panel.x + Math.round((w - LOOK.cell) / 2), y: name.y + name.h + LOOK.ringGap, w: LOOK.cell, h: LOOK.cell };
-    return { panel, title, lines, name, ringMiddle, cellsShown, buttonHints: buttonHintsFooterRectOf(panel) };
+    const reason = { x, y: ringMiddle.y + ringMiddle.h + LOOK.reasonGap, w: innerW, h: LOOK.reasonH };
+    return { panel, title, lines, name, ringMiddle, cellsShown, reason, buttonHints: buttonHintsFooterRectOf(panel) };
 }
 
 // Where the strip's cell at offset from its middle sits.
@@ -66,6 +69,11 @@ export function drawName(host, dc, name, w, h) {
     dc.fillRect(0, 0, w, h, COLORS.tile);
     dc.frameRect(0, 0, w, h, 1, COLORS.border);
     if (name !== "") oneLine(host, dc, name, { x: 0, y: 0, width: w, height: h, size: LOOK.nameSize, weight: 700, font: FONTS.display, align: "center" });
+}
+
+// The line under the ring: why the name is refused or its folder failed, nothing otherwise.
+export function drawReason(host, dc, reason, w, h) {
+    if (reason !== "") text(host, dc, reason, { x: 0, y: 0, width: w, height: h, size: LOOK.reasonSize, color: COLORS.alert, align: "center" });
 }
 
 // One character of the ring; isGreyed: choosing it does nothing for now.

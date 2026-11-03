@@ -212,7 +212,6 @@
         </div>
         <div class="cell">
           <a class="chip tr-profiles" href="#create-profile"><b></b>Créer un Profile</a>
-          <a class="chip tr-share" href="#pinbally-version"><b></b>Version de PinballY</a>
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#household-mission"><b></b>Mission du foyer</a>
@@ -620,6 +619,31 @@
               <li>Une carte « ton style de joueur » : taux d'exploration (tables différentes par Play), régularité, et un archétype (Explorer, Completionist…) ? Avec quels seuils, pour que ça ne ressemble pas à un horoscope ?</li>
             </ul>
             <p class="ctx">Idée externe du 30/09/2026, sans doute la plus partageable. En fin de file car elle a besoin d'une année de journal et de la Distribution pour être vue : le Play Log ne date que du 01/10/2026, le premier bilan complet sera celui de 2027.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-share" id="pinbally-release-day" data-track="share" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Le jour où une nouvelle version de PinballY sort</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">petit</span></div>
+          </div>
+          <p>Rien à faire tant qu'aucune version ne sort : la procédure de mainteneur pour déclarer une version de PinballY « testée », et le blocage éventuel d'une Pack Update qui exigerait un PinballY plus récent.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>, seulement si la nouvelle version l'exige. Part de <code>docs/research/pinbally-next-version.md</code></div>
+          <details>
+            <summary>Checklist et question ouverte</summary>
+            <ul>
+              <li>Relire le diff amont depuis la dernière version testée (<code>compare/&lt;version&gt;...&lt;nouvelle&gt;</code>) et mettre à jour la recherche.</li>
+              <li>Sur la borne, avant et après l'installation : le nombre de tables et la version de <code>ChakraCore.dll</code>.</li>
+              <li>Sur la borne, après l'installation : la ligne <code>[ExpansionPack] Started:</code> (<code>display</code>, <code>build</code>), et si l'installeur a écrasé <code>Scripts\System\</code>.</li>
+              <li>Jouer une partie complète, puis relever <code>LAST_TESTED_VERSION</code> (<code>build</code> compris) et publier une Pack Version.</li>
+              <li>Question ouverte : si le pack doit exiger cette version, relever le minimum et empêcher la Pack Update sur un PinballY trop ancien ? Il faudrait un champ dans chaque release et un lecteur livré avant le premier relèvement.</li>
+            </ul>
+            <p class="ctx">Décidé le 03/11/2026 au grill de « Se préparer à la prochaine version de PinballY » : rien n'exige ce blocage aujourd'hui. En fin de file à la demande de Félix, car l'entrée dort jusqu'à la prochaine version.</p>
           </details>
         </div>
       </li>
