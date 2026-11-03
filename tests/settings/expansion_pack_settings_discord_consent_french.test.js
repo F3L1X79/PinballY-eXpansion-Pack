@@ -36,7 +36,7 @@ test("the Dialog speaks French, the cursor on Annuler", () => {
 
     const { title, message } = readDrawnMenu(fake);
     assert.equal(title, "Discord Rich Presence");
-    assert.equal(squeezed(message), squeezed("Votre compte Discord ouvert sur ce PC montrera publiquement la table jouée, depuis combien de temps, et quand la roue est ouverte. Aucun nom de Profile ni aucune autre donnée personnelle de ce PC n'est envoyé par le PinballY Expansion Pack."));
+    assert.equal(squeezed(message), squeezed("Votre compte Discord ouvert sur ce PC montrera publiquement la table jouée, depuis combien de temps, et quand la roue est ouverte. Aucun nom de profil ni aucune autre donnée personnelle de ce PC n'est envoyé par le PinballY Expansion Pack."));
     assert.deepEqual(drawnMenuLines(fake), ["Activer", "Annuler"]);
     assert.equal(highlightedEntry(fake), "Annuler");
     assertNoErrorLogged(fake);
