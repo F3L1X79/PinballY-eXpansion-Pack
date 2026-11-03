@@ -784,6 +784,8 @@ export default {
         whenOffLabel: "Não:",
         save: "Salvar",
         cancel: "Cancelar",
+        discordConsentMessage: "Sua conta do Discord aberta neste PC mostrará publicamente a mesa jogada, há quanto tempo e quando a roleta está aberta. O PinballY Expansion Pack não envia nenhum nome de perfil nem qualquer outro dado pessoal deste PC.",
+        discordConsentTurnOn: "Ativar",
         notSaved: "Configuração não salva",
         ok: "OK",
         restartQuestion: "As configurações salvas se aplicam quando o PinballY reiniciar.",

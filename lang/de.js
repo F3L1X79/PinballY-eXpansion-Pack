@@ -784,6 +784,8 @@ export default {
         whenOffLabel: "Aus:",
         save: "Speichern",
         cancel: "Abbrechen",
+        discordConsentMessage: "Ihr auf diesem PC geöffnetes Discord-Konto zeigt öffentlich den gespielten Tisch, wie lange er gespielt wird und wann das Wheel geöffnet ist. Das PinballY Expansion Pack sendet keinen Profilnamen und keine anderen persönlichen Daten von diesem PC.",
+        discordConsentTurnOn: "Einschalten",
         notSaved: "Einstellung nicht gespeichert",
         ok: "OK",
         restartQuestion: "Die gespeicherten Einstellungen gelten nach einem Neustart von PinballY.",

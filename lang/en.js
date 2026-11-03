@@ -706,6 +706,9 @@ export default {
         whenOffLabel: "Off:",
         save: "Save",
         cancel: "Cancel",
+        // Before Discord Rich Presence is saved on, each time.
+        discordConsentMessage: "Your Discord account open on this PC will publicly show the table being played, for how long, and when the wheel is open. No Profile name nor any other personal data from this PC is sent by the PinballY Expansion Pack.",
+        discordConsentTurnOn: "Turn on",
         notSaved: "Setting not saved",
         ok: "OK",
         // On leaving the list while a saved setting differs from the running one.

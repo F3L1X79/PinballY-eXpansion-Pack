@@ -8,6 +8,7 @@
 // - Always drawn (getPackMenus), even with the Drawn Menus Add-on off.
 // - Nothing applies before PinballY restarts but the Script Reader Prompt's No thanks: "on restart" marks a saved value that differs from the running one.
 // - Leaving the list with such a value asks Restart now (host.restartPinballY) or Later; attract mode never asks.
+// - Saving Discord Rich Presence on from off asks for consent every time, the cursor on Cancel; a hand-edited .env.local never asks.
 // ============================================================
 
 import lang from "../core/i18n.js";
@@ -43,6 +44,7 @@ const OFFLINE_MODE_MENU_ID = "expansionPackSettingsOfflineMode";
 const UPDATE_CHECK_MENU_ID = "expansionPackSettingsUpdateCheck";
 const OFFER_VPXTOOL_MENU_ID = "expansionPackSettingsOfferVpxtool";
 const SCRIPT_READER_MENU_ID = "expansionPackSettingsScriptReader";
+const DISCORD_CONSENT_MENU_ID = "expansionPackSettingsDiscordConsent";
 const NOT_SAVED_MENU_ID = "expansionPackSettingsNotSaved";
 const RESTART_MENU_ID = "expansionPackSettingsRestart";
 const RESTART_FAILED_MENU_ID = "expansionPackSettingsRestartFailed";
@@ -93,6 +95,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     const offlineModeCommand = host.allocateCommand("expansionPackSettings_offlineMode");
     const switchCommand = host.allocateCommand("expansionPackSettings_switch");
     const saveCommand = host.allocateCommand("expansionPackSettings_save");
+    const discordConsentCommand = host.allocateCommand("expansionPackSettings_discordConsent");
     const restartCommand = host.allocateCommand("expansionPackSettings_restart");
     const updateCommand = host.allocateCommand("expansionPackSettings_update");
     const scriptReaderLineCommand = host.allocateCommand("expansionPackSettings_installVpxtool");
@@ -100,6 +103,8 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     const envLocalPath = `${host.getProjectFolder()}\\.env.local`;
     // The page on screen: its Add-on, the choice saved when it opened, and the switch.
     let page = null;
+    // What the consent Dialog on screen saves on Turn on.
+    let onConsent = null;
 
     const readEnvLocal = () => (host.files.fileExists(envLocalPath) ? host.files.readText(envLocalPath) : null);
 
@@ -323,6 +328,27 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         save(`addOns.${key}`, value, { onSaved: () => backToCategory(key), reopen: () => openPage(key) });
     }
 
+    // What Discord Rich Presence makes public, the cursor on Cancel so that
+    // Select by habit saves nothing. Cancel and Exit run onBack.
+    function openDiscordConsent(onTurnOn, onBack) {
+        onConsent = onTurnOn;
+        getMenus().show(DISCORD_CONSENT_MENU_ID, [
+            { title: TEXT.addOns.discordRichPresence.name, cmd: -1 },
+            { title: TEXT.discordConsentMessage, cmd: -1 },
+            SEPARATOR,
+            { title: TEXT.discordConsentTurnOn, cmd: discordConsentCommand },
+            { title: TEXT.cancel, cmd: menuReturnCommand },
+        ], { dialogStyle: true, selectedCmd: menuReturnCommand, onBack });
+    }
+
+    // The page offers Save only while its switch differs from the saved
+    // choice: On here means saved off. Refused, the page shows the saved choice again.
+    function savePage() {
+        const { key, value } = page;
+        if (key === "discordRichPresence" && value) openDiscordConsent(saveAddOn, () => openPage(key));
+        else saveAddOn();
+    }
+
     function saveChoice({ setting, value }) {
         save(setting.key, value, { onSaved: () => backToLine(setting), reopen: () => openChoicePage(setting) });
     }
@@ -357,7 +383,9 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
             page.value = !page.value;
             showPage();
         } else if (ev.id === saveCommand && page) {
-            saveAddOn();
+            savePage();
+        } else if (ev.id === discordConsentCommand && onConsent) {
+            onConsent();
         } else if (ev.id === restartCommand) {
             restart();
         } else if (ev.id === updateCommand) {

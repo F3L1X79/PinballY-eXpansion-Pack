@@ -788,6 +788,8 @@ export default {
         whenOffLabel: "Désactivé :",
         save: "Enregistrer",
         cancel: "Annuler",
+        discordConsentMessage: "Votre compte Discord ouvert sur ce PC montrera publiquement la table jouée, depuis combien de temps, et quand la roue est ouverte. Aucun nom de Profile ni aucune autre donnée personnelle de ce PC n'est envoyé par le PinballY Expansion Pack.",
+        discordConsentTurnOn: "Activer",
         notSaved: "Réglage non enregistré",
         ok: "OK",
         restartQuestion: "Les réglages enregistrés s'appliquent au redémarrage de PinballY.",
