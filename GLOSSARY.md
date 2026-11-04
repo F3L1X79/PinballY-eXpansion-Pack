@@ -170,6 +170,10 @@ _Avoid_: profile icon
 The screen where a new Profile's name is put together with the flippers, one character at a time. The only drawn screen with no Exit Button, its choices being the characters. Shown as "Saisie du nom" in French.
 _Avoid_: virtual keyboard, onscreen keyboard (it has no keys), high score entry
 
+**Avatar Choice**:
+The screen that follows Name Entry, where a Profile just created picks its Avatar among the pack's portraits. Leaving it without choosing keeps the Default Avatar. It is offered only then: afterwards an Avatar changes only from Windows. Shown as "Choix de l'Avatar" in French.
+_Avoid_: avatar picker (too close to Profile Picker), player select, avatar gallery
+
 **Guest**:
 The Profile that always exists and cannot be removed. Its plays stay its own when a player who played as Guest creates a Profile: nothing moves over.
 _Avoid_: default user, anonymous
@@ -193,6 +197,10 @@ _Avoid_: fresh start, wipe, achievement reset (the Achievements come from the pl
 **Avatar**:
 The picture that stands for a Profile.
 _Avoid_: profile picture, photo
+
+**Default Avatar**:
+The Avatar of a Profile that has no picture of its own: a plain silhouette, except for Guest, which has its own picture.
+_Avoid_: placeholder, generic avatar, Default Score image (those portraits stand for Default Scores)
 
 **Profile Greeting**:
 The short greeting, with the Avatar and the Profile's name, shown when a Profile is picked and when PinballY starts, so the player knows whose plays will count.

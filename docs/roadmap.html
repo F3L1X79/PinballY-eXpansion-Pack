@@ -333,18 +333,25 @@
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
-            <h3>Choisir son Avatar depuis la borne</h3>
+            <h3>Choisir son Avatar à la création du Profile</h3>
             <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span><span class="tag">UI</span></div>
           </div>
-          <p>Choisir ou changer l'Avatar de n'importe quel Profile parmi des images fournies, sans passer par Windows. Les Profiles créés depuis la borne ont tous l'Avatar par défaut, donc la même image dans le Profile picker.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> · Reporté du grill de « Créer un Profile depuis la borne », 02/11/2026</div>
+          <p>Après la Name Entry, un nouvel écran, Avatar Choice, propose 24 portraits en grille façon « Character Select ». Les Profiles créés depuis la borne ne partagent plus la même image dans le Profile Picker. Ensuite, un Avatar ne change que depuis Windows. Grillé le 04/11/2026.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="here">spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/to-spec</code> · Reporté du grill de « Créer un Profile depuis la borne », 02/11/2026 · Nouveaux termes Avatar Choice et Default Avatar</div>
           <details>
-            <summary>À trancher au grill (2)</summary>
+            <summary>Décisions du grill (8)</summary>
             <ul>
-              <li>Quelles images fournir : les images <code>default_scores</code> veulent dire Default Score sur le High Score Board, donc elles prêteraient à confusion.</li>
-              <li>Où se fait le choix (Profile Stats, près du cadre ?), et qui peut changer l'Avatar d'un autre Profile.</li>
+              <li>Galerie dédiée <code>assets/images/avatars/</code> : 24 portraits découpés des planches de <code>.scratch/new_profiles</code> (femmes, hommes, enfants), sans liseré ni bandeau beige. Pas de <code>default_scores</code>, pas de dossier <code>local\</code>, aucun déblocage, aucun filtre pour les Child Profiles, doublons permis.</li>
+              <li><code>OK</code> crée le Profile comme aujourd'hui, puis Avatar Choice s'ouvre. Select ou Launch sur un portrait le copie en <code>avatar.png</code>, sans confirmation, et revient au Profile Picker sur le nouveau Profile.</li>
+              <li>Exit ou l'Exit Button (flèche de retour) ouvrent un Drawn Menu « Garder l'Avatar par défaut ? » : « Choisir un Avatar », déjà sélectionné, puis « Garder l'Avatar par défaut ». Exit dans ce menu revient à la grille. Le mode attract ferme tout sans rien demander et laisse le Default Avatar.</li>
+              <li>Grille serrée sous le titre, dans le panneau Steamball, sans grand portrait : 8 × 3 en fenêtre large, 4 × 6 en fenêtre haute. Le Selection Marker part du premier portrait et la grille reboucle. Le nom du Profile s'affiche près du titre, avec une ligne : « Vous pourrez le remplacer depuis Windows, au prochain démarrage de PinballY ».</li>
+              <li>Le choix n'est proposé qu'à la création : ni Guest, ni les Profiles existants, ni ceux créés depuis Windows ne voient cet écran.</li>
+              <li><code>avatar.jpg</code> passe avant <code>avatar.png</code>, pour qu'une photo déposée l'emporte toujours sur la copie.</li>
+              <li>Tous les Profiles sans image, sauf Guest, passent à la silhouette dès la mise à jour, sans rattrapage. Fichiers renommés : <code>guest_avatar.png</code> (casquette) et <code>default_avatar.png</code> (silhouette).</li>
+              <li>Image illisible : retirée de la grille et journalisée. Aucune image lisible : écran sauté et journalisé. Copie ratée : retour au Profile Picker avec le Default Avatar, journalisé.</li>
             </ul>
+            <p class="ctx">À vérifier par la spec : qu'un Drawn Menu reçoit bien les boutons par-dessus un Drawn Screen (aucun cas existant trouvé). À vérifier sur la borne : qu'un <code>avatar.png</code> remplacé pendant que PinballY tourne n'est redessiné qu'au redémarrage (déduit du code). Avatar Choice passe avant <a href="#drawn-screen-controls">Commandes communes</a> : il suit le modèle de la Name Entry, et la spec demandera un commentaire sur #418 pour en faire le huitième écran à migrer.</p>
           </details>
         </div>
       </li>
