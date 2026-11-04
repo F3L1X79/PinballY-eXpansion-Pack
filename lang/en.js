@@ -699,6 +699,12 @@ export default {
         // Greyed while it is equal or newer, the reason under it.
         vpxtoolUpToDateLine: "Update vpxtool",
         vpxtoolUpToDate: (installed) => `vpxtool v${installed} is up to date`,
+        backglassClockPlacement: {
+            line: "Place the Backglass Clock",
+            title: "Backglass Clock Placement",
+            instruction: "Move and resize the clock on the backglass screen with the mouse, then choose Done.",
+            done: "Done",
+        },
         back: "Back",
         // The categories of the list, each heading its own page, grouped as in .env.example.
         groups: {

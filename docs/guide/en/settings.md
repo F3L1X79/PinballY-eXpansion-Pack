@@ -22,6 +22,8 @@ Everything stays in one folder, with no change to PinballY itself.
 
 Until the pack has read your vpxtool's version once (about ten seconds into the first start that finds it), or while that version cannot be read, there is no vpxtool line.
 
+Under "Launching and playing a table", **Place the Backglass Clock** sits right under the [Backglass Clock](interface.md#backglass-clock)'s line, while that Add-on runs (once PinballY has restarted with it on) on a cabinet with more than one monitor. Choosing it shows the clock on the backglass screen, in front of everything, with the real time and its Windows borders, so that you can move and resize it with the mouse. A Dialog on the wheel screen says what to do: **Done**, or Exit, hides the clock again and brings you back to the line, and PinballY keeps its place and size.
+
 The **Offline Mode** group holds what reaches, or offers to reach, the internet, one switch each:
 
 - **Pack update check**: PinballY asks GitHub for a newer version of the pack at each start (`UPDATE_CHECK`).

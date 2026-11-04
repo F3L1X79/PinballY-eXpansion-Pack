@@ -1870,6 +1870,8 @@ export function createFakePinballYHost({
         // Every custom window created, in order: { desc, borderlessMode(),
         // showMediaWhenRunningFlag(), isVisible(), calls(), windowRect(), layers(), resize() }.
         mediaWindows: () => [...mediaWindowList],
+        // A screen plugged in or out.
+        setMonitorCount(count) { monitorCount = count; },
 
         // Exposes this fake as PinballY's globals; returns the function that
         // restores the previous globals.
