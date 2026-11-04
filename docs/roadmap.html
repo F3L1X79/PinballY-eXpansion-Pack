@@ -226,6 +226,7 @@
           <a class="chip tr-profiles" href="#avatar-choice"><b></b>Choisir son Avatar</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
+          <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
         </div>
         <div class="cell">
           <a class="chip tr-share" href="#drawn-screen-controls"><b></b>Commandes des Drawn Screens</a>
@@ -624,6 +625,29 @@
               <li>Un aperçu en direct des écrans du pack pendant la retouche ?</li>
             </ul>
             <p class="ctx">Idée du 10/10/2026.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-profiles" id="auto-backup" data-track="profiles" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Sauvegarde automatique et datée des Profiles</h3>
+            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span></div>
+          </div>
+          <p>Une copie datée de <code>profiles</code> au démarrage et avant chaque Pack Update, avec quelques générations gardées et un dossier réglable (autre disque, OneDrive). Le Play Log et les Profiles ne se recréent pas.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>saveJson</code> dans <code>common/profiles/profile_store.js</code> et de la page <code>docs/guide/en/install.md</code></div>
+          <details>
+            <summary>Questions ouvertes (3)</summary>
+            <ul>
+              <li>Combien de générations garder, et à quelle fréquence copier : à chaque démarrage, ou une fois par jour au plus ?</li>
+              <li>Le dossier par défaut : à côté du pack (ne protège pas d'un disque mort), ou rien tant que le propriétaire n'en a pas choisi un ?</li>
+              <li>Comment revenir à une copie : à la main, comme pour une remise à zéro, ou depuis les réglages ?</li>
+            </ul>
+            <p class="ctx">Idée de Claude du 04/11/2026, gardée par Félix, assez bas dans la file à sa demande. Aujourd'hui, chaque fichier n'a qu'un <code>.bak</code> sur le même disque, remplacé à chaque écriture : il protège d'un plantage, pas d'un disque mort ni d'un bug qui écrirait des données fausses.</p>
           </details>
         </div>
       </li>
