@@ -144,9 +144,9 @@ _Avoid_: underlay (PinballY's name for the image layer that carries it), wheel c
 The time shown on a small plaque on the backglass screen, from a table's launch until its game ends, where neither Windows nor the wheel's clock can be seen. Shown as "horloge du backglass" in French.
 _Avoid_: game clock, overlay clock, the clock (that is the wheel's)
 
-**Backglass Clock Placement**:
-The screen opened from the eXpansion Pack Settings where the owner moves and resizes the Backglass Clock with the mouse. Shown as "placement de l'horloge du backglass" in French.
-_Avoid_: clock editor, clock setup
+**Backglass Clock Position**:
+The place on the backglass screen, one of six chosen in the eXpansion Pack Settings, where the Backglass Clock shows at its fixed size. Shown as "position de l'horloge du backglass" in French.
+_Avoid_: clock placement, clock editor, clock setup
 
 **Status Icon**:
 A small icon beside the wheel's clock, shown only while the state it stands for lasts. Absent means the state is off; there is no crossed-out icon. Shown as "icône d'état" in French.

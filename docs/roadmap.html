@@ -283,23 +283,22 @@
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
-            <h3>Placer l'horloge du backglass depuis la roue</h3>
+            <h3>Choisir la position de l'horloge du backglass</h3>
             <div class="tags"><span class="tag track">Diffusion</span><span class="tag">petit</span><span class="tag">UI</span></div>
           </div>
-          <p>Une ligne « Placer l'horloge du backglass » dans les Expansion Pack Settings montre la Backglass Clock seule sur l'écran du backglass, hors partie, avec ses bords Windows : le propriétaire la déplace et la redimensionne à la souris, sans menu pause ni B2S devant. Un Dialog sur l'écran de la roue propose « Terminé » et « Remettre à la place par défaut » (en haut à droite). Grillé le 01/11/2026.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/396">Spec #396</a>, tickets #397 (place par défaut en haut à droite), #398 (la ligne, l'horloge avec ses bords, Terminé), #399 (Remettre à la place par défaut) et #400 (le dessin suit un redimensionnement) · Reprend la Backglass Clock (<code>addons/backglass_clock.js</code>, livrée) ; remplace le ticket #389 (taille fixée par le pack), fermé</div>
+          <p>Une ligne sous l'interrupteur de la Backglass Clock, dans les Expansion Pack Settings, choisit sa place sur l'écran du backglass parmi six : en haut ou en bas, à gauche, au milieu ou à droite. Elle garde une taille fixe, la plus petite qu'elle a aujourd'hui, et prend sa place à la partie suivante, sans redémarrage. Plus de placement à la souris. Spec réécrite le 04/11/2026.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="here">tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/to-tickets</code>. <a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/396">Spec #396</a>, ticket #397 (place par défaut en haut à droite) livré ; #398 annulé, #399 et #400 abandonnés · Reprend la Backglass Clock (<code>addons/backglass_clock.js</code>, livrée) ; remplace le ticket #389 (taille fixée par le pack), fermé</div>
           <details>
-            <summary>Décisions du grill (6)</summary>
+            <summary>Décisions (5)</summary>
             <ul>
-              <li>La ligne, sous l'interrupteur de l'horloge, n'apparaît que si l'horloge est activée et qu'il y a au moins deux écrans ; nouveau terme Backglass Clock Placement.</li>
-              <li>Pendant le placement : l'heure réelle, redessinée chaque minute, au premier plan, avec la barre de titre et les bords Windows ; sans bords et cachée à la fin. Une horloge hors de l'écran du backglass va d'abord à la place par défaut.</li>
-              <li>Le Dialog est sur l'écran de la roue ; « Remettre à la place par défaut » le garde ouvert ; Exit vaut Terminé ; on revient sur la ligne du placement dans les réglages.</li>
-              <li>La place par défaut passe en haut à droite de l'écran du backglass, avec la marge d'angle de l'horloge de la roue, à la première partie comme au placement.</li>
-              <li>Le mode attract termine le placement en gardant la place.</li>
-              <li>Rien ne change en partie (un clic y ouvre toujours le menu pause) : le guide renvoie au placement.</li>
+              <li>Six positions, en haut à droite par défaut ; nouveau terme Backglass Clock Position, à la place de Backglass Clock Placement.</li>
+              <li>La ligne, sous l'interrupteur de l'horloge, n'apparaît que si l'horloge est enregistrée activée.</li>
+              <li>Une taille fixe, la plus petite d'aujourd'hui ; les positions du bas tiennent compte de la hauteur réelle de la fenêtre.</li>
+              <li>Le choix s'applique à la partie suivante, sans redémarrage ; il remplace à chaque partie une place réglée à la main.</li>
+              <li>Rien d'autre ne change en partie (un clic y ouvre toujours le menu pause).</li>
             </ul>
-            <p class="ctx">Constat de Félix du 01/11/2026 : depuis #386, l'horloge passe derrière le backglass quand on veut la redimensionner en partie. Avant, le menu pause ouvert à chaque partie gardait PinballY devant.</p>
+            <p class="ctx">Constat de Félix du 01/11/2026 : depuis #386, l'horloge passe derrière le backglass quand on veut la redimensionner en partie. Essai du placement à la souris sur la borne le 04/11/2026 : un clic droit a tourné le contenu de sa fenêtre, et Félix préfère des positions fixes.</p>
           </details>
         </div>
       </li>
