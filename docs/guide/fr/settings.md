@@ -22,6 +22,8 @@ Tout tient dans un seul dossier, sans modifier PinballY.
 
 Tant que le pack n'a pas lu une fois la version de votre vpxtool (une dizaine de secondes après le premier démarrage qui le trouve), ou si cette version est illisible, il n'y a pas de ligne vpxtool.
 
+Sous « Lancer et jouer une table », tant que l'horloge du backglass est enregistrée comme activée, une ligne **Position de l'horloge du backglass** vient juste sous sa ligne Activé / Désactivé et montre la place enregistrée. Elle ouvre une page avec les six places : en haut à gauche, en haut au milieu, en haut à droite, en bas à gauche, en bas au milieu et en bas à droite. Votre choix est enregistré aussitôt et s'applique à la partie suivante, sans redémarrage.
+
 Le groupe **Mode hors ligne** réunit ce qui contacte internet, ou propose de le faire, un interrupteur chacun :
 
 - **Recherche de mises à jour du pack** : PinballY demande à GitHub, à chaque démarrage, si une version plus récente du pack existe (`UPDATE_CHECK`).

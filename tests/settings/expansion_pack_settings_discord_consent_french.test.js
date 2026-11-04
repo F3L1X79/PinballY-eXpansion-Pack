@@ -25,7 +25,7 @@ test("setup", async () => {
     await settle();
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    choose("Réglages du pack");
+    choose("Réglages de l'eXpansion pack");
     choose("Lancer et jouer une table");
 });
 

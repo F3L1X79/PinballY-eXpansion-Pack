@@ -767,13 +767,22 @@ export default {
     },
 
     expansionPackSettings: {
-        menuEntry: "Réglages du pack",
+        menuEntry: "Réglages de l'eXpansion pack",
         on: "Activé",
         off: "Désactivé",
         addOnLine: (name, state) => `${name} : ${state}`,
         languageLine: (languageName) => `Langue : ${languageName}`,
         startupScreenLine: (screenName) => `Écran de démarrage : ${screenName}`,
         startupScreenNames: { welcome: "Écran d'accueil", profilePicker: "Choix du joueur", wheel: "Roue" },
+        backglassClockPositionLine: (placeName) => `Position de l'horloge du backglass : ${placeName}`,
+        backglassClockPositionNames: {
+            topLeft: "En haut à gauche",
+            topCenter: "En haut au milieu",
+            topRight: "En haut à droite",
+            bottomLeft: "En bas à gauche",
+            bottomCenter: "En bas au milieu",
+            bottomRight: "En bas à droite",
+        },
         offlineMode: "Mode hors ligne",
         updateCheckLine: (state) => `Recherche de mises à jour du pack : ${state}`,
         offerVpxtoolLine: (state) => `Proposer vpxtool : ${state}`,

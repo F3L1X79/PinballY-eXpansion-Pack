@@ -23,7 +23,7 @@ test("the Status Icons' page speaks French", async () => {
 
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Réglages du pack");
+    chooseEntry(fake, "Réglages de l'eXpansion pack");
     fake.advanceTime(OPEN_OVER_MS);
     chooseEntry(fake, "Écran de la roue");
     fake.advanceTime(OPEN_OVER_MS);

@@ -11,7 +11,7 @@ An unofficial extension of [PinballY](http://mjrnet.org/pinscape/PinballY.php) t
 ## Profiles
 
 - Each of you picks your own Profile and Avatar with Change Player, and the Welcome Screen greets you by name, so you know whose games will count. Only games of a minute or more count, and Guest is always there for visitors.
-- **My Profile** sums up your pinball life; **Household Stats** sets everyone side by side, the best of each line in gold.
+- **"My Profile"** sums up your pinball life; **"Household Stats"** sets everyone side by side, the best of each line in gold.
 - An Admin Profile keeps the setup entries for you, and a Child Profile leaves the Adult Tables off the wheel.
 
 → [Profiles](docs/guide/en/profiles.md)
@@ -36,8 +36,8 @@ An unofficial extension of [PinballY](http://mjrnet.org/pinscape/PinballY.php) t
 
 - PinballY's menus and messages in English, French, German, Spanish, Italian or Portuguese, drawn in the pack's Steamball look and sorted into sections.
 - A clock, a gold arc under the wheel, launches without a black flash, and sounds you can replace with your own.
-- **Discord Rich Presence** <img src="docs/images/discord_symbol.svg" alt="" width="16" height="16">, once you turn it on, shows your Discord friends the table you are playing and for how long.
-- **eXpansion Pack Settings**, in the Operator Menu, turns each Add-on on or off.
+- **Discord Rich Presence** (<img src="docs/images/discord_symbol.svg" alt="" width="16" height="16">), once you turn it on, shows your Discord friends the table you are playing and for how long.
+- **"eXpansion Pack Settings"**, in the Operator Menu, turns each Add-on on or off.
 
 → [Interface](docs/guide/en/interface.md) · [Discord Rich Presence](docs/guide/en/settings.md#discord-rich-presence)
 

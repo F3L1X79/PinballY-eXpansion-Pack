@@ -1,5 +1,5 @@
 // ============================================================
-// The eXpansion Pack Settings in French through main.js: "Réglages du pack"
+// The eXpansion Pack Settings in French through main.js: "Réglages de l'eXpansion pack"
 // in the Operator Menu, the list's headings, Add-ons and states, the
 // language line in the saved language's own name, the Offline Mode group,
 // the restart question on leaving, an Add-on's page and the Language page.
@@ -27,7 +27,7 @@ test("the list speaks French", async () => {
 
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Réglages du pack");
+    chooseEntry(fake, "Réglages de l'eXpansion pack");
     fake.advanceTime(OPEN_OVER_MS);
 
     assert.deepEqual(drawnMenuLines(fake).slice(0, 2), ["Joueurs et progression", "Écran de la roue"]);
@@ -55,9 +55,9 @@ test("the list speaks French", async () => {
     assert.equal(readDrawnMenu(fake).message, "Les réglages enregistrés s'appliquent au redémarrage de PinballY.");
     assert.deepEqual(drawnMenuLines(fake), ["Redémarrer maintenant", "Plus tard"]);
     chooseEntry(fake, "Plus tard");
-    assert.ok(drawnMenuLines(fake).includes("Réglages du pack"), "Plus tard goes back to the Operator Menu");
+    assert.ok(drawnMenuLines(fake).includes("Réglages de l'eXpansion pack"), "Plus tard goes back to the Operator Menu");
 
-    chooseEntry(fake, "Réglages du pack");
+    chooseEntry(fake, "Réglages de l'eXpansion pack");
     fake.advanceTime(OPEN_OVER_MS);
     chooseEntry(fake, "Joueurs et progression");
     fake.advanceTime(OPEN_OVER_MS);

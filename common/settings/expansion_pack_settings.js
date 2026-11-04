@@ -6,7 +6,7 @@
 // Listens to "menuopen", "command" and "commandbuttondown"; writes .env.local.
 // - Started by main.js whatever config.addOns says, its "menuopen" listener before the Drawn Menus Add-on's.
 // - Always drawn (getPackMenus), even with the Drawn Menus Add-on off.
-// - Nothing applies before PinballY restarts but the Script Reader Prompt's No thanks: "on restart" marks a saved value that differs from the running one.
+// - Nothing applies before PinballY restarts but the Script Reader Prompt's No thanks and the Backglass Clock Position: "on restart" marks a saved value that differs from the running one.
 // - Leaving the list with such a value asks Restart now (host.restartPinballY) or Later; attract mode never asks.
 // - Saving Discord Rich Presence on from off asks for consent every time, the cursor on Cancel; a hand-edited .env.local never asks.
 // ============================================================
@@ -30,6 +30,7 @@ import { getPackUpdater } from "../updates/pack_update.js";
 import { SCRIPT_READER_VERSION } from "../table_roms/script_reader_version.js";
 import { getScriptReaderInstaller, scriptReaderDialogText } from "../table_roms/script_reader_install.js";
 import { getScriptReaderState } from "../table_roms/script_reader_state.js";
+import { setBackglassClockPositionInUse } from "../clock/backglass_clock_position.js";
 import { ADD_ON_GROUPS } from "./add_on_catalogue.js";
 import { saveEnvSetting } from "./env_local_rewrite.js";
 
@@ -43,6 +44,7 @@ const STARTUP_SCREEN_MENU_ID = "expansionPackSettingsStartupScreen";
 const OFFLINE_MODE_MENU_ID = "expansionPackSettingsOfflineMode";
 const UPDATE_CHECK_MENU_ID = "expansionPackSettingsUpdateCheck";
 const OFFER_VPXTOOL_MENU_ID = "expansionPackSettingsOfferVpxtool";
+const BACKGLASS_CLOCK_POSITION_MENU_ID = "expansionPackSettingsBackglassClockPosition";
 const DISCORD_RICH_PRESENCE_MENU_ID = "expansionPackSettingsDiscordRichPresence";
 const SCRIPT_READER_MENU_ID = "expansionPackSettingsScriptReader";
 const DISCORD_CONSENT_MENU_ID = "expansionPackSettingsDiscordConsent";
@@ -72,17 +74,28 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         .map(key => [key, host.allocateCommand(`expansionPackSettings_${key}`)]));
     const addOnOfCommand = new Map([...addOnCommands].map(([key, cmd]) => [cmd, key]));
     // The settings picked on a page of choices and saved at once (but for
-    // asksConsent's On from off), in the list's order: each by its config key,
+    // asksConsent's On from off), in their lines' order: each by its config key,
     // its choices' names in their order, and its value as compared (a language
     // whatever its case, as i18n.js reads it), offline when its line is in the
     // Offline Mode group. One command for its line, one per choice. A switch's
     // choices are keyed "true" / "false": String turns the saved boolean into
     // one of them. Discord Rich Presence's key only names its commands, the
     // Add-on's own page having that name; keyPath and read are the Add-on's value.
+    // underAddOn: its line follows that Add-on's in its category, while saved on.
+    // applySaved: takes a saved value at once, so it never waits for a restart.
     const ON_OFF = { true: TEXT.on, false: TEXT.off };
     const choiceSettings = [
         { key: "startupScreen", menuId: STARTUP_SCREEN_MENU_ID, names: TEXT.startupScreenNames, line: TEXT.startupScreenLine, normalize: String },
         { key: "language", menuId: LANGUAGE_MENU_ID, names: TEXT.languageNames, line: TEXT.languageLine, normalize: value => String(value).toLowerCase() },
+        {
+            key: "backglassClockPosition",
+            menuId: BACKGLASS_CLOCK_POSITION_MENU_ID,
+            names: TEXT.backglassClockPositionNames,
+            line: TEXT.backglassClockPositionLine,
+            normalize: String,
+            underAddOn: "backglassClock",
+            applySaved: setBackglassClockPositionInUse,
+        },
         { key: "updateCheck", menuId: UPDATE_CHECK_MENU_ID, names: ON_OFF, line: TEXT.updateCheckLine, normalize: String, offline: true },
         { key: "offerVpxtool", menuId: OFFER_VPXTOOL_MENU_ID, names: ON_OFF, line: TEXT.offerVpxtoolLine, normalize: String, offline: true },
         {
@@ -130,12 +143,12 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     const stateOf = value => (value ? TEXT.on : TEXT.off);
 
     const addOnDiffers = (saved, key) => saved.addOns[key] !== running.addOns[key];
-    const choiceDiffers = (saved, { read, normalize }) => normalize(read(saved)) !== normalize(read(running));
+    const choiceWaitsForRestart = (saved, { read, normalize, applySaved }) => !applySaved && normalize(read(saved)) !== normalize(read(running));
 
     // A value the pack does not know shows as written.
     const choiceLineOf = (saved, setting) => {
         const name = setting.names[setting.normalize(setting.read(saved))] || setting.read(saved);
-        return { title: setting.line(choiceDiffers(saved, setting) ? TEXT.onRestart(name) : name), cmd: setting.lineCommand };
+        return { title: setting.line(choiceWaitsForRestart(saved, setting) ? TEXT.onRestart(name) : name), cmd: setting.lineCommand };
     };
 
     const releaseToInstall = () => installableRelease(host, getUpdateState());
@@ -155,8 +168,8 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     }
 
     // The categories, each opening its page, then the settings picked on a
-    // page of choices and the Offline Mode group, then the Pack Update and
-    // the Script Reader install while each is possible.
+    // page of choices that sit under no Add-on and the Offline Mode group, then
+    // the Pack Update and the Script Reader install while each is possible.
     function openList(selectedCmd = null) {
         page = null;
         const saved = readSaved();
@@ -168,7 +181,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         getMenus().show(LIST_MENU_ID, [
             ...ADD_ON_GROUPS.map(({ group }) => ({ title: TEXT.groups[group], cmd: groupCommands.get(group), hasSubmenu: true })),
             SEPARATOR,
-            ...choiceSettings.filter(setting => !setting.offline).map(setting => choiceLineOf(saved, setting)),
+            ...choiceSettings.filter(setting => !setting.offline && !setting.underAddOn).map(setting => choiceLineOf(saved, setting)),
             { title: TEXT.offlineMode, cmd: offlineModeCommand, hasSubmenu: true },
             SEPARATOR,
             ...(installs.length > 0 ? [...installs, SEPARATOR] : []),
@@ -190,17 +203,22 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         ], { dialogStyle: true, onBack: () => openList(scriptReaderLineCommand) });
     }
 
-    // A category's Add-ons, each On / Off as saved, under its heading.
+    // A category's Add-ons, each On / Off as saved, under its heading, each
+    // followed by the settings that belong under it while it is saved on.
     function openCategory(group, selectedCmd = null) {
         page = null;
         const saved = readSaved();
         const { addOns } = ADD_ON_GROUPS.find(entry => entry.group === group);
         getMenus().show(CATEGORY_MENU_ID, [
             { title: TEXT.groups[group], cmd: -1 },
-            ...addOns.map((key) => {
+            ...addOns.flatMap((key) => {
                 const state = stateOf(saved.addOns[key]);
                 const shownState = addOnDiffers(saved, key) ? TEXT.onRestart(state) : state;
-                return { title: TEXT.addOnLine(TEXT.addOns[key].name, shownState), cmd: addOnCommands.get(key) };
+                const settingsUnder = saved.addOns[key] ? choiceSettings.filter(setting => setting.underAddOn === key) : [];
+                return [
+                    { title: TEXT.addOnLine(TEXT.addOns[key].name, shownState), cmd: addOnCommands.get(key) },
+                    ...settingsUnder.map(setting => choiceLineOf(saved, setting)),
+                ];
             }),
             SEPARATOR,
             { title: TEXT.back, cmd: menuReturnCommand },
@@ -219,16 +237,19 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         ], { selectedCmd, onBack: () => openList(offlineModeCommand) });
     }
 
-    // Where a setting's line is: the list or the Offline Mode group.
-    const backToLine = setting => (setting.offline ? openOfflineMode : openList)(setting.lineCommand);
+    // Where a setting's line is: the list, the Offline Mode group or the category of its Add-on.
+    function backToLine(setting) {
+        if (setting.underAddOn) openCategory(groupOfAddOn.get(setting.underAddOn), setting.lineCommand);
+        else (setting.offline ? openOfflineMode : openList)(setting.lineCommand);
+    }
 
     const returnToOperatorMenu = () => host.doCommand(operatorMenuCommand);
 
-    // Back or Exit on the list: at once when nothing saved differs from what
-    // runs; otherwise Restart now or Later, Exit leaving as Later does.
+    // Back or Exit on the list: at once when nothing saved waits for a
+    // restart; otherwise Restart now or Later, Exit leaving as Later does.
     function leaveList() {
         const saved = readSaved();
-        if (!choiceSettings.some(setting => choiceDiffers(saved, setting)) && ![...addOnCommands.keys()].some(key => addOnDiffers(saved, key))) {
+        if (!choiceSettings.some(setting => choiceWaitsForRestart(saved, setting)) && ![...addOnCommands.keys()].some(key => addOnDiffers(saved, key))) {
             returnToOperatorMenu();
             return;
         }
@@ -367,7 +388,11 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
 
     // Choosing On while saved on keeps it without asking again.
     function saveChoice({ setting, value }) {
-        const saveValue = () => save(setting.keyPath, value, { onSaved: () => backToLine(setting), reopen: () => openChoicePage(setting) });
+        const onSaved = () => {
+            if (setting.applySaved) setting.applySaved(value);
+            backToLine(setting);
+        };
+        const saveValue = () => save(setting.keyPath, value, { onSaved, reopen: () => openChoicePage(setting) });
         const turnsOn = value === "true" && setting.normalize(setting.read(readSaved())) !== "true";
         if (setting.asksConsent && turnsOn) openDiscordConsent(saveValue, () => openChoicePage(setting));
         else saveValue();

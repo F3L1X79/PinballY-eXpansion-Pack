@@ -10,13 +10,14 @@
 // - Moved to its Backglass Clock Position at each game: a place PinballY saved is overwritten.
 // ============================================================
 
-import config, { DEFAULTS } from "../common/core/config.js";
+import { DEFAULTS } from "../common/core/config.js";
 import lang from "../common/core/i18n.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { UNBOUNDED, fillGradient } from "../common/drawing/steamball_drawing.js";
 import { STEAMBALL_COLORS } from "../common/drawing/steamball_palette.js";
 import { drawShadowedText, measureShadowedText } from "../common/drawing/shadowed_text.js";
+import { backglassClockPositionInUse } from "../common/clock/backglass_clock_position.js";
 import { CLOCK_COLORS, clockTextOf, createMinuteTick } from "../common/clock/minute_tick.js";
 import { TIME_TEXT, WHEEL_CLOCK } from "../common/clock/wheel_clock_layout.js";
 
@@ -122,7 +123,7 @@ export default function init() {
     }
 
     function chosenPosition() {
-        const setting = config.backglassClockPosition;
+        const setting = backglassClockPositionInUse();
         const names = Object.keys(POSITIONS);
         if (names.includes(setting)) return POSITIONS[setting];
         host.log(`[${SCRIPT_NAME}] backglassClockPosition "${setting}" is not one of ${names.join(", ")}; using ${DEFAULTS.backglassClockPosition}.`);

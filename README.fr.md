@@ -11,7 +11,7 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 ## Profils
 
 - Avec « Changer de joueur », chacun prend son Profil et son Avatar, et l'écran d'accueil vous salue par votre nom : vous savez pour qui les parties vont compter. Seules les parties d'au moins une minute comptent, et le Profil Invité reste toujours là pour les visiteurs.
-- **Mon profil** résume votre vie de flippeur ; **Stats de la maison** montre tout le monde côte à côte, le meilleur de chaque ligne en doré.
+- **"Mon profil"** résume votre vie de flippeur ; **"Stats de la maison"** montre tout le monde côte à côte, le meilleur de chaque ligne en doré.
 - Un Profil admin garde les entrées de configuration pour vous, et un Profil enfant retire les tables pour adultes de la roue.
 
 → [Profils](docs/guide/fr/profiles.md)
@@ -36,8 +36,8 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 
 - Les menus et messages de PinballY en français, anglais, allemand, espagnol, italien ou portugais, dessinés dans le style Steamball du pack et rangés en sections.
 - Une horloge, un arc doré sous la roue, des lancements sans flash noir, et des sons que vous pouvez remplacer par les vôtres.
-- **Discord Rich Presence** <img src="docs/images/discord_symbol.svg" alt="" width="16" height="16">, une fois activé, montre à vos amis Discord la table que vous jouez et depuis combien de temps.
-- **Réglages du pack**, dans le menu opérateur, active ou désactive chaque Add-on.
+- **Discord Rich Presence** (<img src="docs/images/discord_symbol.svg" alt="" width="16" height="16">), une fois activé, montre à vos amis Discord la table que vous jouez et depuis combien de temps.
+- **"Réglages de l'eXpansion pack"**, dans le menu opérateur, active ou désactive chaque Add-on.
 
 → [Interface](docs/guide/fr/interface.md) · [Discord Rich Presence](docs/guide/fr/settings.md#discord-rich-presence)
 

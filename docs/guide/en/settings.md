@@ -22,6 +22,8 @@ Everything stays in one folder, with no change to PinballY itself.
 
 Until the pack has read your vpxtool's version once (about ten seconds into the first start that finds it), or while that version cannot be read, there is no vpxtool line.
 
+Under "Launching and playing a table", while the Backglass Clock is saved on, a **Backglass Clock Position** line comes right under its On/Off line and shows the saved place. It opens a page with the six places: top left, top middle, top right, bottom left, bottom middle and bottom right. Your choice is saved at once and applies at the next game, with no restart.
+
 The **Offline Mode** group holds what reaches, or offers to reach, the internet, one switch each:
 
 - **Pack update check**: PinballY asks GitHub for a newer version of the pack at each start (`UPDATE_CHECK`).
