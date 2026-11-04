@@ -328,6 +328,27 @@
         </div>
       </li>
 
+      <li draggable="true" tabindex="0" class="item tr-profiles" id="avatar-choice" data-track="profiles" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Choisir son Avatar depuis la borne</h3>
+            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Choisir ou changer l'Avatar de n'importe quel Profile parmi des images fournies, sans passer par Windows. Les Profiles créés depuis la borne ont tous l'Avatar par défaut, donc la même image dans le Profile picker.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> · Reporté du grill de « Créer un Profile depuis la borne », 02/11/2026</div>
+          <details>
+            <summary>À trancher au grill (2)</summary>
+            <ul>
+              <li>Quelles images fournir : les images <code>default_scores</code> veulent dire Default Score sur le High Score Board, donc elles prêteraient à confusion.</li>
+              <li>Où se fait le choix (Profile Stats, près du cadre ?), et qui peut changer l'Avatar d'un autre Profile.</li>
+            </ul>
+          </details>
+        </div>
+      </li>
+
       <li draggable="true" tabindex="0" class="item tr-share" id="placed-layers" data-track="share" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -375,27 +396,6 @@
               <li>Les fichiers <code>*_give_up*</code> et <code>*_set_aside*</code> par écran et les cas de boutons redondants sont supprimés. Il reste un scénario de branchement par écran : ouverture, Exit, appui maintenu, et abandon pendant la préparation quand l'écran en a une. Les <code>*_button_hints_*</code> restent.</li>
             </ul>
             <p class="ctx">L'absence de <code>defaultPrevented</code> dans le Welcome Screen est sans effet : la file l'ouvre un tick plus tard, jamais pendant l'appui qui l'a demandé. L'enchaînement par un bouton maintenu vient de la lecture du code et de la doc PinballY, il n'a pas été observé sur la borne.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-profiles" id="avatar-choice" data-track="profiles" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Choisir son Avatar depuis la borne</h3>
-            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span><span class="tag">UI</span></div>
-          </div>
-          <p>Choisir ou changer l'Avatar de n'importe quel Profile parmi des images fournies, sans passer par Windows. Les Profiles créés depuis la borne ont tous l'Avatar par défaut, donc la même image dans le Profile picker.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> · Reporté du grill de « Créer un Profile depuis la borne », 02/11/2026</div>
-          <details>
-            <summary>À trancher au grill (2)</summary>
-            <ul>
-              <li>Quelles images fournir : les images <code>default_scores</code> veulent dire Default Score sur le High Score Board, donc elles prêteraient à confusion.</li>
-              <li>Où se fait le choix (Profile Stats, près du cadre ?), et qui peut changer l'Avatar d'un autre Profile.</li>
-            </ul>
           </details>
         </div>
       </li>
