@@ -999,6 +999,10 @@ export default {
         packUpdateFailed: (version, logPath) => `La mise à jour en v${version} a échoué : la version précédente reste en place. Détails dans ${logPath}`,
     },
     releaseHighlights: {
+        "1.2.0": [
+            "Créez un profil directement depuis la borne : choisissez le « + » dans Changer de joueur.",
+            "Discord peut maintenant montrer la table à laquelle vous jouez : activez-le dans les Réglages de l'eXpansion pack.",
+        ],
         "1.1.0": [
             "Lancez une table au hasard directement depuis le menu principal.",
             "Pendant une partie, l'heure s'affiche maintenant sur l'écran du backglass.",

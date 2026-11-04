@@ -994,6 +994,10 @@ export default {
         packUpdateFailed: (version, logPath) => `L'aggiornamento alla v${version} non è riuscito: la versione precedente resta al suo posto. Dettagli in ${logPath}`,
     },
     releaseHighlights: {
+        "1.2.0": [
+            "Crea un nuovo profilo direttamente dal cabinato: scegli il \"+\" in Cambia giocatore.",
+            "Discord ora può mostrare il tavolo a cui stai giocando: attivalo nelle Impostazioni del pack.",
+        ],
         "1.1.0": [
             "Avvia un tavolo a caso direttamente dal menu principale.",
             "Durante una partita, lo schermo del backglass mostra ora l'orario.",

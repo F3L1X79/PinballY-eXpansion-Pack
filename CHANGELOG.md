@@ -2,6 +2,14 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.2.0 (2026-11-04)
+
+- **Create a Profile from the cabinet**: the "+" at the end of Change Player opens Name Entry, a ring of characters you move along with the flippers, no keyboard or Windows needed. The first Profile created on a cabinet that only has Guest becomes an Admin Profile.
+- **Discord Rich Presence**: Discord can show the table being played on the account signed in on the cabinet's PC, and names the Table of the Day or of the Week. It is public, so it is off by default and asks for your consent each time it is turned on in the eXpansion Pack Settings, also from the Offline Mode group. Nothing shows during attract mode, and a Warning toast tells you when Discord cannot be reached.
+- **Status Icons**: small icons beside the wheel's clock show that Discord is showing the cabinet, that a Pack Update is waiting, or that the Update Check is turned off.
+- **Backglass Clock**: now a small plaque in the wheel clock's look, with its blue gradient, gold frame and drop shadow. It appears as soon as a table is launched, so games no longer start paused, opens at the top right of the backglass screen, and stays where you drag it.
+- **Small touches**: the Bronze, Silver, Gold and Platinum emblems each have a gem of their own; the French texts now say "Réglages de l'eXpansion pack" everywhere.
+
 ## v1.1.0 (2026-11-01)
 
 - **New name**: the Expansion Pack is now the PinballY eXpansion Pack, on screen and in the guide. Its folder, `ExpansionPack.zip` and the GitHub repository keep their names, so nothing changes for the install or the Pack Update.

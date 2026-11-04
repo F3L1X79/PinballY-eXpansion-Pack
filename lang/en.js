@@ -935,6 +935,10 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.2.0": [
+            "Create a new Profile right from the cabinet: choose the \"+\" in Change Player.",
+            "Discord can now show the table you are playing: turn it on in the eXpansion Pack Settings.",
+        ],
         "1.1.0": [
             "Launch a random table straight from the main menu.",
             "During a game, the time now shows on the backglass screen.",

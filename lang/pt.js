@@ -995,6 +995,10 @@ export default {
         packUpdateFailed: (version, logPath) => `A atualização para v${version} falhou: a versão anterior continua no lugar. Detalhes em ${logPath}`,
     },
     releaseHighlights: {
+        "1.2.0": [
+            "Crie um novo perfil direto da máquina: escolha o \"+\" em Trocar de jogador.",
+            "O Discord agora pode mostrar a mesa em que você está jogando: ative-o nas Configurações do pack.",
+        ],
         "1.1.0": [
             "Inicie uma mesa aleatória direto do menu principal.",
             "Durante uma partida, a hora agora aparece na tela do backglass.",

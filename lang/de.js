@@ -995,6 +995,10 @@ export default {
         packUpdateFailed: (version, logPath) => `Die Aktualisierung auf v${version} ist fehlgeschlagen: Die vorherige Version bleibt erhalten. Details in ${logPath}`,
     },
     releaseHighlights: {
+        "1.2.0": [
+            "Erstelle ein neues Profil direkt am Automaten: Wähle das \"+\" unter Spieler wechseln.",
+            "Discord kann jetzt den Tisch zeigen, den du spielst: Schalte es in den Expansion-Pack-Einstellungen ein.",
+        ],
         "1.1.0": [
             "Starte einen zufälligen Tisch direkt aus dem Hauptmenü.",
             "Während eines Spiels zeigt der Backglass-Bildschirm jetzt die Uhrzeit.",
