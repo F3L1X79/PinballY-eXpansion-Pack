@@ -236,7 +236,6 @@
 
         <div class="ax row">Faible</div>
         <div class="cell">
-          <a class="chip tr-share" href="#clock-placement"><b></b>Placer l'horloge</a>
           <a class="chip tr-share" href="#pinbally-release-day"><b></b>Nouvelle version de PinballY</a>
         </div>
         <div class="cell">
@@ -277,31 +276,6 @@
     </div>
 
     <ol class="queue">
-
-      <li draggable="true" tabindex="0" class="item tr-share" id="clock-placement" data-track="share" data-rank="bronze">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Choisir la position de l'horloge du backglass</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">petit</span><span class="tag">UI</span></div>
-          </div>
-          <p>Une ligne sous l'interrupteur de la Backglass Clock, dans les Expansion Pack Settings, choisit sa place sur l'écran du backglass parmi six : en haut ou en bas, à gauche, au milieu ou à droite. Elle garde une taille fixe, la plus petite qu'elle a aujourd'hui, et prend sa place à la partie suivante, sans redémarrage. Plus de placement à la souris. Spec réécrite le 04/11/2026.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/396">Spec #396</a>, tickets #446 (six places depuis <code>.env.local</code>, taille fixe) et #447 (la ligne des réglages, appliquée à la partie suivante) ; #397 (place par défaut en haut à droite) livré, #398 annulé, #399 et #400 abandonnés · Reprend la Backglass Clock (<code>addons/backglass_clock.js</code>, livrée) ; remplace le ticket #389 (taille fixée par le pack), fermé</div>
-          <details>
-            <summary>Décisions (5)</summary>
-            <ul>
-              <li>Six positions, en haut à droite par défaut ; nouveau terme Backglass Clock Position, à la place de Backglass Clock Placement.</li>
-              <li>La ligne, sous l'interrupteur de l'horloge, n'apparaît que si l'horloge est enregistrée activée.</li>
-              <li>Une taille fixe, la plus petite d'aujourd'hui ; les positions du bas tiennent compte de la hauteur réelle de la fenêtre.</li>
-              <li>Le choix s'applique à la partie suivante, sans redémarrage ; il remplace à chaque partie une place réglée à la main.</li>
-              <li>Rien d'autre ne change en partie (un clic y ouvre toujours le menu pause).</li>
-            </ul>
-            <p class="ctx">Constat de Félix du 01/11/2026 : depuis #386, l'horloge passe derrière le backglass quand on veut la redimensionner en partie. Essai du placement à la souris sur la borne le 04/11/2026 : un clic droit a tourné le contenu de sa fenêtre, et Félix préfère des positions fixes.</p>
-          </details>
-        </div>
-      </li>
 
       <li draggable="true" tabindex="0" class="item tr-share" id="pinbally-version" data-track="share" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
