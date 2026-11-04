@@ -84,6 +84,10 @@ _Avoid_: logfile, PinballY.log (PinballY's own log, which keeps only the current
 A menu the player sees drawn in the pack's own style instead of PinballY's native one, with the same entries and the same effect when one is chosen. Shown simply as "menu".
 _Avoid_: Steamball menu (Steamball is the palette), custom menu, popup (a popup shows information, a menu offers choices)
 
+**Drawn Screen**:
+A screen the pack draws over the dimmed wheel, which takes the player's buttons until it closes. A Drawn Menu is not one: a menu offers a list of entries, in the place of PinballY's own.
+_Avoid_: overlay, popup, session
+
 **Dialog**:
 A Drawn Menu that waits for the player's answer about one thing. The pack shows one at a time, only when the wheel is free, the most urgent first.
 _Avoid_: popup (a popup shows information without waiting), alert, message box

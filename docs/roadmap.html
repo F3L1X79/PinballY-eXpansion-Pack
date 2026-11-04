@@ -196,7 +196,7 @@
         <span class="recap" id="recap" aria-label="Chantiers par effort"></span>
       </div>
       <div class="gauge" aria-hidden="true"><i id="hero-gauge" style="width:0"></i></div>
-      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 03.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
+      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 04.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
     </div>
   </header>
 
@@ -220,12 +220,14 @@
         <div class="cell sweet">
         </div>
         <div class="cell">
+          <a class="chip tr-share" href="#placed-layers"><b></b>Calques placés</a>
           <a class="chip tr-share" href="#pinbally-version"><b></b>Version de PinballY</a>
           <a class="chip tr-profiles" href="#avatar-choice"><b></b>Choisir son Avatar</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
         </div>
         <div class="cell">
+          <a class="chip tr-share" href="#drawn-screen-controls"><b></b>Commandes des Drawn Screens</a>
           <a class="chip tr-profiles" href="#ratings"><b></b>Notes, favoris, masquées</a>
           <a class="chip tr-profiles" href="#year-in-pinball"><b></b>Year in Pinball</a>
           <a class="chip tr-share" href="#themes"><b></b>Thèmes</a>
@@ -322,6 +324,57 @@
               <li>Filtrer <code>isConfigured</code> dans <code>getVisibleTables</code>, en ticket de cette spec. Une entrée du guide pour le cas où PinballY coupe tout le JavaScript.</li>
             </ul>
             <p class="ctx">Idée de Félix du 01/11/2026. La recherche n'a trouvé aucune rupture annoncée pour la Beta 11, d'où l'impact ramené de fort à moyen.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-share" id="placed-layers" data-track="share" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Calques placés et cachés en un point</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen</span><span class="tag">Architecture</span></div>
+          </div>
+          <p>Un module de <code>common/drawing/</code> possède la création, le placement et le masquage des calques, pour que la règle des calques cachés soit tenue par le code et non par chaque écran. Aujourd'hui, 8 copies de <code>hiddenLayer</code> coexistent et environ 100 calques de l'Achievement List y échappent. Grillé le 04/11/2026.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="here">spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/to-spec</code> · Candidat 2 de la revue d'architecture du 04/11/2026 · Suite : <a href="#drawn-screen-controls">Commandes des Drawn Screens</a></div>
+          <details>
+            <summary>Décisions du grill (5)</summary>
+            <ul>
+              <li>Tout se corrige sans mesure préalable, y compris les lignes de l'Achievement List. Aucun gain de fluidité n'est annoncé ; après livraison, on vérifie sur la borne que le défilement de la liste reste fluide.</li>
+              <li>La règle : tout calque caché qui reste vivant une fois l'écran ouvert ou fermé est un point. Le court passage pendant l'ouverture est toléré. Un test unique le vérifie sur le faux host, et vérifie aussi qu'aucun calque visible ne reste un point.</li>
+              <li><code>common/drawing/placed_layers.js</code> a deux niveaux : <code>createHiddenLayer(host, zIndex)</code>, seul niveau utilisé par les confettis, le feu d'artifice et le Selection Marker, et un jeu de calques placés (<code>place</code>, <code>hide</code>, <code>show</code>, <code>remove</code>) sur lequel s'appuie <code>createScreenLayers</code>. Les écrans écrivent toujours <code>alpha</code> pendant leurs fondus, et le <code>clear</code> de chaque appelant reste tel quel.</li>
+              <li>Le remesurage quand la fenêtre change reste dans les écrans : le Welcome Screen et Name Entry redessinent leurs calques au lieu de les replacer.</li>
+              <li>Le Welcome Screen reprend le <code>fadeIn</code> de <code>screen_opening.js</code>, la phrase de <code>conventions.md</code> pointe vers le module, et l'ADR 0005 reçoit une ligne sur l'échelle retrouvée. Pas de nouvel ADR.</li>
+            </ul>
+            <p class="ctx">Rien n'a été mesuré sur la borne : le coût réel de ces calques cachés reste inconnu.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-share" id="drawn-screen-controls" data-track="share" data-rank="platinum">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Commandes communes des Drawn Screens</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">gros</span><span class="tag">Architecture</span></div>
+          </div>
+          <p>Un module, <code>drawn_screen_controls.js</code>, possède les boutons d'un Drawn Screen une fois ouvert, pour qu'une règle commune ne se paie plus en un ticket par écran. Seul effet visible : un bouton maintenu n'enchaîne plus les choix ni les retours. Grillé le 04/11/2026.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="here">spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/to-spec</code>, après <a href="#placed-layers">Calques placés</a> · Candidat 1 de la revue d'architecture du 04/11/2026 · Nouveau terme Drawn Screen</div>
+          <details>
+            <summary>Décisions du grill (6)</summary>
+            <ul>
+              <li>7 écrans entrent dans le module : d'abord Profile Stats, Household Stats et la liste des Avatar Frames, puis High Score Board, Name Entry, Achievement List et Welcome Screen. Le Drawn Menu et le Profile Picker restent dehors et n'appliquent que la garde du bouton maintenu.</li>
+              <li><code>Next</code> et <code>Prev</code> se répètent toujours ; <code>Select</code>, <code>Launch</code> et <code>Exit</code> ignorent la répétition, sur les Drawn Screens et les Drawn Menus. Il faut donc un appui par niveau pour remonter.</li>
+              <li>Un seul écouteur de <code>commandbuttondown</code> et d'<code>attractmodestart</code>, avec une pile d'ouvertures, pas d'écrans : Profile Stats peut y figurer deux fois (Profile Stats, Household Stats, Profile Stats d'un autre Profile). Le test <code>defaultPrevented</code> reste à l'entrée, pour les appuis pris par un Drawn Menu. L'écouteur s'inscrit à la première création d'écran, avant celui du Profile Picker.</li>
+              <li>Le module possède le routage des boutons, l'état « en préparation », l'attract mode, la pile (mise de côté, réapparition, abandon quand un enfant échoue) et les écouteurs de fermeture. L'écran fournit <code>onMove</code>, <code>onChoose</code>, <code>onExit</code>, <code>setAside</code>, <code>showAgain</code> et <code>close</code>, et garde l'ouverture, le fondu, le marqueur, le son, le glissement et le défilement.</li>
+              <li>L'inscription à la file des Dialogs reste un <code>waitFor</code> explicite dans l'Add-on : le module fournit <code>isOpen</code> et <code>onClosed</code>. L'automatique se tromperait sur le Welcome Screen, déjà dans la file (ADR 0011), et sur Name Entry, dont la fermeture ferait passer un Dialog sur le carrousel.</li>
+              <li>Les fichiers <code>*_give_up*</code> et <code>*_set_aside*</code> par écran et les cas de boutons redondants sont supprimés. Il reste un scénario de branchement par écran : ouverture, Exit, appui maintenu, et abandon pendant la préparation quand l'écran en a une. Les <code>*_button_hints_*</code> restent.</li>
+            </ul>
+            <p class="ctx">L'absence de <code>defaultPrevented</code> dans le Welcome Screen est sans effet : la file l'ouvre un tick plus tard, jamais pendant l'appui qui l'a demandé. L'enchaînement par un bouton maintenu vient de la lecture du code et de la doc PinballY, il n'a pas été observé sur la borne.</p>
           </details>
         </div>
       </li>
