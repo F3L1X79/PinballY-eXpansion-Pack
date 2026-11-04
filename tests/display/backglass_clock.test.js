@@ -19,13 +19,11 @@ const PANEL_TOP = 0xFF2A3547;
 const PANEL = 0xFF171D27;
 const SOFT_WHITE = 0xFFDCDCDC;
 const GOLD = 0xFFE8B84A;
-const OWNER_PLACE = { left: 2600, top: 40, right: 3000, bottom: 340 };
+const SWP_NOMOVE = 0x2;
 
 test("during a game the Backglass Clock shows the time in front, raised on a schedule, and goes at the end", async () => {
     const fake = createFakePinballYHost({
         now: new Date(2026, 9, 30, 21, 47, 30), tables: [TABLE], monitorCount: 2,
-        // Where the owner left it, 400x300 on the backglass screen.
-        savedMediaWindowRects: { BackglassClock: OWNER_PLACE },
     });
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
@@ -85,9 +83,9 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
     assert.ok(time.rect.height < canvas.height / 2, "the time well inside the box");
     assert.ok(underline.y > time.rect.y && underline.width < box.width, "the underline below the time, as wide as it");
     assert.ok(canvas.height < 400, "its own fixed-height canvas, stretched over the window");
-    assert.ok(Math.abs(canvas.width / canvas.height - 400 / 300) < 0.02, "as wide as the window's aspect ratio");
+    assert.ok(Math.abs(canvas.width / canvas.height - 320 / 200) < 0.02, "as wide as the window's aspect ratio");
 
-    // The owner resizing the box: the canvas follows its ratio, never its size.
+    // The window's size changing during the game: the canvas follows its ratio, never its size.
     clock.resize({ width: 640, height: 220 });
     fake.advanceTime(60 * 1000);
     assert.deepEqual(layer.texts(), [lang.clock.time(21, 49), lang.clock.time(21, 49)], "every minute");
@@ -108,7 +106,9 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
     assert.equal(clock.calls().length, beforeEnd + 2, "no raise left after the game");
     assert.deepEqual(layer.texts(), [lang.clock.time(21, 50), lang.clock.time(21, 50)], "no redraw on the wheel");
 
-    assert.ok(clock.calls().filter(entry => entry.call === "setWindowPos").every(entry => entry.flags === KEEP_PLACE_NO_FOCUS),
-        "never moved, sized or focused");
+    const windowCalls = clock.calls().filter(entry => entry.call === "setWindowPos");
+    const raises = windowCalls.filter(entry => entry.after === "TOPMOST" || entry.after === "NOTOPMOST");
+    assert.ok(raises.every(entry => entry.flags === KEEP_PLACE_NO_FOCUS), "every raise keeps its place and never takes the focus");
+    assert.equal(windowCalls.filter(entry => !(entry.flags & SWP_NOMOVE)).length, 1, "moved once, before it shows");
     assertNoErrorLogged(fake);
 });

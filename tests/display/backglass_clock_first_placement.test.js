@@ -1,8 +1,8 @@
 // ============================================================
 // Backglass Clock, through main.js on the fake PinballY globals: a window
-// PinballY opened on the playfield screen (never placed by the owner) moves
-// at "gamestarted" to the top right of the backglass screen read at
-// "prelaunch", at its default size, without taking the focus.
+// PinballY opened on the playfield screen moves at "prelaunch" to the top
+// right of the backglass screen, the default Backglass Clock Position, at
+// its fixed size, without taking the focus.
 // ============================================================
 
 import { test } from "node:test";
@@ -51,6 +51,6 @@ test("at the first game the Backglass Clock moves onto the backglass screen's to
     fake.gameOver(TABLE);
     fake.playGame(TABLE);
     fake.gameStarted(TABLE);
-    assert.deepEqual(clock.windowRect(), rect, "never moved again once on the backglass screen");
+    assert.deepEqual(clock.windowRect(), rect, "the same place at the next game");
     assertNoErrorLogged(fake);
 });

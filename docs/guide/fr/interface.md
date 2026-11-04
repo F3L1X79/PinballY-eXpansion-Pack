@@ -51,7 +51,7 @@ Elles gardent leur place quand la minute change et quand l'horloge est désactiv
 
 Pendant une partie, l'horloge du backglass affiche l'heure dans un petit cadre au dégradé bleu des menus Steamball, bordé d'un filet doré, devant le backglass de VPX, avec le même format, la même ombre portée et le même soulignement doré que l'horloge de la roue. Elle apparaît dès le lancement de la table, pendant son chargement, change avec la minute et disparaît à la fin de la partie ou si le lancement échoue. Elle ne s'affiche jamais sur une borne à un seul écran, ni pendant que PinballY capture les médias d'une table.
 
-Elle est **désactivée par défaut** : activez-la dans les Réglages du pack ou avec `ADD_ON_BACKGLASS_CLOCK=true`. À sa première partie, le cadre s'ouvre en haut à droite de l'écran du backglass. Déplacez-le et redimensionnez-le comme les autres fenêtres de PinballY ; PinballY retient où vous l'avez mis, le cadre y reste désormais tant qu'il est sur l'écran du backglass (ailleurs, il revient en haut à droite à la partie suivante), et l'heure grandit avec lui. Un backglass réglé pour rester au premier plan (« FormToFront » de B2S activé) peut la cacher.
+Elle est **désactivée par défaut** : activez-la dans les Réglages du pack ou avec `ADD_ON_BACKGLASS_CLOCK=true`. Le cadre s'ouvre à la place choisie avec `BACKGLASS_CLOCK_POSITION` (voir [Réglages](settings.md)), en haut à droite de l'écran du backglass par défaut, toujours à la même taille. Il ne se déplace et ne se redimensionne plus à la main : une place réglée à la main est remplacée à la partie suivante. Un backglass réglé pour rester au premier plan (« FormToFront » de B2S activé) peut la cacher.
 
 ---
 

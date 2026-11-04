@@ -74,6 +74,9 @@ export const DEFAULTS = {
     // false = no Fireworks with a Level Toast (nothing is drawn ahead for
     // them, no sound plays), for a PC that struggles with them.
     fireworks: true,
+    // The Backglass Clock's place on the backglass screen: "topLeft",
+    // "topCenter", "topRight", "bottomLeft", "bottomCenter" or "bottomRight".
+    backglassClockPosition: "topRight",
     // false = PinballY never asks GitHub for a newer Pack Version at its
     // start, and never offers to update the pack. A git checkout is never
     // checked either way. In the Settings' Offline Mode group.

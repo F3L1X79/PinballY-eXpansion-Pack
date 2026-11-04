@@ -7,9 +7,10 @@
 // - Never shown while a game runs: that activates PinballY, which opens the pause menu (#386).
 // - Every raise keeps the window's place and never takes VPX's focus.
 // - clientRect isn't in the visible window's units: only its ratio is read.
-// - Moved onto the backglass screen only from outside it: the owner's place sticks.
+// - Moved to its Backglass Clock Position at each game: a place PinballY saved is overwritten.
 // ============================================================
 
+import config, { DEFAULTS } from "../common/core/config.js";
 import lang from "../common/core/i18n.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
@@ -26,8 +27,16 @@ const CONFIG_VAR_PREFIX = "BackglassClock";
 // VPX's B2S loads after "gamestarted" and may come in front: raised again
 // on this schedule, then at each minute (as held on the cabinet, spec #369).
 const RAISE_DELAYS_MS = [2000, 5000, 10000, 20000, 40000];
-// Its size at the backglass screen's top right, until the owner places it.
-const DEFAULT_SIZE = Object.freeze({ width: 320, height: 110 });
+// The size asked for; Windows keeps a borderless window at least 200 px tall (pinbally-help.md, section 2.1).
+const WINDOW_SIZE = Object.freeze({ width: 320, height: 110 });
+const POSITIONS = Object.freeze({
+    topLeft: { column: "left", row: "top" },
+    topCenter: { column: "center", row: "top" },
+    topRight: { column: "right", row: "top" },
+    bottomLeft: { column: "left", row: "bottom" },
+    bottomCenter: { column: "center", row: "bottom" },
+    bottomRight: { column: "right", row: "bottom" },
+});
 const LAYER_Z_INDEX = 100;
 // PinballY stretches this canvas over the whole window; its width follows
 // the window's aspect ratio, so the text keeps its proportions.
@@ -42,13 +51,17 @@ const CAP_TOP = (2210 - 1434) / (2210 + 514);
 const TIME_SIZE = Object.freeze({ start: 52, min: 8 });
 const UNDERLINE = Object.freeze({ thickness: 4, gap: 7 });
 
-const isInside = (inner, outer) => inner.left >= outer.left && inner.top >= outer.top
-    && inner.right <= outer.right && inner.bottom <= outer.bottom;
-
-// The top right corner, with the wheel Clock's corner margin scaled to the screen's height.
-function defaultPlaceOn(screenRect) {
+// The window's place, with the wheel Clock's corner margin scaled to the
+// screen's height; a bottom place depends on the height the window really has.
+function windowRectOn(screenRect, { column, row }, windowHeight) {
     const margin = Math.round(WHEEL_CLOCK.left * (screenRect.bottom - screenRect.top) / WHEEL_CLOCK.referenceHeight);
-    return { left: screenRect.right - DEFAULT_SIZE.width - margin, top: screenRect.top + margin, ...DEFAULT_SIZE };
+    const lefts = {
+        left: screenRect.left + margin,
+        center: Math.round((screenRect.left + screenRect.right - WINDOW_SIZE.width) / 2),
+        right: screenRect.right - WINDOW_SIZE.width - margin,
+    };
+    const top = row === "top" ? screenRect.top + margin : screenRect.bottom - windowHeight - margin;
+    return { left: lefts[column], top, ...WINDOW_SIZE };
 }
 
 export default function init() {
@@ -108,9 +121,16 @@ export default function init() {
         raiseTimers = [];
     }
 
-    // A window outside the backglass screen was never placed by the owner:
-    // PinballY opens a new one on the playfield screen. Read before the game:
-    // Force Backglass hides the backglass on "gamestarted".
+    function chosenPosition() {
+        const setting = config.backglassClockPosition;
+        const names = Object.keys(POSITIONS);
+        if (names.includes(setting)) return POSITIONS[setting];
+        host.log(`[${SCRIPT_NAME}] backglassClockPosition "${setting}" is not one of ${names.join(", ")}; using ${DEFAULTS.backglassClockPosition}.`);
+        return POSITIONS[DEFAULTS.backglassClockPosition];
+    }
+
+    // The screen is read before the game: Force Backglass hides the backglass
+    // on "gamestarted".
     function placeOnBackglassScreen() {
         let backglassRect = null;
         let problem = "the backglass window has no frame";
@@ -123,7 +143,13 @@ export default function init() {
             host.log(`[${SCRIPT_NAME}] Backglass screen unknown (${problem}): the clock stays where it is.`);
             return;
         }
-        if (!isInside(clockWindow.getWindowRect(), backglassRect)) clockWindow.moveTo(defaultPlaceOn(backglassRect));
+        const position = chosenPosition();
+        const asked = windowRectOn(backglassRect, position, WINDOW_SIZE.height);
+        clockWindow.moveTo(asked);
+        const frame = clockWindow.getWindowRect();
+        // The same size is asked again, never the height read back: only the top depends on it.
+        const settled = windowRectOn(backglassRect, position, frame.bottom - frame.top);
+        if (settled.top !== asked.top) clockWindow.moveTo(settled);
     }
 
     function hide() {
@@ -144,10 +170,11 @@ export default function init() {
         hide();
         launchGoingAhead = false;
         if (host.countMonitors() <= 1 || ev.command === host.getBuiltInCommand("CaptureGo")) return;
+        // Again at each game: its title bar was seen back on the cabinet.
+        // Before placing it, as a borderless window's height differs.
+        clockWindow.setBorderless(true);
         // Placed before it shows, so it never flashes on the playfield first.
         placeOnBackglassScreen();
-        // Again at each game: its title bar was seen back on the cabinet.
-        clockWindow.setBorderless(true);
         minuteTick.start();
         clockWindow.showWindow(true);
         shown = true;

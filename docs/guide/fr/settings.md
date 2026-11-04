@@ -60,6 +60,7 @@ ADD_ON_CLOCK=false
 | `ACHIEVEMENT_TOAST_SCALE` | `1.0` | Taille de l'annonce, de `0.5` à `3` : à augmenter sur un grand écran. |
 | `CONFETTI` | `true` | `false` coupe la pluie de confettis qui accompagne l'annonce d'un Défi réussi, d'un Succès Platine, du niveau 10 de maîtrise sur une table ou d'un nouveau palier de la collection, si votre PC peine. |
 | `FIREWORKS` | `true` | `false` coupe le feu d'artifice qui accompagne l'annonce d'un nouveau niveau, si votre PC peine. Indépendant de `CONFETTI`. |
+| `BACKGLASS_CLOCK_POSITION` | `topRight` | Où l'horloge du backglass s'affiche sur l'écran du backglass, à sa taille fixe : `topLeft`, `topCenter`, `topRight`, `bottomLeft`, `bottomCenter` ou `bottomRight` (voir [Interface](interface.md#horloge-du-backglass)). |
 | `UPDATE_CHECK` | `true` | `false` empêche PinballY de demander à GitHub, à chaque démarrage, si une version plus récente du pack existe, et de proposer de la mettre à jour (voir [Mises à jour](updates.md)). |
 | `OFFER_VPXTOOL` | `true` | `false` empêche le pack de jamais proposer d'installer ou de mettre à jour vpxtool ; vous pouvez toujours l'installer vous-même. |
 | `SKIP_RANDOM_GAME_ANIMATION` | `false` | `true` saute la roue de la fortune et lance la table au hasard aussitôt. |

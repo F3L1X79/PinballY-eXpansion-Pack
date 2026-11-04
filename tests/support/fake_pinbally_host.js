@@ -20,6 +20,8 @@ const NEW_MEDIA_WINDOW_RECT = Object.freeze({ left: 26, top: 26, right: 836, bot
 // A custom window's clientRect against its frame, as seen on the cabinet
 // (§2.1, asked 320 wide, reported 480): another unit, the same ratio.
 const MEDIA_WINDOW_CLIENT_SCALE = 1.5;
+// §2.1: asked 320x128, a borderless custom window reports 320x200.
+const BORDERLESS_MIN_HEIGHT = 200;
 
 const RealDate = Date;
 // The fake whose globals are installed and not yet uninstalled, if any.
@@ -668,7 +670,8 @@ export function createFakePinballYHost({
     // A custom window as mainWindow.createMediaWindow() returns it: opened
     // where its settings put it, else where the cabinet showed a new one,
     // visible, with a title bar until borderlessMode is set. setWindowPos moves and sizes it unless its
-    // flags say not to; its client size is the frame's, in other units.
+    // flags say not to, borderless never less than 200 px tall (seen on the
+    // cabinet, docs/pinbally/pinbally-help.md §2.1); its client size is the frame's, in other units.
     // Shown during a game, it activates PinballY, which opens the pause menu
     // (seen on the cabinet, docs/pinbally/pinbally-help.md, #386).
     // Each showWindow and setWindowPos call is recorded in order.
@@ -687,7 +690,8 @@ export function createFakePinballYHost({
             },
             setWindowPos: (after, x, y, width, height, flags) => {
                 calls.push({ call: "setWindowPos", after, x, y, width, height, flags });
-                const size = (flags & SWP_NOSIZE) ? { width: rect.right - rect.left, height: rect.bottom - rect.top } : { width, height };
+                const size = (flags & SWP_NOSIZE) ? { width: rect.right - rect.left, height: rect.bottom - rect.top }
+                    : { width, height: rawWindow.borderlessMode ? Math.max(height, BORDERLESS_MIN_HEIGHT) : height };
                 const origin = (flags & SWP_NOMOVE) ? { left: rect.left, top: rect.top } : { left: x, top: y };
                 rect = { ...origin, right: origin.left + size.width, bottom: origin.top + size.height };
             },
