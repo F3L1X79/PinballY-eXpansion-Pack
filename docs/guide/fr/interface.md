@@ -6,7 +6,7 @@
 
 <img src="../../images/main_menu.png" alt="Le menu principal dessiné, en français, rangé en sections" width="400">
 
-Les menus et messages de PinballY enfin en français, mais aussi en allemand, espagnol, italien et portugais, en plus de l'anglais. Choisissez la langue dans **Réglages du pack**, ou avec `LANGUAGE` dans `.env.local` (voir [Réglages](settings.md)).
+Les menus et messages de PinballY enfin en français, mais aussi en allemand, espagnol, italien et portugais, en plus de l'anglais. Choisissez la langue dans **Réglages de l'eXpansion pack**, ou avec `LANGUAGE` dans `.env.local` (voir [Réglages](settings.md)).
 
 ## Menus dessinés
 
@@ -39,7 +39,7 @@ De petites icônes se placent à droite de l'horloge de la roue, sur sa ligne, �
 - Une flèche dorée pointée vers le bas, seulement pour qui voit les entrées de configuration (un [Profil admin](settings.md#profil-admin), ou n'importe qui tant qu'aucun Profil n'est marqué) : une version plus récente du pack attend (voir [Mises à jour](updates.md)).
 - Une flèche circulaire blanche, barrée, seulement pour qui voit les entrées de configuration : la recherche de mises à jour du pack est désactivée.
 
-Elles gardent leur place quand la minute change et quand l'horloge est désactivée, se cachent pendant une partie et suivent le Profil actif après « Changer de joueur ». Une icône qui apparaît ou disparaît pendant que vous êtes sur la roue le fait en un seul fondu. Pour les désactiver : « Icônes d'état » dans le groupe Écran de la roue des **Réglages du pack**, ou `ADD_ON_STATUS_ICONS=false`.
+Elles gardent leur place quand la minute change et quand l'horloge est désactivée, se cachent pendant une partie et suivent le Profil actif après « Changer de joueur ». Une icône qui apparaît ou disparaît pendant que vous êtes sur la roue le fait en un seul fondu. Pour les désactiver : « Icônes d'état » dans le groupe Écran de la roue des **Réglages de l'eXpansion pack**, ou `ADD_ON_STATUS_ICONS=false`.
 
 ## Lancements, attentes et sons
 
@@ -51,7 +51,7 @@ Elles gardent leur place quand la minute change et quand l'horloge est désactiv
 
 Pendant une partie, l'horloge du backglass affiche l'heure dans un petit cadre au dégradé bleu des menus Steamball, bordé d'un filet doré, devant le backglass de VPX, avec le même format, la même ombre portée et le même soulignement doré que l'horloge de la roue. Elle apparaît dès le lancement de la table, pendant son chargement, change avec la minute et disparaît à la fin de la partie ou si le lancement échoue. Elle ne s'affiche jamais sur une borne à un seul écran, ni pendant que PinballY capture les médias d'une table.
 
-Elle est **désactivée par défaut** : activez-la dans les Réglages du pack ou avec `ADD_ON_BACKGLASS_CLOCK=true`. Le cadre s'ouvre à la place choisie dans les [Réglages du pack](settings.md#réglages-du-pack) ou avec `BACKGLASS_CLOCK_POSITION`, en haut à droite de l'écran du backglass par défaut, toujours à la même taille. Il ne se déplace et ne se redimensionne plus à la main : une place réglée à la main est remplacée à la partie suivante. Un backglass réglé pour rester au premier plan (« FormToFront » de B2S activé) peut la cacher.
+Elle est **désactivée par défaut** : activez-la dans les Réglages de l'eXpansion pack ou avec `ADD_ON_BACKGLASS_CLOCK=true`. Le cadre s'ouvre à la place choisie dans les [Réglages de l'eXpansion pack](settings.md#réglages-de-lexpansion-pack) ou avec `BACKGLASS_CLOCK_POSITION`, en haut à droite de l'écran du backglass par défaut, toujours à la même taille. Il ne se déplace et ne se redimensionne plus à la main : une place réglée à la main est remplacée à la partie suivante. Un backglass réglé pour rester au premier plan (« FormToFront » de B2S activé) peut la cacher.
 
 ---
 

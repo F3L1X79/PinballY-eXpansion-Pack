@@ -52,7 +52,7 @@ Nécessite **Windows** et **PinballY 1.1.0 Beta 10** ou plus récent (plus la fo
    import("./ExpansionPack/main.js").catch(e => logfile.log("ExpansionPack: " + e.message));
    ```
 4. **Redémarrez PinballY.** `PinballY.log` montre une ligne « initialized » par Add-on ; les erreurs sont aussi gardées dans `Scripts\ExpansionPack\errors.log`.
-5. **Choisissez vos Add-ons**, l'écran de démarrage et la langue dans **Réglages du pack**, depuis le menu opérateur, puis redémarrez PinballY d'une seule pression.
+5. **Choisissez vos Add-ons**, l'écran de démarrage et la langue dans **Réglages de l'eXpansion pack**, depuis le menu opérateur, puis redémarrez PinballY d'une seule pression.
 
 Tout ce que le pack conserve (réglages et Profils) reste dans `Scripts\ExpansionPack` : copiez ce dossier pour sauvegarder, supprimez-le avec la ligne d'import pour désinstaller. PINemHi 3.6.8, `.env.local` et l'installation avec git : voir la [page d'installation](docs/guide/fr/install.md).
 

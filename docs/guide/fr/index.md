@@ -16,7 +16,7 @@ Ce guide décrit la version avec laquelle il est livré. Pour une version plus a
 4. [Succès et défis](achievements_and_challenges.md) : les défis de la semaine, les succès et le niveau.
 5. [Choisir une table](choosing_a_table.md) : l'écran d'accueil, la table du jour et la table de la semaine, la maîtrise des tables, les meilleurs scores, la table au hasard et les filtres en plus.
 6. [Interface](interface.md) : PinballY en six langues, les menus dessinés, le nettoyage des menus, l'horloge, les lancements et les sons.
-7. [Réglages](settings.md) : Réglages du pack, `.env.local`, le Profil admin, le Profil enfant et la réinitialisation d'un profil.
+7. [Réglages](settings.md) : Réglages de l'eXpansion pack, `.env.local`, le Profil admin, le Profil enfant et la réinitialisation d'un profil.
 8. [Dépannage](troubleshooting.md) : le toast « Problème », le journal des erreurs (`errors.log`) et les questions fréquentes.
 9. [À venir](coming_next.md) : la direction que prend le pack.
 

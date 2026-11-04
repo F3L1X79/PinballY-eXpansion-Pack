@@ -105,7 +105,7 @@ The menu entries for looking after the cabinet: Table Setup, the Operator Menu a
 _Avoid_: admin entries, operator entries
 
 **eXpansion Pack Settings**:
-The screens, reached from the Operator Menu, where the owner turns each Add-on on or off and picks the interface language without editing the configuration by hand. They belong to the pack itself, not to an Add-on. Shown as "Réglages du pack" in French.
+The screens, reached from the Operator Menu, where the owner turns each Add-on on or off and picks the interface language without editing the configuration by hand. They belong to the pack itself, not to an Add-on. Shown as "Réglages de l'eXpansion pack" in French.
 _Avoid_: Theme Settings (a theme is a palette), options menu, Pack Settings
 
 **Filter Picker**:

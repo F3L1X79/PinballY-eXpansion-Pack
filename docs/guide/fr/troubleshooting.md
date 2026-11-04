@@ -16,7 +16,7 @@ Un échec qui répond à un choix que vous venez de faire (une réinitialisation
 
 | Le message dit | Que faire |
 |---|---|
-| « vpxtool n'a pas pu être installé ; rien n'a changé. Vous pouvez réessayer depuis les Réglages du pack. » (ou « … mis à jour … » pour une mise à jour) | La borne est peut-être hors ligne, le téléchargement a pu être coupé ou bloqué par l'antivirus, ou `vpxtool.exe` est en cours d'utilisation. Votre ancien `vpxtool.exe`, s'il y en avait un, est toujours en place. Lisez `%TEMP%\PinballYExpansionPack\script-reader-install.log`, puis réessayez, ou installez vpxtool à la main (voir [Installation](install.md#vpxtool)). |
+| « vpxtool n'a pas pu être installé ; rien n'a changé. Vous pouvez réessayer depuis les Réglages de l'eXpansion pack. » (ou « … mis à jour … » pour une mise à jour) | La borne est peut-être hors ligne, le téléchargement a pu être coupé ou bloqué par l'antivirus, ou `vpxtool.exe` est en cours d'utilisation. Votre ancien `vpxtool.exe`, s'il y en avait un, est toujours en place. Lisez `%TEMP%\PinballYExpansionPack\script-reader-install.log`, puis réessayez, ou installez vpxtool à la main (voir [Installation](install.md#vpxtool)). |
 
 ## Le toast « Avertissement »
 

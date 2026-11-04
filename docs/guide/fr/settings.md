@@ -4,7 +4,7 @@
 
 Pour le propriétaire de la borne :
 
-- **Réglages du pack** : depuis le menu opérateur, activer ou désactiver chaque Add-on par catégorie, choisir l'écran de démarrage et la langue, puis redémarrer PinballY d'une pression.
+- **Réglages de l'eXpansion pack** : depuis le menu opérateur, activer ou désactiver chaque Add-on par catégorie, choisir l'écran de démarrage et la langue, puis redémarrer PinballY d'une pression.
 - **Profil admin** : les entrées de configuration pour vous seul.
 - **Profil enfant** : une roue sans tables pour adultes.
 - **Gérer les profils** : marquer un Profil admin ou un Profil enfant, ou faire repartir de zéro un Profil ou toute la maison d'un coup.
@@ -12,9 +12,9 @@ Pour le propriétaire de la borne :
 
 Tout tient dans un seul dossier, sans modifier PinballY.
 
-## Réglages du pack
+## Réglages de l'eXpansion pack
 
-**Réglages du pack**, dans le menu opérateur, règle les Add-ons, l'écran de démarrage, la langue et le mode hors ligne sans éditer aucun fichier, puis redémarre PinballY d'une pression. On y trouve aussi « Mettre à jour en vX.Y.Z » après avoir répondu « Plus tard » à l'invite de mise à jour (voir [Mises à jour](updates.md)), et, tant que l'Add-on « ROM des tables » est activé, une ligne vpxtool (voir [Installation](install.md#vpxtool) et [Mises à jour](updates.md#garder-vpxtool-à-jour)) :
+**Réglages de l'eXpansion pack**, dans le menu opérateur, règle les Add-ons, l'écran de démarrage, la langue et le mode hors ligne sans éditer aucun fichier, puis redémarre PinballY d'une pression. On y trouve aussi « Mettre à jour en vX.Y.Z » après avoir répondu « Plus tard » à l'invite de mise à jour (voir [Mises à jour](updates.md)), et, tant que l'Add-on « ROM des tables » est activé, une ligne vpxtool (voir [Installation](install.md#vpxtool) et [Mises à jour](updates.md#garder-vpxtool-à-jour)) :
 
 - « Installer vpxtool v0.38.0 » tant que vpxtool manque ;
 - « Mettre à jour vpxtool (v0.37.1 → v0.38.0) » tant que le vôtre est plus ancien que la version que nomme le pack ;
@@ -34,7 +34,7 @@ Le groupe **Mode hors ligne** réunit ce qui contacte internet, ou propose de le
 
 Discord Rich Presence montre, sur le compte Discord ouvert sur le PC de la borne, ce que fait la borne : « Choisit une table » sur la roue, pendant une partie le nom de la table, depuis combien de temps elle dure et, s'il y a lieu, « Table du jour » ou « Table de la semaine », sous le nom « Virtual Pinball » avec le logo du pack, et rien pendant le mode attract : une borne laissée allumée la nuit ne montre rien. **C'est public** : vos amis Discord et les membres de vos serveurs le voient. Rien d'autre n'est envoyé : aucun nom de profil, jamais la table sélectionnée sur la roue, rien d'autre de votre PC. Une table adulte montre son nom comme toute autre table.
 
-Il est **désactivé par défaut** : activez-le dans les Réglages du pack, sous « Lancer et jouer une table » ou dans le groupe Mode hors ligne, ou avec `ADD_ON_DISCORD_RICH_PRESENCE=true`. L'activer dans les Réglages demande votre accord à chaque fois, dans un dialogue qui dit ce qui devient public, le curseur sur « Annuler » : seul « Activer » l'enregistre. Le désactiver ne demande jamais rien. Lancez Discord avant PinballY : le pack ne le lance jamais et le cherche trois fois, à 15 secondes d'intervalle, au démarrage ; si Discord ne tourne toujours pas, ou se ferme pendant la session, un [toast « Avertissement »](troubleshooting.md#le-toast-avertissement) le dit une seule fois et le statut reste vide jusqu'au prochain démarrage de PinballY (la raison est dans `PinballY.log`). Tant que Discord montre vraiment la borne, son symbole blanc se place à côté de l'horloge de la roue, pour tout le monde (voir [Icônes d'état](interface.md#icônes-détat)).
+Il est **désactivé par défaut** : activez-le dans les Réglages de l'eXpansion pack, sous « Lancer et jouer une table » ou dans le groupe Mode hors ligne, ou avec `ADD_ON_DISCORD_RICH_PRESENCE=true`. L'activer dans les Réglages demande votre accord à chaque fois, dans un dialogue qui dit ce qui devient public, le curseur sur « Annuler » : seul « Activer » l'enregistre. Le désactiver ne demande jamais rien. Lancez Discord avant PinballY : le pack ne le lance jamais et le cherche trois fois, à 15 secondes d'intervalle, au démarrage ; si Discord ne tourne toujours pas, ou se ferme pendant la session, un [toast « Avertissement »](troubleshooting.md#le-toast-avertissement) le dit une seule fois et le statut reste vide jusqu'au prochain démarrage de PinballY (la raison est dans `PinballY.log`). Tant que Discord montre vraiment la borne, son symbole blanc se place à côté de l'horloge de la roue, pour tout le monde (voir [Icônes d'état](interface.md#icônes-détat)).
 
 ## `.env.local`
 

@@ -29,7 +29,7 @@ Sont conservés :
 
 ## Plus tard
 
-« Plus tard » n'est plus demandé pour cette version : « Mettre à jour en vX.Y.Z » reste dans **Réglages du pack** jusqu'à la mise à jour, et la flèche dorée reste à côté de l'horloge.
+« Plus tard » n'est plus demandé pour cette version : « Mettre à jour en vX.Y.Z » reste dans **Réglages de l'eXpansion pack** jusqu'à la mise à jour, et la flèche dorée reste à côté de l'horloge.
 
 ## Garder vpxtool à jour
 
@@ -37,7 +37,7 @@ Chaque version du pack nomme la version de vpxtool avec laquelle elle a été es
 
 ## Couper la recherche
 
-Réglez « Recherche de mises à jour du pack » sur « Désactivé » dans le groupe Mode hors ligne des **Réglages du pack**, ou écrivez `UPDATE_CHECK=false` dans `.env.local` : la borne ne contacte alors jamais GitHub. Dès le démarrage suivant, une flèche circulaire blanche, barrée, se tient à côté de l'horloge de la roue pour le rappeler, à qui voit les entrées de configuration (voir [Icônes d'état](interface.md#icônes-détat)).
+Réglez « Recherche de mises à jour du pack » sur « Désactivé » dans le groupe Mode hors ligne des **Réglages de l'eXpansion pack**, ou écrivez `UPDATE_CHECK=false` dans `.env.local` : la borne ne contacte alors jamais GitHub. Dès le démarrage suivant, une flèche circulaire blanche, barrée, se tient à côté de l'horloge de la roue pour le rappeler, à qui voit les entrées de configuration (voir [Icônes d'état](interface.md#icônes-détat)).
 
 Un pack installé avec git n'est jamais vérifié ni mis à jour : lancez `git pull` dans `Scripts\ExpansionPack`.
 

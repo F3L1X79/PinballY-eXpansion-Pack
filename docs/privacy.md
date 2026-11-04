@@ -44,7 +44,7 @@ Rien. Le PinballY Expansion Pack n'a aucun serveur : ni compte, ni statistiques,
 
 ## Ce qui est envoyé à Discord
 
-Discord Rich Presence est **désactivé par défaut**. Le propriétaire de la borne l'active dans les Réglages du pack, après un Dialog de consentement qui dit ce qui devient public. Une fois activé, le pack parle seulement à l'application Discord ouverte sur le même PC, qui affiche sur le compte Discord connecté :
+Discord Rich Presence est **désactivé par défaut**. Le propriétaire de la borne l'active dans les Réglages de l'eXpansion pack, après un Dialog de consentement qui dit ce qui devient public. Une fois activé, le pack parle seulement à l'application Discord ouverte sur le même PC, qui affiche sur le compte Discord connecté :
 
 - pendant une partie : le nom de la table, le temps écoulé depuis le début de la partie, et « Table du jour » ou « Table de la semaine » le cas échéant ;
 - sur la roue : seulement qu'une table est en train d'être choisie ;
@@ -56,7 +56,7 @@ Ce que Discord fait de ce statut relève de la [Politique de confidentialité de
 
 ## Comment l'arrêter
 
-Désactiver Discord Rich Presence dans les Réglages du pack, ou fermer Discord avant de lancer PinballY.
+Désactiver Discord Rich Presence dans les Réglages de l'eXpansion pack, ou fermer Discord avant de lancer PinballY.
 
 ## Contact
 
