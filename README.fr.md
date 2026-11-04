@@ -10,43 +10,34 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 
 ## Profils
 
-Avec « Changer de joueur », chacun prend son Profil et son Avatar, et l'écran d'accueil vous salue par votre nom : vous savez pour qui les parties vont compter. Seules les parties d'au moins une minute comptent, et le Profil Invité reste toujours là pour les visiteurs.
-
-**Mon profil** résume votre vie de flippeur ; **Stats de la maison** montre tout le monde côte à côte, le meilleur de chaque ligne en doré.
-
-Un Profil admin garde les entrées de configuration pour vous, et un Profil enfant retire les tables pour adultes de la roue.
+- Avec « Changer de joueur », chacun prend son Profil et son Avatar, et l'écran d'accueil vous salue par votre nom : vous savez pour qui les parties vont compter. Seules les parties d'au moins une minute comptent, et le Profil Invité reste toujours là pour les visiteurs.
+- **Mon profil** résume votre vie de flippeur ; **Stats de la maison** montre tout le monde côte à côte, le meilleur de chaque ligne en doré.
+- Un Profil admin garde les entrées de configuration pour vous, et un Profil enfant retire les tables pour adultes de la roue.
 
 → [Profils](docs/guide/fr/profiles.md)
 
 ## Succès et défis
 
-Un nouveau Défi chaque lundi, le même pour toute la maison, dont la carte suit votre progression sur l'écran de la roue.
-
-Des dizaines de Succès du Bronze au Platine, dont quelques secrets, chacun annoncé par un encart sans interrompre vos parties. Chaque Succès fait monter votre niveau, affiché sur votre Avatar.
+- Un nouveau Défi chaque lundi, le même pour toute la maison, dont la carte suit votre progression sur l'écran de la roue.
+- Des dizaines de Succès du Bronze au Platine, dont quelques secrets, chacun annoncé par un encart sans interrompre vos parties. Chaque Succès fait monter votre niveau, affiché sur votre Avatar.
 
 → [Succès et défis](docs/guide/fr/achievements_and_challenges.md)
 
 ## Choisir une table
 
-L'écran d'accueil propose la table du jour et la table de la semaine : jouez-les plusieurs jours ou semaines d'affilée pour faire une série sur la table du jour ou de la semaine.
-
-Chaque minute passée sur une table fait monter votre maîtrise de celle-ci, de Novice à Mage du flipper.
-
-Les meilleurs scores sont attribués au Profil qui jouait, quelles que soient les initiales, et présentés sur un podium.
-
-À court d'idées ? Une table au hasard tourne sur une roue de la fortune.
+- L'écran d'accueil propose la table du jour et la table de la semaine : jouez-les plusieurs jours ou semaines d'affilée pour faire une série sur la table du jour ou de la semaine.
+- Chaque minute passée sur une table fait monter votre maîtrise de celle-ci, de Novice à Mage du flipper.
+- Les meilleurs scores sont attribués au Profil qui jouait, quelles que soient les initiales, et présentés sur un podium.
+- À court d'idées ? Une table au hasard tourne sur une roue de la fortune.
 
 → [Choisir une table](docs/guide/fr/choosing_a_table.md)
 
 ## Interface
 
-Les menus et messages de PinballY en français, anglais, allemand, espagnol, italien ou portugais, dessinés dans le style Steamball du pack et rangés en sections.
-
-Une horloge, un arc doré sous la roue, des lancements sans flash noir, et des sons que vous pouvez remplacer par les vôtres.
-
-<img src="docs/images/discord_symbol.svg" alt="" width="16" height="16"> **Discord Rich Presence**, une fois activé, montre à vos amis Discord la table que vous jouez et depuis combien de temps.
-
-**Réglages du pack**, dans le menu opérateur, active ou désactive chaque Add-on.
+- Les menus et messages de PinballY en français, anglais, allemand, espagnol, italien ou portugais, dessinés dans le style Steamball du pack et rangés en sections.
+- Une horloge, un arc doré sous la roue, des lancements sans flash noir, et des sons que vous pouvez remplacer par les vôtres.
+- **Discord Rich Presence** <img src="docs/images/discord_symbol.svg" alt="" width="16" height="16">, une fois activé, montre à vos amis Discord la table que vous jouez et depuis combien de temps.
+- **Réglages du pack**, dans le menu opérateur, active ou désactive chaque Add-on.
 
 → [Interface](docs/guide/fr/interface.md) · [Discord Rich Presence](docs/guide/fr/settings.md#discord-rich-presence)
 
