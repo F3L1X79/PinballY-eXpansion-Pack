@@ -218,6 +218,7 @@
 
         <div class="ax row">Moyen</div>
         <div class="cell sweet">
+          <a class="chip tr-play" href="#backglass-loader"><b></b>Loader sur le backglass</a>
         </div>
         <div class="cell">
           <a class="chip tr-share" href="#placed-layers"><b></b>Calques placés</a>
@@ -376,6 +377,29 @@
               <li>Les fichiers <code>*_give_up*</code> et <code>*_set_aside*</code> par écran et les cas de boutons redondants sont supprimés. Il reste un scénario de branchement par écran : ouverture, Exit, appui maintenu, et abandon pendant la préparation quand l'écran en a une. Les <code>*_button_hints_*</code> restent.</li>
             </ul>
             <p class="ctx">L'absence de <code>defaultPrevented</code> dans le Welcome Screen est sans effet : la file l'ouvre un tick plus tard, jamais pendant l'appui qui l'a demandé. L'enchaînement par un bouton maintenu vient de la lecture du code et de la doc PinballY, il n'a pas été observé sur la borne.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="backglass-loader" data-track="play" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Le Loader au milieu du backglass, au chargement et au déchargement d'une table</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">UI</span></div>
+          </div>
+          <p>Pendant qu'une table se charge et se ferme, le Loader tourne aussi au milieu du backglass, et plus seulement sur le playfield.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>addons/seamless_launch_overlay.js</code>, <code>common/drawing/loader.js</code> et <code>addons/force_backglass.js</code></div>
+          <details>
+            <summary>Questions ouvertes (3)</summary>
+            <ul>
+              <li>Au chargement : Force Backglass cache le backglass à <code>gamestarted</code>, juste après le message <code>running</code>, alors que VPX charge encore. La comète ne tournerait donc que jusqu'à l'ouverture de sa première fenêtre. Est-ce assez, ou faut-il retarder ce masquage, sans événement qui dise que la table est prête ?</li>
+              <li>À la fermeture : Exit Game envoie <code>terminating</code> avant <code>gameover</code>, et le backglass ne revient qu'à <code>gameover</code>. La comète attend-elle ce moment, ou le backglass revient-il plus tôt ? Montrer une fenêtre pendant une partie a déjà ouvert le menu de pause (#386) ; rien n'a été observé pour le backglass, à vérifier sur la borne.</li>
+              <li>La comète seule, ou avec la légende du playfield (l'étape en cours) ?</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 04/11/2026. Tous les types de fenêtres ont <code>createDrawingLayer</code>, mais <code>createLoader</code> dessine aujourd'hui sur la fenêtre principale : il faudra lui passer celle du backglass. Rien à montrer sur un écran unique, où Force Backglass cache le backglass. La définition du Loader dans <code>GLOSSARY.md</code> parle du seul playfield : à revoir au grill.</p>
           </details>
         </div>
       </li>
