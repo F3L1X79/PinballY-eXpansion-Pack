@@ -17,7 +17,7 @@ import { UNBOUNDED, fillGradient } from "../common/drawing/steamball_drawing.js"
 import { STEAMBALL_COLORS } from "../common/drawing/steamball_palette.js";
 import { drawShadowedText, measureShadowedText } from "../common/drawing/shadowed_text.js";
 import { CLOCK_COLORS, clockTextOf, createMinuteTick } from "../common/clock/minute_tick.js";
-import { TIME_TEXT } from "../common/clock/wheel_clock_layout.js";
+import { TIME_TEXT, WHEEL_CLOCK } from "../common/clock/wheel_clock_layout.js";
 
 const SCRIPT_NAME = "BackglassClock";
 
@@ -26,7 +26,7 @@ const CONFIG_VAR_PREFIX = "BackglassClock";
 // VPX's B2S loads after "gamestarted" and may come in front: raised again
 // on this schedule, then at each minute (as held on the cabinet, spec #369).
 const RAISE_DELAYS_MS = [2000, 5000, 10000, 20000, 40000];
-// Its size at the backglass screen's top left, until the owner places it.
+// Its size at the backglass screen's top right, until the owner places it.
 const DEFAULT_SIZE = Object.freeze({ width: 320, height: 110 });
 const LAYER_Z_INDEX = 100;
 // PinballY stretches this canvas over the whole window; its width follows
@@ -44,6 +44,12 @@ const UNDERLINE = Object.freeze({ thickness: 4, gap: 7 });
 
 const isInside = (inner, outer) => inner.left >= outer.left && inner.top >= outer.top
     && inner.right <= outer.right && inner.bottom <= outer.bottom;
+
+// The top right corner, with the wheel Clock's corner margin scaled to the screen's height.
+function defaultPlaceOn(screenRect) {
+    const margin = Math.round(WHEEL_CLOCK.left * (screenRect.bottom - screenRect.top) / WHEEL_CLOCK.referenceHeight);
+    return { left: screenRect.right - DEFAULT_SIZE.width - margin, top: screenRect.top + margin, ...DEFAULT_SIZE };
+}
 
 export default function init() {
     const host = createPinballYHost();
@@ -117,7 +123,7 @@ export default function init() {
             host.log(`[${SCRIPT_NAME}] Backglass screen unknown (${problem}): the clock stays where it is.`);
             return;
         }
-        if (!isInside(clockWindow.getWindowRect(), backglassRect)) clockWindow.moveTo({ left: backglassRect.left, top: backglassRect.top, ...DEFAULT_SIZE });
+        if (!isInside(clockWindow.getWindowRect(), backglassRect)) clockWindow.moveTo(defaultPlaceOn(backglassRect));
     }
 
     function hide() {

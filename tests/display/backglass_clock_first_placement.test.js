@@ -1,7 +1,7 @@
 // ============================================================
 // Backglass Clock, through main.js on the fake PinballY globals: a window
 // PinballY opened on the playfield screen (never placed by the owner) moves
-// at "gamestarted" to the top left of the backglass screen read at
+// at "gamestarted" to the top right of the backglass screen read at
 // "prelaunch", at its default size, without taking the focus.
 // ============================================================
 
@@ -14,9 +14,12 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 const TABLE = { id: 1, configId: "Medieval Madness", title: "Medieval Madness", manufacturer: "Williams", year: 1997 };
 // The backglass screen, right of a 2560-wide playfield.
 const BACKGLASS_RECT = { left: 2560, top: 0, right: 4480, bottom: 1080 };
+// The wheel Clock's 30 px at 1920 px high, on this 1080 px high screen: 16.875, rounded.
+const MARGIN = 17;
+const DEFAULT_WIDTH = 320;
 const SWP_NOACTIVATE = 0x10;
 
-test("at the first game the Backglass Clock moves onto the backglass screen's top left", async () => {
+test("at the first game the Backglass Clock moves onto the backglass screen's top right", async () => {
     const fake = createFakePinballYHost({ tables: [TABLE], monitorCount: 2, backglassWindowRect: BACKGLASS_RECT });
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
@@ -33,9 +36,11 @@ test("at the first game the Backglass Clock moves onto the backglass screen's to
     fake.gameStarted(TABLE);
 
     const rect = clock.windowRect();
-    assert.equal(rect.left, BACKGLASS_RECT.left);
-    assert.equal(rect.top, BACKGLASS_RECT.top);
+    assert.equal(rect.left, 4143, "screen right - default width - margin");
+    assert.equal(rect.right, BACKGLASS_RECT.right - MARGIN);
+    assert.equal(rect.top, BACKGLASS_RECT.top + MARGIN);
     const width = rect.right - rect.left;
+    assert.equal(width, DEFAULT_WIDTH);
     const height = rect.bottom - rect.top;
     assert.ok(width > height && width <= 400 && height <= 200, `a small box, wider than tall (${width}x${height})`);
     assert.ok(clock.calls().filter(entry => entry.call === "setWindowPos").every(entry => entry.flags & SWP_NOACTIVATE),
