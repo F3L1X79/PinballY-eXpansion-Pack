@@ -10,25 +10,43 @@ An unofficial extension of [PinballY](http://mjrnet.org/pinscape/PinballY.php) t
 
 ## Profiles
 
-Each of you picks your own Profile and Avatar with Change Player, and the Welcome Screen greets you by name, so you know whose games will count. Only games of a minute or more count, and Guest is always there for visitors. **My Profile** sums up your pinball life; **Household Stats** sets everyone side by side, the best of each line in gold. An Admin Profile keeps the setup entries for you, and a Child Profile leaves the Adult Tables off the wheel.
+Each of you picks your own Profile and Avatar with Change Player, and the Welcome Screen greets you by name, so you know whose games will count. Only games of a minute or more count, and Guest is always there for visitors.
+
+**My Profile** sums up your pinball life; **Household Stats** sets everyone side by side, the best of each line in gold.
+
+An Admin Profile keeps the setup entries for you, and a Child Profile leaves the Adult Tables off the wheel.
 
 → [Profiles](docs/guide/en/profiles.md)
 
 ## Achievements and Challenges
 
-A new Challenge every Monday, the same for the whole household, its card tracking your progress on the wheel screen. Dozens of Achievements from Bronze to Platinum, a few of them secret, each announced by a toast without interrupting your games. Every one of them raises your Player Level, shown on your Avatar.
+A new Challenge every Monday, the same for the whole household, its card tracking your progress on the wheel screen.
+
+Dozens of Achievements from Bronze to Platinum, a few of them secret, each announced by a toast without interrupting your games. Every one of them raises your Player Level, shown on your Avatar.
 
 → [Achievements and Challenges](docs/guide/en/achievements_and_challenges.md)
 
 ## Choosing a table
 
-The Welcome Screen offers the Table of the Day and the Table of the Week: play them several days or weeks in a row to build a Table of the Day or Table of the Week Streak. Every minute on a table builds your Mastery Level of it, from Rookie to Pinball Wizard. High Scores are credited to the Profile that played, whatever the initials, and shown on a podium. Short of ideas? A Random Game spins on a wheel of fortune.
+The Welcome Screen offers the Table of the Day and the Table of the Week: play them several days or weeks in a row to build a Table of the Day or Table of the Week Streak.
+
+Every minute on a table builds your Mastery Level of it, from Rookie to Pinball Wizard.
+
+High Scores are credited to the Profile that played, whatever the initials, and shown on a podium.
+
+Short of ideas? A Random Game spins on a wheel of fortune.
 
 → [Choosing a table](docs/guide/en/choosing_a_table.md)
 
 ## Interface
 
-PinballY's menus and messages in English, French, German, Spanish, Italian or Portuguese, drawn in the pack's Steamball look and sorted into sections. A clock, a gold arc under the wheel, launches without a black flash, and sounds you can replace with your own. **Discord Rich Presence**, once you turn it on, shows your Discord friends the table you are playing and for how long. **eXpansion Pack Settings**, in the Operator Menu, turns each Add-on on or off.
+PinballY's menus and messages in English, French, German, Spanish, Italian or Portuguese, drawn in the pack's Steamball look and sorted into sections.
+
+A clock, a gold arc under the wheel, launches without a black flash, and sounds you can replace with your own.
+
+<img src="docs/images/discord_symbol.svg" alt="" width="16" height="16"> **Discord Rich Presence**, once you turn it on, shows your Discord friends the table you are playing and for how long.
+
+**eXpansion Pack Settings**, in the Operator Menu, turns each Add-on on or off.
 
 → [Interface](docs/guide/en/interface.md) · [Discord Rich Presence](docs/guide/en/settings.md#discord-rich-presence)
 
