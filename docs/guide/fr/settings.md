@@ -22,8 +22,6 @@ Tout tient dans un seul dossier, sans modifier PinballY.
 
 Tant que le pack n'a pas lu une fois la version de votre vpxtool (une dizaine de secondes après le premier démarrage qui le trouve), ou si cette version est illisible, il n'y a pas de ligne vpxtool.
 
-Sous « Lancer et jouer une table », **Placer l'horloge du backglass** se trouve juste sous la ligne de l'[horloge du backglass](interface.md#horloge-du-backglass), tant que cet Add-on tourne (une fois PinballY redémarré avec lui) sur une borne à plusieurs écrans. La choisir affiche l'horloge sur l'écran du backglass, devant tout le reste, avec l'heure réelle et ses bordures Windows, pour la déplacer et la redimensionner à la souris. Un dialogue sur l'écran de la roue dit quoi faire : **Terminé**, ou Exit, cache de nouveau l'horloge et vous ramène sur la ligne, et PinballY garde sa place et sa taille.
-
 Le groupe **Mode hors ligne** réunit ce qui contacte internet, ou propose de le faire, un interrupteur chacun :
 
 - **Recherche de mises à jour du pack** : PinballY demande à GitHub, à chaque démarrage, si une version plus récente du pack existe (`UPDATE_CHECK`).

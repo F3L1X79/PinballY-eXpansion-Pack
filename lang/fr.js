@@ -782,12 +782,6 @@ export default {
         updateVpxtool: (installed, version) => `Mettre à jour vpxtool (v${installed} → v${version})`,
         vpxtoolUpToDateLine: "Mettre à jour vpxtool",
         vpxtoolUpToDate: (installed) => `vpxtool v${installed} est à jour`,
-        backglassClockPlacement: {
-            line: "Placer l'horloge du backglass",
-            title: "Placement de l'horloge du backglass",
-            instruction: "Déplacez et redimensionnez l'horloge sur l'écran du backglass avec la souris, puis choisissez Terminé.",
-            done: "Terminé",
-        },
         back: "Retour",
         groups: {
             playersAndProgress: "Joueurs et progression",

@@ -8,7 +8,6 @@
 // - Every raise keeps the window's place and never takes VPX's focus.
 // - clientRect isn't in the visible window's units: only its ratio is read.
 // - Moved onto the backglass screen only from outside it: the owner's place sticks.
-// - The Backglass Clock Placement (common/clock/backglass_clock_placement.js) shows it with borders, outside any game.
 // ============================================================
 
 import lang from "../common/core/i18n.js";
@@ -19,7 +18,6 @@ import { STEAMBALL_COLORS } from "../common/drawing/steamball_palette.js";
 import { drawShadowedText, measureShadowedText } from "../common/drawing/shadowed_text.js";
 import { CLOCK_COLORS, clockTextOf, createMinuteTick } from "../common/clock/minute_tick.js";
 import { TIME_TEXT, WHEEL_CLOCK } from "../common/clock/wheel_clock_layout.js";
-import { registerBackglassClockPlacement } from "../common/clock/backglass_clock_placement.js";
 
 const SCRIPT_NAME = "BackglassClock";
 
@@ -172,24 +170,6 @@ export default function init() {
     // failed or was cancelled before "gamestarted".
     host.on("gameover", safeHandler(SCRIPT_NAME, hide));
     host.on("postlaunch", safeHandler(SCRIPT_NAME, hide));
-
-    registerBackglassClockPlacement({
-        begin() {
-            placeOnBackglassScreen();
-            clockWindow.setBorderless(false);
-            minuteTick.start();
-            clockWindow.showWindow(true);
-            clockWindow.setTopmost(true);
-            shown = true;
-        },
-        // PinballY keeps the place and size itself. Harmless once ended: the
-        // Dialog's Done runs it, then its close.
-        end() {
-            if (!shown) return;
-            clockWindow.setBorderless(true);
-            hide();
-        },
-    });
 
     // Deferred until main.js has finished, like Force Backglass, so the hide
     // wins over PinballY's saved Visible setting for the window.

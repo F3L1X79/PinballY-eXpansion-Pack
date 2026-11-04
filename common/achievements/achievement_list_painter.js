@@ -113,7 +113,7 @@ function fillDisc(dc, centerX, centerY, radius, color) {
     }
 }
 
-// A rank emblem centred on (centerX, centerY), about 64 pixels tall at scale 1: 
+// A rank emblem centred on (centerX, centerY), about 64 pixels tall at scale 1:
 // a pointed shield with a gem and a crest, and wings growing with the rank. Unlocked,
 // it is in the rank's colour, and with a halo it gets a glow growing with
 // the rank, plus sparkles for Platinum; missing, it is muted and never has

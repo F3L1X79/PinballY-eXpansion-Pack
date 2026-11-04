@@ -2,7 +2,7 @@
 // eXpansion Pack Settings: their entry in the Operator Menu, after PinballY's Options, for whoever
 // sees the setup entries, opens the list of Add-on categories (their Add-ons as saved in .env.local,
 // read again on each opening, one page per Add-on whose Save rewrites its one line), the Startup screen and
-// Language pages, the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z", the vpxtool line and the Backglass Clock Placement while possible.
+// Language pages, the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
 // Listens to "menuopen", "command" and "commandbuttondown"; writes .env.local.
 // - Started by main.js whatever config.addOns says, its "menuopen" listener before the Drawn Menus Add-on's.
 // - Always drawn (getPackMenus), even with the Drawn Menus Add-on off.
@@ -30,7 +30,6 @@ import { getPackUpdater } from "../updates/pack_update.js";
 import { SCRIPT_READER_VERSION } from "../table_roms/script_reader_version.js";
 import { getScriptReaderInstaller, scriptReaderDialogText } from "../table_roms/script_reader_install.js";
 import { getScriptReaderState } from "../table_roms/script_reader_state.js";
-import { getBackglassClockPlacement } from "../clock/backglass_clock_placement.js";
 import { ADD_ON_GROUPS } from "./add_on_catalogue.js";
 import { saveEnvSetting } from "./env_local_rewrite.js";
 
@@ -46,8 +45,6 @@ const UPDATE_CHECK_MENU_ID = "expansionPackSettingsUpdateCheck";
 const OFFER_VPXTOOL_MENU_ID = "expansionPackSettingsOfferVpxtool";
 const DISCORD_RICH_PRESENCE_MENU_ID = "expansionPackSettingsDiscordRichPresence";
 const SCRIPT_READER_MENU_ID = "expansionPackSettingsScriptReader";
-const CLOCK_PLACEMENT_MENU_ID = "expansionPackSettingsClockPlacement";
-const BACKGLASS_CLOCK_KEY = "backglassClock";
 const DISCORD_CONSENT_MENU_ID = "expansionPackSettingsDiscordConsent";
 const NOT_SAVED_MENU_ID = "expansionPackSettingsNotSaved";
 const RESTART_MENU_ID = "expansionPackSettingsRestart";
@@ -119,7 +116,6 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     const updateCommand = host.allocateCommand("expansionPackSettings_update");
     const scriptReaderLineCommand = host.allocateCommand("expansionPackSettings_installVpxtool");
     const scriptReaderInstallCommand = host.allocateCommand("expansionPackSettings_scriptReaderInstall");
-    const clockPlacementCommand = host.allocateCommand("expansionPackSettings_placeBackglassClock");
     const envLocalPath = `${host.getProjectFolder()}\\.env.local`;
     // The page on screen: its Add-on, the choice saved when it opened, and the switch.
     let page = null;
@@ -194,34 +190,6 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         ], { dialogStyle: true, onBack: () => openList(scriptReaderLineCommand) });
     }
 
-    // Monitors are counted at each opening, since a screen can be plugged in or out.
-    const clockPlacementLines = () => (getBackglassClockPlacement() && host.countMonitors() > 1
-        ? [{ title: TEXT.backglassClockPlacement.line, cmd: clockPlacementCommand }]
-        : []);
-
-    // Begins the placement, under a Dialog that says what to do. onClose ends it
-    // too, for a close that isn't onBack's: attract mode closes a Drawn Menu.
-    function openClockPlacement() {
-        page = null;
-        const placement = getBackglassClockPlacement();
-        if (!placement) return;
-        const { title, instruction, done } = TEXT.backglassClockPlacement;
-        placement.begin();
-        getMenus().show(CLOCK_PLACEMENT_MENU_ID, [
-            { title, cmd: -1 },
-            { title: instruction, cmd: -1 },
-            SEPARATOR,
-            { title: done, cmd: menuReturnCommand },
-        ], {
-            dialogStyle: true,
-            onBack: () => {
-                placement.end();
-                openCategory(groupOfAddOn.get(BACKGLASS_CLOCK_KEY), clockPlacementCommand);
-            },
-            onClose: placement.end,
-        });
-    }
-
     // A category's Add-ons, each On / Off as saved, under its heading.
     function openCategory(group, selectedCmd = null) {
         page = null;
@@ -229,11 +197,10 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         const { addOns } = ADD_ON_GROUPS.find(entry => entry.group === group);
         getMenus().show(CATEGORY_MENU_ID, [
             { title: TEXT.groups[group], cmd: -1 },
-            ...addOns.flatMap((key) => {
+            ...addOns.map((key) => {
                 const state = stateOf(saved.addOns[key]);
                 const shownState = addOnDiffers(saved, key) ? TEXT.onRestart(state) : state;
-                const line = { title: TEXT.addOnLine(TEXT.addOns[key].name, shownState), cmd: addOnCommands.get(key) };
-                return key === BACKGLASS_CLOCK_KEY ? [line, ...clockPlacementLines()] : [line];
+                return { title: TEXT.addOnLine(TEXT.addOns[key].name, shownState), cmd: addOnCommands.get(key) };
             }),
             SEPARATOR,
             { title: TEXT.back, cmd: menuReturnCommand },
@@ -448,8 +415,6 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
             openScriptReaderDialog();
         } else if (ev.id === scriptReaderInstallCommand) {
             getScriptReaderInstaller().start();
-        } else if (ev.id === clockPlacementCommand) {
-            openClockPlacement();
         }
     }));
 }
