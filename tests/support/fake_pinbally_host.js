@@ -720,6 +720,8 @@ export function createFakePinballYHost({
             layers: () => [...ownLayers],
             // The owner resizing it by hand: PinballY tells no script.
             resize({ width, height }) { rect = { ...rect, right: rect.left + width, bottom: rect.top + height }; },
+            // The owner dragging it with the mouse: the place moved and stuck (§2.1).
+            dragTo(place) { rect = { ...place }; },
             // The owner showing its borders from its right-click menu (UsageTips.html).
             showBorders() { rawWindow.borderlessMode = false; },
         });

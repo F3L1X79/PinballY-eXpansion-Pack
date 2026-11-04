@@ -22,8 +22,6 @@ Everything stays in one folder, with no change to PinballY itself.
 
 Until the pack has read your vpxtool's version once (about ten seconds into the first start that finds it), or while that version cannot be read, there is no vpxtool line.
 
-Under "Launching and playing a table", while the Backglass Clock is saved on, a **Backglass Clock Position** line comes right under its On/Off line and shows the saved place. It opens a page with the six places: top left, top middle, top right, bottom left, bottom middle and bottom right. Your choice is saved at once and applies at the next game, with no restart.
-
 The **Offline Mode** group holds what reaches, or offers to reach, the internet, one switch each:
 
 - **Pack update check**: PinballY asks GitHub for a newer version of the pack at each start (`UPDATE_CHECK`).
@@ -62,7 +60,6 @@ ADD_ON_CLOCK=false
 | `ACHIEVEMENT_TOAST_SCALE` | `1.0` | Size of the toast, from `0.5` to `3`. Raise it on a large screen. |
 | `CONFETTI` | `true` | `false` turns off the Confetti Shower that falls with the toast of a completed Challenge, a Platinum Achievement, Mastery Level 10 on a table or a new Collection Tier, if your PC struggles with it. |
 | `FIREWORKS` | `true` | `false` turns off the Fireworks that come with the toast of a new Player Level, if your PC struggles with them. Independent of `CONFETTI`. |
-| `BACKGLASS_CLOCK_POSITION` | `topRight` | Where the Backglass Clock shows on the backglass screen, at its fixed size: `topLeft`, `topCenter`, `topRight`, `bottomLeft`, `bottomCenter` or `bottomRight` (see [Interface](interface.md#backglass-clock)). |
 | `UPDATE_CHECK` | `true` | `false` stops PinballY from asking GitHub for a newer version of the pack at each start, and from offering to update it (see [Updates](updates.md)). |
 | `OFFER_VPXTOOL` | `true` | `false` stops the pack from ever offering to install or update vpxtool; you can still install it yourself. |
 | `SKIP_RANDOM_GAME_ANIMATION` | `false` | `true` skips the wheel of fortune and launches the Random Game at once. |

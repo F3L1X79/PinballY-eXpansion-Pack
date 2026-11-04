@@ -22,8 +22,6 @@ Tout tient dans un seul dossier, sans modifier PinballY.
 
 Tant que le pack n'a pas lu une fois la version de votre vpxtool (une dizaine de secondes après le premier démarrage qui le trouve), ou si cette version est illisible, il n'y a pas de ligne vpxtool.
 
-Sous « Lancer et jouer une table », tant que l'horloge du backglass est enregistrée comme activée, une ligne **Position de l'horloge du backglass** vient juste sous sa ligne Activé / Désactivé et montre la place enregistrée. Elle ouvre une page avec les six places : en haut à gauche, en haut au milieu, en haut à droite, en bas à gauche, en bas au milieu et en bas à droite. Votre choix est enregistré aussitôt et s'applique à la partie suivante, sans redémarrage.
-
 Le groupe **Mode hors ligne** réunit ce qui contacte internet, ou propose de le faire, un interrupteur chacun :
 
 - **Recherche de mises à jour du pack** : PinballY demande à GitHub, à chaque démarrage, si une version plus récente du pack existe (`UPDATE_CHECK`).
@@ -62,7 +60,6 @@ ADD_ON_CLOCK=false
 | `ACHIEVEMENT_TOAST_SCALE` | `1.0` | Taille de l'annonce, de `0.5` à `3` : à augmenter sur un grand écran. |
 | `CONFETTI` | `true` | `false` coupe la pluie de confettis qui accompagne l'annonce d'un Défi réussi, d'un Succès Platine, du niveau 10 de maîtrise sur une table ou d'un nouveau palier de la collection, si votre PC peine. |
 | `FIREWORKS` | `true` | `false` coupe le feu d'artifice qui accompagne l'annonce d'un nouveau niveau, si votre PC peine. Indépendant de `CONFETTI`. |
-| `BACKGLASS_CLOCK_POSITION` | `topRight` | Où l'horloge du backglass s'affiche sur l'écran du backglass, à sa taille fixe : `topLeft`, `topCenter`, `topRight`, `bottomLeft`, `bottomCenter` ou `bottomRight` (voir [Interface](interface.md#horloge-du-backglass)). |
 | `UPDATE_CHECK` | `true` | `false` empêche PinballY de demander à GitHub, à chaque démarrage, si une version plus récente du pack existe, et de proposer de la mettre à jour (voir [Mises à jour](updates.md)). |
 | `OFFER_VPXTOOL` | `true` | `false` empêche le pack de jamais proposer d'installer ou de mettre à jour vpxtool ; vous pouvez toujours l'installer vous-même. |
 | `SKIP_RANDOM_GAME_ANIMATION` | `false` | `true` saute la roue de la fortune et lance la table au hasard aussitôt. |

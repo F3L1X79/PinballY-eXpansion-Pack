@@ -686,16 +686,6 @@ export default {
         languageLine: (languageName) => `Language: ${languageName}`,
         startupScreenLine: (screenName) => `Startup screen: ${screenName}`,
         startupScreenNames: { welcome: "Welcome Screen", profilePicker: "Profile picker", wheel: "Wheel" },
-        // Under the Backglass Clock's line, by the saved place's name.
-        backglassClockPositionLine: (placeName) => `Backglass Clock Position: ${placeName}`,
-        backglassClockPositionNames: {
-            topLeft: "Top left",
-            topCenter: "Top middle",
-            topRight: "Top right",
-            bottomLeft: "Bottom left",
-            bottomCenter: "Bottom middle",
-            bottomRight: "Bottom right",
-        },
         // The Offline Mode group, heading its own page, and its switches.
         offlineMode: "Offline Mode",
         updateCheckLine: (state) => `Pack update check: ${state}`,
