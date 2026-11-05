@@ -196,7 +196,7 @@
         <span class="recap" id="recap" aria-label="Chantiers par effort"></span>
       </div>
       <div class="gauge" aria-hidden="true"><i id="hero-gauge" style="width:0"></i></div>
-      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 04.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
+      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 05.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
     </div>
   </header>
 
@@ -244,6 +244,7 @@
         </div>
         <div class="cell">
           <a class="chip tr-share" href="#crt-filter"><b></b>Faux CRT</a>
+          <a class="chip tr-play" href="#neon-confirmations"><b></b>Confirmations néon</a>
         </div>
         <div class="cell">
           <a class="chip tr-share" href="#pinemhi-online"><b></b>Scores en ligne PINemHi</a>
@@ -697,6 +698,30 @@
               <li>Le sens des lignes sur un écran tourné : horizontales pour le joueur, ou celles de l'écran physique ?</li>
             </ul>
             <p class="ctx">Idée de Félix du 04/11/2026, assez bas dans la file à sa demande. Le résumé de l'aide PinballY ne mentionne aucun shader : ni courbure d'écran ni bavure de couleurs a priori, à confirmer dans l'aide complète. Pas de scintillement, selon la règle « pas d'animation sans fin ».</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="neon-confirmations" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Des confirmations stylées : un gros néon qui clignote, puis s'efface</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Après une action importante, un gros logo néon clignote au milieu de l'écran avec « Profil créé » ou « Profil réinitialisé », puis disparaît seul au bout de quelques secondes.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (le néon, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part du calque non bloquant de <code>common/achievements/achievement_toast.js</code> et de <code>common/menus/profile_reset_menu.js</code>. Après <a href="#placed-layers">Calques placés (n° <span data-ref="placed-layers"></span>)</a> et <a href="#avatar-choice">Choisir son Avatar (n° <span data-ref="avatar-choice"></span>)</a>, qui change la fin de la création d'un Profile</div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Quelles confirmations, en dehors de ces deux-là ? Une erreur garde-t-elle un message qu'on prend le temps de lire ?</li>
+              <li>Le néon remplace-t-il le menu avec <code>OK</code> qui clôt aujourd'hui une réinitialisation, ou s'y ajoute-t-il ?</li>
+              <li>Un néon s'accorde-t-il au style Steamball, en or par exemple, ou forme-t-il une exception assumée ?</li>
+              <li>Les boutons restent-ils actifs pendant le clignotement, et un appui efface-t-il le néon ? Que se passe-t-il si un toast ou un Dialog arrive au même moment ?</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 05/11/2026. Le clignotement s'arrête de lui-même : il respecte la règle « pas d'animation sans fin ».</p>
           </details>
         </div>
       </li>
