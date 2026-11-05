@@ -31,7 +31,7 @@ test("main.js warns right after the summary when PinballY is older than Beta 10"
     assert.deepEqual(packLines, [
         `[ExpansionPack] Started: eXpansion Pack v${PACK_VERSION}, PinballY 1.1.0 (Beta 9), build 9001, language en, `
             + "Add-ons off: none, 1 Profiles, 0 tables",
-        "[ExpansionPack] WARNING: PinballY 1.1.0 (Beta 9) is older than 1.1.0 Beta 10, the minimum this pack needs.",
+        "[ExpansionPack] WARNING: PinballY 1.1.0 (Beta 9) is older than 1.1.0 (Beta 10), the minimum this pack needs.",
     ]);
     assertNoErrorLogged(fake);
 });

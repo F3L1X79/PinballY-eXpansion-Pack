@@ -1,7 +1,7 @@
 // ============================================================
 // Startup summary's version warning: a WARNING line only for a PinballY
-// older than 1.1.0 Beta 10 or newer than the last version tested (Beta 10),
-// with versions in the formats of docs/pinbally/pinbally-help.md §2.10.
+// older than 1.1.0 Beta 10, newer than the Tested PinballY Version (Beta 10) or
+// unreadable, with versions in the formats of docs/pinbally/pinbally-help.md §2.10.
 // The summary line starts with the Pack Version, marked in a git checkout.
 // ============================================================
 
@@ -29,13 +29,13 @@ test("Beta 9 is warned as older than the minimum", () => {
     assert.deepEqual(packLinesFor(versionOf("1.1.0 (Beta 9)", "1.1.0-beta.9+9001.20230101T1200", 9001)), [
         `[ExpansionPack] Started: eXpansion Pack v${PACK_VERSION}, PinballY 1.1.0 (Beta 9), build 9001, language en, `
             + "Add-ons off: none, 1 Profiles, 0 tables",
-        "[ExpansionPack] WARNING: PinballY 1.1.0 (Beta 9) is older than 1.1.0 Beta 10, the minimum this pack needs.",
+        "[ExpansionPack] WARNING: PinballY 1.1.0 (Beta 9) is older than 1.1.0 (Beta 10), the minimum this pack needs.",
     ]);
 });
 
 test("Beta 11 is warned as newer than the last version tested", () => {
     assert.deepEqual(packLinesFor(versionOf("1.1.0 (Beta 11)", "1.1.0-beta.11+10200.20260114T1200", 10200)).slice(1), [
-        "[ExpansionPack] WARNING: PinballY 1.1.0 (Beta 11) is newer than 1.1.0 Beta 10, the last version this pack was tested with.",
+        "[ExpansionPack] WARNING: PinballY 1.1.0 (Beta 11) is newer than 1.1.0 (Beta 10), the last version this pack was tested with.",
     ]);
 });
 
@@ -52,9 +52,22 @@ test("a 1.0 release is older, despite having no pre-release status", () => {
     assert.match(packLinesFor(versionOf("1.0.0 (Release)", "1.0.0+5000.20200101T1200", 5000))[1], /is older than/);
 });
 
-test("Beta 10 itself, and a version in an unknown format, get no warning", () => {
+test("Beta 10 itself gets no warning", () => {
     assert.equal(packLinesFor(BETA_10_VERSION).length, 1);
-    assert.equal(packLinesFor(versionOf("1.1.0 custom", "custom build", 1)).length, 1);
+});
+
+test("Beta 10 with another build number gets no warning, and the startup line keeps that build", () => {
+    const lines = packLinesFor(versionOf("1.1.0 (Beta 10)", "1.1.0-beta.10+10106.20260301T1200", 10106));
+    assert.equal(lines.length, 1);
+    assert.match(lines[0], /PinballY 1\.1\.0 \(Beta 10\), build 10106,/);
+});
+
+test("a version the pack cannot read is warned as not tested with this pack", () => {
+    const warning = "[ExpansionPack] WARNING: PinballY 1.1.0 custom has a version this pack cannot read: "
+        + "it was not tested with this pack.";
+    for (const semantic of ["custom build", "1.1.0-gamma.1+1.20240101T1200", undefined]) {
+        assert.deepEqual(packLinesFor(versionOf("1.1.0 custom", semantic, 1)).slice(1), [warning]);
+    }
 });
 
 test("Add-ons off are listed in config order, and a Profile store that failed reads as unknown", () => {
