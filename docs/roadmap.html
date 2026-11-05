@@ -394,17 +394,19 @@
             <h3>Le Loader au milieu du backglass, au chargement et au déchargement d'une table</h3>
             <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">UI</span></div>
           </div>
-          <p>Pendant qu'une table se charge et se ferme, le Loader tourne aussi au milieu du backglass, et plus seulement sur le playfield.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>addons/seamless_launch_overlay.js</code>, <code>common/drawing/loader.js</code> et <code>addons/force_backglass.js</code></div>
+          <p>Pendant qu'une table se charge et se ferme, le Loader tourne aussi au milieu du backglass, et plus seulement sur le playfield. Grillé le 05/11/2026.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
+          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/449">Spec #449</a>, tickets #450 et #451 (vérification sur la borne)</div>
           <details>
-            <summary>Questions ouvertes (3)</summary>
+            <summary>Décisions du grill (5)</summary>
             <ul>
-              <li>Au chargement : Force Backglass cache le backglass à <code>gamestarted</code>, juste après le message <code>running</code>, alors que VPX charge encore. La comète ne tournerait donc que jusqu'à l'ouverture de sa première fenêtre. Est-ce assez, ou faut-il retarder ce masquage, sans événement qui dise que la table est prête ?</li>
-              <li>À la fermeture : Exit Game envoie <code>terminating</code> avant <code>gameover</code>, et le backglass ne revient qu'à <code>gameover</code>. La comète attend-elle ce moment, ou le backglass revient-il plus tôt ? Montrer une fenêtre pendant une partie a déjà ouvert le menu de pause (#386) ; rien n'a été observé pour le backglass, à vérifier sur la borne.</li>
-              <li>La comète seule, ou avec la légende du playfield (l'étape en cours) ?</li>
+              <li>Au chargement, la comète s'arrête à <code>running</code>, comme celle du playfield. Force Backglass ne change pas et il n'y a aucun minuteur. Si elle paraît trop brève sur la borne, on ouvrira un ticket avec une durée observée.</li>
+              <li>À la fermeture, le backglass revient toujours à <code>gameover</code>. La comète est demandée aux mêmes messages que sur le playfield, et apparaît donc avec la fenêtre.</li>
+              <li>Elle s'arrête aussi à <code>capturing</code>, pour ne jamais apparaître dans un média capturé, et revient au <code>gameover</code> de fin de capture.</li>
+              <li>La comète seule, sans légende, en plein milieu de la fenêtre, à 7 % de sa hauteur.</li>
+              <li>Elle fait partie de Seamless Launch Overlay, sans réglage propre ni test du nombre d'écrans. <code>GLOSSARY.md</code> ne change pas : un test de scénario couvre ce comportement.</li>
             </ul>
-            <p class="ctx">Idée de Félix du 04/11/2026. Tous les types de fenêtres ont <code>createDrawingLayer</code>, mais <code>createLoader</code> dessine aujourd'hui sur la fenêtre principale : il faudra lui passer celle du backglass. Rien à montrer sur un écran unique, où Force Backglass cache le backglass. La définition du Loader dans <code>GLOSSARY.md</code> parle du seul playfield : à revoir au grill.</p>
+            <p class="ctx">À vérifier sur la borne : qu'un calque posé sur la fenêtre cachée apparaît à son retour, que la comète tourne à la bonne taille au milieu de l'écran, et qu'elle n'est pas qu'un flash (aucune durée entre ces événements n'est mesurée).</p>
           </details>
         </div>
       </li>

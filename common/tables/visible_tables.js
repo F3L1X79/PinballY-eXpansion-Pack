@@ -1,17 +1,18 @@
 ﻿// ============================================================
 // Single source for "the tables the active Profile can see": PinballY's list
-// without the hidden tables and, for a Child Profile, the Adult Tables.
-// Read-only, no side effects.
+// without the hidden and unconfigured tables and, for a Child Profile, the
+// Adult Tables. Read-only, no side effects.
 // - The Period Table pick deliberately reads the household's visible tables instead.
+// - Unconfigured tables are left out even on a wheel that shows them (spec #405).
 // ============================================================
 
-import { createPinballYHost } from "../core/pinbally_host.js";
+import { createPinballYHost, isVisibleTable } from "../core/pinbally_host.js";
 import { getProfileStore } from "../profiles/profile_store.js";
 import { isKeptFromChild } from "./adult_tables.js";
 
 // Whether the named Profile (the active one by default) can see this table.
 export const isVisibleTo = (game, profileStore, profileName) =>
-    !game.isHidden && !isKeptFromChild(game, profileStore, profileName);
+    isVisibleTable(game) && !isKeptFromChild(game, profileStore, profileName);
 
 // The tables, among the household's visible ones, that the named Profile
 // (the active one by default) can see.

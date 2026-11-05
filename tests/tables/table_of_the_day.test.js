@@ -288,6 +288,31 @@ test("replaces a Table of the Day hidden since it was picked", () => {
     assert.notEqual(tableOfTheDay.getTable().configId, "Theatre of Magic (Bally 1995)");
 });
 
+test("never picks an unconfigured table, even one never played", () => {
+    const unconfigured = { id: 9, configId: "Backup.Unconfigured", title: "Backup", lastPlayed: null, isConfigured: false };
+    const { tableOfTheDay } = createTableOfTheDay({ tables: [...PLAYED_TABLES, unconfigured] });
+
+    assert.equal(tableOfTheDay.getTable().configId, "Medieval Madness (Williams 1997)");
+});
+
+test("gives no table when every table is unconfigured", () => {
+    const unconfigured = { id: 9, configId: "Backup.Unconfigured", title: "Backup", lastPlayed: null, isConfigured: false };
+    const { tableOfTheDay } = createTableOfTheDay({ tables: [unconfigured] });
+
+    assert.equal(tableOfTheDay.getTable(), null);
+});
+
+test("replaces a Table of the Day no longer configured, as one hidden since it was picked", () => {
+    const { fake, tableOfTheDay } = createTableOfTheDay({
+        lock: { configId: "Theatre of Magic (Bally 1995)", period: "2026-09-23" },
+    });
+    fake.setTables(PLAYED_TABLES.map(game =>
+        game.configId === "Theatre of Magic (Bally 1995)" ? { ...game, isConfigured: false } : game));
+
+    assert.notEqual(tableOfTheDay.getTable().configId, "Theatre of Magic (Bally 1995)");
+    assert.notEqual(readJson(fake, CABINET_FILE).tableOfTheDay.configId, "Theatre of Magic (Bally 1995)");
+});
+
 test("counts a day once in Periods Played, however many times the Table of the Day is played", () => {
     const { fake, tableOfTheDay } = createTableOfTheDay();
     assert.equal(tableOfTheDay.getPeriodsPlayed(), 0);

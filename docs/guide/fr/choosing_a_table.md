@@ -11,6 +11,7 @@ Chaque jour une table que personne à la maison n'a encore jouée, ou celle dél
 - Tant que votre défi de la semaine a des tables du défi, il montre aussi l'une d'elles, tirée au hasard. Cette table du défi n'est jamais l'une des deux tables déjà présentées, sauf quand une partie de plus termine votre défi.
 - De là, lancez l'une d'elles, restez sur la table de la roue, changez de joueur ou tentez une table au hasard.
 - Jouez-les plusieurs jours ou plusieurs semaines d'affilée pour faire une série.
+- Ni l'une ni l'autre n'est jamais une table masquée ou non configurée (un fichier de table trouvé par PinballY mais jamais configuré), même quand votre roue l'affiche.
 - Quand quelqu'un d'autre vous prend un record, Invité compris, votre prochain écran d'accueil vous dit qui, une seule fois, pour que vous sachiez quel record reprendre.
 - Tant que l'écran d'accueil est ouvert, le son des vidéos de la table de la roue est baissé, et revient à sa fermeture.
 
@@ -23,7 +24,7 @@ Pour un Profil enfant, voir [Réglages](settings.md#profil-enfant) : la table du
 Chaque minute passée sur une table fait monter votre maîtrise de celle-ci, sur dix niveaux, de Novice à Mage du flipper, chacun plus long à atteindre que le précédent.
 
 - La barre de maîtrise, en haut à droite de l'écran de la roue, montre où vous en êtes sur la table sélectionnée, et un encart annonce le niveau atteint.
-- Quand dix de vos tables atteignent le niveau suivant, la maîtrise de votre collection passe un palier.
+- Quand dix de vos tables atteignent le niveau suivant, la maîtrise de votre collection passe un palier. Les tables masquées et non configurées ne comptent pas.
 - Le niveau 10 sur une table et chaque nouveau palier font pleuvoir des confettis.
 - Chaque palier débloque aussi un cadre pour votre Avatar, de la Sylve enchantée à la Légende céleste : choisissez celui que vous portez dans **Mon profil**, sous **Cadre**.
 - Jouez un jour de fête (Nouvel An, Nouvel An chinois, Saint-Valentin, Pâques, Halloween, Noël et cinq autres) et le cadre de ce jour vous appartient pour de bon, annoncé par un encart à votre retour sur la roue.

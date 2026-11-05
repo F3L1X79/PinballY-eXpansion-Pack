@@ -1263,7 +1263,9 @@ export function createFakePinballYHost({
         return BUILT_IN_COMMANDS[name];
     }
 
-    // PinballY's wheel never shows hidden or unconfigured tables.
+    // The wheel as with PinballY's "Hide unconfigured games" checked: its
+    // default shows them, which a test reproduces with setWheelTables().
+    // A table without the flag counts as configured.
     const canBeOnWheel = (game, { includeHidden = false } = {}) => (includeHidden || !game.isHidden) && game.isConfigured !== false;
 
     // Runs the metafilters over every table, in ascending priority. Narrowing
@@ -1414,7 +1416,7 @@ export function createFakePinballYHost({
         clearTimeout: removeTimer,
         setInterval: (callback, ms) => addTimer(callback, ms, ms),
         clearInterval: removeTimer,
-        getVisibleTables: () => allTables.filter(table => !table.isHidden),
+        getVisibleTables: () => allTables.filter(table => canBeOnWheel(table)),
         getAllTables: () => [...allTables],
         getWheelTables: () => unfilteredWheel()
             .filter(configId => !ruledOutConfigIds.has(configId))

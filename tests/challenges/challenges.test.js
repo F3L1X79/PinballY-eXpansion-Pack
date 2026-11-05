@@ -134,6 +134,25 @@ test("with no visible table there is no Challenge and no card", () => {
     assert.ok(!cardShown(fake));
 });
 
+test("an unconfigured table counts neither in a draw nor in a Challenge's progress", () => {
+    const unconfigured = { ...table(5, "Stern", 2020), isConfigured: false };
+    assert.deepEqual(drawnOf([...TABLES, unconfigured], "differentTables"),
+        ["differentTables:null:4"], "the target stays within the 4 configured tables");
+
+    const { fake } = setUp({ tables: [...TABLES, unconfigured], randoms: [0, 0, 0.99] });
+    play(fake, TABLES[0], 60);
+    assert.ok(cardShows(fake, TEXT.progress(1, 4, TEXT.daysLeft(7))));
+    play(fake, unconfigured, 5 * 60);
+    assert.ok(cardShows(fake, TEXT.progress(1, 4, TEXT.daysLeft(7))), "a Play on it adds nothing");
+});
+
+test("a Challenge never points to an unconfigured table", () => {
+    const unconfigured = { ...table(5, "Stern", 2020), isConfigured: false };
+    const { challenges } = setUpDrawn([...TABLES, unconfigured], "neverPlayedTables");
+
+    assert.deepEqual(challenges.getTablesToPlay().map(game => game.configId), TABLES.map(game => game.configId));
+});
+
 test("a new week draws a new Challenge, never with the previous template", () => {
     const { fake } = setUp({ randoms: [0, 0, 0.99] });
     const lastWeek = cabinetChallenge(fake).current;

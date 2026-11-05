@@ -57,7 +57,7 @@ Configurer le pack ne demande pas de Profil admin : tant qu'aucun Profil n'est m
 - parties jouées, temps total et durée moyenne d'une partie ;
 - votre niveau et la maîtrise de votre collection ;
 - fabricant, décennie et table préférés, et la toute première table jouée ;
-- la part de la collection que vous avez essayée ;
+- la part de la collection que vous avez essayée, sans les tables masquées ni les tables non configurées ;
 - vos succès, vos jours d'affilée sur la borne, vos séries sur la table du jour et la table de la semaine, et les défis réussis ;
 - les meilleurs scores et records que vous détenez encore ;
 - le cadre que porte votre Avatar (à choisir sous **Cadre**, voir [Maîtrise des tables](choosing_a_table.md#maîtrise-des-tables)) ;

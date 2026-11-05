@@ -293,6 +293,9 @@ _Avoid_: Favorites, favourites filter
 The tables carrying PinballY's Hidden flag, for the whole cabinet, offered to every Profile as a wheel selection. A Hidden Table is not one a Profile can see: it is left out of every other selection and list. Shown as "Tables masquées" in French.
 _Avoid_: masked tables, operator tables
 
+**Unconfigured table**:
+A table file PinballY found but that was never set up. It stays on a wheel that shows it and can be played, but it is not one a Profile can see. Shown as "table non configurée" in French.
+
 **Period Table Streak**:
 The number of consecutive Periods in which the active Profile made a Play on the Period Table that started during its Period.
 _Avoid_: Streak (alone: the Daily Streak is another one), combo, chain

@@ -41,8 +41,8 @@ function seedProfile(fake, name, data) {
     fake.addFile(profileFile(name), JSON.stringify({ version: 1, ...data }));
 }
 
-function createRandomGameOn({ wheel, skipAnimation = false, plays = GUEST_PLAYS, animator = noDelayAnimator, seed = () => {} }) {
-    const fake = createFakePinballYHost({ tables: TABLES });
+function createRandomGameOn({ wheel, tables = TABLES, skipAnimation = false, plays = GUEST_PLAYS, animator = noDelayAnimator, seed = () => {} }) {
+    const fake = createFakePinballYHost({ tables });
     fake.setWheelTables(wheel.map(table => table.configId));
     seedProfile(fake, "guest", { plays });
     seed(fake);
@@ -117,6 +117,20 @@ test("draws over the whole selection when no table was ever played", async () =>
     const launched = await launchedConfigIds(fake, randomGame);
 
     assert.deepEqual([...launched].sort(), [ATTACK_FROM_MARS.configId, THEATRE_OF_MAGIC.configId]);
+});
+
+test("never launches the Last Played Table when it is an unconfigured table on the wheel", async () => {
+    const unconfigured = { id: 5, configId: "Backup.Unconfigured", title: "Backup", isConfigured: false };
+    const { fake, randomGame } = createRandomGameOn({
+        tables: [...TABLES, unconfigured],
+        wheel: [unconfigured, THEATRE_OF_MAGIC, ATTACK_FROM_MARS],
+        plays: { ...GUEST_PLAYS, [unconfigured.configId]: { count: 1, seconds: 60, lastPlayed: "2026-09-01T20:00:00" } },
+    });
+
+    const launched = await launchedConfigIds(fake, randomGame);
+
+    assert.ok(!launched.has(unconfigured.configId));
+    assert.ok(launched.has(THEATRE_OF_MAGIC.configId), "the table played before it can be drawn");
 });
 
 test("never launches the Last Played Table with the animation turned off", async () => {

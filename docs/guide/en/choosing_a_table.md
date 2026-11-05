@@ -11,6 +11,7 @@ Every day there is a table nobody in the house has played yet, or the one left a
 - While your weekly Challenge has Challenge Tables, it also shows one of them, drawn at random. That Challenge Table is never one of the two tables already shown, unless one more game finishes your Challenge.
 - From there, launch one of them, stay on the table on the wheel, change player or spin a Random Game.
 - Play them several days or weeks in a row to build a Streak.
+- Neither is ever a hidden table or an unconfigured one (a table file PinballY found but that was never set up), even when your wheel shows it.
 - When someone else takes one of your High Scores, Guest included, your next Welcome Screen tells you who, once, so you know which record to win back.
 - While the Welcome Screen is open, the video sound of the table on the wheel is turned down, and comes back as it closes.
 
@@ -23,7 +24,7 @@ For a Child Profile, see [Settings](settings.md#child-profile): the Table of the
 Every minute you play a table builds your Table Mastery of it, through ten Mastery Levels from Rookie to Pinball Wizard, each longer to reach than the one before.
 
 - The Mastery Bar, at the top right of the wheel screen, shows how far you are on the selected table, and a toast announces the level you reach.
-- When ten of your tables reach the next level, your Collection Mastery climbs a tier.
+- When ten of your tables reach the next level, your Collection Mastery climbs a tier. Hidden and unconfigured tables do not count.
 - Mastery Level 10 on a table and each new Collection Tier bring a shower of confetti.
 - Each Collection Tier also unlocks an Avatar Frame, from the Enchanted Forest to the Celestial Legend, to wear around your Avatar: pick it in **My Profile**, under **Frame**.
 - Play on a holiday (New Year's Day, Chinese New Year, Valentine's Day, Easter, Halloween, Christmas and five more) and that day's Holiday Frame is yours for good, announced by a toast when you come back to the wheel.

@@ -8,7 +8,7 @@
 
 A new Challenge comes every Monday, the same for the whole household: five different Stern tables, three tables you have never played, half an hour on a single table...
 
-- Its card on the wheel screen tracks your progress.
+- Its card on the wheel screen tracks your progress. A game on a hidden or unconfigured table does not count.
 - **Challenge Tables**, right under "All Tables" behind "Change Filter" in the main menu, keeps only the tables that would move it forward, and leaves the list once there are none.
 - The Welcome Screen also shows one of your Challenge Tables (see [Choosing a table](choosing_a_table.md)).
 - Completing it brings a shower of confetti across the wheel screen.
@@ -23,6 +23,7 @@ There are dozens of Achievements, from Bronze to Platinum: manufacturers and dec
 
 - Each one is announced by a small toast in a corner, without interrupting your games; a Platinum also brings a shower of confetti across the wheel screen.
 - The Achievement List, opened from **My Achievements** in the main menu, shows how far you are from each missing one, and which of the household's Avatars already have it.
+- Completing the collection, a manufacturer, a decade or a category leaves out hidden and unconfigured tables, so one can unlock when its last unplayed table leaves the list.
 - A few stay secret, shown as "???" with a hint, until you stumble upon them.
 - A Child Profile has three more of its own: Snack Time, Wednesday Off and Beat the Grown-Ups, a Table Record taken from a grown-up.
 

@@ -6,6 +6,11 @@
 // tests/support/fake_pinbally_host.js. No side effects on import.
 // ============================================================
 
+// Whether a table belongs to the household's visible tables. Unconfigured
+// tables never do, whatever "Hide unconfigured games" says: they show a raw
+// file name, and their config ID may change once they are set up (spec #405).
+export const isVisibleTable = game => !game.isHidden && game.isConfigured !== false;
+
 const ADODB_TEXT_TYPE = 2;
 const ADODB_READ_ALL = -1;
 const ADODB_SAVE_OVERWRITE = 2;
@@ -494,8 +499,8 @@ export function createPinballYHost() {
         setInterval: (callback, ms) => setInterval(callback, ms),
         clearInterval: (id) => { clearInterval(id); },
 
-        getVisibleTables: () => gameList.getAllGames().filter(game => !game.isHidden),
-        // Hidden tables included.
+        getVisibleTables: () => gameList.getAllGames().filter(isVisibleTable),
+        // Hidden and unconfigured tables included.
         getAllTables: () => gameList.getAllGames(),
         // The current wheel selection in wheel order: index 0 is the current table.
         getWheelTables: () => gameList.getAllWheelGames(),

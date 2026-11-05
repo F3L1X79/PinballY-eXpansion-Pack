@@ -8,7 +8,7 @@
 // ============================================================
 
 import { safeHandler } from "../core/safe_handler.js";
-import { createPinballYHost } from "../core/pinbally_host.js";
+import { createPinballYHost, isVisibleTable } from "../core/pinbally_host.js";
 import { getProfileStore } from "../profiles/profile_store.js";
 import { isAdultTable, isKeptFromChild } from "./adult_tables.js";
 import { launchShownTable } from "./table_launch.js";
@@ -100,7 +100,7 @@ export function createPeriodTable(host, definition, profileStore) {
         const { period: lockedPeriod, configId: lockedConfigId } = getLock();
         if (lockedPeriod !== currentPeriod || !lockedConfigId) return null;
         const lockedGame = host.getGameInfo(lockedConfigId);
-        return lockedGame && !lockedGame.isHidden ? lockedGame : null;
+        return lockedGame && isVisibleTable(lockedGame) ? lockedGame : null;
     }
 
     function pickNewTable(currentPeriod) {

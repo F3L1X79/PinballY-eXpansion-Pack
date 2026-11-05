@@ -108,6 +108,18 @@ for (const { name, createHost, usesGlobals } of ADAPTERS) {
             assert.deepEqual(host.getVisibleTables().map(game => game.title), ["Theatre of Magic"]);
         });
 
+        test("leaves unconfigured tables out of the visible tables, not out of every table", () => {
+            fake.setTables([
+                { id: 1, configId: "Medieval Madness (Williams 1997)", title: "Medieval Madness", isConfigured: true },
+                { id: 2, configId: "Attack from Mars (Bally 1995)", title: "Attack from Mars" },
+                { id: 3, configId: "Backup.Unconfigured", title: "Backup", isConfigured: false },
+            ]);
+
+            assert.deepEqual(host.getVisibleTables().map(game => game.title), ["Medieval Madness", "Attack from Mars"]);
+            assert.deepEqual(host.getAllTables().map(game => game.title), ["Medieval Madness", "Attack from Mars", "Backup"]);
+            assert.equal(host.getGameInfo("Backup.Unconfigured").title, "Backup");
+        });
+
         test("offers the wheel selection in wheel order, every visible table by default", () => {
             assert.deepEqual(host.getWheelTables().map(game => game.configId), [
                 "Medieval Madness (Williams 1997)",

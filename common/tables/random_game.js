@@ -28,11 +28,12 @@ const randomIndex = length => Math.floor(Math.random() * length);
 export function createRandomGame(host, profileStore, { animateTo, skipAnimation = config.skipRandomGameAnimation }) {
     // The active Profile's most recently played visible table, or null when
     // it never played one. Its lastPlayed times are local ISO strings, which
-    // sort as text.
+    // sort as text. Unconfigured tables included: a wheel can show them, and
+    // the one just played must not be drawn again.
     const lastPlayedOf = game => profileStore.getPlay(game.configId).lastPlayed;
     function findLastPlayedTable() {
-        return host.getVisibleTables()
-            .filter(lastPlayedOf)
+        return host.getAllTables()
+            .filter(game => !game.isHidden && lastPlayedOf(game))
             .reduce((latest, game) => (!latest || lastPlayedOf(game) > lastPlayedOf(latest) ? game : latest), null);
     }
 

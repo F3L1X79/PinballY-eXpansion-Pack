@@ -57,7 +57,7 @@ You don't need an Admin Profile to set up the pack: while no Profile is marked, 
 - games played and total time, and the average game length;
 - your Player Level and Collection Mastery;
 - your favourite manufacturer, decade and table, and the first table you ever played;
-- how much of the collection you have tried;
+- how much of the collection you have tried, hidden and unconfigured tables left out;
 - your Achievements, your Daily Streak and your Table of the Day and Table of the Week Streaks, and the Challenges you completed;
 - the High Scores and Table Records you still hold;
 - the Avatar Frame you wear (pick it under **Frame**, see [Table Mastery](choosing_a_table.md#table-mastery));
