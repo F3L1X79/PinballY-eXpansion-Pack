@@ -13,7 +13,7 @@ import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 import { NAME_ENTRY_Z_INDEX } from "../../common/profiles/name_entry_painter.js";
 import {
     startOnWheel, press, step, highlighted, openNameEntry, isNameEntryOpen, nameEntryTexts, nameShown, currentCharacter, ringShown, colorOf,
-    enter, enterName, moveTo, pickerTexts, PROFILES_FOLDER, NAME_ENTRY_OPEN_MS, GLIDE_OVER_MS,
+    enter, enterName, moveTo, pickerTexts, passThroughAvatarChoice, PROFILES_FOLDER, NAME_ENTRY_OPEN_MS, GLIDE_OVER_MS,
 } from "./name_entry_scenario.js";
 
 const ERASE = String.fromCharCode(0x2190);
@@ -101,13 +101,13 @@ test("a name built with the flippers creates an empty folder, and the picker com
     assert.equal(isNameEntryOpen(fake), false, "OK closes Name Entry");
     assert.equal(fake.files.fileExists(`${PROFILES_FOLDER}\\Maxx\\profile.json`), false, "no profile.json");
     assert.ok(store.listProfiles().some(profile => profile.name === "Maxx"), "the folder is there");
+    passThroughAvatarChoice(fake);
     assert.equal(store.getActiveProfile().name, "Zed", "the active Profile is kept");
     assert.equal(highlighted(fake, names()), "Maxx", "the picker comes back on the new Profile");
 
-    // Holding Select over OK must not pick the new Profile.
-    press(fake, "Select", true);
-    assert.equal(store.getActiveProfile().name, "Zed", "the held Select's auto-repeat picks nothing");
-    assert.ok(pickerTexts(fake).includes(lang.profiles.pickerTitle), "the picker is still open");
+    // Holding Exit on Avatar Choice must not close the picker.
+    press(fake, "Exit", true);
+    assert.ok(pickerTexts(fake).includes(lang.profiles.pickerTitle), "the held Exit's auto-repeat leaves the picker open");
 
     // In alphabetical place, the "+" still last.
     step(fake, "Prev");

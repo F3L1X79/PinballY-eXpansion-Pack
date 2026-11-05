@@ -1,9 +1,9 @@
 // ============================================================
 // Profile picker: "Change Player" (main menu, exit menu, Welcome Screen),
 // or the Startup Screen, opens a drawn carousel of the Profiles' Avatars;
-// Select or Launch switches Profile, Exit closes it; its last slot, the "+",
-// opens Name Entry. Also shows the active Profile's badge at the top right of
-// the wheel, and greets the Profile on each pick when the Welcome Screen is off.
+// Select or Launch switches Profile, Exit closes it; the last slot, "+",
+// opens Name Entry then Avatar Choice. Shows the active Profile's badge
+// top right of the wheel, and greets each pick when the Welcome Screen is off.
 // - As the Startup Screen only, a drawn dialog of the wheel dialog module, which the Welcome Screen follows.
 // - Swallows every button through "commandbuttondown" while open.
 // - Layers are drawn ahead and kept: each draw blocks PinballY 20 to 45 ms on the cabinet.
@@ -18,6 +18,7 @@ import { getProfileStore } from "../common/profiles/profile_store.js";
 import { displayNameOf } from "../common/profiles/profile_name.js";
 import { seesSetupEntries } from "../common/profiles/setup_entries.js";
 import { createNameEntry } from "../common/profiles/name_entry.js";
+import { createAvatarChoice } from "../common/profiles/avatar_choice.js";
 import { getMainMenu, MAIN_MENU_POSITION } from "../common/menus/main_menu.js";
 import { getWheelDialogs, DIALOG_PRIORITY } from "../common/core/wheel_dialog.js";
 import { getStartupScreen, notifyStartupPickerDone, STARTUP_SCREEN } from "../common/core/startup_screen.js";
@@ -128,8 +129,9 @@ export default function init() {
     const profileRewards = getProfileRewards();
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
     // Before this Add-on's own button listener, which then sees each press
-    // Name Entry took as handled.
+    // Name Entry and Avatar Choice took as handled.
     const nameEntry = createNameEntry(host, { profileStore, drawingAhead: getDrawingAhead() });
+    const avatarChoice = createAvatarChoice(host, { profileStore, drawingAhead: getDrawingAhead() });
     const hiddenLayer = zIndex => {
         const layer = host.createDrawingLayer(zIndex);
         layer.alpha = 0;
@@ -717,8 +719,9 @@ export default function init() {
         greetAfterPause({ atStartup });
     }
 
-    // Name Entry created a Profile: the carousel, still open under it, comes
-    // back on it, and no switch happens, so an Admin Profile stays itself to mark it.
+    // Name Entry created a Profile and Avatar Choice closed: the carousel,
+    // still open under them, comes back on it, its Avatar read only now, and
+    // no switch happens, so an Admin Profile stays itself to mark it.
     function showCreated(name) {
         slots = readSlots();
         highlighted = Math.max(0, slots.findIndex(slot => slot.name === name));
@@ -766,7 +769,7 @@ export default function init() {
         if (ev.repeat) return;
         if (ev.command === "Select" || ev.command === "Launch") {
             const chosen = slots[highlighted];
-            if (chosen === NEW_PROFILE_SLOT) nameEntry.open(showCreated);
+            if (chosen === NEW_PROFILE_SLOT) nameEntry.open(name => avatarChoice.open(name, () => showCreated(name)));
             else pick(chosen);
         } else if (ev.command === "Exit") {
             exit();

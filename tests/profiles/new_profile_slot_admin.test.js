@@ -6,7 +6,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { assertNoErrorLogged } from "../support/error_log.js";
-import { startOnWheel, highlighted, step, openNameEntry, enterName, enter } from "./name_entry_scenario.js";
+import { startOnWheel, highlighted, step, openNameEntry, enterName, enter, passThroughAvatarChoice } from "./name_entry_scenario.js";
 
 test("an Admin Profile sees the + and stays active after creating a Profile", async () => {
     const { fake, lang, store, openPicker } = await startOnWheel({ profiles: ["Alice", "Bob"], admins: ["Bob"], activeProfile: "Bob" });
@@ -19,6 +19,7 @@ test("an Admin Profile sees the + and stays active after creating a Profile", as
     openNameEntry(fake);
     enterName(fake, "Kid");
     enter(fake, "OK");
+    passThroughAvatarChoice(fake);
     assert.equal(highlighted(fake, names), "Kid");
     assert.equal(store.getActiveProfile().name, "Bob");
     assert.equal(store.isAdmin(), true);

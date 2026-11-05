@@ -1,6 +1,7 @@
 // ============================================================
 // Starts main.js on the fake host with the Profile picker alone, opens the
-// carousel, and reads the "+" slot and Name Entry as the player sees them.
+// carousel, and reads the "+" slot, Name Entry and Avatar Choice as the
+// player sees them, the pack's portraits seeded.
 // Never loaded by PinballY; one start per test file, as main.js loads once
 // per process.
 // ============================================================
@@ -11,6 +12,7 @@ import { shownLayers } from "../support/shown_layers.js";
 import { layerUnderMarker } from "../support/selection_marker_reader.js";
 import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 import { NAME_ENTRY_Z_INDEX as Z } from "../../common/profiles/name_entry_painter.js";
+import { AVATAR_CHOICE_Z_INDEX as AVATAR_Z } from "../../common/profiles/avatar_choice_painter.js";
 import config from "../../common/core/config.js";
 
 export const PROFILES_FOLDER = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
@@ -22,12 +24,20 @@ const SETTLED_MS = 3000;
 export const GLIDE_OVER_MS = 500;
 // Past Name Entry's opening: its pieces drawn, then its fade in.
 export const NAME_ENTRY_OPEN_MS = 600;
+// Past Avatar Choice's opening: its portraits drawn, then its fade in.
+export const AVATAR_CHOICE_OPEN_MS = 1000;
+const PICKER_AVATAR_Z_INDEX = 6501;
 
 const markedProfile = marks => JSON.stringify({ version: 1, plays: {}, notified: [], ...marks });
+
+// The pack's portraits of Avatar Choice, by number (1 for avatar_choice_01.png).
+export const PORTRAIT_COUNT = 24;
+export const portraitOf = number => `C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images\\avatar_choice\\avatar_choice_${String(number).padStart(2, "0")}.png`;
 
 // profiles: the Household's folders; admins, children: those of them marked.
 export async function startOnWheel({ profiles = ["Alice", "Bob"], admins = [], children = [], activeProfile = "Bob", language = "en", fakeOptions = {} } = {}) {
     const fake = createFakePinballYHost(fakeOptions);
+    for (let number = 1; number <= PORTRAIT_COUNT; number++) fake.addFile(portraitOf(number), `portrait ${number}`);
     for (const name of profiles) fake.addFolder(`${PROFILES_FOLDER}\\${name}`);
     for (const name of admins) fake.addFile(`${PROFILES_FOLDER}\\${name}\\profile.json`, markedProfile({ isAdmin: true }));
     for (const name of children) fake.addFile(`${PROFILES_FOLDER}\\${name}\\profile.json`, markedProfile({ isChild: true }));
@@ -136,3 +146,37 @@ export function openNameEntry(fake) {
     fake.advanceTime(NAME_ENTRY_OPEN_MS);
     assert.equal(isNameEntryOpen(fake), true, "Name Entry opens");
 }
+
+// Avatar Choice, which opens once Name Entry's OK created the Profile.
+export const isAvatarChoiceOpen = fake => shownLayers(fake, AVATAR_Z.backdrop).length > 0;
+export const avatarChoiceTexts = fake => shownLayers(fake, AVATAR_Z.texts).flatMap(layer => layer.texts());
+export const portraitLayers = fake => shownLayers(fake, AVATAR_Z.portraits);
+// The portrait's path the Selection Marker surrounds, or "exit" on the Exit Button.
+export function currentPortrait(fake) {
+    const exitButton = shownLayers(fake, AVATAR_Z.exitButton);
+    const layer = layerUnderMarker(fake, AVATAR_Z.marker, [...portraitLayers(fake), ...exitButton]);
+    assert.ok(layer, "the Selection Marker surrounds a portrait or the Exit Button");
+    return exitButton.includes(layer) ? "exit" : layer.images()[0];
+}
+
+// After a successful OK: lets Avatar Choice open, then leaves it with
+// Exit, keeping the Default Avatar.
+export function passThroughAvatarChoice(fake) {
+    fake.advanceTime(AVATAR_CHOICE_OPEN_MS);
+    assert.equal(isAvatarChoiceOpen(fake), true, "Avatar Choice opens after OK");
+    press(fake, "Exit");
+    assert.equal(isAvatarChoiceOpen(fake), false, "Exit leaves Avatar Choice");
+}
+
+// Enters the name, chooses OK and lets Avatar Choice open.
+export function createThroughNameEntry(fake, name) {
+    enterName(fake, name);
+    moveTo(fake, "OK");
+    press(fake, "Select");
+    fake.advanceTime(AVATAR_CHOICE_OPEN_MS);
+}
+
+// The Avatar images the carousel shows.
+export const pickerAvatars = fake => fake.drawingLayers()
+    .filter(layer => layer.zIndex === PICKER_AVATAR_Z_INDEX && layer.alpha > 0)
+    .flatMap(layer => layer.images());

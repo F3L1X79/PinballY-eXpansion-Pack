@@ -597,6 +597,11 @@ export default {
             },
             folderFailed: "Le dossier de ce profil n'a pas pu être créé : vérifiez le dossier profiles dans Windows, puis réessayez.",
         },
+        // Avatar Choice, right after Name Entry: its title, then a line under the Profile's name.
+        avatarChoice: {
+            title: "Choix de l'Avatar",
+            line: "Vous pourrez le remplacer depuis Windows, au prochain démarrage de PinballY.",
+        },
         greeting: name => `Salut ${name} !`,
     },
 

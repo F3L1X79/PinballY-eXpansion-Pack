@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { errorLines } from "../support/error_log.js";
 import { seesManageProfiles, seesSetupEntries } from "../../common/profiles/setup_entries.js";
 import {
-    startOnWheel, press, step, highlighted, openNameEntry, isNameEntryOpen, nameEntryTexts, enterName, moveTo, PROFILES_FOLDER,
+    startOnWheel, press, step, highlighted, openNameEntry, isNameEntryOpen, nameEntryTexts, enterName, moveTo, passThroughAvatarChoice, PROFILES_FOLDER,
 } from "./name_entry_scenario.js";
 
 test("a mark that cannot be saved keeps the Profile and is logged, and it can still become admin", async () => {
@@ -27,6 +27,7 @@ test("a mark that cannot be saved keeps the Profile and is logged, and it can st
 
     assert.equal(isNameEntryOpen(fake), false);
     assert.ok(store.listProfileNames().includes("Max"), "the Profile is kept");
+    passThroughAvatarChoice(fake);
     assert.equal(highlighted(fake, names), "Max", "the picker comes back on it");
     assert.equal(store.hasAdminProfile(), false);
     assert.equal(seesSetupEntries(store), true, "everyone still sees the setup entries");

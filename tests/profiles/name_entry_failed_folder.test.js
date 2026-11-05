@@ -8,7 +8,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { errorLines } from "../support/error_log.js";
 import {
-    startOnWheel, press, step, highlighted, openNameEntry, isNameEntryOpen, nameShown, reasonShown, enter, enterName, moveTo, PROFILES_FOLDER,
+    startOnWheel, press, step, highlighted, openNameEntry, isNameEntryOpen, nameShown, reasonShown, enter, enterName, moveTo, passThroughAvatarChoice,
+    PROFILES_FOLDER,
 } from "./name_entry_scenario.js";
 
 test("a folder that cannot be created leaves the screen open, the name kept, with a message", async () => {
@@ -42,6 +43,7 @@ test("a folder that cannot be created leaves the screen open, the name kept, wit
     press(fake, "Select");
     assert.equal(isNameEntryOpen(fake), false);
     assert.ok(store.listProfileNames().includes("Maxi"));
+    passThroughAvatarChoice(fake);
     assert.equal(highlighted(fake, [lang.profiles.guestName, "Alice", "Maxi", lang.profiles.newProfile]), "Maxi");
     assert.equal(errorLines(fake).length, 1, "no further error");
 });

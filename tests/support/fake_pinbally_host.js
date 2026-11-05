@@ -271,6 +271,7 @@ export function createFakePinballYHost({
     let restartCount = 0;
     let failingRestartCount = 0;
     let failingFolderCreationCount = 0;
+    let failingCopyCount = 0;
     // Every Pack Update asked, in order: { zipUrl, sha256, packVersion },
     // and how many of the next ones never get ready.
     const packUpdateList = [];
@@ -881,6 +882,22 @@ export function createFakePinballYHost({
             modifiedDates.delete(path);
             fileOperationList.push({ operation: "delete", path });
         },
+        // Overwrites the target, as CopyFile with its overwrite flag does.
+        copyFile(fromPath, toPath) {
+            if (failingCopyCount > 0) {
+                failingCopyCount--;
+                throw new Error(`Permission denied: ${toPath}`);
+            }
+            requireFile(fromPath);
+            requireParentFolder(toPath);
+            requireUnlocked(toPath);
+            const content = files.get(fromPath);
+            files.set(toPath, content instanceof Uint8Array ? new Uint8Array(content) : content);
+            modifiedDates.set(toPath, nowMs);
+            if (unreadableImages.has(fromPath)) unreadableImages.add(toPath);
+            else unreadableImages.delete(toPath);
+            fileOperationList.push({ operation: "copy", path: fromPath, to: toPath });
+        },
         createFolder(folderPath) {
             if (failingFolderCreationCount > 0) {
                 failingFolderCreationCount--;
@@ -1182,6 +1199,11 @@ export function createFakePinballYHost({
             },
             MoveFile: fileSystem.renameFile,
             DeleteFile: fileSystem.deleteFile,
+            // Only with its overwrite flag, the one the pack passes.
+            CopyFile: (fromPath, toPath, overwrite) => {
+                if (overwrite !== true) throw new Error("The fake host copies only with overwrite.");
+                fileSystem.copyFile(fromPath, toPath);
+            },
             GetFile: (path) => {
                 requireFile(path);
                 const { modified, size } = fileSystem.getFileInfo(path);
@@ -1509,6 +1531,8 @@ export function createFakePinballYHost({
         failNextRestart() { failingRestartCount++; },
         // The next folder created throws, as Windows does on a denied folder.
         failNextFolderCreation() { failingFolderCreationCount++; },
+        // The next file copied throws, as Windows does on a denied file.
+        failNextCopy() { failingCopyCount++; },
         // Every Pack Update asked, through either host: { zipUrl, sha256, packVersion }.
         packUpdatesAsked: () => packUpdateList.map(update => ({ ...update })),
         // The next Pack Update asked never gets ready.

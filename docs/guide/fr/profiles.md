@@ -26,10 +26,11 @@ Ouvrez **Changer de joueur** : sa dernière place, après le dernier Profil, est
 
 1. Choisissez le « + » avec Select ou Launch : la saisie du nom s'ouvre.
 2. Parcourez l'anneau de caractères avec les flippers, en maintenant l'un d'eux pour continuer. Select ou Launch choisit le caractère sous le marqueur : `A` à `Z`, `a` à `z`, `-`, `←` pour effacer le dernier caractère, et `OK`.
-3. Choisissez `OK`. `OK` reste grisé tant que le nom est vide ou refusé.
-4. « Changer de joueur » revient sur le nouveau Profil, à sa place dans l'ordre alphabétique. Vous êtes toujours sur votre ancien Profil : appuyez sur Select pour choisir le nouveau.
+3. Choisissez `OK`. `OK` reste grisé tant que le nom est vide ou refusé. Le Profil est créé, et le Choix de l'Avatar s'ouvre.
+4. Le Choix de l'Avatar montre 24 portraits sous le nom du nouveau Profil. Parcourez-les avec les flippers, en maintenant l'un d'eux pour continuer ; Select ou Launch prend aussitôt le portrait sous le marqueur. Exit, ou le bouton Exit avant le premier portrait, garde l'Avatar par défaut.
+5. « Changer de joueur » revient sur le nouveau Profil, à sa place dans l'ordre alphabétique, avec son Avatar. Vous êtes toujours sur votre ancien Profil : appuyez sur Select pour choisir le nouveau.
 
-Exit revient sur le « + » sans rien créer. Sur une borne laissée inactive, le mode attract ferme la saisie du nom et « Changer de joueur », sans rien créer non plus.
+Dans la saisie du nom, Exit revient sur le « + » sans rien créer. Sur une borne laissée inactive, le mode attract ferme la saisie du nom et « Changer de joueur », sans rien créer non plus ; pendant le Choix de l'Avatar, il les ferme aussi, et le Profil déjà créé garde l'Avatar par défaut. Deux Profils peuvent prendre le même portrait. Une fois créé, un Profil ne change d'Avatar que depuis Windows.
 
 Un nom compte 12 caractères au maximum, sans accents, espaces ni chiffres. Pour un nom plus long ou accentué, renommez le dossier du Profil dans Windows, **avant de jouer** : renommer garde les parties et les Succès du Profil, mais ses meilleurs scores et ses records perdus suivent le nom, et renommer le dossier du Profil actif repart sur Invité.
 
@@ -42,7 +43,7 @@ Si le dossier ne peut pas être créé, la saisie du nom reste ouverte avec votr
 ### Depuis Windows
 
 1. Dans `PinballY\Scripts\ExpansionPack\profiles`, créez un dossier vide au nom du joueur : c'est ce nom que la borne affiche. Un nom qui commence par `.` ou `_` est ignoré. Ne copiez pas le dossier d'Invité : la copie reprendrait sa progression, alors qu'un dossier vide part de zéro.
-2. Facultatif : placez dans ce dossier une image PNG ou JPEG carrée nommée `avatar.png` ou `avatar.jpg`. Si les deux sont là, `avatar.jpg` l'emporte. Sans aucune des deux, le Profil reçoit l'Avatar par défaut, une simple silhouette grise.
+2. Facultatif : placez dans ce dossier une image PNG ou JPEG carrée nommée `avatar.png` ou `avatar.jpg`. Si les deux sont là, `avatar.jpg` l'emporte : une photo déposée sous le nom `avatar.jpg` s'affiche à la place du portrait que le Choix de l'Avatar a copié en `avatar.png`. Sans aucune des deux, le Profil reçoit l'Avatar par défaut, une simple silhouette grise. Un `avatar.png` ou `avatar.jpg` remplacé par un autre fichier du même nom pendant que PinballY tourne s'affiche à son prochain démarrage.
 3. Ouvrez **Changer de joueur**, dans le menu principal ou le menu de sortie, et choisissez le nouveau Profil. Inutile de redémarrer PinballY. Tant que vous ne l'avez pas choisi, vous jouez toujours en Invité.
 4. Facultatif : pour garder les entrées de configuration pour vous seul, ouvrez **Gérer les profils** dans le menu de sortie et choisissez **Devenir admin** (voir [Profil admin](settings.md#profil-admin)).
 

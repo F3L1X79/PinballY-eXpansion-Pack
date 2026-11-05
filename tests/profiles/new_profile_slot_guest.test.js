@@ -6,7 +6,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { assertNoErrorLogged } from "../support/error_log.js";
-import { startOnWheel, highlighted, step, openNameEntry, enterName, enter } from "./name_entry_scenario.js";
+import { startOnWheel, highlighted, step, openNameEntry, enterName, enter, passThroughAvatarChoice } from "./name_entry_scenario.js";
 
 test("Guest alone sees the + and creates the first Profile, staying Guest", async () => {
     const { fake, lang, store, openPicker } = await startOnWheel({ profiles: [], activeProfile: "guest" });
@@ -21,6 +21,7 @@ test("Guest alone sees the + and creates the first Profile, staying Guest", asyn
     openNameEntry(fake);
     enterName(fake, "Max");
     enter(fake, "OK");
+    passThroughAvatarChoice(fake);
     assert.equal(highlighted(fake, names), "Max");
     assert.equal(store.getActiveProfile().isGuest, true);
     assertNoErrorLogged(fake);

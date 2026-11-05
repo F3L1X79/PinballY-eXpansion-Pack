@@ -13,6 +13,7 @@ import { NAME_ENTRY_Z_INDEX } from "../../common/profiles/name_entry_painter.js"
 import { seesSetupEntries } from "../../common/profiles/setup_entries.js";
 import {
     startOnWheel, press, step, highlighted, openNameEntry, isNameEntryOpen, nameEntryTexts, enterName, moveTo, pickerTexts, PROFILES_FOLDER,
+    isAvatarChoiceOpen, AVATAR_CHOICE_OPEN_MS,
 } from "./name_entry_scenario.js";
 
 test("the first Profile is announced in yellow, at each opening, and becomes an Admin Profile", async () => {
@@ -45,6 +46,14 @@ test("the first Profile is announced in yellow, at each opening, and becomes an 
     assert.equal(store.isAdmin("Max"), true);
     assert.equal(store.getActiveProfile().name, "guest", "no switch happens");
     assert.equal(seesSetupEntries(store), false, "Guest no longer sees the setup entries");
+
+    // Taking a portrait on Avatar Choice keeps the mark.
+    fake.advanceTime(AVATAR_CHOICE_OPEN_MS);
+    assert.equal(isAvatarChoiceOpen(fake), true);
+    press(fake, "Select");
+    assert.equal(isAvatarChoiceOpen(fake), false);
+    assert.equal(fake.readFile(`${PROFILES_FOLDER}\\Max\\avatar.png`), "portrait 1");
+    assert.equal(store.isAdmin("Max"), true, "still an Admin Profile");
 
     // The picker comes back on it, and the "+" is gone for Guest.
     assert.equal(highlighted(fake, [guest, "Max", label]), "Max");

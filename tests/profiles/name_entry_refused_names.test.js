@@ -10,7 +10,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 import {
     startOnWheel, press, step, highlighted, openNameEntry, isNameEntryOpen, nameShown, reasonShown, currentCharacter, colorOf,
-    enter, enterName, eraseName, moveTo, assertRefused, PROFILES_FOLDER,
+    enter, enterName, eraseName, moveTo, assertRefused, passThroughAvatarChoice, PROFILES_FOLDER,
 } from "./name_entry_scenario.js";
 
 const OK = "OK";
@@ -80,6 +80,7 @@ test("a refused name greys OK and says why; a hyphen stays inside the name", asy
     assert.equal(isNameEntryOpen(fake), false);
     assert.ok(fake.files.listFolders(PROFILES_FOLDER).includes("Jo-Max"), "created without its trailing hyphen");
     assert.equal(fake.files.listFolders(PROFILES_FOLDER).includes("Jo-Max-"), false);
+    passThroughAvatarChoice(fake);
     assert.equal(highlighted(fake, [lang.profiles.guestName, "Alice", "Jo-Max", "Zed", lang.profiles.newProfile]), "Jo-Max", "the picker comes back on it");
     assert.equal(store.getActiveProfile().name, "Zed");
 

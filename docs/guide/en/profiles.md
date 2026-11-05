@@ -26,10 +26,11 @@ Open **Change Player**: its last slot, after the last Profile, is **New profile*
 
 1. Choose the "+" with Select or Launch: Name Entry opens.
 2. Move along the ring of characters with the flippers, and hold one to keep going. Select or Launch chooses the character under the marker: `A` to `Z`, `a` to `z`, `-`, `←` to erase the last character, and `OK`.
-3. Choose `OK`. `OK` stays grey while the name is empty or refused.
-4. Change Player comes back on the new Profile, in its alphabetical place. You are still on your former Profile: press Select to pick the new one.
+3. Choose `OK`. `OK` stays grey while the name is empty or refused. The Profile is created, and Avatar Choice opens.
+4. Avatar Choice shows 24 portraits under your new Profile's name. Move through them with the flippers, and hold one to keep going; Select or Launch takes the portrait under the marker at once. Exit, or the Exit Button before the first portrait, keeps the default Avatar.
+5. Change Player comes back on the new Profile, in its alphabetical place, wearing its Avatar. You are still on your former Profile: press Select to pick the new one.
 
-Exit goes back to the "+" with nothing created. On a cabinet left idle, attract mode closes Name Entry and Change Player, with nothing created either.
+On Name Entry, Exit goes back to the "+" with nothing created. On a cabinet left idle, attract mode closes Name Entry and Change Player, with nothing created either; on Avatar Choice, it closes them too, and the Profile already created keeps the default Avatar. Two Profiles may take the same portrait. Once created, a Profile changes its Avatar from Windows only.
 
 A name has 12 characters at most, without accents, spaces or digits. For a longer or accented name, rename the Profile's folder in Windows, **before playing**: a rename keeps the Profile's plays and Achievements, but its High Scores and Lost Records follow the name, and renaming the active Profile's folder restarts on Guest.
 
@@ -42,7 +43,7 @@ If the folder cannot be created, Name Entry stays open with your name and says s
 ### From Windows
 
 1. In `PinballY\Scripts\ExpansionPack\profiles`, create an empty folder named after the player: the cabinet shows that name. A name starting with `.` or `_` is ignored. Don't copy Guest's folder: the copy would carry over Guest's progress, while an empty folder starts from zero.
-2. Optional: put a square PNG or JPEG named `avatar.png` or `avatar.jpg` in that folder. If both are there, `avatar.jpg` wins. Without either, the Profile gets the default Avatar, a plain grey silhouette.
+2. Optional: put a square PNG or JPEG named `avatar.png` or `avatar.jpg` in that folder. If both are there, `avatar.jpg` wins, so a photo dropped as `avatar.jpg` shows over the portrait Avatar Choice copied as `avatar.png`. Without either, the Profile gets the default Avatar, a plain grey silhouette. An `avatar.png` or `avatar.jpg` replaced by another file of the same name while PinballY runs shows from its next start.
 3. Open **Change Player**, in the main menu or the Exit menu, and pick the new Profile. There is no need to restart PinballY. Until you pick it, you are still playing as Guest.
 4. Optional: to keep the setup entries for yourself, open **Manage profiles** in the Exit menu and choose **Become admin** (see [Admin Profile](settings.md#admin-profile)).
 

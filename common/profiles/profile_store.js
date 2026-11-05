@@ -107,9 +107,11 @@ export function createProfileStore(host) {
 
     // Only the found Profile's Avatar is checked: each check draws a probe layer.
     function findProfile(name) {
-        const folderName = listProfileNames().find(folder => sameName(folder, name));
+        const folderName = folderNameOf(name);
         return folderName === undefined ? null : profileAt(folderName);
     }
+    // The listed folder of the named Profile, in any case; undefined when none.
+    const folderNameOf = name => listProfileNames().find(folder => sameName(folder, name));
 
     // The file's data, or null when it is missing, not JSON or not an object;
     // the cause of an unreadable file is logged here, its outcome by the caller.
@@ -462,6 +464,15 @@ export function createProfileStore(host) {
         return createdName;
     }
 
+    // Copies imagePath as the named Profile's avatar.png, replacing it;
+    // nothing records which image it was. Throws when the copy fails.
+    function giveAvatar(profileName, imagePath) {
+        const folderName = folderNameOf(profileName);
+        if (folderName === undefined) throw new Error(`No Profile named "${profileName}".`);
+        files.copyFile(imagePath, `${profilesFolder}\\${folderName}\\avatar.png`);
+        log(`The Profile "${folderName}" was given the Avatar ${imagePath}.`);
+    }
+
     // A mark that cannot be saved keeps the Profile: with no Admin Profile,
     // everyone still sees the setup entries and Manage profiles offers the mark.
     function markFirstProfile(profileName) {
@@ -543,6 +554,8 @@ export function createProfileStore(host) {
         // Whether the Household has no Profile; re-read on every call.
         isHouseholdEmpty,
         createProfile,
+        // The named Profile's avatar.png becomes a copy of the image.
+        giveAvatar,
         switchTo,
         getProfileData: () => activeData,
         // The named Profile's data, to read only: change it with updateProfileData.
