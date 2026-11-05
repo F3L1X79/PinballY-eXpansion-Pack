@@ -9,7 +9,7 @@ import { startOnProfilePicker } from "../core/startup_picker_scenario.js";
 import { OPEN_OVER_MS } from "../drawn_menu/drawn_menu_reader.js";
 import { UPDATE_STATE_FILE } from "../table_roms/script_reader_prompt_scenario.js";
 
-const BETA_11 = { display: "1.1.0 (Beta 11)", semantic: "1.1.0-beta.11+10200.20260114T1200", build: 10200, status: "1.1.0" };
+export const BETA_11 = { display: "1.1.0 (Beta 11)", semantic: "1.1.0-beta.11+10200.20260114T1200", build: 10200, status: "1.1.0" };
 const PACK_UPDATE_HELPER = "C:\\PinballY\\Scripts\\ExpansionPack\\tools\\pack_update.ps1";
 export const RELEASE = {
     packVersion: "9.0.0",

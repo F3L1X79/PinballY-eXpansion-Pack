@@ -1,8 +1,9 @@
 // ============================================================
-// When the PinballY Version Notice is submitted at a start, and what it says:
-// once per PinballY Version for each Admin Profile, once for the whole cabinet
-// while it has no Admin Profile, never for a Profile without the setup entries.
-// Each submitAt() is a new start on the same cabinet's disk.
+// When the PinballY Version Notice is submitted, at a start or a Profile switch,
+// and what it says: once per PinballY Version for each Admin Profile, once for the
+// whole cabinet while it has no Admin Profile, never for a Profile without the
+// setup entries. Each submitAt() or startSession() is a new start on the same
+// cabinet's disk; a switch is the household's switchTo within a session.
 // ============================================================
 
 import { test } from "node:test";
@@ -21,25 +22,44 @@ const BETA_11 = versionOf("1.1.0 (Beta 11)", "1.1.0-beta.11+10200.20260114T1200"
 const BETA_12 = versionOf("1.1.0 (Beta 12)", "1.1.0-beta.12+10300.20270114T1200");
 const CUSTOM = versionOf("1.1.0 custom", "custom build");
 
-// The household as the Notice asks about it: its Admin Profiles and the active Profile.
-const household = (active, admins = []) => ({
-    getActiveProfile: () => ({ name: active }),
-    isAdmin: () => admins.includes(active),
-    hasAdminProfile: () => admins.length > 0,
-});
+// The household as the Notice asks about it: its Admin Profiles and the active
+// Profile. switchTo tells the listeners, as the Profile store does; setAdmins
+// tells nobody, as a mark set from the Manage profiles menu does.
+function household(initialActive, initialAdmins = []) {
+    let active = initialActive;
+    let admins = initialAdmins;
+    const listeners = [];
+    return {
+        getActiveProfile: () => ({ name: active }),
+        isAdmin: () => admins.includes(active),
+        hasAdminProfile: () => admins.length > 0,
+        onSwitch: listener => { listeners.push(listener); },
+        switchTo: name => {
+            active = name;
+            for (const listener of listeners) listener();
+        },
+        setAdmins: names => { admins = names; },
+    };
+}
 
 const cabinet = () => createFakePinballYHost();
 
-// A new start: the dialog submitted, or null. show: whether it reaches the screen.
-function submitAt(fake, profileStore, { version = BETA_11, references, show = true } = {}) {
-    const host = { ...fake, getPinballYVersion: () => version };
+// One session: the dialogs submitted so far, in order. Nothing reaches the
+// screen by itself: showing or dropping one is up to the test, as a queue's turn.
+function startSession(fake, profileStore, { version = BETA_11, references } = {}) {
     const submitted = [];
-    submitVersionNotice(host, {
+    submitVersionNotice({ ...fake, getPinballYVersion: () => version }, {
         state: createUpdateState(fake),
         profileStore,
         dialogs: { submit: dialog => submitted.push(dialog) },
         references,
     });
+    return submitted;
+}
+
+// A new start: the dialog submitted, or null. show: whether it reaches the screen.
+function submitAt(fake, profileStore, { version, references, show = true } = {}) {
+    const submitted = startSession(fake, profileStore, { version, references });
     assert.ok(submitted.length <= 1);
     if (submitted.length === 0) return null;
     if (show) submitted[0].onShown();
@@ -157,6 +177,134 @@ test("a memory file cut by a crash is logged and deleted, and the Notice still s
     assert.equal(fake.readFile(STATE_FILE), undefined, "deleted");
     assert.equal(errorLines(fake).length, 1);
     assert.match(errorLines(fake)[0], /pack_update\.json/);
+});
+
+test("a switch to an Admin Profile that has not seen it submits it", () => {
+    const fake = cabinet();
+    const profiles = household("Kid", ["Ava"]);
+    const submitted = startSession(fake, profiles);
+    assert.equal(submitted.length, 0, "a Child Profile at the start");
+
+    profiles.switchTo("Ava");
+
+    assert.equal(submitted.length, 1);
+    assert.equal(submitted[0].title, "Untested PinballY version");
+    assertNoErrorLogged(fake);
+});
+
+test("while a submission waits its turn, a switch makes no second one", () => {
+    const profiles = household("Ava", ["Ava", "Ben"]);
+    const submitted = startSession(cabinet(), profiles);
+
+    profiles.switchTo("Ben");
+
+    assert.equal(submitted.length, 1);
+    assert.equal(submitted[0].isStale(), false, "still good for Ben");
+});
+
+test("a Profile that already saw it does not see it again after a switch", () => {
+    const profiles = household("Ava", ["Ava"]);
+    const fake = cabinet();
+    const submitted = startSession(fake, profiles);
+    submitted[0].onShown();
+
+    profiles.switchTo("Kid");
+    profiles.switchTo("Ava");
+
+    assert.equal(submitted.length, 1);
+    assertNoErrorLogged(fake);
+});
+
+test("a second Admin Profile gets its own after the first one saw it", () => {
+    const profiles = household("Ava", ["Ava", "Ben"]);
+    const submitted = startSession(cabinet(), profiles);
+    submitted[0].onShown();
+
+    profiles.switchTo("Ben");
+
+    assert.equal(submitted.length, 2);
+});
+
+test("a Profile no longer eligible at its turn drops it unmarked, and a later switch submits it again", () => {
+    const fake = cabinet();
+    const profiles = household("Ava", ["Ava"]);
+    const submitted = startSession(fake, profiles);
+
+    profiles.switchTo("Kid");
+    assert.equal(submitted[0].isStale(), true);
+    assert.equal(fake.readFile(STATE_FILE), undefined, "not marked");
+
+    profiles.switchTo("Ava");
+    assert.equal(submitted.length, 2);
+    assert.equal(submitted[1].isStale(), false);
+});
+
+test("a submission once found stale stays so: the queue may keep it until its turn, and two must never be live", () => {
+    const profiles = household("Ava", ["Ava"]);
+    const submitted = startSession(cabinet(), profiles);
+
+    profiles.switchTo("Kid");
+    submitted[0].isStale();
+    profiles.switchTo("Ava");
+
+    assert.deepEqual(submitted.map(dialog => dialog.isStale()), [true, false]);
+});
+
+test("back on an eligible Profile before anything asked, the same submission still stands", () => {
+    const profiles = household("Ava", ["Ava"]);
+    const submitted = startSession(cabinet(), profiles);
+
+    profiles.switchTo("Kid");
+    profiles.switchTo("Ava");
+
+    assert.equal(submitted.length, 1);
+    assert.equal(submitted[0].isStale(), false);
+});
+
+test("a mark set elsewhere can make a waiting submission stale, with no switch", () => {
+    const fake = cabinet();
+    const profiles = household("Guest");
+    const submitted = startSession(fake, profiles);
+
+    profiles.setAdmins(["Ava"]);
+
+    assert.equal(submitted[0].isStale(), true, "Guest no longer sees the setup entries");
+    assert.equal(fake.readFile(STATE_FILE), undefined);
+});
+
+test("a Profile gaining the Admin mark while active gets it at its next switch, not at once", () => {
+    const fake = cabinet();
+    const profiles = household("Kid", ["Ava"]);
+    const submitted = startSession(fake, profiles);
+
+    profiles.setAdmins(["Ava", "Kid"]);
+    assert.equal(submitted.length, 0, "nothing at once");
+
+    profiles.switchTo("Ava");
+    submitted[0].onShown();
+    profiles.switchTo("Kid");
+    assert.equal(submitted.length, 2, "Ava's, then its own at its next switch");
+});
+
+test("with no Admin Profile, a switch does not show it again once it was shown", () => {
+    const fake = cabinet();
+    const profiles = household("Guest");
+    const submitted = startSession(fake, profiles);
+    submitted[0].onShown();
+
+    profiles.switchTo("Bob");
+
+    assert.equal(submitted.length, 1);
+    assertNoErrorLogged(fake);
+});
+
+test("no gap: a switch submits nothing", () => {
+    const profiles = household("Kid", ["Ava"]);
+    const submitted = startSession(cabinet(), profiles, { version: BETA_10 });
+
+    profiles.switchTo("Ava");
+
+    assert.equal(submitted.length, 0);
 });
 
 test("a failed write goes to the Error Log, the Notice still shows, and it may show again", () => {

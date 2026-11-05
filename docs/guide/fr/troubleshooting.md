@@ -28,14 +28,14 @@ Quand quelque chose que vous avez activé ne fonctionnera pas pour le reste de l
 
 ## L'avis de version de PinballY
 
-Chaque version du pack nomme la version de PinballY sur laquelle elle a été testée. Quand le PinballY installé sur votre borne est plus récent, a une version que le pack ne sait pas lire, ou est plus ancien que le minimum du pack, le pack le dit au démarrage, dans un message avec un seul bouton « Compris ». Exit compte comme une lecture. Il ne désactive jamais rien.
+Chaque version du pack nomme la version de PinballY sur laquelle elle a été testée. Quand le PinballY installé sur votre borne est plus récent, a une version que le pack ne sait pas lire, ou est plus ancien que le minimum du pack, le pack le dit au démarrage ou quand un Profil devient actif, dans un message avec un seul bouton « Compris ». Exit compte comme une lecture. Il ne désactive jamais rien.
 
 | Le titre dit | Ce que cela veut dire | Quoi faire |
 |---|---|---|
 | « Version de PinballY non testée » | Votre PinballY est plus récent que celui sur lequel cette version du pack a été testée, ou sa version ne peut pas être lue. Tout peut bien marcher. | Rien pour l'instant. Si quelque chose se comporte mal, pensez-y d'abord, et cherchez une version plus récente du pack (voir [Mises à jour](updates.md)). |
 | « Version de PinballY trop ancienne » | Votre PinballY est plus ancien que le minimum du pack. Certaines fonctions peuvent ne pas marcher. | Installez une version plus récente de PinballY. |
 
-**Qui le voit :** chaque Profil admin, une fois par version de PinballY, à un démarrage où ce Profil est le Profil actif. Tant que la borne n'a aucun Profil admin, il s'affiche une seule fois pour toute la borne, au Profil actif, Invité compris. Un Profil qui ne voit pas les entrées de configuration ne le voit jamais. Il ne revient que si la version de PinballY installée change, et une réinitialisation de profil ne le fait pas revenir.
+**Qui le voit :** chaque Profil admin, une fois par version de PinballY, à un démarrage où ce Profil est le Profil actif, ou dès qu'il devient le Profil actif et que la roue est libre. Un Profil qui reçoit la marque admin alors qu'il est actif le voit à son prochain démarrage ou changement de Profil. Tant que la borne n'a aucun Profil admin, il s'affiche une seule fois pour toute la borne, au Profil actif, Invité compris. Un Profil qui ne voit pas les entrées de configuration ne le voit jamais. Il ne revient que si la version de PinballY installée change, et une réinitialisation de profil ne le fait pas revenir.
 
 Le pack ne réagit qu'à ce qui est installé : il ne regarde jamais ce que PinballY a publié. Le même écart est écrit dans une ligne `WARNING` de `PinballY.log`, même quand personne ne voit le message.
 

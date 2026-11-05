@@ -28,14 +28,14 @@ When something you turned on will not work for the rest of the session, the pack
 
 ## The PinballY version notice
 
-Each version of the pack names the PinballY version it was tested on. When the PinballY installed on your cabinet is newer than that, has a version the pack cannot read, or is older than the pack's minimum, the pack says so at startup, in a message with a single "Got it" button. Exit counts as having read it. It never turns anything off.
+Each version of the pack names the PinballY version it was tested on. When the PinballY installed on your cabinet is newer than that, has a version the pack cannot read, or is older than the pack's minimum, the pack says so at startup or when a Profile becomes active, in a message with a single "Got it" button. Exit counts as having read it. It never turns anything off.
 
 | The title says | What it means | What to do |
 |---|---|---|
 | "Untested PinballY version" | Your PinballY is newer than the one this version of the pack was tested on, or its version cannot be read. Everything may work fine. | Nothing for now. If something misbehaves, think of this first, and look for a newer version of the pack (see [Updates](updates.md)). |
 | "PinballY version too old" | Your PinballY is older than the pack's minimum. Some features may not work. | Install a newer PinballY. |
 
-**Who sees it:** each Admin Profile, once per PinballY version, at a start where that Profile is the active one. While the cabinet has no Admin Profile, it shows once for the whole cabinet, to the active Profile, Guest included. A Profile that does not see the setup entries never sees it. It comes back only when the installed PinballY version changes, and a Profile Reset does not bring it back.
+**Who sees it:** each Admin Profile, once per PinballY version, at a start where that Profile is the active one, or as soon as it becomes the active Profile and the wheel is free. A Profile that gains the Admin mark while active sees it at its next start or switch. While the cabinet has no Admin Profile, it shows once for the whole cabinet, to the active Profile, Guest included. A Profile that does not see the setup entries never sees it. It comes back only when the installed PinballY version changes, and a Profile Reset does not bring it back.
 
 The pack reacts only to what is installed: it never checks what PinballY has published. The same gap is written as a `WARNING` line in `PinballY.log`, even when nobody sees the message.
 

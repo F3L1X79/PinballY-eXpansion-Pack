@@ -1,9 +1,11 @@
 // ============================================================
-// PinballY Version Notice: at init, tells a Profile that sees the setup entries
-// that the PinballY Version has a gap (see pinbally_version.js), ahead of the
-// Startup Screen. Once per PinballY Version for each Admin Profile, once for
-// the whole cabinet while it has no Admin Profile. Never disables anything.
+// PinballY Version Notice: at init, ahead of the Startup Screen, and at each
+// Profile switch, tells a Profile that sees the setup entries that the PinballY
+// Version has a gap (see pinbally_version.js). Once per PinballY Version for each
+// Admin Profile, once for the whole cabinet while it has no Admin Profile.
+// Never disables anything. Listens to the Profile store's switches.
 // - Marked once shown, so Exit counts as read; a Profile that does not see it marks nothing.
+// - One submission at a time; stale, unmarked, once the active Profile stops being eligible.
 // - Its memory is in the update state file, so a Profile Reset does not bring it back.
 // ============================================================
 
@@ -11,6 +13,7 @@ import lang from "../core/i18n.js";
 import { logError } from "../core/error_log.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { pinballYVersionGap } from "../core/pinbally_version.js";
+import { safeHandler } from "../core/safe_handler.js";
 import { DIALOG_PRIORITY, getWheelDialogs } from "../core/wheel_dialog.js";
 import { getStartupVeil } from "../drawing/startup_veil.js";
 import { sameName } from "../profiles/profile_name_rules.js";
@@ -35,6 +38,7 @@ function textOf(gap) {
         : { title: TEXT.notTestedTitle, message: TEXT.notTested(gap.running, gap.tested) };
 }
 
+// Submits it now if eligible, and again at each Profile switch for the session.
 // dialogs: the wheel dialog queue; references: the versions compared with, the
 // pack's own unless a test gives others; onShown: run as the Notice shows.
 export function submitVersionNotice(host, { state, profileStore, dialogs, references, onShown = () => {} }) {
@@ -42,25 +46,43 @@ export function submitVersionNotice(host, { state, profileStore, dialogs, refere
     const gap = pinballYVersionGap(version, references);
     if (gap.kind === "none") return;
     const { display } = version;
-    if (!isEligible(profileStore, state.versionNotice(display))) return;
+    const isEligibleNow = () => isEligible(profileStore, state.versionNotice(display));
+    // The submission in the queue, not yet found stale.
+    let waiting = null;
 
-    dialogs.submit({
-        id: MENU_ID,
-        ...textOf(gap),
-        buttons: [{ label: lang.versionNotice.gotIt }],
-        priority: DIALOG_PRIORITY.VERSION_NOTICE,
-        // Fires once on screen: a failed write is logged and still lets the caller's onShown run.
-        onShown: () => {
-            const { name } = profileStore.getActiveProfile();
-            try {
-                state.markVersionNoticeShown(display, name, !profileStore.hasAdminProfile());
-                host.log(`[${SCRIPT_NAME}] Shown to ${name} for PinballY ${display}.`);
-            } catch (error) {
-                logError(SCRIPT_NAME, `ERROR remembering the Notice for PinballY ${display}, it may show again: ${error.message}`, host, error);
-            }
-            onShown();
-        },
-    });
+    function submit() {
+        if (waiting || !isEligibleNow()) return;
+        const submission = {};
+        waiting = submission;
+        dialogs.submit({
+            id: MENU_ID,
+            ...textOf(gap),
+            buttons: [{ label: lang.versionNotice.gotIt }],
+            priority: DIALOG_PRIORITY.VERSION_NOTICE,
+            // Final once true: the queue also asks away from its turn (isIdle) and
+            // keeps the dialog, which must not come back beside a newer submission.
+            isStale: () => {
+                if (waiting === submission && !isEligibleNow()) waiting = null;
+                return waiting !== submission;
+            },
+            // Fires once on screen: a failed write is logged and still lets the caller's onShown run.
+            onShown: () => {
+                waiting = null;
+                const { name } = profileStore.getActiveProfile();
+                try {
+                    state.markVersionNoticeShown(display, name, !profileStore.hasAdminProfile());
+                    host.log(`[${SCRIPT_NAME}] Shown to ${name} for PinballY ${display}.`);
+                } catch (error) {
+                    logError(SCRIPT_NAME, `ERROR remembering the Notice for PinballY ${display}, it may show again: ${error.message}`, host, error);
+                }
+                onShown();
+            },
+        });
+    }
+
+    submit();
+    // Fires after each Profile switch, the Startup Screen's pick included.
+    profileStore.onSwitch(safeHandler(SCRIPT_NAME, submit));
 }
 
 export function startVersionNotice() {
