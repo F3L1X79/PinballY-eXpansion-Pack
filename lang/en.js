@@ -899,6 +899,14 @@ export default {
         // The title of the Error Toast of an update that failed.
         toastTitle: "eXpansion Pack",
     },
+    // The PinballY Version Notice at startup (see common/updates/version_notice.js).
+    versionNotice: {
+        notTestedTitle: "Untested PinballY version",
+        notTested: (running, tested) => `PinballY ${running} has not been tested with this version of the pack, which was tested on ${tested}. Everything may work fine, but if something misbehaves, this may be why.`,
+        tooOldTitle: "PinballY version too old",
+        tooOld: (minimum, running) => `This pack needs PinballY ${minimum} or newer, and this cabinet has ${running}. Some features may not work: install a newer PinballY.`,
+        gotIt: "Got it",
+    },
     // The Script Reader (vpxtool): its Dialog, its install's wait and result (see common/table_roms/).
     scriptReader: {
         dialogTitle: (version) => `vpxtool v${version}`,

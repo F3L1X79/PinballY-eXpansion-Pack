@@ -26,6 +26,19 @@ When something you turned on will not work for the rest of the session, the pack
 |---|---|---|
 | "Discord not found: the table being played won't show on Discord. Start Discord before PinballY." | The active Profile, whoever it is, once per session. | Start Discord before PinballY, then restart PinballY. The pack tries three times in the first 30 seconds, and stops trying if Discord closes or refuses the connection later (see [Discord Rich Presence](settings.md#discord-rich-presence)). |
 
+## The PinballY version notice
+
+Each version of the pack names the PinballY version it was tested on. When the PinballY installed on your cabinet is newer than that, has a version the pack cannot read, or is older than the pack's minimum, the pack says so at startup, in a message with a single "Got it" button. Exit counts as having read it. It never turns anything off.
+
+| The title says | What it means | What to do |
+|---|---|---|
+| "Untested PinballY version" | Your PinballY is newer than the one this version of the pack was tested on, or its version cannot be read. Everything may work fine. | Nothing for now. If something misbehaves, think of this first, and look for a newer version of the pack (see [Updates](updates.md)). |
+| "PinballY version too old" | Your PinballY is older than the pack's minimum. Some features may not work. | Install a newer PinballY. |
+
+**Who sees it:** each Admin Profile, once per PinballY version, at a start where that Profile is the active one. While the cabinet has no Admin Profile, it shows once for the whole cabinet, to the active Profile, Guest included. A Profile that does not see the setup entries never sees it. It comes back only when the installed PinballY version changes, and a Profile Reset does not bring it back.
+
+The pack reacts only to what is installed: it never checks what PinballY has published. The same gap is written as a `WARNING` line in `PinballY.log`, even when nobody sees the message.
+
 ## The Error Log (`errors.log`)
 
 PinballY starts a new `PinballY.log` at each launch, so the pack also writes every error it meets to its own Error Log, which survives restarts:
@@ -44,6 +57,8 @@ PinballY's own log, in the PinballY folder, covers the current session only. At 
 ## Common questions
 
 **The pack does not start at all.** Check that you have `PinballY\Scripts\ExpansionPack\main.js`, not `ExpansionPack\ExpansionPack\main.js` nor a folder named `PinballY-Expansion-Pack-<version>` (that one comes from "Source code (zip)", not `ExpansionPack.zip`), and that `Scripts\main.js` holds the import line (see [Install](install.md)). A pack that fails to load writes its error to `PinballY.log`, under "ExpansionPack:".
+
+**No Add-on starts after a PinballY upgrade.** Look in `PinballY.log` for a line starting with `[ExpansionPack] Started:`. Its absence can mean that JavaScript was turned off, for instance by an older `Scripts\System\SystemClasses.js` next to a newer PinballY. Check that this file comes from the PinballY version you installed. Whether PinballY's installers overwrite that folder has not been checked, so do not assume they do.
 
 **There is no sound.** The sounds need the *Windows Media Player* optional feature of Windows, there by default on Windows 10 and 11: if it was removed, add *Windows Media Player Legacy* back in *Settings › Apps › Optional features* (on an "N" edition, install the *Media Feature Pack*). Check also the `*_SOUND_FILE` settings: an empty value means no sound.
 

@@ -967,6 +967,13 @@ export default {
         updated: (version) => `eXpansion Pack aggiornato alla v${version}`,
         toastTitle: "eXpansion Pack",
     },
+    versionNotice: {
+        notTestedTitle: "Versione di PinballY non testata",
+        notTested: (running, tested) => `PinballY ${running} non è ancora stato testato con questa versione del pack, testata su ${tested}. Tutto può funzionare bene, ma se qualcosa non va, il motivo può essere questo.`,
+        tooOldTitle: "Versione di PinballY troppo vecchia",
+        tooOld: (minimum, running) => `Questo pack richiede PinballY ${minimum} o più recente, e questo cabinato ha ${running}. Alcune funzioni potrebbero non funzionare: installa una versione più recente di PinballY.`,
+        gotIt: "Capito",
+    },
     scriptReader: {
         dialogTitle: (version) => `vpxtool v${version}`,
         dialog: "vpxtool legge lo script di ogni tavolo perché la sua ROM venga compilata da sola. Scritto da Francis De Brabandere, con licenza Apache-2.0, scaricato da github.com/francisdb/vpxtool.",

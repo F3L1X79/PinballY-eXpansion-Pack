@@ -1,8 +1,8 @@
 // ============================================================
 // Update state: the small git-ignored JSON file in the pack folder that
 // remembers the newest known release between two starts, the version last
-// offered and the one an update in progress installs, with the one it
-// replaces (docs/adr/0018).
+// offered, the one an update in progress installs, with the one it replaces
+// (docs/adr/0018), and who saw the PinballY Version Notice.
 // Read once when created; each change writes the whole file.
 // - An unreadable file (cut by a crash) is logged, deleted, and read as empty.
 // ============================================================
@@ -13,6 +13,7 @@ import { logError } from "../core/error_log.js";
 const SCRIPT_NAME = "UpdateCheck";
 export const UPDATE_STATE_FILE_NAME = "pack_update.json";
 const FORMAT_VERSION = 1;
+const NOTICE_NOT_SHOWN = Object.freeze({ shownTo: [], shownWithoutAdmin: false });
 
 export function createUpdateState(host) {
     const path = `${host.getProjectFolder()}\\${UPDATE_STATE_FILE_NAME}`;
@@ -38,7 +39,23 @@ export function createUpdateState(host) {
         host.files.writeText(path, JSON.stringify(saved));
     }
 
+    // { shownTo: Profile names, shownWithoutAdmin } for this PinballY Version's
+    // display string; the record of another version counts for nothing.
+    function versionNotice(pinballYVersion) {
+        const record = saved && saved.versionNotice;
+        return record && record.pinballYVersion === pinballYVersion ? record : NOTICE_NOT_SHOWN;
+    }
+
     return {
+        versionNotice,
+        // A different version replaces the whole record.
+        markVersionNoticeShown: (pinballYVersion, profileName, withoutAdmin) => {
+            const { shownTo, shownWithoutAdmin } = versionNotice(pinballYVersion);
+            save({
+                ...saved,
+                versionNotice: { pinballYVersion, shownTo: [...shownTo, profileName], shownWithoutAdmin: shownWithoutAdmin || withoutAdmin },
+            });
+        },
         // { packVersion, zipUrl, sha256 }, or null.
         latestRelease: () => (saved && saved.latestRelease) || null,
         rememberRelease: ({ packVersion, zipUrl, sha256 }) => save({ ...saved, latestRelease: { packVersion, zipUrl, sha256 } }),

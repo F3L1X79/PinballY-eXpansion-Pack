@@ -26,6 +26,19 @@ Quand quelque chose que vous avez activé ne fonctionnera pas pour le reste de l
 |---|---|---|
 | « Discord introuvable : la table jouée n'apparaîtra pas sur Discord. Lancez Discord avant PinballY. » | Le Profil actif, quel qu'il soit, une fois par session. | Lancez Discord avant PinballY, puis redémarrez PinballY. Le pack essaie trois fois pendant les 30 premières secondes, et cesse d'essayer si Discord se ferme ou refuse la connexion ensuite (voir [Discord Rich Presence](settings.md#discord-rich-presence)). |
 
+## L'avis de version de PinballY
+
+Chaque version du pack nomme la version de PinballY sur laquelle elle a été testée. Quand le PinballY installé sur votre borne est plus récent, a une version que le pack ne sait pas lire, ou est plus ancien que le minimum du pack, le pack le dit au démarrage, dans un message avec un seul bouton « Compris ». Exit compte comme une lecture. Il ne désactive jamais rien.
+
+| Le titre dit | Ce que cela veut dire | Quoi faire |
+|---|---|---|
+| « Version de PinballY non testée » | Votre PinballY est plus récent que celui sur lequel cette version du pack a été testée, ou sa version ne peut pas être lue. Tout peut bien marcher. | Rien pour l'instant. Si quelque chose se comporte mal, pensez-y d'abord, et cherchez une version plus récente du pack (voir [Mises à jour](updates.md)). |
+| « Version de PinballY trop ancienne » | Votre PinballY est plus ancien que le minimum du pack. Certaines fonctions peuvent ne pas marcher. | Installez une version plus récente de PinballY. |
+
+**Qui le voit :** chaque Profil admin, une fois par version de PinballY, à un démarrage où ce Profil est le Profil actif. Tant que la borne n'a aucun Profil admin, il s'affiche une seule fois pour toute la borne, au Profil actif, Invité compris. Un Profil qui ne voit pas les entrées de configuration ne le voit jamais. Il ne revient que si la version de PinballY installée change, et une réinitialisation de profil ne le fait pas revenir.
+
+Le pack ne réagit qu'à ce qui est installé : il ne regarde jamais ce que PinballY a publié. Le même écart est écrit dans une ligne `WARNING` de `PinballY.log`, même quand personne ne voit le message.
+
 ## Le journal des erreurs (`errors.log`)
 
 PinballY recrée `PinballY.log` à chaque lancement : le pack écrit donc aussi chaque erreur qu'il rencontre dans son propre journal des erreurs, qui survit aux redémarrages :
@@ -44,6 +57,8 @@ Le journal de PinballY lui-même, dans le dossier de PinballY, ne couvre que la 
 ## Questions fréquentes
 
 **Le pack ne démarre pas du tout.** Vérifiez que vous avez `PinballY\Scripts\ExpansionPack\main.js`, et non `ExpansionPack\ExpansionPack\main.js` ni un dossier nommé `PinballY-Expansion-Pack-<version>` (celui-là vient de « Source code (zip) », pas d'`ExpansionPack.zip`), et que `Scripts\main.js` contient la ligne d'import (voir [Installation](install.md)). Un pack qui échoue au chargement écrit son erreur dans `PinballY.log`, après « ExpansionPack: ».
+
+**Aucun add-on ne démarre après une mise à jour de PinballY.** Cherchez dans `PinballY.log` une ligne qui commence par `[ExpansionPack] Started:`. Son absence peut vouloir dire que JavaScript a été désactivé, par exemple par un ancien `Scripts\System\SystemClasses.js` à côté d'un PinballY plus récent. Vérifiez que ce fichier vient bien de la version de PinballY que vous avez installée. Personne n'a vérifié si les installateurs de PinballY écrasent ce dossier : ne le tenez donc pas pour acquis.
 
 **Il n'y a aucun son.** Les sons ont besoin de la fonctionnalité facultative *Lecteur Windows Media* de Windows, présente par défaut sur Windows 10 et 11 : si elle a été retirée, rajoutez *Lecteur Windows Media hérité* dans *Paramètres › Applications › Fonctionnalités facultatives* (sur une édition « N », installez le *Media Feature Pack*). Vérifiez aussi les réglages `*_SOUND_FILE` : une valeur vide veut dire aucun son.
 

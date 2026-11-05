@@ -3,7 +3,7 @@
 // summary, keeps the Adult Tables off a Child Profile's wheel, switches to Guest
 // without the Profile picker, resolves the Startup Screen, restores the quiet wheel's
 // volume, starts the Play Error Toasts, initializes SCRIPTS in order but those off in
-// config.addOns (the eXpansion Pack Settings before Drawn Menus), then the Update result, Prompt and Check.
+// config.addOns (the eXpansion Pack Settings before Drawn Menus), then the Update result and Prompt, the PinballY Version Notice and the Update Check.
 // - A script whose init() throws is logged, Error Log included, and skipped, so the others still load.
 // - LOG_STARTUP_TIMING logs each init time.
 // ============================================================
@@ -19,6 +19,7 @@ import { startExpansionPackSettings } from "./common/settings/expansion_pack_set
 import { startUpdateCheck } from "./common/updates/update_check.js";
 import { startUpdatePrompt } from "./common/updates/update_prompt.js";
 import { startUpdateResult } from "./common/updates/update_result.js";
+import { startVersionNotice } from "./common/updates/version_notice.js";
 import { logError } from "./common/core/error_log.js";
 import { startPlayErrorToasts } from "./common/achievements/play_error_toasts.js";
 import { getWindowLayout } from "./common/core/window_layout.js";
@@ -242,9 +243,10 @@ for (const { key, module } of SCRIPTS) {
 }
 
 // Last, whatever config.addOns says: never Add-ons. The Update result and
-// Prompt read what an earlier start remembered, in the same tick as the
-// Add-ons' own startup dialogs, which their priorities come before; then the
-// Update Check's request runs in the background, so no startup screen waits for GitHub.
+// Prompt read what an earlier start remembered, and the PinballY Version Notice
+// what is installed, in the same tick as the Add-ons' own startup dialogs, which
+// their priorities come before; then the Update Check's request runs in the
+// background, so no startup screen waits for GitHub.
 try {
     startUpdateResult();
 } catch (error) {
@@ -254,6 +256,11 @@ try {
     startUpdatePrompt();
 } catch (error) {
     logError(SCRIPT_NAME, `ERROR submitting the Update Prompt: ${error.message}`, null, error);
+}
+try {
+    startVersionNotice();
+} catch (error) {
+    logError(SCRIPT_NAME, `ERROR submitting the PinballY Version Notice: ${error.message}`, null, error);
 }
 try {
     startUpdateCheck();
