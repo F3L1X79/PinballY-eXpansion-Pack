@@ -164,3 +164,17 @@ test("an unreadable Avatar shows the default Avatar, and is logged once", () => 
     assert.equal(avatarLines.length, 1);
     assert.match(avatarLines[0], /^\[ProfileStore\].*Alice\\avatar\.png.*default Avatar/);
 });
+
+test("an unreadable avatar.jpg is logged and the avatar.png next to it shows", () => {
+    const fake = createFake();
+    fake.addUnreadableImage(`${ALICE}\\avatar.jpg`);
+    fake.addFile(`${ALICE}\\avatar.png`);
+    const store = createProfileStore(fake);
+
+    const alice = store.listProfiles().find(profile => profile.name === "Alice");
+    assert.equal(alice.avatarPath, `${ALICE}\\avatar.png`);
+
+    const avatarLines = fake.logLines().filter(line => line.includes("avatar.jpg"));
+    assert.equal(avatarLines.length, 1);
+    assert.match(avatarLines[0], /^\[ProfileStore\].*Alice\\avatar\.jpg.*next image/);
+});

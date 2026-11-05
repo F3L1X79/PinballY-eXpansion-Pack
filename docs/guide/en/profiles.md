@@ -42,7 +42,7 @@ If the folder cannot be created, Name Entry stays open with your name and says s
 ### From Windows
 
 1. In `PinballY\Scripts\ExpansionPack\profiles`, create an empty folder named after the player: the cabinet shows that name. A name starting with `.` or `_` is ignored. Don't copy Guest's folder: the copy would carry over Guest's progress, while an empty folder starts from zero.
-2. Optional: put a square PNG or JPEG named `avatar.png` or `avatar.jpg` in that folder. Without it, the Profile gets the default Avatar.
+2. Optional: put a square PNG or JPEG named `avatar.png` or `avatar.jpg` in that folder. If both are there, `avatar.jpg` wins. Without either, the Profile gets the default Avatar, a plain grey silhouette.
 3. Open **Change Player**, in the main menu or the Exit menu, and pick the new Profile. There is no need to restart PinballY. Until you pick it, you are still playing as Guest.
 4. Optional: to keep the setup entries for yourself, open **Manage profiles** in the Exit menu and choose **Become admin** (see [Admin Profile](settings.md#admin-profile)).
 

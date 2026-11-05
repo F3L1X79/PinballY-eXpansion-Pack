@@ -6,7 +6,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { createFakePinballYHost } from "../support/fake_pinbally_host.js";
 import { createProfileStore, MIN_PLAY_SECONDS } from "../../common/profiles/profile_store.js";
@@ -280,8 +280,23 @@ test("a Profile's own avatar.png or avatar.jpg is its Avatar, otherwise the defa
     assert.equal(store.getActiveProfile().avatarPath, defaultAvatar);
 });
 
+test("a Profile holding both images shows avatar.jpg", () => {
+    const fake = createFake();
+    fake.addFile(`${PROFILES}\\Alice\\avatar.png`);
+    fake.addFile(`${PROFILES}\\Alice\\avatar.jpg`);
+    const store = createProfileStore(fake);
+
+    const alice = store.listProfiles().find(profile => profile.name === "Alice");
+    assert.equal(alice.avatarPath, `${PROFILES}\\Alice\\avatar.jpg`);
+});
+
 test("the default Avatar is committed in the assets folder", () => {
     assert.ok(existsSync(fileURLToPath(new URL("../../assets/images/default_avatar.png", import.meta.url))));
+});
+
+test("Guest ships its own picture, not the default Avatar", () => {
+    const shipped = path => readFileSync(fileURLToPath(new URL(`../../${path}`, import.meta.url)));
+    assert.notDeepEqual(shipped("profiles/guest/avatar.png"), shipped("assets/images/default_avatar.png"));
 });
 
 test("accented Profile names survive a switch, a save and a restart", () => {

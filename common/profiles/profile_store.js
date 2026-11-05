@@ -23,7 +23,8 @@ const PROFILE_VERSION = 1;
 const CABINET_VERSION = 1;
 const PLAY_LOG_VERSION = 1;
 // Still images only: PinballY keeps an animated image locked while it shows it.
-const AVATAR_FILES = ["avatar.png", "avatar.jpg"];
+// avatar.jpg first, so that an image the owner drops wins over the avatar.png Avatar Choice copies.
+const AVATAR_FILES = ["avatar.jpg", "avatar.png"];
 
 const isGuestName = name => sameName(name, GUEST_NAME);
 // A player parks or hides a Profile by renaming its folder.
@@ -84,7 +85,7 @@ export function createProfileStore(host) {
             if (files.isImageReadable(path)) return path;
             if (!loggedUnreadableAvatars.has(path)) {
                 loggedUnreadableAvatars.add(path);
-                log(`${path} is not a readable PNG or JPEG image; showing the default Avatar.`);
+                log(`${path} is not a readable PNG or JPEG image; moving on to the next image or the default Avatar.`);
             }
         }
         return defaultAvatarPath;

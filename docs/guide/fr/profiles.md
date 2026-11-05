@@ -42,7 +42,7 @@ Si le dossier ne peut pas être créé, la saisie du nom reste ouverte avec votr
 ### Depuis Windows
 
 1. Dans `PinballY\Scripts\ExpansionPack\profiles`, créez un dossier vide au nom du joueur : c'est ce nom que la borne affiche. Un nom qui commence par `.` ou `_` est ignoré. Ne copiez pas le dossier d'Invité : la copie reprendrait sa progression, alors qu'un dossier vide part de zéro.
-2. Facultatif : placez dans ce dossier une image PNG ou JPEG carrée nommée `avatar.png` ou `avatar.jpg`. Sans elle, le Profil reçoit l'Avatar par défaut.
+2. Facultatif : placez dans ce dossier une image PNG ou JPEG carrée nommée `avatar.png` ou `avatar.jpg`. Si les deux sont là, `avatar.jpg` l'emporte. Sans aucune des deux, le Profil reçoit l'Avatar par défaut, une simple silhouette grise.
 3. Ouvrez **Changer de joueur**, dans le menu principal ou le menu de sortie, et choisissez le nouveau Profil. Inutile de redémarrer PinballY. Tant que vous ne l'avez pas choisi, vous jouez toujours en Invité.
 4. Facultatif : pour garder les entrées de configuration pour vous seul, ouvrez **Gérer les profils** dans le menu de sortie et choisissez **Devenir admin** (voir [Profil admin](settings.md#profil-admin)).
 
