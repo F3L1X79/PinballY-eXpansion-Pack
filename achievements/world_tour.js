@@ -1,7 +1,7 @@
 // ============================================================
 // The World Tour Secret Achievement: every table of the "All Tables" wheel
-// selected in one go, without launching any. Unlocked by the Profile's
-// worldTour flag, set by common/achievements/world_tour.js.
+// that the Profile can see selected in one go, without launching any. Unlocked
+// by the Profile's worldTour flag, set by common/achievements/world_tour.js.
 // Called by achievements_engine.js at each check; no side effects.
 // ============================================================
 

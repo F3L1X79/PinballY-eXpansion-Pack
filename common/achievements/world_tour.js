@@ -1,46 +1,47 @@
 // ============================================================
 // World Tour tracker: keeps in memory the tables selected in one go on the
-// "All Tables" filter; once every table the Profile sees has been seen, sets
-// its worldTour flag in profile.json and calls onCompleted.
+// "All Tables" filter; once every table of that wheel the Profile can see has
+// been seen, sets its worldTour flag in profile.json and calls onCompleted.
 // - Listens to "gameselect", which the Add-ons' own wheel moves never fire.
 // - Starts over on a launch, filter change, Profile switch, attract mode or wheel reload.
+// - An unconfigured table on the wheel neither counts nor starts the tour over.
 // ============================================================
 
 import { safeHandler } from "../core/safe_handler.js";
-import { ALL_TABLES_FILTER } from "../core/pinbally_host.js";
+import { ALL_TABLES_FILTER, isVisibleTable } from "../core/pinbally_host.js";
 
 const SCRIPT_NAME = "WorldTour";
 // A single table is no tour.
-const MIN_WHEEL_TABLES = 2;
+const MIN_TOUR_TABLES = 2;
 
-// Equal for two wheels with the same tables, whatever the current one.
-const signatureOf = wheel => wheel.map(table => table.configId).sort().join("\n");
+// Equal for the same tables to tour, whatever the current one.
+const signatureOf = tourTables => tourTables.map(table => table.configId).sort().join("\n");
 
 export function createWorldTour(host, profileStore, { onCompleted }) {
     const seenConfigIds = new Set();
-    // The wheel's signature when the tour started; null while the tour
-    // waits for its starting table.
-    let tourWheelSignature = null;
+    // The signature of the tables to tour when the tour started; null while
+    // the tour waits for its starting table.
+    let tourTablesSignature = null;
     let isCompleted = false;
 
     const isOnAllTablesWheel = () => host.getCurrentFilterId() === ALL_TABLES_FILTER && host.getUIMode() === "wheel";
 
     function startOver() {
         seenConfigIds.clear();
-        tourWheelSignature = null;
+        tourTablesSignature = null;
         isCompleted = false;
     }
 
-    function startFrom(game, wheel) {
+    function startFrom(game, tourTables) {
         startOver();
         seenConfigIds.add(game.configId);
-        tourWheelSignature = signatureOf(wheel);
+        tourTablesSignature = signatureOf(tourTables);
     }
 
     function startIfWaiting() {
-        if (tourWheelSignature !== null || !isOnAllTablesWheel()) return;
+        if (tourTablesSignature !== null || !isOnAllTablesWheel()) return;
         const wheel = host.getWheelTables();
-        if (wheel[0]) startFrom(wheel[0], wheel);
+        if (wheel[0]) startFrom(wheel[0], wheel.filter(isVisibleTable));
     }
 
     const safeStartIfWaiting = safeHandler(SCRIPT_NAME, startIfWaiting);
@@ -62,12 +63,14 @@ export function createWorldTour(host, profileStore, { onCompleted }) {
     function recordSelection(game) {
         if (!game || !isOnAllTablesWheel()) return;
         // Read afresh: the metafilters keep Hidden tables, and Adult Tables
-        // for a Child Profile, off this wheel. A refreshed filter can change
-        // its contents without any event: the tour then starts over here.
-        const wheel = host.getWheelTables();
-        if (signatureOf(wheel) === tourWheelSignature) seenConfigIds.add(game.configId);
-        else startFrom(game, wheel);
-        if (isCompleted || wheel.length < MIN_WHEEL_TABLES || !wheel.every(table => seenConfigIds.has(table.configId))) return;
+        // for a Child Profile, off this wheel, but not unconfigured tables:
+        // once selected they join the seen ones, where nothing asks for them.
+        // A refreshed filter can change the tables without any event: the
+        // tour then starts over here.
+        const tourTables = host.getWheelTables().filter(isVisibleTable);
+        if (signatureOf(tourTables) === tourTablesSignature) seenConfigIds.add(game.configId);
+        else startFrom(game, tourTables);
+        if (isCompleted || tourTables.length < MIN_TOUR_TABLES || !tourTables.every(table => seenConfigIds.has(table.configId))) return;
         isCompleted = true;
         profileStore.updateProfileData(data => { data.worldTour = true; });
         onCompleted();
