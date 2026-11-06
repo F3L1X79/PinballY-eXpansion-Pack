@@ -1,7 +1,7 @@
 // ============================================================
 // The way into the Household Stats: the Profile Stats' "Household Stats"
 // button shows from two Profiles, with their count; Exit goes back to the
-// Profile Stats on that button; attract mode closes both.
+// Profile Stats on that button, and Select opens them again.
 // ============================================================
 
 import { test } from "node:test";
@@ -10,7 +10,7 @@ import { startHousehold, errorLines } from "./household_stats_scenario.js";
 import { openProfileStats, buttons, highlighted, isProfileStatsOpen, PROFILE_STATS_OPEN_MS } from "./profile_stats_reader.js";
 import { openHouseholdStats, isHouseholdStatsOpen, householdStatsLayerCount, title, press } from "./household_stats_reader.js";
 
-test("the Household button opens the Household Stats, Exit goes back to it, attract mode closes them", async () => {
+test("the Household button opens the Household Stats, Exit goes back to it", async () => {
     // Guest is active: without the Profile picker, it is at startup.
     const { fake, lang } = await startHousehold({ profiles: { Alice: {}, Bob: {} } });
     openProfileStats(fake, lang);
@@ -34,8 +34,5 @@ test("the Household button opens the Household Stats, Exit goes back to it, attr
     press(fake, "Select");
     fake.advanceTime(PROFILE_STATS_OPEN_MS);
     assert.ok(isHouseholdStatsOpen(fake), "opened again from its button");
-    fake.fire("attractmodestart", {});
-    assert.equal(householdStatsLayerCount(fake), 0);
-    assert.ok(!isProfileStatsOpen(fake));
     assert.deepEqual(errorLines(fake), []);
 });

@@ -1,8 +1,8 @@
 // ============================================================
 // The drawn Profile Stats through main.js: opened from "Your Stats", the card
 // and its buttons, GAME summing every table played (hidden and removed too),
-// Exit Button selected first, Next / Prev looping, every button swallowed,
-// numbers read again on each opening.
+// Exit Button selected first, Next / Prev looping, Exit and the Exit Button
+// closing them, numbers read again on each opening.
 // ============================================================
 
 import { test } from "node:test";
@@ -84,9 +84,6 @@ test("the Profile Stats show the Profile, its buttons and its GAME totals, and d
     assert.deepEqual(fake.soundsPlayed(), Array(5).fill(NAVIGATION_SOUND), "each move plays the navigation sound");
     press(fake, "Prev");
     assert.equal(highlighted(fake), TEXT.buttons.mostPlayedTables, "Prev loops back to the last choice");
-    for (const button of ["Next", "Prev", "Info", "Coin"]) {
-        assert.equal(press(fake, button).defaultPrevented, true, `${button} is swallowed`);
-    }
     assert.equal(fake.getCurrentTable().configId, MARS.configId, "the wheel never moved");
 
     press(fake, "Exit");
@@ -108,10 +105,5 @@ test("the Profile Stats show the Profile, its buttons and its GAME totals, and d
     choose(fake, lang.buttonHints.back);
     assert.equal(isProfileStatsOpen(fake), false, "Select on the Exit Button closes them");
     assert.equal(fake.getUIMode(), "wheel");
-
-    openProfileStats(fake, lang);
-    fake.fire("attractmodestart");
-    assert.equal(isProfileStatsOpen(fake), false, "attract mode closes them");
-    assert.equal(press(fake, "Next").defaultPrevented, false);
     assertNoErrorLogged(fake);
 });

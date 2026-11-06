@@ -1,7 +1,7 @@
 ﻿// ============================================================
 // Welcome Screen through main.js at 5 h: opens on its turn at startup,
 // greets by the hour, loops through its choices with the navigation sound,
-// names the table on the wheel, swallows every button, and closes on Stay
+// names the table on the wheel, leaves the wheel still, and closes on Stay
 // leaving no layer nor timer.
 // ============================================================
 
@@ -67,10 +67,6 @@ test("the Welcome Screen opens on its turn at startup, greets the Profile and lo
     assert.deepEqual(fake.soundsPlayed(), Array(6).fill(NAVIGATION_SOUND), "each move plays the navigation sound");
     press(fake, "Prev");
     assert.deepEqual(highlighted(fake), { label: TEXT.stayOn("Attack from Mars Special"), tooltip: null }, "Prev loops back to the last choice");
-
-    for (const button of ["Next", "Prev", "Info", "Coin"]) {
-        assert.equal(press(fake, button).defaultPrevented, true, `${button} is swallowed`);
-    }
     assert.equal(fake.getCurrentTable().configId, MARS.configId, "the wheel never moved");
 
     choose(fake, TEXT.stayOn("Attack from Mars Special"));

@@ -6,6 +6,7 @@
 // "attractmodestart", from the first screen registered on.
 // - Swallows every press while a ready or getting-ready opening is on top.
 // - An opening set aside under a child outside the module neither acts nor swallows.
+// - Left to screens: opening, fade, Selection Marker, sounds, scrolling, waitFor().
 // ============================================================
 
 import { createPinballYHost } from "./pinbally_host.js";

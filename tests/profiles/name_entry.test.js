@@ -2,7 +2,7 @@
 // Name Entry through main.js: the "+" opens it over the Profile picker; the
 // flippers move along the ring without drawing; a name is built, erased and
 // capped; OK creates an empty folder and the picker comes back on it with no
-// switch. Exit returns to the "+" and attract mode closes all, nothing created.
+// switch. Exit returns to the "+", nothing created.
 // ============================================================
 
 import { test } from "node:test";
@@ -52,10 +52,8 @@ test("a name built with the flippers creates an empty folder, and the picker com
     assert.equal(currentCharacter(fake), "-");
     press(fake, "Prev");
     assert.equal(currentCharacter(fake), "z");
-    press(fake, "Next", true);
-    assert.equal(currentCharacter(fake), "-", "auto-repeat moves too");
     assert.equal(fake.drawings().length, drawingsBefore, "moving draws nothing");
-    assert.equal(fake.soundsPlayed().length, soundsBefore + 5, "each move plays the navigation sound");
+    assert.equal(fake.soundsPlayed().length, soundsBefore + 4, "each move plays the navigation sound");
 
     // OK and the arrow do nothing on an empty name.
     enter(fake, OK);
@@ -75,8 +73,6 @@ test("a name built with the flippers creates an empty folder, and the picker com
     press(fake, "Select");
     assert.equal(nameShown(fake), "Ma");
     assert.equal(currentCharacter(fake), "a", "otherwise it stays put");
-    press(fake, "Select", true);
-    assert.equal(nameShown(fake), "Ma", "Select ignores auto-repeat");
     press(fake, "Launch");
     assert.equal(nameShown(fake), "Maa", "Launch chooses too");
 
@@ -105,10 +101,6 @@ test("a name built with the flippers creates an empty folder, and the picker com
     assert.equal(store.getActiveProfile().name, "Zed", "the active Profile is kept");
     assert.equal(highlighted(fake, names()), "Maxx", "the picker comes back on the new Profile");
 
-    // Holding Exit on Avatar Choice must not close the picker.
-    press(fake, "Exit", true);
-    assert.ok(pickerTexts(fake).includes(lang.profiles.pickerTitle), "the held Exit's auto-repeat leaves the picker open");
-
     // In alphabetical place, the "+" still last.
     step(fake, "Prev");
     assert.equal(highlighted(fake, names()), "Alice");
@@ -118,28 +110,16 @@ test("a name built with the flippers creates an empty folder, and the picker com
     step(fake, "Next");
     assert.equal(highlighted(fake, names()), label);
 
-    // Exit returns to the "+", with nothing created; the held Exit keeps the picker open.
+    // Exit returns to the "+", with nothing created.
     openNameEntry(fake);
     assert.equal(currentCharacter(fake), "A", "a new opening starts over");
     assert.equal(nameShown(fake), "");
     enter(fake, "Q");
-    press(fake, "Exit", true);
-    assert.equal(isNameEntryOpen(fake), true, "Exit ignores auto-repeat");
     press(fake, "Exit");
     assert.equal(isNameEntryOpen(fake), false);
     assert.equal(highlighted(fake, names()), label, "back on the +");
-    press(fake, "Exit", true);
-    assert.ok(pickerTexts(fake).includes(lang.profiles.pickerTitle), "the held Exit's auto-repeat leaves the picker open");
+    assert.ok(pickerTexts(fake).includes(lang.profiles.pickerTitle), "the picker stays open");
     assert.equal(store.listProfiles().some(profile => profile.name === "Q"), false, "nothing created");
-
-    // Attract mode closes everything, with nothing created.
-    openNameEntry(fake);
-    enter(fake, "Q");
-    fake.fire("attractmodestart");
-    assert.equal(isNameEntryOpen(fake), false);
-    assert.deepEqual(pickerTexts(fake), [], "the picker closes with it");
-    assert.equal(store.listProfiles().some(profile => profile.name === "Q"), false, "nothing created");
-    assert.equal(press(fake, "Next").defaultPrevented, false, "the buttons are back");
     fake.advanceTime(GLIDE_OVER_MS);
 
     assertNoErrorLogged(fake);

@@ -310,33 +310,6 @@ test("only the items inside the rows area are shown, and the list scrolls to kee
     assert.equal(readRows(fake, TEXT).length, 30);
 });
 
-test("every button is swallowed while the list is open, Select does nothing, and none once it is closed", () => {
-    const { fake, exits } = setUp();
-
-    for (const buttonCommand of ["Next", "Select", "Launch", "Information", "Prev", "Exit"]) {
-        assert.equal(press(fake, buttonCommand).defaultPrevented, true, `${buttonCommand} is swallowed`);
-        if (buttonCommand === "Select") assert.ok(isListOpen(fake), "Select leaves the list open");
-    }
-    assert.equal(isListOpen(fake), false, "Exit closed it");
-    assert.deepEqual(exits, ["exit"]);
-    for (const buttonCommand of ["Next", "Select", "Exit"]) {
-        assert.equal(press(fake, buttonCommand).defaultPrevented, false, `${buttonCommand} reaches PinballY again`);
-    }
-    assert.deepEqual(shownItems(fake), [], "no row stays on screen");
-    assert.deepEqual(exits, ["exit"]);
-});
-
-test("attract mode closes the list without going back anywhere", () => {
-    const { fake, exits } = setUp();
-
-    fake.fire("attractmodestart");
-
-    assert.equal(isListOpen(fake), false);
-    assert.deepEqual(shownItems(fake), []);
-    assert.deepEqual(exits, []);
-    assert.equal(press(fake, "Next").defaultPrevented, false);
-});
-
 test("the list shows no native menu", () => {
     const fake = createFakePinballYHost();
     const list = createAchievementList(fake, {

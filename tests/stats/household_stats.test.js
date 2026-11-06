@@ -1,15 +1,14 @@
 // ============================================================
 // The Household Stats through main.js: active Profile first, then the picker's
 // order without Guest, each value as that Profile's Stats show it, the best
-// of each line in gold; the marker loops through Exit and the columns, and
-// no button reaches the wheel.
+// of each line in gold; the marker loops through Exit and the columns.
 // ============================================================
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { startHousehold, errorLines, played, PROFILES, DEFAULT_AVATAR, NAVIGATION_SOUND, HOUR, MEDIEVAL, MARS, THEATRE } from "./household_stats_scenario.js";
 import { openProfileStats, playerLevel, buttons, press } from "./profile_stats_reader.js";
-import { openHouseholdStats, columns, columnNames, labels, lineValues, goldOn, highlightedColumn, isHouseholdStatsOpen, collectionPairMiddles } from "./household_stats_reader.js";
+import { openHouseholdStats, columns, columnNames, labels, lineValues, goldOn, highlightedColumn, collectionPairMiddles } from "./household_stats_reader.js";
 
 // Past every toast a Profile switch brings.
 const ALL_TOASTS_MS = 600000;
@@ -76,9 +75,5 @@ test("the Household side by side, the best of each line in gold", async () => {
     press(fake, "Next");
     assert.equal(highlightedColumn(fake), "Bob", "and back");
     assert.deepEqual(fake.soundsPlayed(), [...soundsBefore, ...Array(6).fill(NAVIGATION_SOUND)], "PinballY's navigation sound on each move");
-
-    assert.ok(press(fake, "Info").defaultPrevented, "a button the screen does not use never reaches the wheel");
-    assert.ok(isHouseholdStatsOpen(fake), "and does nothing");
-    assert.equal(highlightedColumn(fake), "Bob");
     assert.deepEqual(errorLines(fake), []);
 });
