@@ -261,6 +261,13 @@ export function createFakePinballYHost({
     const fileOperationList = [];
     // Every file read, in order, by path.
     const fileReadList = [];
+    // How long each read of a file takes on the clock, by path: a read
+    // blocks PinballY while it runs, as a draw does.
+    const readMsByPath = new Map();
+    function recordRead(path) {
+        fileReadList.push(path);
+        nowMs += readMsByPath.get(path) ?? 0;
+    }
     addFolder(projectFolderOf(programFolder));
     addFolder(TEMPORARY_FOLDER);
     // What each program does when run, by path: args => { output, errorOutput, exitCode, durationMs }.
@@ -851,7 +858,7 @@ export function createFakePinballYHost({
         folderExists: (path) => folders.has(withoutTrailingSlash(path)),
         readText(path) {
             requireFile(path);
-            fileReadList.push(path);
+            recordRead(path);
             return files.get(path);
         },
         // A file seeded with bytes (a Uint8Array), as a copy; a text file as its UTF-8 bytes.
@@ -861,7 +868,7 @@ export function createFakePinballYHost({
                 modifiedDates.delete(path);
             }
             requireFile(path);
-            fileReadList.push(path);
+            recordRead(path);
             const content = files.get(path);
             return content instanceof Uint8Array ? new Uint8Array(content) : new Uint8Array(Buffer.from(content, "utf8"));
         },
@@ -1623,6 +1630,8 @@ export function createFakePinballYHost({
         unlockFile(filePath) { lockedFiles.delete(filePath); },
         // The file is listed in its folder, but gone by the time readBytes reads it.
         vanishBeforeRead(filePath) { vanishingFiles.add(filePath); },
+        // Each read of the file moves the clock on by ms, like a slow disk.
+        slowDownReads(filePath, ms) { readMsByPath.set(filePath, ms); },
         addFolder,
         // Removes the folder with everything in it, as a player would by hand.
         removeFolder(folderPath) {

@@ -103,12 +103,16 @@ export function openDrawnScreen(host, scriptName, { referenceHeight, backdropZIn
 // The shared opening of a screen the player waits for. referenceHeight:
 // the window's height in reference pixels; drawingAhead: the shared drawing
 // ahead (common/core/drawing_ahead.js); profileName and isReadOnly: whose
-// screen the timing line names (common/drawing/screen_opening.js). The
+// screen the timing line names (common/drawing/screen_opening.js);
+// readSplit(): the line's reading time split by reader, asked once the
+// steps are over (null: none). The
 // screen queues its steps with read(step) and draw(step), each doing one
 // thing (a step may queue more), draws within them with drawBackdrop(draw)
 // and drawPiece(), then calls start(). The veil and Loader sit just under
 // the backdrop.
-export function prepareDrawnScreen(host, scriptName, { referenceHeight, backdropZIndex, drawingAhead, profileName = null, isReadOnly = false }) {
+export function prepareDrawnScreen(host, scriptName, {
+    referenceHeight, backdropZIndex, drawingAhead, profileName = null, isReadOnly = false, readSplit = null,
+}) {
     const screen = createScreenLayers(host, scriptName, referenceHeight);
     const opening = createScreenOpening(host, scriptName, { zIndex: backdropZIndex - 2, drawingAhead });
     // Each step with whether it reads or draws, first come first run.
@@ -155,7 +159,7 @@ export function prepareDrawnScreen(host, scriptName, { referenceHeight, backdrop
             opening.begin();
             opening.runVeiled(runNextStep, {
                 onDone: () => {
-                    opening.logOpened({ profileName, isReadOnly });
+                    opening.logOpened({ profileName, isReadOnly, readSplit: readSplit ? readSplit() : null });
                     screen.showAll();
                     onReady();
                     opening.fadeIn(setOpacity);

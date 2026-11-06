@@ -32,6 +32,7 @@ const SECONDS_PER_MINUTE = 60;
 const MINUTES_PER_HOUR = 60;
 const MISSING_IMAGE_FILE = "assets\\images\\missing_image.png";
 const NO_PLAY = Object.freeze({ count: 0, seconds: 0 });
+const untimed = (reader, read) => read();
 
 export function createProfileStats(host, {
     profileStore, readPlayerLevel, countAchievements, achievementList, profileRewards = null, frameList = null, dailyStreak, tableOfTheDay, tableOfTheWeek, challenges = null,
@@ -64,25 +65,26 @@ export function createProfileStats(host, {
         };
     }
 
-    // The card's values that another Profile's can be set beside.
-    function readCardStats(profileName, { data, profileTables }) {
+    // The card's values that another Profile's can be set beside; timeReader:
+    // readStats()'s.
+    function readCardStats(profileName, { data, profileTables }, timeReader = untimed) {
         return {
-            playerLevel: readPlayerLevel(profileName),
-            collectionMastery: collectionMasteryOfProfile(profileTables, data),
-            achievements: countAchievements(profileName),
+            playerLevel: timeReader("Player Level", () => readPlayerLevel(profileName)),
+            collectionMastery: timeReader("Collection Mastery", () => collectionMasteryOfProfile(profileTables, data)),
+            achievements: timeReader("Achievements", () => countAchievements(profileName)),
         };
     }
 
     // The PROGRESSION section's values that another Profile's can be set beside.
-    function readProgressionStats(profileName, { data, profileTables }) {
+    function readProgressionStats(profileName, { data, profileTables }, timeReader = untimed) {
         return {
             // The Collection Achievements' rule, so the two never disagree.
             collection: { played: countPlayedTablesIn(profileTables, data.plays), total: profileTables.length },
-            dailyStreak: dailyStreak.read(profileName),
+            dailyStreak: timeReader("Daily Streak", () => dailyStreak.read(profileName)),
             // Null without the Challenges Add-on.
-            challenges: challenges ? challenges.getRecord(profileName) : null,
+            challenges: challenges ? timeReader("Challenges", () => challenges.getRecord(profileName)) : null,
             // Where it stands on the boards; null without the High Scores Add-on.
-            boards: highScores ? highScores.heldBy(profileName) : null,
+            boards: highScores ? timeReader("boards", () => highScores.heldBy(profileName)) : null,
         };
     }
 
@@ -90,13 +92,15 @@ export function createProfileStats(host, {
     // beside, for the named Profile (the active one by default): the same
     // readers as the screen's, so a value never differs between screens.
     // Reads only, another Profile's profile.json once for every reader.
-    function readStats(profileName = profileStore.getActiveProfile().name) {
+    // timeReader(reader, read): runs read() and returns what it returns,
+    // free to time it under the reader's name (the Household Stats' line).
+    function readStats(profileName = profileStore.getActiveProfile().name, timeReader = untimed) {
         return profileStore.withCachedReads(() => {
             const profileData = readProfileData(profileName);
             return {
                 plays: sumPlays(profileData.data),
-                ...readCardStats(profileName, profileData),
-                ...readProgressionStats(profileName, profileData),
+                ...readCardStats(profileName, profileData, timeReader),
+                ...readProgressionStats(profileName, profileData, timeReader),
             };
         });
     }

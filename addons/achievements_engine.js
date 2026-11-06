@@ -141,7 +141,7 @@ export default function init() {
     // opening the Profile Stats, created just after.
     const householdStats = createHouseholdStats(createPinballYHost(), {
         profileStore,
-        readStats: profileName => profileStats.readStats(profileName),
+        readStats: (profileName, timeReader) => profileStats.readStats(profileName, timeReader),
         openProfileStats: (profileName, onBack, onFailed) => profileStats.openReadOnly(profileName, onBack, onFailed),
         profileRewards,
         drawingAhead: getDrawingAhead(),

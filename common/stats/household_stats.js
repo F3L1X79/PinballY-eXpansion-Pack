@@ -32,8 +32,9 @@ const MINUTES_PER_HOUR = 60;
 const GLIDE_TIME_CONSTANT_MS = 40;
 const GLIDE_SNAP_PX = 0.5;
 
-// readStats(profileName): the Profile Stats' values for that Profile
-// (common/stats/profile_stats.js); openProfileStats(profileName, onBack, onFailed):
+// readStats(profileName, timeReader): the Profile Stats' values for that
+// Profile (common/stats/profile_stats.js), each reader run through
+// timeReader(reader, read); openProfileStats(profileName, onBack, onFailed):
 // opens that Profile's Profile Stats, read-only, onBack called on its Exit,
 // onFailed once their opening failed and was given up;
 // profileRewards: the worn Avatar Frames (null: none);
@@ -155,8 +156,19 @@ export function createHouseholdStats(host, {
     // fades them in together: it never shows up half drawn.
     function open(onBack = null, { onFailed = () => {} } = {}) {
         if (controls.isShown()) return;
+        // The opening line's reading time by reader, summed over every Profile
+        // read, to tell which readers are worth keeping or reading ahead.
+        const msByReader = {};
+        let profileCount = 0;
+        function timeReader(reader, read) {
+            const startMs = host.now().getTime();
+            const result = read();
+            msByReader[reader] = (msByReader[reader] || 0) + host.now().getTime() - startMs;
+            return result;
+        }
         const drawn = prepareDrawnScreen(host, SCRIPT_NAME, {
             referenceHeight: REFERENCE_HEIGHT, backdropZIndex: HOUSEHOLD_STATS_Z_INDEX.backdrop, drawingAhead,
+            readSplit: () => ({ profileCount, msByReader }),
         });
         // Apart from the other layers: their alpha also fades them at the view's edges.
         const columnLayers = [];
@@ -182,10 +194,12 @@ export function createHouseholdStats(host, {
         function queueSteps(entries) {
             const allStats = [];
             const framePaths = [];
+            profileCount = entries.length;
             for (const { profile } of entries) {
                 drawn.read(() => profileStore.withCachedReads(() => {
-                    allStats.push(readStats(profile.name));
-                    framePaths.push(profileRewards ? profileRewards.wornImageOf(profile.name, AVATAR_FRAME_WIDTH) : null);
+                    allStats.push(readStats(profile.name, timeReader));
+                    framePaths.push(profileRewards
+                        ? timeReader("worn Avatar Frame", () => profileRewards.wornImageOf(profile.name, AVATAR_FRAME_WIDTH)) : null);
                 }));
             }
             drawn.read(() => { screen = describeScreen(entries, allStats, framePaths, exitButtonLookOf(onBack !== null)); });

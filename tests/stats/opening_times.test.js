@@ -3,7 +3,7 @@
 // globals: each opening of the Profile Stats (the active Profile's and
 // another Profile's, read only), the Household Stats, the Achievement
 // List and the Avatar Frame list logs one line through its own script
-// name, its reading and its drawing timed apart.
+// name, its reading and drawing timed apart (only the Household's split).
 // ============================================================
 
 import { test } from "node:test";
@@ -17,7 +17,8 @@ import { isListOpen } from "../achievements/achievement_list_reader.js";
 const TIMES = "in \\d+ ms: read in \\d+ ms, drawn in \\d+ ms\\.";
 const ACTIVE_PROFILE_STATS = new RegExp(`^\\[ProfileStats\\] Opened Alice's ${TIMES}$`);
 const READ_ONLY_PROFILE_STATS = new RegExp(`^\\[ProfileStats\\] Opened Bob's, read only, ${TIMES}$`);
-const HOUSEHOLD_STATS = new RegExp(`^\\[HouseholdStats\\] Opened ${TIMES}$`);
+// Its reading time also split by reader (household_stats_read_split.test.js).
+const HOUSEHOLD_STATS = /^\[HouseholdStats\] Opened in \d+ ms: read in \d+ ms \(2 Profiles: [^)]+\), drawn in \d+ ms\.$/;
 const ACHIEVEMENT_LIST = new RegExp(`^\\[AchievementList\\] Opened ${TIMES}$`);
 const AVATAR_FRAME_LIST = new RegExp(`^\\[AvatarFrameList\\] Opened ${TIMES}$`);
 
