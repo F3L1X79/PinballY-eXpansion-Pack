@@ -221,7 +221,6 @@
           <a class="chip tr-play" href="#backglass-loader"><b></b>Loader sur le backglass</a>
         </div>
         <div class="cell">
-          <a class="chip tr-share" href="#placed-layers"><b></b>Calques placés</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
@@ -281,31 +280,6 @@
 
     <ol class="queue">
 
-      <li draggable="true" tabindex="0" class="item tr-share" id="placed-layers" data-track="share" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Calques placés et cachés en un point</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen</span><span class="tag">Architecture</span></div>
-          </div>
-          <p>Un module de <code>common/drawing/</code> possède la création, le placement et le masquage des calques, pour que la règle des calques cachés soit tenue par le code et non par chaque écran. Aujourd'hui, 8 copies de <code>hiddenLayer</code> coexistent, et environ 100 calques de l'Achievement List y échappent, comme ceux du Profile Picker, des toasts et de la Challenge Card. Grillé le 04/11/2026.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/410">Spec #410</a>, tickets #433 à #439 · Candidat 2 de la revue d'architecture du 04/11/2026 · Suite : <a href="#drawn-screen-controls">Commandes des Drawn Screens</a></div>
-          <details>
-            <summary>Décisions du grill (5)</summary>
-            <ul>
-              <li>Tout se corrige sans mesure préalable, y compris les lignes de l'Achievement List. Aucun gain de fluidité n'est annoncé ; après livraison, on vérifie sur la borne que le défilement de la liste reste fluide.</li>
-              <li>La règle : tout calque caché qui reste vivant une fois l'écran ouvert ou fermé est un point. Le court passage pendant l'ouverture est toléré. Un test unique le vérifie sur le faux host, et vérifie aussi qu'aucun calque visible ne reste un point.</li>
-              <li><code>common/drawing/placed_layers.js</code> a deux niveaux : <code>createHiddenLayer(host, zIndex)</code>, seul niveau utilisé par les confettis, le feu d'artifice et le Selection Marker, et un jeu de calques placés (<code>place</code>, <code>hide</code>, <code>show</code>, <code>remove</code>) sur lequel s'appuie <code>createScreenLayers</code>. Les écrans écrivent toujours <code>alpha</code> pendant leurs fondus, et le <code>clear</code> de chaque appelant reste tel quel.</li>
-              <li>Le remesurage quand la fenêtre change reste dans les écrans : le Welcome Screen et Name Entry redessinent leurs calques au lieu de les replacer.</li>
-              <li>Le Welcome Screen reprend le <code>fadeIn</code> de <code>screen_opening.js</code>, la phrase de <code>conventions.md</code> pointe vers le module, et l'ADR 0005 reçoit une ligne sur l'échelle retrouvée. Pas de nouvel ADR.</li>
-            </ul>
-            <p class="ctx">Rien n'a été mesuré sur la borne : le coût réel de ces calques cachés reste inconnu.</p>
-          </details>
-        </div>
-      </li>
-
       <li draggable="true" tabindex="0" class="item tr-share" id="drawn-screen-controls" data-track="share" data-rank="platinum">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -316,7 +290,7 @@
           </div>
           <p>Un module, <code>drawn_screen_controls.js</code>, possède les boutons d'un Drawn Screen une fois ouvert, pour qu'une règle commune ne se paie plus en un ticket par écran. Seul effet visible : un bouton maintenu n'enchaîne plus les choix ni les retours. Grillé le 04/11/2026.</p>
           <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/418">Spec #418</a>, tickets #440 à #445, à livrer après <a href="#placed-layers">Calques placés</a> · Candidat 1 de la revue d'architecture du 04/11/2026 · Nouveau terme Drawn Screen</div>
+          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/418">Spec #418</a>, tickets #440 à #445 · Candidat 1 de la revue d'architecture du 04/11/2026 · Nouveau terme Drawn Screen</div>
           <details>
             <summary>Décisions du grill (6)</summary>
             <ul>
@@ -660,7 +634,7 @@
           </div>
           <p>Après une action importante, un gros logo néon clignote au milieu de l'écran avec « Profil créé » ou « Profil réinitialisé », puis disparaît seul au bout de quelques secondes.</p>
           <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (le néon, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part du calque non bloquant de <code>common/achievements/achievement_toast.js</code> et de <code>common/menus/profile_reset_menu.js</code>. Après <a href="#placed-layers">Calques placés (n° <span data-ref="placed-layers"></span>)</a>. La création d'un Profile finit désormais par Avatar Choice</div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (le néon, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part du calque non bloquant de <code>common/achievements/achievement_toast.js</code> et de <code>common/menus/profile_reset_menu.js</code>, ses calques créés et cachés par <code>common/drawing/placed_layers.js</code>. La création d'un Profile finit désormais par Avatar Choice</div>
           <details>
             <summary>Questions ouvertes (4)</summary>
             <ul>
@@ -684,7 +658,7 @@
           </div>
           <p>Des transitions entre les écrans et une réaction visuelle aux appuis, toujours ponctuelles et dans le style Steamball.</p>
           <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après <a href="#placed-layers">Calques placés (n° <span data-ref="placed-layers"></span>)</a> et <a href="#drawn-screen-controls">Commandes communes (n° <span data-ref="drawn-screen-controls"></span>)</a>, qui reprennent les calques et les boutons de ces écrans</div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après <a href="#drawn-screen-controls">Commandes communes (n° <span data-ref="drawn-screen-controls"></span>)</a>, qui reprend les boutons de ces écrans ; leurs calques passent déjà par <code>common/drawing/placed_layers.js</code></div>
           <details>
             <summary>Questions ouvertes (3)</summary>
             <ul>
