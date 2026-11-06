@@ -218,7 +218,6 @@
 
         <div class="ax row">Moyen</div>
         <div class="cell sweet">
-          <a class="chip tr-play" href="#backglass-loader"><b></b>Loader sur le backglass</a>
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
@@ -279,27 +278,26 @@
 
     <ol class="queue">
 
-      <li draggable="true" tabindex="0" class="item tr-play" id="backglass-loader" data-track="play" data-rank="bronze">
+      <li draggable="true" tabindex="0" class="item tr-share" id="pinemhi-online" data-track="share" data-rank="gold">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
-            <h3>Le Loader au milieu du backglass, au chargement et au déchargement d'une table</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">UI</span></div>
+            <h3>Scores en ligne PINemHi sur le High Score Board</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen-gros</span><span class="tag">UI</span></div>
           </div>
-          <p>Pendant qu'une table se charge et se ferme, le Loader tourne aussi au milieu du backglass, et plus seulement sur le playfield. Grillé le 05/11/2026.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/449">Spec #449</a> : #450 livré, reste <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/451">#451</a> (vérification sur la borne)</div>
+          <p>Un onglet « Scores en ligne » à côté des scores locaux du High Score Board : le n° 1 mondial du LeaderBoard de PINemHi, puis le meilleur score de la maison (un autre Profile, ou à défaut un Default Score), sans « ami en ligne ».</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Sur le High Score Board (livré) · Research : <code>docs/research/high-scores-tools.md</code></div>
           <details>
-            <summary>Décisions du grill (5)</summary>
+            <summary>Questions ouvertes (4)</summary>
             <ul>
-              <li>Au chargement, la comète s'arrête à <code>running</code>, comme celle du playfield. Force Backglass ne change pas et il n'y a aucun minuteur. Si elle paraît trop brève sur la borne, on ouvrira un ticket avec une durée observée.</li>
-              <li>À la fermeture, le backglass revient toujours à <code>gameover</code>. La comète est demandée aux mêmes messages que sur le playfield, et apparaît donc avec la fenêtre.</li>
-              <li>Elle s'arrête aussi à <code>capturing</code>, pour ne jamais apparaître dans un média capturé, et revient au <code>gameover</code> de fin de capture.</li>
-              <li>La comète seule, sans légende, en plein milieu de la fenêtre, à 12 % de sa hauteur, plus grande que celle du playfield (7 %) pour bien se voir (demandé après la livraison).</li>
-              <li>Elle fait partie de Seamless Launch Overlay, sans réglage propre ni test du nombre d'écrans. <code>GLOSSARY.md</code> ne change pas : un test de scénario couvre ce comportement.</li>
+              <li>pinemhi.com expose-t-il une API, ou faudrait-il lire ses pages (fragile, et ses conditions d'utilisation) ? À établir en <code>/research</code>.</li>
+              <li>Accord de l'auteur de PINemHi : sans licence publiée, se brancher sur son service se demande, comme PinballY l'a fait pour l'embarquer.</li>
+              <li>Le LeaderBoard ne retient que le joueur 1 de la dernière partie, avec un compte pinemhi.com, et surtout les tables à ROM : combien des tables de la borne y ont un classement ?</li>
+              <li>Borne hors ligne, réponse lente : l'onglet attend-il, ou montre-t-il la dernière réponse gardée ? Un record mondial démesuré décourage-t-il les enfants ?</li>
             </ul>
-            <p class="ctx">À vérifier sur la borne : qu'un calque posé sur la fenêtre cachée apparaît à son retour, que la comète tourne à la bonne taille au milieu de l'écran, et qu'elle n'est pas qu'un flash (aucune durée entre ces événements n'est mesurée).</p>
+            <p class="ctx">Idée de Félix du 29/10/2026, d'après une maquette externe. La maison a déjà ses records attribués sur le High Score Board : la seule nouveauté est le score mondial, d'où l'impact faible.</p>
           </details>
         </div>
       </li>
@@ -321,30 +319,6 @@
               <li>Quel besoin, hors enfants (les Adult Tables y suffisent) : une table qu'un Profile n'aime pas ? Une note basse suffirait-elle alors ?</li>
             </ul>
             <p class="ctx">Les notes, favoris et le flag Hidden natifs sont des colonnes globales de <code>GameStats.csv</code> : l'invite de notation, les filtres de favoris et les Hidden Tables devront lire les données du Profile. Les Tables masquées par Profile rouvrent le choix de la spec #263, où elles valent pour toute la borne.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-share" id="pinemhi-online" data-track="share" data-rank="gold">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Scores en ligne PINemHi sur le High Score Board</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen-gros</span><span class="tag">UI</span></div>
-          </div>
-          <p>Un onglet « Scores en ligne » à côté des scores locaux du High Score Board : le n° 1 mondial du LeaderBoard de PINemHi, puis le meilleur score de la maison (un autre Profile, ou à défaut un Default Score), sans « ami en ligne ».</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Sur le High Score Board (livré) · Research : <code>docs/research/high-scores-tools.md</code></div>
-          <details>
-            <summary>Questions ouvertes (4)</summary>
-            <ul>
-              <li>pinemhi.com expose-t-il une API, ou faudrait-il lire ses pages (fragile, et ses conditions d'utilisation) ? À établir en <code>/research</code>.</li>
-              <li>Accord de l'auteur de PINemHi : sans licence publiée, se brancher sur son service se demande, comme PinballY l'a fait pour l'embarquer.</li>
-              <li>Le LeaderBoard ne retient que le joueur 1 de la dernière partie, avec un compte pinemhi.com, et surtout les tables à ROM : combien des tables de la borne y ont un classement ?</li>
-              <li>Borne hors ligne, réponse lente : l'onglet attend-il, ou montre-t-il la dernière réponse gardée ? Un record mondial démesuré décourage-t-il les enfants ?</li>
-            </ul>
-            <p class="ctx">Idée de Félix du 29/10/2026, d'après une maquette externe. La maison a déjà ses records attribués sur le High Score Board : la seule nouveauté est le score mondial, d'où l'impact faible.</p>
           </details>
         </div>
       </li>

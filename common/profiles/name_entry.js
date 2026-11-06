@@ -13,12 +13,12 @@
 import lang from "../core/i18n.js";
 import { logHandlerError } from "../core/safe_handler.js";
 import { createNavigationSound } from "../core/navigation_sound.js";
-import { createWindowWatch, readViewSize, sameSize, sizeText } from "../core/window_watch.js";
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
 import { createSelectionMarker } from "../drawing/selection_marker.js";
 import { createScreenOpening } from "../drawing/screen_opening.js";
+import { createWindowRedraw } from "../drawing/window_redraw.js";
 import { createPlacedLayers } from "../drawing/placed_layers.js";
-import { drawBackdrop, drawButtonHintsBand, EXIT_BUTTON_LOOK } from "../drawing/steamball_drawing.js";
+import { drawButtonHintsBand, EXIT_BUTTON_LOOK } from "../drawing/steamball_drawing.js";
 import { buttonHintGroupsOf, FLIPPER_HINT } from "../drawing/button_hints.js";
 import {
     NAME_ENTRY_Z_INDEX as Z_INDEX, REFERENCE_HEIGHT, layoutNameEntry, cellRectOf, drawTitle, drawLines, drawName, drawReason, drawCharacter,
@@ -45,17 +45,19 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
     const ERASE = RING.length - 2;
     const OK = RING.length - 1;
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
-    const windowWatch = createWindowWatch(host, SCRIPT_NAME);
     const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: Z_INDEX.backdrop - 2, drawingAhead });
     const placed = createPlacedLayers(host, { referenceHeight: REFERENCE_HEIGHT });
+    const windowRedraw = createWindowRedraw(host, SCRIPT_NAME, {
+        placed, zIndex: Z_INDEX.backdrop, referenceHeight: REFERENCE_HEIGHT,
+        layout: referenceWidth => layoutNameEntry(referenceWidth, TEXT.lines.length + (shown.notice === null ? 0 : 1)),
+    });
     // Here, before the Profile picker adds its own button listener.
     const controls = drawnScreenControls.register(SCRIPT_NAME);
     // The open screen, null when closed: the name so far and why it is
     // refused, the Profiles listed at the opening, the first Profile's notice (null
     // once the Household has a Profile), whether its folder just failed, the current
     // character's index, what OK hands the name to, its place among the Drawn
-    // Screen controls, the window it is laid out for and its layers (null
-    // marker while getting ready).
+    // Screen controls, its layout and its layers (null marker while getting ready).
     let shown = null;
 
     const isOkGreyed = () => shown.refusal !== null;
@@ -65,28 +67,6 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
     function reasonText() {
         if (shown.hasFolderFailed) return TEXT.folderFailed;
         return shown.refusal === null || shown.refusal === NAME_REFUSAL.EMPTY ? "" : TEXT.refusals[shown.refusal];
-    }
-
-    // Draws the backdrop, which measures the window the layout depends on.
-    // A draw that throws leaves no layer behind. Never placed: it shows
-    // over the whole window.
-    function drawBackdropLayer() {
-        const view = readViewSize(host, SCRIPT_NAME);
-        const layer = placed.create(Z_INDEX.backdrop);
-        let measured = null;
-        try {
-            layer.draw(dc => {
-                const size = dc.getSize();
-                placed.measure(size);
-                const geometry = layoutNameEntry(placed.referenceWidth, TEXT.lines.length + (shown.notice === null ? 0 : 1));
-                drawBackdrop(dc, size, REFERENCE_HEIGHT, geometry.panel);
-                measured = { size, referenceWidth: placed.referenceWidth, geometry };
-            });
-        } catch (error) {
-            placed.remove(layer);
-            throw error;
-        }
-        return { layer, view, ...measured };
     }
 
     // A hidden layer placed on rect and drawn in its own coordinates, kept
@@ -109,8 +89,8 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
     const drawReasonOn = rect => dc => drawReason(host, dc, reasonText(), rect.w, rect.h);
     const drawCharacterOn = (index, rect) => dc => drawCharacter(host, dc, RING[index], index === OK && isOkGreyed(), rect.w, rect.h);
 
-    function useBackdrop({ layer, view, size, referenceWidth, geometry }) {
-        Object.assign(shown, { view, size, referenceWidth, geometry, backdrop: layer });
+    function useBackdrop({ layer, referenceWidth, geometry }) {
+        Object.assign(shown, { referenceWidth, geometry, backdrop: layer });
     }
 
     // Each piece as one step, for the opening to run in slices; the backdrop
@@ -189,35 +169,19 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
         shown.ringLayers = [];
     }
 
-    // The window watch saw the view's size change: drawn again in place, the
-    // name and the current character kept, the fade going on. False, nothing
-    // kept, while the layers' window keeps its old size. A draw that fails
-    // gives the screen up, rather than leaving half of it shown.
-    function followWindow(previousView, nextView) {
-        let backdrop = null;
-        const previousSize = shown.size;
-        try {
-            backdrop = drawBackdropLayer();
-            if (sameSize(backdrop.size, previousSize)) {
-                placed.remove(backdrop.layer);
-                return false;
-            }
-            removeLayers();
-            useBackdrop(backdrop);
-            for (const step of pieceSteps()) step();
-        } catch (error) {
-            leave();
-            throw error;
-        }
-        placeMarker();
-        setOpacity(shown.opacity);
-        host.log(`[${SCRIPT_NAME}] The screen is redrawn for the window's new size: view ${sizeText(previousView)} to ${sizeText(nextView)}, layers ${sizeText(previousSize)} to ${sizeText(backdrop.size)}.`);
-        return true;
-    }
+    // Redrawn for a new window size: the name and the current character stay
+    // in shown, the fade goes on. A redraw that fails gives the screen up.
+    const followedScreen = {
+        keep: () => () => {
+            placeMarker();
+            setOpacity(shown.opacity);
+        },
+        removeLayers, useBackdrop, pieceSteps, onFailed: () => leave(),
+    };
 
     // Run by the Drawn Screen controls on every close, attract mode included.
     function remove() {
-        windowWatch.stop();
+        windowRedraw.stop();
         opening.remove();
         removeLayers();
         shown = null;
@@ -239,10 +203,10 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
         shown = {
             name: "", refusal: NAME_REFUSAL.EMPTY, listedNames, notice, hasFolderFailed: false, cursor: 0, onCreated, opacity: 0,
             controlled: controls.open({ onMove: move, onChoose: choose, onExit: leave, close: remove }),
-            view: null, size: null, referenceWidth: 0, geometry: null, backdrop: null, fixedLayers: [], ringLayers: [], nameLayer: null, reasonLayer: null, marker: null,
+            referenceWidth: 0, geometry: null, backdrop: null, fixedLayers: [], ringLayers: [], nameLayer: null, reasonLayer: null, marker: null,
         };
         opening.begin();
-        const steps = [() => useBackdrop(drawBackdropLayer()), ...pieceSteps()];
+        const steps = [() => useBackdrop(windowRedraw.drawBackdrop()), ...pieceSteps()];
         opening.runVeiled(() => {
             opening.draw(steps.shift());
             return steps.length > 0;
@@ -253,9 +217,7 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
                 setOpacity(0);
                 opening.logOpened();
                 opening.fadeIn(setOpacity);
-                // Only now, against what the backdrop measured: getting ready
-                // can outlast the watch's retries.
-                windowWatch.start(followWindow, shown.view);
+                windowRedraw.start(followedScreen);
             },
             // Logged by the drawing ahead: given up rather than left veiled.
             onFailed: leave,
