@@ -2,7 +2,7 @@
 // Confetti Shower: about 8 s of confetti over the wheel screen, started with
 // a celebrated toast; tells when it is due to end so a Level Toast can follow.
 // Vanishes on "prelaunch", "gamestarted" and "attractmodestart".
-// - Confetti wait shrunk to a dot: a hidden full-window layer still costs every frame.
+// - Confetti wait as points (placed_layers.js): a hidden full-window layer still costs every frame.
 // - Does not check for a drawn dialog itself: the toast waits for one.
 // ============================================================
 
@@ -10,6 +10,7 @@ import { safeHandler } from "../core/safe_handler.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { getDrawingAhead } from "../core/drawing_ahead.js";
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
+import { createHiddenLayer, hideLayer } from "../drawing/placed_layers.js";
 import config from "../core/config.js";
 
 const SCRIPT_NAME = "ConfettiShower";
@@ -51,11 +52,6 @@ const BACK_SHADE = 0.55;
 // The shower's nominal length, from its start: what a Level Toast waiting
 // for its end counts on, though the last confetti may fall a little longer.
 const SHOWER_MS = 8000;
-// The span of a confetto waiting to fall. PinballY stretches a layer over the
-// whole window by default and still fills every pixel of a hidden one on
-// each frame: hundreds of them slowed a single landscape screen's wheel to
-// about 10 frames a second.
-const WAITING_SPAN = { xSpan: 0.001, ySpan: 0.001 };
 
 const random = (min, max) => min + Math.random() * (max - min);
 
@@ -135,13 +131,6 @@ export function createConfettiShower(host, { enabled = true, soundFile = "", dra
     let frameTimer = null;
     const stopListeners = [];
 
-    function hiddenLayer() {
-        const layer = host.createDrawingLayer(CONFETTI_Z_INDEX);
-        layer.alpha = 0;
-        layer.setScale(WAITING_SPAN);
-        return layer;
-    }
-
     function paperLayer(layer, rgb, angle) {
         layer.draw(dc => drawPaper(dc, rgb, angle), CANVAS_SIDE, CANVAS_SIDE);
         return layer;
@@ -150,22 +139,23 @@ export function createConfettiShower(host, { enabled = true, soundFile = "", dra
     // First the window size, then one confetto (both sides) per step.
     drawingAhead.add(() => {
         if (!screenSize) {
-            measureLayer = hiddenLayer();
+            measureLayer = createHiddenLayer(host, CONFETTI_Z_INDEX);
             // A draw without a size gets a canvas the size of the window.
             measureLayer.draw(dc => { screenSize = dc.getSize(); });
             return true;
         }
         const rgb = COLORS[pool.length % COLORS.length];
         const angle = random(0, Math.PI);
-        const frontLayer = measureLayer || hiddenLayer();
+        const frontLayer = measureLayer || createHiddenLayer(host, CONFETTI_Z_INDEX);
         measureLayer = null;
-        pool.push({ front: paperLayer(frontLayer, rgb, angle), back: paperLayer(hiddenLayer(), shade(rgb, BACK_SHADE), angle) });
+        const backLayer = createHiddenLayer(host, CONFETTI_Z_INDEX);
+        pool.push({ front: paperLayer(frontLayer, rgb, angle), back: paperLayer(backLayer, shade(rgb, BACK_SHADE), angle) });
         return pool.length < COUNT;
     });
 
     function hide(piece) {
-        piece.layers.front.alpha = 0;
-        piece.layers.back.alpha = 0;
+        hideLayer(piece.layers.front);
+        hideLayer(piece.layers.back);
     }
 
     function stop() {

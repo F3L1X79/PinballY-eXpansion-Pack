@@ -3,7 +3,7 @@
 // of everything, started with a Level Toast. Each burst is a film drawn
 // ahead (docs/adr/0012). Vanishes on "prelaunch", "gamestarted" and
 // "attractmodestart".
-// - Every layer waits shrunk to a dot.
+// - Every layer waits as a point (placed_layers.js).
 // - Does not check for a drawn dialog itself: the toast waits for one.
 // ============================================================
 
@@ -12,6 +12,7 @@ import { createPinballYHost } from "../core/pinbally_host.js";
 import { getDrawingAhead } from "../core/drawing_ahead.js";
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
 import { CONFETTI_Z_INDEX } from "./confetti_shower.js";
+import { createHiddenLayer, hideLayer } from "../drawing/placed_layers.js";
 import config from "../core/config.js";
 
 const SCRIPT_NAME = "Fireworks";
@@ -57,8 +58,6 @@ const TRAIL_LIFE_MS = 380;
 const TRAIL_EVERY_MS = 28;
 // Painting time per drawing-ahead step, within its 12 ms slice.
 const STEP_MS = 8;
-// See WAITING_SPAN in confetti_shower.js.
-const WAITING_SPAN = { xSpan: 0.001, ySpan: 0.001 };
 
 const random = (min, max) => min + Math.random() * (max - min);
 const clamp01 = value => Math.max(0, Math.min(1, value));
@@ -303,24 +302,13 @@ export function createFireworks(host, { enabled = true, soundFile = "", drawingA
     });
     let ready = false;
 
-    function hiddenLayer() {
-        const layer = host.createDrawingLayer(FIREWORKS_Z_INDEX);
-        hide(layer);
-        return layer;
-    }
-
-    function hide(layer) {
-        layer.alpha = 0;
-        layer.setScale(WAITING_SPAN);
-    }
-
     // The layer being painted, over as many steps as it needs.
     let current = null;
     // First the window size, then each layer, painted for at most STEP_MS a step.
     drawingAhead.add(() => {
         const startMs = host.now().getTime();
         if (!screenSize) {
-            measureLayer = hiddenLayer();
+            measureLayer = createHiddenLayer(host, FIREWORKS_Z_INDEX);
             // A draw without a size gets a canvas the size of the window.
             measureLayer.draw(dc => { screenSize = dc.getSize(); });
             return true;
@@ -330,7 +318,7 @@ export function createFireworks(host, { enabled = true, soundFile = "", drawingA
             current = { side, keep, job: createPaintJob(items, side) };
         }
         if (current.job.run(() => host.now().getTime() - startMs < STEP_MS)) {
-            const layer = measureLayer || hiddenLayer();
+            const layer = measureLayer || createHiddenLayer(host, FIREWORKS_Z_INDEX);
             measureLayer = null;
             const { job, side } = current;
             layer.draw(dc => job.drawTo(dc), side, side);
@@ -350,8 +338,8 @@ export function createFireworks(host, { enabled = true, soundFile = "", drawingA
     }
 
     function hideAll() {
-        for (const rocket of rocketLayers) for (const layer of [rocket.head, ...rocket.sparks]) hide(layer);
-        for (const frames of films) for (const layer of frames) hide(layer);
+        for (const rocket of rocketLayers) for (const layer of [rocket.head, ...rocket.sparks]) hideLayer(layer);
+        for (const frames of films) for (const layer of frames) hideLayer(layer);
     }
 
     function stop() {
@@ -396,7 +384,7 @@ export function createFireworks(host, { enabled = true, soundFile = "", drawingA
             const t = (nowMs - piece.startMs) / TRAIL_LIFE_MS;
             if (t >= 1) {
                 piece.done = true;
-                hide(layer);
+                hideLayer(layer);
                 continue;
             }
             alive = true;
@@ -414,7 +402,7 @@ export function createFireworks(host, { enabled = true, soundFile = "", drawingA
             const nx = rocket.x + Math.cos(angle) * rocket.speed * frameRatio;
             const ny = rocket.y + Math.sin(angle) * rocket.speed * frameRatio;
             if (Math.hypot(nx - rocket.sx, ny - rocket.sy) >= Math.hypot(rocket.targetX - rocket.sx, rocket.targetY - rocket.sy)) {
-                hide(rocket.layers.head);
+                hideLayer(rocket.layers.head);
                 const scheme = pickScheme();
                 rocket.burst = { scheme, frames: films[scheme], startMs: nowMs, frame: -1 };
                 show.schemes.push(scheme + 1);
@@ -435,7 +423,7 @@ export function createFireworks(host, { enabled = true, soundFile = "", drawingA
         const { burst } = rocket;
         const frame = Math.floor((nowMs - burst.startMs) / (1000 / FILM_FPS));
         if (frame === burst.frame) return true;
-        if (burst.frame >= 0 && burst.frame < burst.frames.length) hide(burst.frames[burst.frame]);
+        if (burst.frame >= 0 && burst.frame < burst.frames.length) hideLayer(burst.frames[burst.frame]);
         burst.frame = frame;
         if (frame >= burst.frames.length) return trailAlive;
         const shown = FILM_SPAN * rocket.pixelScale;

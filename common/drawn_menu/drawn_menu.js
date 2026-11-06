@@ -7,7 +7,7 @@
 // - Swallows every button through "commandbuttondown" while open; never changes the UI mode.
 // - A menu with onBack (a submenu) goes back on Exit and on its MenuReturn entry.
 // - With keepNative (the pause menu), it closes on the native "menuclose", or at "postlaunch".
-// - Images are drawn ahead, shrunk to a dot while hidden; all redrawn in place if the window's size changes while open.
+// - Images are drawn ahead, hidden as points (placed_layers.js); all redrawn in place if the window's size changes while open.
 // - isOpen() and onClosed() let what waits for a free wheel wait for it.
 // ============================================================
 
@@ -22,6 +22,7 @@ import { getDrawingAhead } from "../core/drawing_ahead.js";
 import { createButtonSound, createNavigationSound } from "../core/navigation_sound.js";
 import { DRAWN_MENU_IMAGES, DRAWN_MENU_IMAGES_FOLDER } from "./drawn_menu_images.js";
 import { addStyledText } from "../drawing/steamball_drawing.js";
+import { createHiddenLayer, hideLayer, placementOf } from "../drawing/placed_layers.js";
 import {
     DRAWN_MENU_Z_INDEX, DRAWN_MENU_LOOK, ROW_KIND, pointsOf, computeGeometry, menuScaleOf, drawTexts, drawSelectedText, drawBackdrop, selectionSize,
 } from "./drawn_menu_painter.js";
@@ -34,9 +35,6 @@ const FRAME_MS = 16;
 // The glide slows down as it arrives (exponential ease-out).
 const GLIDE_TIME_CONSTANT_MS = 40;
 const GLIDE_SNAP_PX = 0.5;
-// A hidden layer shrunk to a dot: PinballY would otherwise fill every
-// pixel of the window with it at each frame, even invisible.
-const DOT_SCALE = Object.freeze({ xSpan: 0.001, ySpan: 0.001 });
 const SEPARATOR_CMD = -1;
 
 // PinballY's own items, as plain copies of what the menu shows: its item
@@ -188,20 +186,11 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
         deselect: createButtonSound(host, SCRIPT_NAME, "Deselect", 1),
     };
 
-    function hide(layer) {
-        layer.alpha = 0;
-        layer.setScale(DOT_SCALE);
-    }
-    const hiddenLayer = zIndex => {
-        const layer = host.createDrawingLayer(zIndex);
-        hide(layer);
-        return layer;
-    };
-    const backdrop = hiddenLayer(DRAWN_MENU_Z_INDEX.backdrop);
-    const textsLayer = hiddenLayer(DRAWN_MENU_Z_INDEX.texts);
-    const selectedTextLayer = hiddenLayer(DRAWN_MENU_Z_INDEX.selectedText);
+    const backdrop = createHiddenLayer(host, DRAWN_MENU_Z_INDEX.backdrop);
+    const textsLayer = createHiddenLayer(host, DRAWN_MENU_Z_INDEX.texts);
+    const selectedTextLayer = createHiddenLayer(host, DRAWN_MENU_Z_INDEX.selectedText);
     // The painted images, each drawn for the window size in its signature.
-    const imageLayer = (image, zIndex, stretched = false) => ({ image, stretched, layer: hiddenLayer(zIndex), signature: null });
+    const imageLayer = (image, zIndex, stretched = false) => ({ image, stretched, layer: createHiddenLayer(host, zIndex), signature: null });
     const panel = ["top", "middle", "bottom"].map(part => imageLayer(DRAWN_MENU_IMAGES.panel[part], DRAWN_MENU_Z_INDEX.panel, part === "middle"));
     const glass = ["top", "middle", "bottom"].map(part => imageLayer(DRAWN_MENU_IMAGES.glass[part], DRAWN_MENU_Z_INDEX.glass, part === "middle"));
     const outline = imageLayer(DRAWN_MENU_IMAGES.selection, DRAWN_MENU_Z_INDEX.selection);
@@ -264,8 +253,9 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
     // The layer's box in window pixels; stretched to it, or scaled by its height.
     function place(layer, { x, y, width, height }, stretched) {
         const { width: windowWidth, height: windowHeight } = windowSize;
-        layer.setScale(stretched ? { xSpan: width / windowWidth, ySpan: height / windowHeight } : { ySpan: height / windowHeight });
-        layer.setPos((x + width / 2) / windowWidth - 0.5, 0.5 - (y + height / 2) / windowHeight);
+        const placement = placementOf({ x, y, w: width, h: height }, windowWidth, windowHeight);
+        layer.setScale(stretched ? { xSpan: placement.xSpan, ySpan: placement.ySpan } : { ySpan: placement.ySpan });
+        layer.setPos(placement.x, placement.y);
     }
 
     // A texts' layer, drawn at its size, on whole pixels: between two,
@@ -289,7 +279,7 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
         place(bottom.layer, { x, y: bottomY, width, height: bottom.size.height }, false);
         const middleY = topY + top.size.height;
         if (bottomY - middleY < 1) {
-            hide(middle.layer);
+            hideLayer(middle.layer);
             return [top.layer, bottom.layer];
         }
         place(middle.layer, { x, y: middleY, width, height: bottomY - middleY }, true);
@@ -458,7 +448,7 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
         const onClose = shown ? shown.onClose : null;
         stopTimers();
         shown = null;
-        for (const layer of allLayers) hide(layer);
+        for (const layer of allLayers) hideLayer(layer);
         return onClose;
     }
 
@@ -594,7 +584,7 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
     // stays and every press stays swallowed until its "menuclose".
     function hidePanel() {
         stopTimers();
-        for (const layer of allLayers) if (layer !== backdrop) hide(layer);
+        for (const layer of allLayers) if (layer !== backdrop) hideLayer(layer);
         shown.panelHidden = true;
     }
 

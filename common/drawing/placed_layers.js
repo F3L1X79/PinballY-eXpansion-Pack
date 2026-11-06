@@ -27,6 +27,8 @@ export function createHiddenLayer(host, zIndex) {
 // shows: its span of the window's height and its centre's position.
 export function placementOf(rect, referenceWidth, referenceHeight) {
     return {
+        // For a canvas stretched to rect; one kept in proportion takes only ySpan.
+        xSpan: rect.w / referenceWidth,
         ySpan: rect.h / referenceHeight,
         x: (rect.x + rect.w / 2) / referenceWidth - 0.5,
         y: 0.5 - (rect.y + rect.h / 2) / referenceHeight,

@@ -6,6 +6,7 @@
 // ============================================================
 
 import { safeHandler } from "../core/safe_handler.js";
+import { createHiddenLayer, hideLayer, placementOf } from "./placed_layers.js";
 
 const SCRIPT_NAME = "SelectionMarker";
 
@@ -27,7 +28,6 @@ const SPREAD = 0.5;
 // Golds from a warm bronze to a white gleam, twice a lap; the stops end as
 // they start, so each lap joins up.
 const GOLD_STOPS = [0xA8661C, 0xD98A1C, 0xFFD23F, 0xFFFBE6, 0xFFD23F, 0xD98A1C, 0xA8661C, 0xC98428, 0xFFC93A, 0xFFF0A0, 0xFFC93A, 0xC98428, 0xA8661C];
-const HIDDEN_SPAN = { xSpan: 0.001, ySpan: 0.001 };
 
 // The colour at u along the gradient, wrapping round.
 function goldAt(u) {
@@ -87,11 +87,8 @@ function drawGlow(dc, w, h, phase) {
 // For one open screen: zIndex for its layer, and the screen's reference
 // coordinate system (its layers' rects in reference pixels).
 export function createSelectionMarker(host, { zIndex, referenceWidth, referenceHeight }) {
-    const layer = host.createDrawingLayer(zIndex);
-    layer.alpha = 0;
-    // Hidden until its first choice: PinballY would otherwise stretch it
-    // to the whole window.
-    layer.setScale(HIDDEN_SPAN);
+    // A point until its first choice.
+    const layer = createHiddenLayer(host, zIndex);
     let choice = null;
 
     function draw() {
@@ -114,10 +111,10 @@ export function createSelectionMarker(host, { zIndex, referenceWidth, referenceH
     function moveTo(rect) {
         choice = { ...rect };
         const { canvasW, canvasH } = draw();
-        layer.setScale({ ySpan: canvasH / referenceHeight });
-        const left = rect.x - MARGIN;
-        const top = rect.y - MARGIN;
-        layer.setPos((left + canvasW / 2) / referenceWidth - 0.5, 0.5 - (top + canvasH / 2) / referenceHeight);
+        // The canvas, larger than the choice by the glow's room.
+        const { ySpan, x, y } = placementOf({ x: rect.x - MARGIN, y: rect.y - MARGIN, w: canvasW, h: canvasH }, referenceWidth, referenceHeight);
+        layer.setScale({ ySpan });
+        layer.setPos(x, y);
     }
 
     return {
@@ -129,8 +126,7 @@ export function createSelectionMarker(host, { zIndex, referenceWidth, referenceH
         setAside() {
             host.clearInterval(timer);
             timer = null;
-            layer.alpha = 0;
-            layer.setScale(HIDDEN_SPAN);
+            hideLayer(layer);
         },
         // Back on the same choice, turning again; its opacity is the screen's to set.
         showAgain() {
