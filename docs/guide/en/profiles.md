@@ -14,7 +14,7 @@ With Change Player, each of you picks your own Profile and Avatar, and the Welco
 - Once the cabinet has two Profiles or more besides Guest, PinballY starts on Change Player so that everyone picks their Profile before playing; it can also start on the Welcome Screen or straight on the wheel (`STARTUP_SCREEN`, see [Settings](settings.md)).
 - While Change Player is open, the video sound of the table on the wheel is turned down, and comes back as it closes.
 
-Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. An Admin Profile keeps the setup entries for itself, a Child Profile hides the Adult Tables, and an Admin Profile's **Manage profiles**, in the Operator Menu, marks a Child Profile or starts a Profile over: see [Settings](settings.md).
+Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. An Admin Profile keeps the setup entries for itself, a Child Profile hides the Adult Tables, and an Admin Profile's **Manage profiles**, in the Exit menu and the Operator Menu, marks a Child Profile or starts a Profile over: see [Settings](settings.md).
 
 ## Create a Profile
 
@@ -45,7 +45,7 @@ If the folder cannot be created, Name Entry stays open with your name and says s
 1. In `PinballY\Scripts\ExpansionPack\profiles`, create an empty folder named after the player: the cabinet shows that name. A name starting with `.` or `_` is ignored. Don't copy Guest's folder: the copy would carry over Guest's progress, while an empty folder starts from zero.
 2. Optional: put a square PNG or JPEG named `avatar.png` or `avatar.jpg` in that folder. If both are there, `avatar.jpg` wins, so a photo dropped as `avatar.jpg` shows over the portrait Avatar Choice copied as `avatar.png`. Without either, the Profile gets the default Avatar, a plain grey silhouette. An `avatar.png` or `avatar.jpg` replaced by another file of the same name while PinballY runs shows from its next start.
 3. Open **Change Player**, in the main menu or the Exit menu, and pick the new Profile. There is no need to restart PinballY. Until you pick it, you are still playing as Guest.
-4. Optional: to keep the setup entries for yourself, open **Manage profiles** in the Operator Menu and choose **Become admin** (see [Admin Profile](settings.md#admin-profile)).
+4. Optional: to keep the setup entries for yourself, open **Manage profiles** in the Exit menu and choose **Become admin** (see [Admin Profile](settings.md#admin-profile)).
 
 You don't need an Admin Profile to set up the pack: while no Profile is marked, every Profile, Guest included, sees the setup entries.
 

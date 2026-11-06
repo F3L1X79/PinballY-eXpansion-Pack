@@ -72,7 +72,7 @@ PinballY's own log, in the PinballY folder, covers the current session only. At 
 
 **I created my first Profile and Guest lost the setup entries, and the "+".** The first Profile created from the cabinet becomes an Admin Profile, as Name Entry's yellow line says, and you are still on Guest: pick the new Profile in Change Player, in the main menu or the Exit menu (see [Create a Profile](profiles.md#create-a-profile)).
 
-**"Manage profiles" is missing from the Operator Menu.** Once a Profile is marked, it shows to Admin Profiles only; while none is, it shows to every Profile but Guest and Child Profiles, with "Become admin" alone (see [Admin Profile](settings.md#admin-profile)). With PinballY's Exit menu disabled in its options, open the Operator Menu with the coin door service button.
+**"Manage profiles" is missing from the Exit menu or the Operator Menu.** Once a Profile is marked, it shows to Admin Profiles only; while none is, it shows to every Profile but Guest and Child Profiles, with "Become admin" alone (see [Admin Profile](settings.md#admin-profile)). With PinballY's Exit menu disabled in its options, open the Operator Menu with the coin door service button.
 
 **A Profile mark (`isAdmin`, `isChild`) has no effect.** It must be `true` or `false`, at the top level of `profile.json`, with its key spelt exactly; a wrong mark is ignored and logged in `PinballY.log`. Edit `profile.json` with PinballY closed: while it runs, its next save of the active Profile overwrites your edit, without any line in the log.
 

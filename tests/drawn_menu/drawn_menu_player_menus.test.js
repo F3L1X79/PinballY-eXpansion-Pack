@@ -78,7 +78,7 @@ test("the Exit menu is drawn with the pack's entries", () => {
     assert.equal(fake.currentMenu(), null, "no native menu");
     assert.deepEqual(drawnMenuLines(fake), [
         "Exit PinballY", "Shut Down", "---",
-        lang.profiles.menuEntry, "---",
+        lang.profiles.menuEntry, lang.profileReset.menuEntry, "---",
         "Operator Menu", "---",
         "Help", "About PinballY", "---",
         "Cancel",
@@ -97,14 +97,16 @@ test("Change Player in the Exit menu opens the Profile picker", () => {
     assert.ok(!pickerShown());
 });
 
-test("Manage profiles in the Operator Menu opens the Profile Reset list", () => {
-    openOperatorMenu(fake);
-    chooseEntry(fake, lang.profileReset.menuEntry);
+for (const [menuName, open] of [["Exit menu", openExitMenu], ["Operator Menu", openOperatorMenu]]) {
+    test(`Manage profiles in the ${menuName} opens the Profile Reset list`, () => {
+        open(fake);
+        chooseEntry(fake, lang.profileReset.menuEntry);
 
-    assert.equal(fake.currentMenu(), null);
-    assert.ok(drawnMenuLines(fake).includes("Alice"), "the Profile Reset list is drawn in its place");
-    press(fake, "Exit");
-});
+        assert.equal(fake.currentMenu(), null);
+        assert.ok(drawnMenuLines(fake).includes("Alice"), "the Profile Reset list is drawn in its place");
+        press(fake, "Exit");
+    });
+}
 
 test("Shut Down in the Exit menu draws the power off menu in its place", () => {
     openExitMenu(fake);

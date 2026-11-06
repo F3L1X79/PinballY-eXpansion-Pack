@@ -9,6 +9,7 @@ import { SEPARATOR_CMD } from "./menu_separator.js";
 
 export const PLAYER_GROUP_RANK = {
     CHANGE_PLAYER: 0,
+    MANAGE_PROFILES: 1,
 };
 
 // Command id -> rank, for every entry ever added: ids don't change during
