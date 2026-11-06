@@ -601,6 +601,9 @@ export default {
         avatarChoice: {
             title: "Choix de l'Avatar",
             line: "Vous pourrez le remplacer depuis Windows, au prochain démarrage de PinballY.",
+            keepDefaultQuestion: "Garder l'Avatar par défaut ?",
+            chooseAvatar: "Choisir un Avatar",
+            keepDefault: "Garder l'Avatar par défaut",
         },
         greeting: name => `Salut ${name} !`,
     },

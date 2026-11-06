@@ -6,12 +6,16 @@
 // ============================================================
 
 import { STEAMBALL_COLORS as COLORS, STEAMBALL_FONTS as FONTS } from "../drawing/steamball_palette.js";
-import { text, oneLine, drawAvatar, buttonHintsFooterRectOf, EXIT_AND_HINTS_METRICS as EXIT_AND_HINTS } from "../drawing/steamball_drawing.js";
+import {
+    text, oneLine, drawAvatar, glow, fillGradient, buttonHintsFooterRectOf, DIMMED_WHEEL, EXIT_AND_HINTS_METRICS as EXIT_AND_HINTS,
+} from "../drawing/steamball_drawing.js";
 
 // Above Name Entry's layers, which close as it opens, and the Profile
-// picker's, which stay open under it.
+// picker's, which stay open under it; the Exit confirmation over the grid.
+// Not a Drawn Menu: those are drawn under the Profile picker (6200 to 6205).
 export const AVATAR_CHOICE_Z_INDEX = Object.freeze({
     backdrop: 6530, texts: 6531, portraits: 6532, exitButton: 6533, buttonHints: 6534, marker: 6535, tooltip: 6536,
+    confirmationPanel: 6537, confirmationChoices: 6538, confirmationMarker: 6539,
 });
 
 export const REFERENCE_HEIGHT = 1920;
@@ -73,4 +77,52 @@ export function drawHint(host, dc, hint, w, h) {
 
 export function drawPortrait(dc, path, side) {
     drawAvatar(dc, path, 0, 0, side);
+}
+
+const CONFIRMATION = Object.freeze({
+    maxWidth: 760, pad: 36, questionH: 72, questionSize: 30, questionMinSize: 20,
+    choiceMaxWidth: 600, choiceH: 72, choiceGap: 20, choiceSize: 26, choiceMinSize: 18,
+});
+
+// The Exit confirmation: a cover over the whole panel, the small box in its
+// middle (within the panel's own padding), its question and its two
+// choices, top to bottom.
+export function layoutConfirmation(geometry) {
+    const { panel } = geometry;
+    const { pad, choiceH, choiceGap } = CONFIRMATION;
+    const w = Math.min(CONFIRMATION.maxWidth, panel.w - 2 * LOOK.pad);
+    const h = 2 * pad + CONFIRMATION.questionH + 2 * (choiceGap + choiceH);
+    const box = { x: panel.x + Math.round((panel.w - w) / 2), y: panel.y + Math.round((panel.h - h) / 2), w, h };
+    const question = { x: box.x + pad, y: box.y + pad, w: w - 2 * pad, h: CONFIRMATION.questionH };
+    const choiceW = Math.min(CONFIRMATION.choiceMaxWidth, w - 2 * pad);
+    const choices = [0, 1].map(index => ({
+        x: box.x + Math.round((w - choiceW) / 2), y: question.y + question.h + choiceGap + index * (choiceH + choiceGap),
+        w: choiceW, h: choiceH,
+    }));
+    return { cover: panel, box, question, choices };
+}
+
+// On the cover's canvas: the grid dimmed, then the box and its question.
+export function drawConfirmationPanel(host, dc, layout, question) {
+    const { cover, box } = layout;
+    dc.fillRect(0, 0, cover.w, cover.h, DIMMED_WHEEL);
+    const x = box.x - cover.x;
+    const y = box.y - cover.y;
+    glow(dc, x, y, box.w, box.h, COLORS.gold, 6, 0x30);
+    fillGradient(dc, x, y, box.w, box.h, COLORS.panelTop, COLORS.panel);
+    dc.frameRect(x, y, box.w, box.h, 1, COLORS.border);
+    const rect = layout.question;
+    oneLine(host, dc, question, {
+        x: rect.x - cover.x, y: rect.y - cover.y, width: rect.w, height: rect.h,
+        size: CONFIRMATION.questionSize, minSize: CONFIRMATION.questionMinSize, weight: 700, color: COLORS.gold, font: FONTS.display, align: "center",
+    });
+}
+
+// A choice on its own canvas: a tile as the Exit Button's, its label centred.
+export function drawConfirmationChoice(host, dc, label, w, h) {
+    fillGradient(dc, 0, 0, w, h, COLORS.rowUnlocked, COLORS.tile);
+    dc.frameRect(0, 0, w, h, 2, COLORS.border);
+    oneLine(host, dc, label, {
+        x: 0, y: 0, width: w, height: h, size: CONFIRMATION.choiceSize, minSize: CONFIRMATION.choiceMinSize, weight: 600, align: "center",
+    });
 }

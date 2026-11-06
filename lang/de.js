@@ -599,6 +599,9 @@ export default {
         avatarChoice: {
             title: "Wählen Sie Ihren Avatar",
             line: "Sie können ihn in Windows ersetzen; die Änderung gilt nach dem nächsten Start von PinballY.",
+            keepDefaultQuestion: "Den Standard-Avatar behalten?",
+            chooseAvatar: "Einen Avatar wählen",
+            keepDefault: "Den Standard-Avatar behalten",
         },
         greeting: name => `Hallo ${name}!`,
     },

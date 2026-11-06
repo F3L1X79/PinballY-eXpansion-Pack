@@ -1,8 +1,9 @@
 // ============================================================
 // Avatar Choice: the drawn screen, over the Profile picker, where a Profile
 // Name Entry just created takes one of the pack's portraits as its Avatar.
-// Select or Launch copies it as the Profile's avatar.png; Exit keeps the
-// Default Avatar. Both hand back to the picker; attract mode copies nothing.
+// Select or Launch copies it as the Profile's avatar.png; Exit asks, on a panel
+// over the grid, before keeping the Default Avatar. Both hand back to the
+// picker; attract mode closes everything without asking, copying nothing.
 // - Moving only moves the Selection Marker: the portraits are drawn once, at opening.
 // - Swallows every button through "commandbuttondown" while open; a press already handled is not its own.
 // - Registered before the Profile picker's listener, which then sees each press as handled.
@@ -20,11 +21,14 @@ import { buttonHintGroupsOf, exitButtonWordOf, FLIPPER_HINT } from "../drawing/b
 import { EXIT_BUTTON, stepThroughExitButton } from "../drawing/exit_button_loop.js";
 import {
     AVATAR_CHOICE_Z_INDEX as Z_INDEX, REFERENCE_HEIGHT, layoutAvatarChoice, portraitRectOf, drawTitle, drawName, drawHint, drawPortrait,
+    layoutConfirmation, drawConfirmationPanel, drawConfirmationChoice,
 } from "./avatar_choice_painter.js";
 
 const SCRIPT_NAME = "AvatarChoice";
 
 const AVATAR_CHOICE_FOLDER ="assets\\images\\avatar_choice";
+// The Exit confirmation's choices, top to bottom: indexes into its layout's choices.
+const CHOICE = Object.freeze({ CHOOSE_AVATAR: 0, KEEP_DEFAULT: 1 });
 // Any other file there is left out.
 const PORTRAIT_FILE = /^avatar_choice_(\d+)\.png$/i;
 
@@ -45,7 +49,8 @@ export function createAvatarChoice(host, { profileStore, drawingAhead }) {
     const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: Z_INDEX.backdrop - 2, drawingAhead });
     // The open screen, null when closed: the Profile's name, the portraits'
     // paths, the selected portrait's index (or EXIT_BUTTON), what closing
-    // hands back to, the layout and its layers (null marker while getting ready).
+    // hands back to, the layout and its layers (null marker while getting
+    // ready), and the Exit confirmation while it shows.
     let shown = null;
 
     // Draws the backdrop, which measures the window the layout depends on.
@@ -73,11 +78,11 @@ export function createAvatarChoice(host, { profileStore, drawingAhead }) {
         layer.setPos((rect.x + rect.w / 2) / shown.referenceWidth - 0.5, 0.5 - (rect.y + rect.h / 2) / REFERENCE_HEIGHT);
     }
 
-    // A hidden layer placed on rect and drawn in its own coordinates, kept
-    // before drawing, so a draw that throws leaves nothing behind once closed.
-    function drawPiece(zIndex, rect, draw) {
+    // A hidden layer placed on rect and drawn in its own coordinates, kept in
+    // layers before drawing, so a draw that throws leaves nothing behind once closed.
+    function drawPiece(zIndex, rect, draw, layers = shown.layers) {
         const layer = host.createDrawingLayer(zIndex);
-        shown.layers.push(layer);
+        layers.push(layer);
         layer.alpha = 0;
         layer.clear(STEAMBALL_COLORS.transparent);
         place(layer, rect);
@@ -114,24 +119,86 @@ export function createAvatarChoice(host, { profileStore, drawingAhead }) {
     const selectedRect = () => (shown.selected === EXIT_BUTTON ? shown.geometry.exitButton : portraitRectOf(shown.geometry, shown.selected));
 
     // Each frame of the fade in, and each move. The Exit Button's tooltip
-    // shows only while it is selected.
+    // shows only while it is selected; the confirmation, when shown, hides it
+    // and takes the marker's place, the grid's set aside under it.
     function setOpacity(opacity) {
         shown.opacity = opacity;
         shown.backdrop.alpha = opacity;
         for (const layer of shown.layers) layer.alpha = opacity;
-        if (shown.selected !== EXIT_BUTTON) shown.tooltip.alpha = 0;
-        shown.marker.setOpacity(opacity);
+        if (shown.selected !== EXIT_BUTTON || shown.confirmation) shown.tooltip.alpha = 0;
+        const { confirmation } = shown;
+        if (!confirmation) {
+            shown.marker.setOpacity(opacity);
+            return;
+        }
+        for (const layer of confirmation.layers) layer.alpha = opacity;
+        if (confirmation.marker) confirmation.marker.setOpacity(opacity);
+    }
+
+    function removeConfirmation() {
+        const { marker, layers } = shown.confirmation;
+        shown.confirmation = null;
+        if (marker) marker.remove();
+        for (const layer of layers) host.removeDrawingLayer(layer);
     }
 
     // Closes the screen or gives up the one getting ready; nothing handed back.
     function close() {
         if (!shown) return;
+        if (shown.confirmation) removeConfirmation();
         const { marker, backdrop, layers } = shown;
         shown = null;
         opening.remove();
         if (marker) marker.remove();
         if (backdrop) host.removeDrawingLayer(backdrop);
         for (const layer of layers) host.removeDrawingLayer(layer);
+    }
+
+    // Exit, or the Exit Button: a small panel drawn over the grid asks to
+    // confirm, "Choose an Avatar" current. Drawn at once, as it is small.
+    function askToConfirm() {
+        const layout = layoutConfirmation(shown.geometry);
+        const confirmation = { layout, selected: CHOICE.CHOOSE_AVATAR, layers: [], marker: null };
+        shown.confirmation = confirmation;
+        shown.marker.setAside();
+        try {
+            drawPiece(Z_INDEX.confirmationPanel, layout.cover, dc => drawConfirmationPanel(host, dc, layout, TEXT.keepDefaultQuestion), confirmation.layers);
+            for (const [choice, label] of [[CHOICE.CHOOSE_AVATAR, TEXT.chooseAvatar], [CHOICE.KEEP_DEFAULT, TEXT.keepDefault]]) {
+                const rect = layout.choices[choice];
+                drawPiece(Z_INDEX.confirmationChoices, rect, dc => drawConfirmationChoice(host, dc, label, rect.w, rect.h), confirmation.layers);
+            }
+            confirmation.marker = createSelectionMarker(host, {
+                zIndex: Z_INDEX.confirmationMarker, referenceWidth: shown.referenceWidth, referenceHeight: REFERENCE_HEIGHT,
+            });
+            confirmation.marker.moveTo(layout.choices[confirmation.selected]);
+        } catch (error) {
+            // The grid stays as it was, rather than a half drawn panel.
+            backToGrid();
+            throw error;
+        }
+        setOpacity(shown.opacity);
+    }
+
+    // "Choose an Avatar", or Exit on the confirmation: the marker where it was.
+    function backToGrid() {
+        removeConfirmation();
+        shown.marker.showAgain();
+        setOpacity(shown.opacity);
+    }
+
+    // On the confirmation: Next and Prev go round both choices.
+    function confirmationButton(command) {
+        const { confirmation } = shown;
+        if (command === "Next" || command === "Prev") {
+            navigationSound.play();
+            confirmation.selected = confirmation.selected === CHOICE.CHOOSE_AVATAR ? CHOICE.KEEP_DEFAULT : CHOICE.CHOOSE_AVATAR;
+            confirmation.marker.moveTo(confirmation.layout.choices[confirmation.selected]);
+        } else if (command === "Exit") {
+            backToGrid();
+        } else if (command === "Select" || command === "Launch") {
+            if (confirmation.selected === CHOICE.KEEP_DEFAULT) leave();
+            else backToGrid();
+        }
     }
 
     function leave() {
@@ -150,7 +217,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead }) {
         const portraits = opening.read(() => readPortraits(host));
         shown = {
             profileName, portraits, onClosed, selected: 0, isPreparing: true, opacity: 0,
-            referenceWidth: 0, geometry: null, backdrop: null, layers: [], tooltip: null, marker: null,
+            referenceWidth: 0, geometry: null, backdrop: null, layers: [], tooltip: null, marker: null, confirmation: null,
         };
         const pending = steps();
         opening.runVeiled(() => {
@@ -180,7 +247,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead }) {
 
     // A portrait is taken at once; a copy that fails keeps the Default Avatar.
     function choose() {
-        if (shown.selected === EXIT_BUTTON) return leave();
+        if (shown.selected === EXIT_BUTTON) return askToConfirm();
         try {
             profileStore.giveAvatar(shown.profileName, shown.portraits[shown.selected]);
         } catch (error) {
@@ -196,13 +263,16 @@ export function createAvatarChoice(host, { profileStore, drawingAhead }) {
         if (!shown || ev.defaultPrevented) return;
         // Swallowed first, so a failing copy still never reaches the wheel.
         ev.preventDefault();
-        if (ev.command === "Next" || ev.command === "Prev") {
+        if ((ev.command === "Next" || ev.command === "Prev") && !shown.confirmation) {
             if (!shown.isPreparing) move(ev.command === "Next" ? 1 : -1);
             return;
         }
-        // A held button counts once.
+        // A held button counts once, flippers included on the confirmation's two choices.
         if (ev.repeat) return;
-        if (ev.command === "Exit") leave();
+        if (shown.confirmation) confirmationButton(ev.command);
+        // Before the grid shows there is no choice to lose: Exit leaves at once.
+        else if (ev.command === "Exit" && shown.isPreparing) leave();
+        else if (ev.command === "Exit") askToConfirm();
         // Launch is the plunger, which selects in PinballY's own menus too.
         else if ((ev.command === "Select" || ev.command === "Launch") && !shown.isPreparing) choose();
     }));

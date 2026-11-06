@@ -27,10 +27,10 @@ Open **Change Player**: its last slot, after the last Profile, is **New profile*
 1. Choose the "+" with Select or Launch: Name Entry opens.
 2. Move along the ring of characters with the flippers, and hold one to keep going. Select or Launch chooses the character under the marker: `A` to `Z`, `a` to `z`, `-`, `←` to erase the last character, and `OK`.
 3. Choose `OK`. `OK` stays grey while the name is empty or refused. The Profile is created, and Avatar Choice opens.
-4. Avatar Choice shows 24 portraits under your new Profile's name. Move through them with the flippers, and hold one to keep going; Select or Launch takes the portrait under the marker at once. Exit, or the Exit Button before the first portrait, keeps the default Avatar.
+4. Avatar Choice shows 24 portraits under your new Profile's name. Move through them with the flippers, and hold one to keep going; Select or Launch takes the portrait under the marker at once. Exit, or the Exit Button before the first portrait, asks "Keep the default Avatar?" on a small panel over the portraits: "Choose an Avatar", the current choice at first, or Exit, brings the portraits back with the marker where it was; "Keep the default Avatar" leaves without a portrait.
 5. Change Player comes back on the new Profile, in its alphabetical place, wearing its Avatar. You are still on your former Profile: press Select to pick the new one.
 
-On Name Entry, Exit goes back to the "+" with nothing created. On a cabinet left idle, attract mode closes Name Entry and Change Player, with nothing created either; on Avatar Choice, it closes them too, and the Profile already created keeps the default Avatar. Two Profiles may take the same portrait. Once created, a Profile changes its Avatar from Windows only.
+On Name Entry, Exit goes back to the "+" with nothing created. On a cabinet left idle, attract mode closes Name Entry and Change Player, with nothing created either; on Avatar Choice, even while it asks to confirm, it closes them too without asking, and the Profile already created keeps the default Avatar. Two Profiles may take the same portrait. Once created, a Profile changes its Avatar from Windows only.
 
 A name has 12 characters at most, without accents, spaces or digits. For a longer or accented name, rename the Profile's folder in Windows, **before playing**: a rename keeps the Profile's plays and Achievements, but its High Scores and Lost Records follow the name, and renaming the active Profile's folder restarts on Guest.
 

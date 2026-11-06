@@ -159,13 +159,33 @@ export function currentPortrait(fake) {
     return exitButton.includes(layer) ? "exit" : layer.images()[0];
 }
 
-// After a successful OK: lets Avatar Choice open, then leaves it with
-// Exit, keeping the Default Avatar.
+// Avatar Choice's confirmation, which Exit shows over the grid.
+export const isConfirmationOpen = fake => shownLayers(fake, AVATAR_Z.confirmationPanel).length > 0;
+export const confirmationTexts = fake => shownLayers(fake, AVATAR_Z.confirmationPanel).flatMap(layer => layer.texts());
+export const confirmationChoices = fake => shownLayers(fake, AVATAR_Z.confirmationChoices).flatMap(layer => layer.texts());
+// The confirmation's choice the Selection Marker surrounds.
+export function currentConfirmationChoice(fake) {
+    const layer = layerUnderMarker(fake, AVATAR_Z.confirmationMarker, shownLayers(fake, AVATAR_Z.confirmationChoices));
+    assert.ok(layer, "the Selection Marker surrounds a choice of the confirmation");
+    return layer.texts()[0];
+}
+
+// Exit, then the confirmation's second choice, "Keep the default Avatar".
+export function keepDefaultAvatar(fake) {
+    press(fake, "Exit");
+    assert.equal(isConfirmationOpen(fake), true, "Exit asks to confirm");
+    press(fake, "Next");
+    assert.equal(currentConfirmationChoice(fake), confirmationChoices(fake)[1]);
+    press(fake, "Select");
+    assert.equal(isAvatarChoiceOpen(fake), false, "keeping the Default Avatar leaves Avatar Choice");
+}
+
+// After a successful OK: lets Avatar Choice open, then leaves it keeping
+// the Default Avatar.
 export function passThroughAvatarChoice(fake) {
     fake.advanceTime(AVATAR_CHOICE_OPEN_MS);
     assert.equal(isAvatarChoiceOpen(fake), true, "Avatar Choice opens after OK");
-    press(fake, "Exit");
-    assert.equal(isAvatarChoiceOpen(fake), false, "Exit leaves Avatar Choice");
+    keepDefaultAvatar(fake);
 }
 
 // Enters the name, chooses OK and lets Avatar Choice open.
