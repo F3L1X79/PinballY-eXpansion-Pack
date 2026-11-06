@@ -27,6 +27,8 @@ export const SHIPPED_SOUNDS = Object.freeze({
 const UNSHIPPED_SOUNDS = Object.freeze({
     // Played once when the Profile picker appears as the Startup Screen.
     profilePickerSoundFile: "",
+    // Played once when Avatar Choice shows, after Name Entry.
+    avatarChoiceSoundFile: "",
 });
 const SOUND_SETTINGS = [...Object.keys(SHIPPED_SOUNDS), ...Object.keys(UNSHIPPED_SOUNDS)];
 const NO_SOUNDS = Object.fromEntries(SOUND_SETTINGS.map(key => [key, ""]));

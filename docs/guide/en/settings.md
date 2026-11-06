@@ -55,6 +55,7 @@ ADD_ON_CLOCK=false
 | `CONFETTI_SOUND_FILE` | `assets\sounds\confetti.wav` | Sound played once when a shower of confetti starts. |
 | `FIREWORKS_SOUND_FILE` | `assets\sounds\fireworks.wav` | Sound played once when the Fireworks start. |
 | `PROFILE_PICKER_SOUND_FILE` | empty | Sound played once when PinballY starts on the Profile picker (`STARTUP_SCREEN=profilePicker`); none ships with the pack. |
+| `AVATAR_CHOICE_SOUND_FILE` | empty | Sound played once when Avatar Choice shows, after a new Profile's name is entered; none ships with the pack. |
 | `STARTUP_SCREEN` | `profilePicker` | What PinballY shows first: `profilePicker` (the "Change Player" carousel, then the Welcome Screen; skipped while the cabinet has fewer than two Profiles besides Guest), `welcome` (the Welcome Screen) or `wheel` (the bare wheel, the last player greeted). A screen whose feature is turned off gives way to the next one, from the carousel to the Welcome Screen to the wheel. |
 | `ACHIEVEMENT_TOAST_SECONDS` | `4` | Seconds an Achievement toast stays on screen (up to 60). |
 | `ACHIEVEMENT_TOAST_SCALE` | `1.0` | Size of the toast, from `0.5` to `3`. Raise it on a large screen. |

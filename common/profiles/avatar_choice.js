@@ -3,7 +3,7 @@
 // Name Entry just created takes one of the pack's readable portraits, copied
 // as its avatar.png by Select or Launch; Exit asks, on a panel, before keeping
 // the Default Avatar. Both hand back to the picker, as does having no portrait;
-// attract mode closes everything, copying nothing. Redrawn when the window resizes.
+// attract mode closes everything, copying nothing. Plays its sound as it shows; redrawn on a resize.
 // - Exit while still opening leaves at once, unasked: no choice can be lost yet.
 // - Moving only moves the Selection Marker: the portraits are drawn once, at opening.
 // - Swallows every button through "commandbuttondown" while open; a press already handled is not its own.
@@ -51,10 +51,15 @@ function readPortraits(host, folder) {
     return portraits;
 }
 
-// drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js).
-export function createAvatarChoice(host, { profileStore, drawingAhead }) {
+// drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js);
+// soundFile: played once as the screen shows, empty for none.
+export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile = "" }) {
     const { profiles: { avatarChoice: TEXT } } = lang;
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
+    // A sound that cannot play is logged and never stops the screen.
+    const playOpeningSound = safeHandler(SCRIPT_NAME, () => {
+        if (soundFile) host.playSound(soundFile);
+    });
     const windowWatch = createWindowWatch(host, SCRIPT_NAME);
     const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: Z_INDEX.backdrop - 2, drawingAhead });
     // The open screen, null when closed: the Profile's name, the portraits'
@@ -293,6 +298,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead }) {
                 setOpacity(0);
                 opening.logOpened({ profileName });
                 opening.fadeIn(setOpacity);
+                playOpeningSound();
                 // Only now, against what the backdrop measured: getting ready
                 // can outlast the watch's retries.
                 windowWatch.start(followWindow, shown.view);

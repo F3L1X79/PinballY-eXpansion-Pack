@@ -55,6 +55,7 @@ ADD_ON_CLOCK=false
 | `CONFETTI_SOUND_FILE` | `assets\sounds\confetti.wav` | Son joué une fois au début d'une pluie de confettis. |
 | `FIREWORKS_SOUND_FILE` | `assets\sounds\fireworks.wav` | Son joué une fois au début du feu d'artifice. |
 | `PROFILE_PICKER_SOUND_FILE` | vide | Son joué une fois quand PinballY démarre sur le carrousel « Changer de joueur » (`STARTUP_SCREEN=profilePicker`) ; aucun n'est fourni avec le pack. |
+| `AVATAR_CHOICE_SOUND_FILE` | vide | Son joué une fois quand le Choix de l'Avatar apparaît, après la saisie du nom d'un nouveau Profil ; aucun n'est fourni avec le pack. |
 | `STARTUP_SCREEN` | `profilePicker` | Ce que PinballY montre en premier : `profilePicker` (le carrousel « Changer de joueur », puis l'écran d'accueil ; sauté tant que la borne compte moins de deux Profils en plus d'Invité), `welcome` (l'écran d'accueil) ou `wheel` (la roue seule, le dernier joueur salué). Un écran dont la fonctionnalité est désactivée cède la place au suivant, du carrousel à l'écran d'accueil puis à la roue. |
 | `ACHIEVEMENT_TOAST_SECONDS` | `4` | Secondes d'affichage d'une annonce de Succès (60 au plus). |
 | `ACHIEVEMENT_TOAST_SCALE` | `1.0` | Taille de l'annonce, de `0.5` à `3` : à augmenter sur un grand écran. |
