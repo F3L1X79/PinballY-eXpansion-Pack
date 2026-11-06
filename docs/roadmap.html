@@ -222,7 +222,6 @@
         </div>
         <div class="cell">
           <a class="chip tr-share" href="#placed-layers"><b></b>Calques placés</a>
-          <a class="chip tr-profiles" href="#avatar-choice"><b></b>Choisir son Avatar</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
@@ -281,34 +280,6 @@
     </div>
 
     <ol class="queue">
-
-      <li draggable="true" tabindex="0" class="item tr-profiles" id="avatar-choice" data-track="profiles" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Choisir son Avatar à la création du Profile</h3>
-            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span><span class="tag">UI</span></div>
-          </div>
-          <p>Après la Name Entry, un nouvel écran, Avatar Choice, propose 24 portraits en grille façon « Character Select ». Les Profiles créés depuis la borne ne partagent plus la même image dans le Profile Picker. Ensuite, un Avatar ne change que depuis Windows. Grillé le 04/11/2026.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/425">Spec #425</a>, tickets #426 à #431 faits ; reste <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/432">#432, vérification sur la borne</a> ·Reporté du grill de « Créer un Profile depuis la borne », 02/11/2026 · Nouveaux termes Avatar Choice et Default Avatar</div>
-          <details>
-            <summary>Décisions du grill (8)</summary>
-            <ul>
-              <li>Galerie dédiée <code>assets/images/avatars/</code> : 24 portraits découpés des planches de <code>.scratch/new_profiles</code> (femmes, hommes, enfants), sans liseré ni bandeau beige. Pas de <code>default_scores</code>, pas de dossier <code>local\</code>, aucun déblocage, aucun filtre pour les Child Profiles, doublons permis.</li>
-              <li><code>OK</code> crée le Profile comme aujourd'hui, puis Avatar Choice s'ouvre. Select ou Launch sur un portrait le copie en <code>avatar.png</code>, sans confirmation, et revient au Profile Picker sur le nouveau Profile.</li>
-              <li>Exit ou l'Exit Button (flèche de retour) ouvrent, dans l'écran lui-même, un petit panneau « Garder l'Avatar par défaut ? » : « Choisir un Avatar », déjà sélectionné, puis « Garder l'Avatar par défaut ». Pas de Drawn Menu : ces menus sont dessinés sous le Profile Picker et la Name Entry. Exit dans ce panneau revient à la grille. Le mode attract ferme tout sans rien demander et laisse le Default Avatar.</li>
-              <li>Grille serrée sous le titre, dans le panneau Steamball, sans grand portrait : 8 × 3 en fenêtre large, 4 × 6 en fenêtre haute. Le Selection Marker part du premier portrait et la grille reboucle. Le nom du Profile s'affiche près du titre, avec une ligne : « Vous pourrez le remplacer depuis Windows, au prochain démarrage de PinballY ».</li>
-              <li>Le choix n'est proposé qu'à la création : ni Guest, ni les Profiles existants, ni ceux créés depuis Windows ne voient cet écran.</li>
-              <li><code>avatar.jpg</code> passe avant <code>avatar.png</code>, pour qu'une photo déposée l'emporte toujours sur la copie.</li>
-              <li>Tous les Profiles sans image, sauf Guest, passent à la silhouette dès la mise à jour, sans rattrapage. La silhouette devient <code>default_avatar.png</code> ; la casquette reste dans <code>profiles/guest/avatar.png</code>, déjà livré avec le pack.</li>
-              <li>Image illisible : retirée de la grille et journalisée. Aucune image lisible : écran sauté et journalisé. Copie ratée : retour au Profile Picker avec le Default Avatar, journalisé.</li>
-            </ul>
-            <p class="ctx">À vérifier sur la borne : qu'un <code>avatar.png</code> remplacé pendant que PinballY tourne n'est redessiné qu'au redémarrage (déduit du code), et le temps d'ouverture avec 24 portraits. Avatar Choice passe avant <a href="#drawn-screen-controls">Commandes communes</a> : il suit le modèle de la Name Entry, et un commentaire sur #418 en fait le huitième écran à migrer.</p>
-          </details>
-        </div>
-      </li>
 
       <li draggable="true" tabindex="0" class="item tr-share" id="placed-layers" data-track="share" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
@@ -689,7 +660,7 @@
           </div>
           <p>Après une action importante, un gros logo néon clignote au milieu de l'écran avec « Profil créé » ou « Profil réinitialisé », puis disparaît seul au bout de quelques secondes.</p>
           <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (le néon, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part du calque non bloquant de <code>common/achievements/achievement_toast.js</code> et de <code>common/menus/profile_reset_menu.js</code>. Après <a href="#placed-layers">Calques placés (n° <span data-ref="placed-layers"></span>)</a> et <a href="#avatar-choice">Choisir son Avatar (n° <span data-ref="avatar-choice"></span>)</a>, qui change la fin de la création d'un Profile</div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (le néon, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part du calque non bloquant de <code>common/achievements/achievement_toast.js</code> et de <code>common/menus/profile_reset_menu.js</code>. Après <a href="#placed-layers">Calques placés (n° <span data-ref="placed-layers"></span>)</a>. La création d'un Profile finit désormais par Avatar Choice</div>
           <details>
             <summary>Questions ouvertes (4)</summary>
             <ul>
