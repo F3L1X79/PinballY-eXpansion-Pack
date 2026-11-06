@@ -16,6 +16,7 @@ import { AVATAR_CHOICE_Z_INDEX as AVATAR_Z } from "../../common/profiles/avatar_
 import config from "../../common/core/config.js";
 
 export const PROFILES_FOLDER = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
+export const DEFAULT_AVATAR = "C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images\\default_avatar.png";
 const ERASE_ARROW = String.fromCharCode(0x2190);
 // The carousel's background, its Avatars, then the gold frame and names.
 const PICKER_Z_RANGE = [6500, 6502];

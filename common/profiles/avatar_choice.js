@@ -4,6 +4,7 @@
 // Select or Launch copies it as the Profile's avatar.png; Exit asks, on a panel
 // over the grid, before keeping the Default Avatar. Both hand back to the
 // picker; attract mode closes everything without asking, copying nothing.
+// - Exit while still opening leaves at once, unasked: no choice can be lost yet.
 // - Moving only moves the Selection Marker: the portraits are drawn once, at opening.
 // - Swallows every button through "commandbuttondown" while open; a press already handled is not its own.
 // - Registered before the Profile picker's listener, which then sees each press as handled.

@@ -12,10 +12,8 @@ import { exitButtonTooltipOn } from "../support/button_hints_reader.js";
 import { AVATAR_CHOICE_Z_INDEX } from "../../common/profiles/avatar_choice_painter.js";
 import {
     startOnWheel, press, step, highlighted, openNameEntry, createThroughNameEntry, pickerAvatars, isAvatarChoiceOpen, currentPortrait,
-    isConfirmationOpen, currentConfirmationChoice, keepDefaultAvatar, PROFILES_FOLDER,
+    isConfirmationOpen, currentConfirmationChoice, keepDefaultAvatar, PROFILES_FOLDER, DEFAULT_AVATAR,
 } from "./name_entry_scenario.js";
-
-const DEFAULT_AVATAR = "C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images\\default_avatar.png";
 
 test("Exit and the Exit Button leave Avatar Choice with the Default Avatar, once confirmed", async () => {
     const { fake, lang, store, openPicker } = await startOnWheel({ profiles: ["Alice"], activeProfile: "Alice" });
