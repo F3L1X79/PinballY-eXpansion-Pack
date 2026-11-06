@@ -34,7 +34,7 @@ import { drawLevelPip, levelPipOn, drawAvatarFrame, avatarFrameSide, AVATAR_FRAM
 import { getProfileRewards } from "../common/avatar_frames/profile_rewards.js";
 import { createNavigationSound } from "../common/core/navigation_sound.js";
 import { createWindowWatch, readViewSize, sameSize, sizeText } from "../common/core/window_watch.js";
-import { createPlacedLayers } from "../common/drawing/placed_layers.js";
+import { createPlacedLayers, hideLayer, placeAligned } from "../common/drawing/placed_layers.js";
 import config from "../common/core/config.js";
 
 const SCRIPT_NAME = "ProfilePicker";
@@ -152,8 +152,11 @@ export default function init() {
         framed: { layer: hiddenLayer(TOP_Z_INDEX), side: FRAMED_GOLD_FRAME_SIDE, isDrawn: false },
     };
     const badgeLayer = host.createDrawingLayer(BADGE_Z_INDEX);
-    badgeLayer.setScale({ ySpan: BADGE.height / BADGE_REFERENCE_HEIGHT });
-    badgeLayer.setPos(0, 0, "top right");
+    const showBadge = () => {
+        placeAligned(badgeLayer, { ySpan: BADGE.height / BADGE_REFERENCE_HEIGHT }, 0, 0, "top right");
+        badgeLayer.alpha = 1;
+    };
+    showBadge();
 
     // The slots shown (the Profiles, then the "+" for whoever sees it) and
     // the highlighted one's index; null when closed.
@@ -805,14 +808,14 @@ export default function init() {
     // A table launched from a native menu before the startup carousel
     // showed: the player already chose, so it must not show after the game.
     host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
-        badgeLayer.alpha = 0;
+        hideLayer(badgeLayer);
         startupGreetingPending = false;
         stopGreeting();
         if (isStartupPending && !slots) dropStartup();
     }));
     // Fires back on the wheel, after a game, a menu or a dialog.
     host.on("wheelmode", safeHandler(SCRIPT_NAME, () => {
-        badgeLayer.alpha = 1;
+        if (badgeLayer.alpha === 0) showBadge();
         greetAtStartupIfFree();
     }));
     // No "wheelmode" follows the close of a Drawn Menu or a drawn screen.

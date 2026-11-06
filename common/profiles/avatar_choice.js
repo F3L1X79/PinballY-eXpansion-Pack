@@ -19,6 +19,7 @@ import { createWindowWatch, readViewSize, sameSize, sizeText } from "../core/win
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
 import { createSelectionMarker } from "../drawing/selection_marker.js";
 import { createScreenOpening } from "../drawing/screen_opening.js";
+import { createPlacedLayers } from "../drawing/placed_layers.js";
 import { drawBackdrop, drawExitButton, exitTooltipRectOf, drawExitTooltip, drawButtonHintsBand, EXIT_BUTTON_LOOK } from "../drawing/steamball_drawing.js";
 import { buttonHintGroupsOf, exitButtonWordOf, FLIPPER_HINT } from "../drawing/button_hints.js";
 import { EXIT_BUTTON, stepThroughExitButton } from "../drawing/exit_button_loop.js";
@@ -62,6 +63,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
     });
     const windowWatch = createWindowWatch(host, SCRIPT_NAME);
     const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: Z_INDEX.backdrop - 2, drawingAhead });
+    const placed = createPlacedLayers(host, { referenceHeight: REFERENCE_HEIGHT });
     // The open screen, null when closed: the Profile's name, the portraits'
     // paths, the selected portrait's index (or EXIT_BUTTON), what closing
     // hands back to, the window it is laid out for and its layers (null
@@ -69,23 +71,22 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
     let shown = null;
 
     // Draws the backdrop, which measures the window the layout depends on.
-    // A draw that throws leaves no window-sized layer behind, which PinballY
-    // would fill on every frame.
+    // A draw that throws leaves no layer behind. Never placed: it shows over
+    // the whole window.
     function drawBackdropLayer() {
         const view = readViewSize(host, SCRIPT_NAME);
-        const layer = host.createDrawingLayer(Z_INDEX.backdrop);
-        layer.alpha = 0;
+        const layer = placed.create(Z_INDEX.backdrop);
         let measured = null;
         try {
             layer.draw(dc => {
                 const size = dc.getSize();
-                const referenceWidth = REFERENCE_HEIGHT * size.width / size.height;
-                const geometry = layoutAvatarChoice(referenceWidth);
+                placed.measure(size);
+                const geometry = layoutAvatarChoice(placed.referenceWidth);
                 drawBackdrop(dc, size, REFERENCE_HEIGHT, geometry.panel);
-                measured = { size, referenceWidth, geometry };
+                measured = { size, referenceWidth: placed.referenceWidth, geometry };
             });
         } catch (error) {
-            host.removeDrawingLayer(layer);
+            placed.remove(layer);
             throw error;
         }
         return { layer, view, ...measured };
@@ -95,19 +96,13 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
         Object.assign(shown, { view, size, referenceWidth, geometry, backdrop: layer });
     }
 
-    function place(layer, rect) {
-        layer.setScale({ ySpan: rect.h / REFERENCE_HEIGHT });
-        layer.setPos((rect.x + rect.w / 2) / shown.referenceWidth - 0.5, 0.5 - (rect.y + rect.h / 2) / REFERENCE_HEIGHT);
-    }
-
     // A hidden layer placed on rect and drawn in its own coordinates, kept in
     // layers before drawing, so a draw that throws leaves nothing behind once closed.
     function drawPiece(zIndex, rect, draw, layers = shown.layers) {
-        const layer = host.createDrawingLayer(zIndex);
+        const layer = placed.create(zIndex);
         layers.push(layer);
-        layer.alpha = 0;
         layer.clear(STEAMBALL_COLORS.transparent);
-        place(layer, rect);
+        placed.place(layer, rect);
         layer.draw(draw, rect.w, rect.h);
         return layer;
     }
@@ -139,20 +134,27 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
 
     const selectedRect = () => (shown.selected === EXIT_BUTTON ? shown.geometry.exitButton : portraitRectOf(shown.geometry, shown.selected));
 
+    function showWithOpacity(layers, opacity) {
+        for (const layer of layers) {
+            placed.show(layer);
+            layer.alpha = opacity;
+        }
+    }
+
     // Each frame of the fade in, and each move. The Exit Button's tooltip
     // shows only while it is selected; the confirmation, when shown, hides it
     // and takes the marker's place, the grid's set aside under it.
     function setOpacity(opacity) {
         shown.opacity = opacity;
-        shown.backdrop.alpha = opacity;
-        for (const layer of shown.layers) layer.alpha = opacity;
-        if (shown.selected !== EXIT_BUTTON || shown.confirmation) shown.tooltip.alpha = 0;
+        showWithOpacity([shown.backdrop, ...shown.layers.filter(layer => layer !== shown.tooltip)], opacity);
+        if (shown.selected === EXIT_BUTTON && !shown.confirmation) showWithOpacity([shown.tooltip], opacity);
+        else if (placed.isShown(shown.tooltip)) placed.hide(shown.tooltip);
         const { confirmation } = shown;
         if (!confirmation) {
             shown.marker.setOpacity(opacity);
             return;
         }
-        for (const layer of confirmation.layers) layer.alpha = opacity;
+        showWithOpacity(confirmation.layers, opacity);
         if (confirmation.marker) confirmation.marker.setOpacity(opacity);
     }
 
@@ -160,7 +162,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
         const { marker, layers } = shown.confirmation;
         shown.confirmation = null;
         if (marker) marker.remove();
-        for (const layer of layers) host.removeDrawingLayer(layer);
+        for (const layer of layers) placed.remove(layer);
     }
 
     function placeMarker() {
@@ -171,8 +173,8 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
     function removeLayers() {
         if (shown.confirmation) removeConfirmation();
         if (shown.marker) shown.marker.remove();
-        if (shown.backdrop) host.removeDrawingLayer(shown.backdrop);
-        for (const layer of shown.layers) host.removeDrawingLayer(layer);
+        if (shown.backdrop) placed.remove(shown.backdrop);
+        for (const layer of shown.layers) placed.remove(layer);
         Object.assign(shown, { marker: null, backdrop: null, layers: [], tooltip: null });
     }
 
@@ -187,7 +189,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
         try {
             backdrop = drawBackdropLayer();
             if (sameSize(backdrop.size, previousSize)) {
-                host.removeDrawingLayer(backdrop.layer);
+                placed.remove(backdrop.layer);
                 return false;
             }
             removeLayers();

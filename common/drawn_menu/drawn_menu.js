@@ -22,7 +22,7 @@ import { getDrawingAhead } from "../core/drawing_ahead.js";
 import { createButtonSound, createNavigationSound } from "../core/navigation_sound.js";
 import { DRAWN_MENU_IMAGES, DRAWN_MENU_IMAGES_FOLDER } from "./drawn_menu_images.js";
 import { addStyledText } from "../drawing/steamball_drawing.js";
-import { createHiddenLayer, hideLayer, placementOf } from "../drawing/placed_layers.js";
+import { createHiddenLayer, hideLayer, placementOf, WINDOW_SPAN } from "../drawing/placed_layers.js";
 import {
     DRAWN_MENU_Z_INDEX, DRAWN_MENU_LOOK, ROW_KIND, pointsOf, computeGeometry, menuScaleOf, drawTexts, drawSelectedText, drawBackdrop, selectionSize,
 } from "./drawn_menu_painter.js";
@@ -396,7 +396,7 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
         drawSelectedTextLayer();
         placeSelectedText();
         placeOutline(selectedCenterY());
-        backdrop.setScale({ xSpan: 1, ySpan: 1 });
+        backdrop.setScale(WINDOW_SPAN);
         backdrop.setPos(0, 0);
         shown.layers = [
             ...placeStack(panel, geometry.panel),
