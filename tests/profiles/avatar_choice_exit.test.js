@@ -2,7 +2,7 @@
 // Avatar Choice through main.js, left without a portrait: Exit, or Select
 // on the Exit Button, then "Keep the default Avatar" on the confirmation
 // bring back the picker on the new Profile, wearing the Default Avatar,
-// with nothing copied; a held Exit never goes through the confirmation.
+// with nothing copied.
 // ============================================================
 
 import { test } from "node:test";
@@ -21,22 +21,16 @@ test("Exit and the Exit Button leave Avatar Choice with the Default Avatar, once
     const TEXT = lang.profiles.avatarChoice;
     fake.addFile(DEFAULT_AVATAR, "default");
 
-    // Exit, held: once the confirmation shows, the held Exit and Select do nothing more.
+    // Exit, then Keep the default Avatar.
     await openPicker();
     step(fake, "Next");
     openNameEntry(fake);
     createThroughNameEntry(fake, "Max");
     assert.equal(isAvatarChoiceOpen(fake), true);
-    press(fake, "Exit", true);
-    assert.equal(isConfirmationOpen(fake), false, "a held Exit counts once, on the press that started it");
     assert.equal(press(fake, "Exit").defaultPrevented, true);
     assert.equal(isConfirmationOpen(fake), true, "Exit asks to confirm");
-    press(fake, "Exit", true);
-    assert.equal(isConfirmationOpen(fake), true, "the held Exit does not go through the confirmation");
     press(fake, "Next");
     assert.equal(currentConfirmationChoice(fake), TEXT.keepDefault);
-    press(fake, "Select", true);
-    assert.equal(isAvatarChoiceOpen(fake), true, "a held Select counts once");
     assert.equal(press(fake, "Select").defaultPrevented, true);
     assert.equal(isAvatarChoiceOpen(fake), false, "keeping the Default Avatar leaves");
     assert.equal(isConfirmationOpen(fake), false);

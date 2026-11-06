@@ -6,8 +6,7 @@
 // attract mode closes everything, copying nothing. Plays its sound as it shows; redrawn on a resize.
 // - Exit while still opening leaves at once, unasked: no choice can be lost yet.
 // - Moving only moves the Selection Marker: the portraits are drawn once, at opening.
-// - Swallows every button through "commandbuttondown" while open; a press already handled is not its own.
-// - Registered before the Profile picker's listener, which then sees each press as handled.
+// - Buttons and attract mode, its confirmation's too, go through the Drawn Screen controls, set up before the Profile picker's listener.
 // - Opens through the shared screen opening (docs/adr/0014).
 // ============================================================
 
@@ -53,8 +52,9 @@ function readPortraits(host, folder) {
 }
 
 // drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js);
+// drawnScreenControls: the shared Drawn Screen controls (common/core/drawn_screen_controls.js);
 // soundFile: played once as the screen shows, empty for none.
-export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile = "" }) {
+export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScreenControls, soundFile = "" }) {
     const { profiles: { avatarChoice: TEXT } } = lang;
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
     // A sound that cannot play is logged and never stops the screen.
@@ -64,10 +64,13 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
     const windowWatch = createWindowWatch(host, SCRIPT_NAME);
     const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: Z_INDEX.backdrop - 2, drawingAhead });
     const placed = createPlacedLayers(host, { referenceHeight: REFERENCE_HEIGHT });
+    // Here, before the Profile picker adds its own button listener.
+    const controls = drawnScreenControls.register(SCRIPT_NAME);
     // The open screen, null when closed: the Profile's name, the portraits'
     // paths, the selected portrait's index (or EXIT_BUTTON), what closing
-    // hands back to, the window it is laid out for and its layers (null
-    // marker while getting ready), and the Exit confirmation while it shows.
+    // hands back to, its place among the Drawn Screen controls, the window it
+    // is laid out for and its layers (null marker while getting ready), and
+    // the Exit confirmation while it shows.
     let shown = null;
 
     // Draws the backdrop, which measures the window the layout depends on.
@@ -206,15 +209,6 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
         return true;
     }
 
-    // Closes the screen or gives up the one getting ready; nothing handed back.
-    function close() {
-        if (!shown) return;
-        windowWatch.stop();
-        opening.remove();
-        removeLayers();
-        shown = null;
-    }
-
     // Exit, or the Exit Button: a small panel drawn over the grid asks to
     // confirm, "Choose an Avatar" current unless a redraw keeps another.
     // Drawn at once, as it is small.
@@ -248,24 +242,19 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
         setOpacity(shown.opacity);
     }
 
-    // On the confirmation: Next and Prev go round both choices.
-    function confirmationButton(command) {
-        const { confirmation } = shown;
-        if (command === "Next" || command === "Prev") {
-            navigationSound.play();
-            confirmation.selected = confirmation.selected === CHOICE.CHOOSE_AVATAR ? CHOICE.KEEP_DEFAULT : CHOICE.CHOOSE_AVATAR;
-            confirmation.marker.moveTo(confirmation.layout.choices[confirmation.selected]);
-        } else if (command === "Exit") {
-            backToGrid();
-        } else if (command === "Select" || command === "Launch") {
-            if (confirmation.selected === CHOICE.KEEP_DEFAULT) leave();
-            else backToGrid();
-        }
+    // Run by the Drawn Screen controls on every close, attract mode included.
+    function remove() {
+        windowWatch.stop();
+        opening.remove();
+        removeLayers();
+        shown = null;
     }
 
+    // A choice, Exit or a failed draw: closed, then handed back to the picker.
     function leave() {
-        const { onClosed } = shown;
-        close();
+        if (!shown) return;
+        const { onClosed, controlled } = shown;
+        controlled.close();
         onClosed();
     }
 
@@ -287,6 +276,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
         navigationSound.load();
         shown = {
             profileName, portraits, onClosed, selected: 0, isPreparing: true, opacity: 0,
+            controlled: controls.open({ onMove: move, onChoose: choose, onExit: exit, close: remove }),
             view: null, size: null, referenceWidth: 0, geometry: null, backdrop: null, layers: [], tooltip: null, marker: null, confirmation: null,
         };
         const pending = [() => useBackdrop(drawBackdropLayer()), ...pieceSteps()];
@@ -296,6 +286,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
         }, {
             onDone: () => {
                 shown.isPreparing = false;
+                shown.controlled.ready();
                 placeMarker();
                 setOpacity(0);
                 opening.logOpened({ profileName });
@@ -310,16 +301,33 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
         });
     }
 
-    // direction: 1 for Next, -1 for Prev, through the Exit Button then each portrait.
+    // direction: 1 for Next, -1 for Prev, through the Exit Button then each
+    // portrait; on the confirmation, round both choices.
     function move(direction) {
         navigationSound.play();
+        const { confirmation } = shown;
+        if (confirmation) {
+            confirmation.selected = confirmation.selected === CHOICE.CHOOSE_AVATAR ? CHOICE.KEEP_DEFAULT : CHOICE.CHOOSE_AVATAR;
+            confirmation.marker.moveTo(confirmation.layout.choices[confirmation.selected]);
+            return;
+        }
         shown.selected = stepThroughExitButton(shown.selected, direction, shown.portraits.length);
         shown.marker.moveTo(selectedRect());
         setOpacity(shown.opacity);
     }
 
+    // Before the grid shows there is no choice to lose: Exit leaves at once.
+    function exit() {
+        if (shown.isPreparing) leave();
+        else if (shown.confirmation) backToGrid();
+        else askToConfirm();
+    }
+
     // A portrait is taken at once; a copy that fails keeps the Default Avatar.
     function choose() {
+        const { confirmation } = shown;
+        if (confirmation && confirmation.selected === CHOICE.KEEP_DEFAULT) return leave();
+        if (confirmation) return backToGrid();
         if (shown.selected === EXIT_BUTTON) return askToConfirm();
         try {
             profileStore.giveAvatar(shown.profileName, shown.portraits[shown.selected]);
@@ -329,30 +337,6 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, soundFile
         }
         return leave();
     }
-
-    // Fires on every mapped button press; drives the screen while it is open.
-    host.on("commandbuttondown", safeHandler(SCRIPT_NAME, ev => {
-        // Already handled: Name Entry's OK opened the screen within the same press.
-        if (!shown || ev.defaultPrevented) return;
-        // Swallowed first, so a failing copy still never reaches the wheel.
-        ev.preventDefault();
-        if ((ev.command === "Next" || ev.command === "Prev") && !shown.confirmation) {
-            if (!shown.isPreparing) move(ev.command === "Next" ? 1 : -1);
-            return;
-        }
-        // A held button counts once, flippers included on the confirmation's two choices.
-        if (ev.repeat) return;
-        if (shown.confirmation) confirmationButton(ev.command);
-        // Before the grid shows there is no choice to lose: Exit leaves at once.
-        else if (ev.command === "Exit" && shown.isPreparing) leave();
-        else if (ev.command === "Exit") askToConfirm();
-        // Launch is the plunger, which selects in PinballY's own menus too.
-        else if ((ev.command === "Select" || ev.command === "Launch") && !shown.isPreparing) choose();
-    }));
-
-    // Fires when the cabinet sits idle: the screen must not stay over attract
-    // mode nor keep the buttons. Nothing is copied; the picker closes itself.
-    host.on("attractmodestart", safeHandler(SCRIPT_NAME, close));
 
     return { open };
 }

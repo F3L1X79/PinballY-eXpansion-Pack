@@ -43,11 +43,9 @@ test("the confirmation asks before keeping the Default Avatar, and gives the gri
     assert.deepEqual(DRAWN_MENU_Z_INDEX, { backdrop: 6200, panel: 6201, texts: 6202, selection: 6203, selectedText: 6204, glass: 6205 },
         "the Drawn Menus keep their range");
 
-    // The flippers go round both choices; a held flipper counts once.
+    // The flippers go round both choices.
     press(fake, "Next");
     assert.equal(currentConfirmationChoice(fake), TEXT.keepDefault);
-    press(fake, "Next", true);
-    assert.equal(currentConfirmationChoice(fake), TEXT.keepDefault, "a held flipper counts once");
     press(fake, "Next");
     assert.equal(currentConfirmationChoice(fake), TEXT.chooseAvatar);
 

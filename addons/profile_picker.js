@@ -134,7 +134,9 @@ export default function init() {
     // Before this Add-on's own button listener, which then sees each press
     // Name Entry and Avatar Choice took as handled.
     const nameEntry = createNameEntry(host, { profileStore, drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls() });
-    const avatarChoice = createAvatarChoice(host, { profileStore, drawingAhead: getDrawingAhead(), soundFile: config.avatarChoiceSoundFile });
+    const avatarChoice = createAvatarChoice(host, {
+        profileStore, drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls(), soundFile: config.avatarChoiceSoundFile,
+    });
     // Every carousel and greeting layer, in the window's layout pixels; the
     // overlays are never placed, so they show at the window's size.
     const placed = createPlacedLayers(host);
