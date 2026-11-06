@@ -4,7 +4,6 @@
 
 Voici ce que nous envisageons pour la suite du pack. Rien n'est promis : les projets évoluent, et certaines de ces idées ne verront peut-être jamais le jour.
 
-- **Choisir son Avatar** : quand vous créez un Profil sur la borne, choisissez l'un des 24 portraits au lieu de l'Avatar par défaut.
 - **Notes, favoris et tables masquées propres à chaque Profil**, puis la note moyenne de la maison pour chaque table.
 - **Scores en ligne** : un onglet au tableau des meilleurs scores, avec le n° 1 mondial du LeaderBoard de PINemHi, puis le meilleur score de la maison.
 - **Mission du foyer** : un objectif par semaine pour toute la maison, sans classement : on réussit ou on échoue ensemble, et même le joueur le moins fort aide.

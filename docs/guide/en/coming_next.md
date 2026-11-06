@@ -4,7 +4,6 @@
 
 Here is what we are thinking about for the pack's future. Nothing is promised: plans change, and some of these ideas may never ship.
 
-- **Choosing your Avatar**: when you create a Profile on the cabinet, pick one of 24 portraits instead of the default Avatar.
 - **Ratings, favourites and hidden tables for each Profile**, then the household's average rating of each table.
 - **Online scores**: a tab on the High Score Board with the world number one from the PINemHi LeaderBoard, then the household's best score.
 - **Household Mission**: one goal a week for the whole household, with no ranking: you win or lose together, and even the least skilled player helps.
