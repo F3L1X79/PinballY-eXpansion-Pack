@@ -147,6 +147,7 @@ export default function init() {
         drawingAhead: getDrawingAhead(),
         drawnScreenControls: getDrawnScreenControls(),
         hasCollectionMastery: config.addOns.tableMastery !== false,
+        highScores: getEnabledHighScores(),
     });
     const profileStats = createProfileStats(createPinballYHost(), {
         profileStore,

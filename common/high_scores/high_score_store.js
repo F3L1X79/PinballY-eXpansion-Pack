@@ -46,7 +46,16 @@ export function createHighScoreStore(host, profileStore) {
     const data = isRecord(saved) && isRecord(saved.tables) && Array.isArray(saved.highScores)
         ? saved
         : { version: RECORD_VERSION, tables: {}, highScores: [] };
-    const save = () => profileStore.saveCabinetFile(RECORD_NAME, data);
+    // Called after every save, even a failed one: what the readers see
+    // changed already (a board, a High Score or a reset).
+    const savedListeners = [];
+    const save = () => {
+        try {
+            profileStore.saveCabinetFile(RECORD_NAME, data);
+        } finally {
+            savedListeners.forEach(listener => listener());
+        }
+    };
 
     const knownBoardOf = (configId) => {
         const entry = data.tables[configId];
@@ -308,6 +317,8 @@ export function createHighScoreStore(host, profileStore) {
             save();
         },
         onCredited(listener) { creditedListeners.push(listener); },
+        // listener(): after any change of the file is saved.
+        onSaved(listener) { savedListeners.push(listener); },
     };
 }
 

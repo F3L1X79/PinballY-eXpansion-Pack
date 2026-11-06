@@ -4,7 +4,7 @@
 // each line in gold. Select on a column opens that Profile's Stats
 // read-only. Exit calls the return given to open().
 // Opens directly, not through the wheel dialog module: the player asked for it.
-// - Read again on each opening, one Profile per step (docs/adr/0014).
+// - Each Profile's stats kept for the session, read again (one per step, docs/adr/0014) once they could differ.
 // - Its buttons and attract mode go through the Drawn Screen controls.
 // - Past five columns, they glide sideways to keep the marker in view.
 // - isOpen() and onClosed() let the wheel dialogs wait for it.
@@ -41,14 +41,41 @@ const GLIDE_SNAP_PX = 0.5;
 // hasCollectionMastery: false without the Table Mastery Add-on, which
 // takes the Collection Mastery line away; drawingAhead: the shared drawing
 // ahead (common/core/drawing_ahead.js), which runs the opening;
-// drawnScreenControls: the shared Drawn Screen controls (common/core/drawn_screen_controls.js).
+// drawnScreenControls: the shared Drawn Screen controls (common/core/drawn_screen_controls.js);
+// highScores: the High Score store, whose saves change the boards (null: none).
 export function createHouseholdStats(host, {
-    profileStore, readStats, openProfileStats, drawingAhead, drawnScreenControls, profileRewards = null, hasCollectionMastery = true,
+    profileStore, readStats, openProfileStats, drawingAhead, drawnScreenControls, profileRewards = null, hasCollectionMastery = true, highScores = null,
 }) {
     const { profileStats: TEXT } = lang;
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
     const log = message => host.log(`[${SCRIPT_NAME}] ${message}`);
     const controls = drawnScreenControls.register(SCRIPT_NAME);
+
+    // Each Profile's stats and worn frame as last read ({ stats, framePath }),
+    // by lower-case name, kept for the session and thrown away as soon as a
+    // value shown could differ: never older than its Profile Stats.
+    const kept = new Map();
+    // The day and the visible tables every kept value was read under.
+    let keptUnder = null;
+    const forgetAll = () => kept.clear();
+    // Fires after any write to a Profile's files: a Play, a Notified Unlock, a frame worn, a reset, a mark.
+    profileStore.onUpdate(safeHandler(SCRIPT_NAME, profileName => { kept.delete(profileName.toLowerCase()); }));
+    // The active Profile's Achievements are counted live, the others' from their Notified ones.
+    profileStore.onSwitch(safeHandler(SCRIPT_NAME, forgetAll));
+    // Fires on table exit: the game may change anyone's boards or the active Profile's live count.
+    host.on("gameover", safeHandler(SCRIPT_NAME, forgetAll));
+    // The boards change after the game too, once read, and outside a Play.
+    if (highScores) highScores.onSaved(safeHandler(SCRIPT_NAME, forgetAll));
+
+    // What the Daily Streak, the Collection Mastery and the Achievements
+    // depend on beyond a Profile's files: the day and every visible table
+    // with what the Achievements read of it.
+    function readingConditions() {
+        const now = host.now();
+        const tables = host.getVisibleTables()
+            .map(game => [game.configId, game.manufacturer, game.year, (game.categories || []).join(",")].join("|"));
+        return [`${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`, ...tables].join("\n");
+    }
 
     // Every Profile but Guest, in the Profile picker's order, from either
     // of the store's lists: Guest always comes first in both.
@@ -189,19 +216,39 @@ export function createHouseholdStats(host, {
         // has measured the window.
         const drawPiece = (zIndex, rect, draw, into) => drawn.draw(() => drawn.drawPiece(zIndex, rect(), draw, into));
 
-        // Queued once the Profiles are known: one step per Profile read, its
-        // stats and worn frame sharing one read of its profile.json.
+        // Queued once the Profiles are known: one step per Profile not kept,
+        // its stats and worn frame sharing one read of its profile.json.
+        // A Profile no longer listed is forgotten, so one re-created under
+        // its name is read afresh.
         function queueSteps(entries) {
+            const conditions = readingConditions();
+            if (conditions !== keptUnder) forgetAll();
+            keptUnder = conditions;
+            const listed = new Set(entries.map(({ profile }) => profile.name.toLowerCase()));
+            for (const key of [...kept.keys()]) if (!listed.has(key)) kept.delete(key);
             const allStats = [];
             const framePaths = [];
-            profileCount = entries.length;
-            for (const { profile } of entries) {
+            entries.forEach(({ profile }, index) => {
+                const key = profile.name.toLowerCase();
+                const keep = ({ stats, framePath }) => {
+                    allStats[index] = stats;
+                    framePaths[index] = framePath;
+                };
+                if (kept.has(key)) {
+                    keep(kept.get(key));
+                    return;
+                }
+                profileCount++;
                 drawn.read(() => profileStore.withCachedReads(() => {
-                    allStats.push(readStats(profile.name, timeReader));
-                    framePaths.push(profileRewards
-                        ? timeReader("worn Avatar Frame", () => profileRewards.wornImageOf(profile.name, AVATAR_FRAME_WIDTH)) : null);
+                    const read = {
+                        stats: readStats(profile.name, timeReader),
+                        framePath: profileRewards
+                            ? timeReader("worn Avatar Frame", () => profileRewards.wornImageOf(profile.name, AVATAR_FRAME_WIDTH)) : null,
+                    };
+                    kept.set(key, read);
+                    keep(read);
                 }));
-            }
+            });
             drawn.read(() => { screen = describeScreen(entries, allStats, framePaths, exitButtonLookOf(onBack !== null)); });
             drawn.draw(() => drawn.drawBackdrop((dc, size, referenceWidth) => {
                 geometry = layoutHouseholdStats(referenceWidth, screen.columns.length, screen.labels.length);
