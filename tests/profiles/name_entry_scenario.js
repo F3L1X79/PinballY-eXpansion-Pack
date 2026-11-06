@@ -33,12 +33,17 @@ const markedProfile = marks => JSON.stringify({ version: 1, plays: {}, notified:
 
 // The pack's portraits of Avatar Choice, by number (1 for avatar_choice_01.png).
 export const PORTRAIT_COUNT = 24;
-export const portraitOf = number => `C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images\\avatar_choice\\avatar_choice_${String(number).padStart(2, "0")}.png`;
+export const PORTRAITS_FOLDER = "C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images\\avatar_choice";
+export const portraitOf = number => `${PORTRAITS_FOLDER}\\avatar_choice_${String(number).padStart(2, "0")}.png`;
+const ALL_PORTRAITS = Array.from({ length: PORTRAIT_COUNT }, (_, index) => index + 1);
 
-// profiles: the Household's folders; admins, children: those of them marked.
-export async function startOnWheel({ profiles = ["Alice", "Bob"], admins = [], children = [], activeProfile = "Bob", language = "en", fakeOptions = {} } = {}) {
+// profiles: the Household's folders; admins, children: those of them
+// marked. portraits: the numbers of the portraits seeded.
+export async function startOnWheel({
+    profiles = ["Alice", "Bob"], admins = [], children = [], activeProfile = "Bob", language = "en", portraits = ALL_PORTRAITS, fakeOptions = {},
+} = {}) {
     const fake = createFakePinballYHost(fakeOptions);
-    for (let number = 1; number <= PORTRAIT_COUNT; number++) fake.addFile(portraitOf(number), `portrait ${number}`);
+    for (const number of portraits) fake.addFile(portraitOf(number), `portrait ${number}`);
     for (const name of profiles) fake.addFolder(`${PROFILES_FOLDER}\\${name}`);
     for (const name of admins) fake.addFile(`${PROFILES_FOLDER}\\${name}\\profile.json`, markedProfile({ isAdmin: true }));
     for (const name of children) fake.addFile(`${PROFILES_FOLDER}\\${name}\\profile.json`, markedProfile({ isChild: true }));

@@ -1,9 +1,9 @@
 // ============================================================
 // Avatar Choice: the drawn screen, over the Profile picker, where a Profile
-// Name Entry just created takes one of the pack's portraits, copied as its
-// avatar.png by Select or Launch; Exit asks, on a panel over the grid, before
-// keeping the Default Avatar. Both hand back to the picker; attract mode
-// closes everything, copying nothing. Redrawn in place when the window resizes.
+// Name Entry just created takes one of the pack's readable portraits, copied
+// as its avatar.png by Select or Launch; Exit asks, on a panel, before keeping
+// the Default Avatar. Both hand back to the picker, as does having no portrait;
+// attract mode closes everything, copying nothing. Redrawn when the window resizes.
 // - Exit while still opening leaves at once, unasked: no choice can be lost yet.
 // - Moving only moves the Selection Marker: the portraits are drawn once, at opening.
 // - Swallows every button through "commandbuttondown" while open; a press already handled is not its own.
@@ -13,6 +13,7 @@
 
 import lang from "../core/i18n.js";
 import { safeHandler, logHandlerError } from "../core/safe_handler.js";
+import { logError } from "../core/error_log.js";
 import { createNavigationSound } from "../core/navigation_sound.js";
 import { createWindowWatch, readViewSize, sameSize, sizeText } from "../core/window_watch.js";
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
@@ -34,14 +35,20 @@ const CHOICE = Object.freeze({ CHOOSE_AVATAR: 0, KEEP_DEFAULT: 1 });
 // Any other file there is left out.
 const PORTRAIT_FILE = /^avatar_choice_(\d+)\.png$/i;
 
-// The pack's portraits, in their numbers' order.
-function readPortraits(host) {
-    const folder = `${host.getProjectFolder()}\\${AVATAR_CHOICE_FOLDER}`;
+// The paths of the pack's readable portraits, in their numbers' order;
+// logs each unreadable one, left out.
+function readPortraits(host, folder) {
     const numberOf = name => Number(PORTRAIT_FILE.exec(name)[1]);
-    return host.files.listFiles(folder)
+    const portraits = [];
+    const numbered = host.files.listFiles(folder)
         .filter(name => PORTRAIT_FILE.test(name))
         .sort((a, b) => numberOf(a) - numberOf(b))
         .map(name => `${folder}\\${name}`);
+    for (const path of numbered) {
+        if (host.files.isImageReadable(path)) portraits.push(path);
+        else logError(SCRIPT_NAME, `ERROR ${path} is unreadable; Avatar Choice shows without it.`, host);
+    }
+    return portraits;
 }
 
 // drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js).
@@ -256,13 +263,21 @@ export function createAvatarChoice(host, { profileStore, drawingAhead }) {
     }
 
     // profileName: the Profile just created; onClosed(): called once the
-    // screen is closed by a choice, Exit or a failed opening, never by attract mode.
+    // screen is closed by a choice, Exit or a failed opening, or at once when
+    // no portrait is readable; never by attract mode.
     function open(profileName, onClosed) {
         if (shown) return;
+        opening.begin();
+        const folder = `${host.getProjectFolder()}\\${AVATAR_CHOICE_FOLDER}`;
+        const portraits = opening.read(() => readPortraits(host, folder));
+        // Before any veil: the picker comes straight back.
+        if (portraits.length === 0) {
+            logError(SCRIPT_NAME, `ERROR No readable portrait in ${folder}; Avatar Choice is skipped.`, host);
+            onClosed();
+            return;
+        }
         // Here rather than on the first move, which it would slow down.
         navigationSound.load();
-        opening.begin();
-        const portraits = opening.read(() => readPortraits(host));
         shown = {
             profileName, portraits, onClosed, selected: 0, isPreparing: true, opacity: 0,
             view: null, size: null, referenceWidth: 0, geometry: null, backdrop: null, layers: [], tooltip: null, marker: null, confirmation: null,
