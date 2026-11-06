@@ -4,7 +4,7 @@
 // entry's command as a native menu would (none for a disabled line), falling
 // back to the native menu when drawing fails, or with the Add-on off (but for
 // the pack's own screens, getPackMenus); draw() returns false instead.
-// - Swallows every button through "commandbuttondown" while open; never changes the UI mode.
+// - Swallows every button through its own "commandbuttondown" while open, a held Select, Launch or Exit counting once; never changes the UI mode.
 // - A menu with onBack (a submenu) goes back on Exit and on its MenuReturn entry.
 // - With keepNative (the pause menu), it closes on the native "menuclose", or at "postlaunch".
 // - Images are drawn ahead, hidden as points (placed_layers.js); all redrawn in place if the window's size changes while open.
@@ -19,6 +19,7 @@ import { createWindowWatch, sizeText } from "../core/window_watch.js";
 import config from "../core/config.js";
 import lang from "../core/i18n.js";
 import { getDrawingAhead } from "../core/drawing_ahead.js";
+import { isHeldSelectLaunchOrExit } from "../core/drawn_screen_controls.js";
 import { createButtonSound, createNavigationSound } from "../core/navigation_sound.js";
 import { DRAWN_MENU_IMAGES, DRAWN_MENU_IMAGES_FOLDER } from "./drawn_menu_images.js";
 import { addStyledText } from "../drawing/steamball_drawing.js";
@@ -620,7 +621,7 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
         if (!shown || ev.defaultPrevented) return;
         // Swallowed first, so a failing move still never reaches the wheel.
         ev.preventDefault();
-        if (shown.panelHidden) return;
+        if (shown.panelHidden || isHeldSelectLaunchOrExit(ev)) return;
         if (ev.command === "Next") move(1);
         else if (ev.command === "Prev") move(-1);
         else if (ev.command === "NextPage") movePage(1);
