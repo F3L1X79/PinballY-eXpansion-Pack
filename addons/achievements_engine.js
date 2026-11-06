@@ -124,7 +124,7 @@ export default function init() {
 
     const profileRewards = getProfileRewards();
     const achievementList = createAchievementList(createPinballYHost(), {
-        getAchievements: getAllAchievements, profileStore, drawingAhead: getDrawingAhead(), profileRewards,
+        getAchievements: getAllAchievements, profileStore, drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls(), profileRewards,
     });
     const mainMenu = getMainMenu();
     mainMenu.add({

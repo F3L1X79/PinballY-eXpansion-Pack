@@ -4,7 +4,7 @@
 // then compact rows) from the High Score store. Opens at once on the last
 // known board while the board is read fresh, then redraws in place.
 // Opens directly, not through the wheel dialog module: the player asked for it.
-// - Swallows every button through "commandbuttondown"; the flippers scroll the rows.
+// - Its buttons and attract mode go through the Drawn Screen controls; the flippers scroll the rows.
 // - Crowns are drawn ahead once: PinballY reads an image file again on every draw.
 // - isOpen() and onClosed() let the wheel dialogs wait for it.
 // ============================================================
@@ -12,7 +12,6 @@
 import lang from "../core/i18n.js";
 import { displayNameOf } from "../profiles/profile_name.js";
 import { safeHandler } from "../core/safe_handler.js";
-import { createClosedListeners } from "../core/closed_listeners.js";
 import { openDrawnScreen } from "../stats/drawn_screen.js";
 import { createHiddenLayer, hideLayer } from "../drawing/placed_layers.js";
 import { createLoader, LOADER_PLACEMENT } from "../drawing/loader.js";
@@ -32,10 +31,11 @@ const TRANSPARENT = 0x00000000;
 // Frames; drawingAhead: the shared drawing ahead
 // (common/core/drawing_ahead.js); refresh(configId): reads the table's board into the store,
 // resolving to "read", "unsupported", "failed" or "notLearned" (a table
-// without a ROM whose board source is not learned yet).
-export function createHighScoreBoard(host, { highScores, profileRewards, drawingAhead, refresh }) {
+// without a ROM whose board source is not learned yet); drawnScreenControls:
+// the shared Drawn Screen controls (common/core/drawn_screen_controls.js).
+export function createHighScoreBoard(host, { highScores, profileRewards, drawingAhead, drawnScreenControls, refresh }) {
     const log = message => host.log(`[${SCRIPT_NAME}] ${message}`);
-    const closedListeners = createClosedListeners(SCRIPT_NAME);
+    const controls = drawnScreenControls.register(SCRIPT_NAME);
     const projectFolder = host.getProjectFolder();
     // On the top third, so that the comet never hides the scores.
     const loader = createLoader(host, { zIndex: HIGH_SCORE_BOARD_LOADER_Z_INDEX, placement: LOADER_PLACEMENT.TOP_THIRD });
@@ -58,8 +58,9 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         return true;
     });
     // The screen on show: its drawn screen, return, opacity, the layers
-    // of its content (all but the backdrop), its layout, its rows' layers
-    // and the first row in view; null when closed.
+    // of its content (all but the backdrop), its layout, its rows' layers,
+    // the first row in view and its place among the Drawn Screen controls'
+    // openings (controlled); null when closed.
     let shown = null;
 
     // Each line once: the Default Score images are read again on every opening.
@@ -216,8 +217,11 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         const opened = {
             drawn, onBack, exitLook: exitButtonLookOf(onBack !== null), marker,
             opacity: 0, content: [], geometry: null, rowLayers: [], crownLayers: [], firstRow: 0, isReading: Boolean(game),
+            controlled: controls.open({ onMove: scroll, onChoose: back, onExit: back, close: remove }),
         };
         shown = opened;
+        // Opens at once on the last known board: ready from the start.
+        opened.controlled.ready();
         const defaultImages = readDefaultScoreImages(host, logImageLine);
         drawContent(opened, screenFor(game, game ? "reading" : "read", defaultImages));
         // The Loader waits for the end of the fade in: at full opacity over a
@@ -240,37 +244,26 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         }));
     }
 
-    function close() {
-        if (!shown) return;
+    // Run by the Drawn Screen controls on every close, attract mode
+    // included, which then tell the closed listeners.
+    function remove() {
         shown.drawn.close(shown.content);
         shown.marker.remove();
         loader.hide();
         for (const crown of crowns) hideLayer(crown.layer);
         shown = null;
-        closedListeners.tell();
     }
 
-    // Fires on every mapped button press; swallows them all while the
-    // screen is open, the flippers scrolling a board longer than the window,
-    // Select and Launch choosing the Exit Button, always selected.
-    host.on("commandbuttondown", safeHandler(SCRIPT_NAME, ev => {
-        // Already handled within the same press by the screen that opened this one.
-        if (!shown || ev.defaultPrevented) return;
-        ev.preventDefault();
-        if (ev.command === "Next" || ev.command === "Prev") scroll(ev.command === "Next" ? 1 : -1);
-        if (!["Exit", "Select", "Launch"].includes(ev.command)) return;
-        const { onBack } = shown;
-        close();
+    // Exit, and Select and Launch on the Exit Button, always selected.
+    function back() {
+        const { onBack, controlled } = shown;
+        controlled.close();
         if (onBack) onBack();
-    }));
-
-    // Fires when the cabinet sits idle: the screen must not stay over
-    // attract mode nor keep the buttons.
-    host.on("attractmodestart", safeHandler(SCRIPT_NAME, close));
+    }
 
     return {
         open,
-        isOpen: () => shown !== null,
-        onClosed: closedListeners.onClosed,
+        isOpen: controls.isOpen,
+        onClosed: controls.onClosed,
     };
 }

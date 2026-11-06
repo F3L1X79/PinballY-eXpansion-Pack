@@ -5,14 +5,13 @@
 // Achievement Progress. Exit calls the return given to open().
 // Opens directly, not through the wheel dialog module: the player asked for it.
 // - Every layer is drawn ahead from startup and kept between openings, a point while hidden.
-// - Swallows every button through "commandbuttondown" while open.
+// - Its buttons and attract mode go through the Drawn Screen controls.
 // - Opens at once when drawn ahead, else through the shared screen opening (docs/adr/0014).
 // - isOpen() and onClosed() let the wheel dialogs wait for it.
 // ============================================================
 
 import lang from "../core/i18n.js";
 import { safeHandler } from "../core/safe_handler.js";
-import { createClosedListeners } from "../core/closed_listeners.js";
 import { createNavigationSound } from "../core/navigation_sound.js";
 import { displayNameOf } from "../profiles/profile_name.js";
 import { createScreenOpening } from "../drawing/screen_opening.js";
@@ -52,8 +51,9 @@ const MAX_OWNER_AVATARS = 4;
 // The file name's ending of each rank's emblem image, by where it shows.
 const EMBLEM_VARIANT = Object.freeze({ UNLOCKED: "_plain", MISSING: "_missing", HEADER: "_plain" });
 
-// drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js).
-export function createAchievementList(host, { getAchievements, profileStore, drawingAhead, profileRewards = null }) {
+// drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js);
+// drawnScreenControls: the shared Drawn Screen controls (common/core/drawn_screen_controls.js).
+export function createAchievementList(host, { getAchievements, profileStore, drawingAhead, drawnScreenControls, profileRewards = null }) {
     const { achievementList: TEXT } = lang;
     // In the window's own pixels, as the geometry is.
     const placed = createPlacedLayers(host);
@@ -93,13 +93,14 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
     let household = null;
     // The open list, null when closed: the highlighted item's index
     // (EXIT_BUTTON for the Exit Button), the scroll it glides to, what Exit
-    // returns to, whether it is still getting ready and the Selection
-    // Marker, there only while the Exit Button is selected.
+    // returns to, the Selection Marker, there only while the Exit Button is
+    // selected, and its place among the Drawn Screen controls' openings
+    // (controlled).
     let shown = null;
     // Below 1 only while a list that had to get ready fades in.
     let opacity = 1;
-    const opening =createScreenOpening(host, SCRIPT_NAME, { zIndex: ACHIEVEMENT_LIST_Z_INDEX.backdrop - 2, drawingAhead });
-    const closedListeners = createClosedListeners(SCRIPT_NAME);
+    const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: ACHIEVEMENT_LIST_Z_INDEX.backdrop - 2, drawingAhead });
+    const controls = drawnScreenControls.register(SCRIPT_NAME);
     // Where the list and the highlighted line are while gliding, in pixels.
     const glide = { scroll: 0, highlightTop: 0, timer: null, lastMs: 0 };
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
@@ -669,6 +670,8 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
     // the bare wheel, the Exit Button then a cross); onFailed: called once
     // an opening given up on a failing drawing is closed.
     function open(onExit = null, { onFailed = () => {} } = {}) {
+        // Already open: a second opening would stack a second entry on the controls.
+        if (shown) return;
         // Before the content is read: the Exit Button and the footer follow it.
         exitLook = exitButtonLookOf(onExit !== null);
         // A native menu left open would sit over or under the list.
@@ -682,13 +685,16 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
         // Drawn: only what was not drawn ahead yet.
         opening.draw(measure);
         // On the Exit Button, the list at its top: Next reaches the first row.
-        shown = { onExit, scroll: 0, highlighted: EXIT_BUTTON, isPreparing: false, marker: null };
+        shown = {
+            onExit, scroll: 0, highlighted: EXIT_BUTTON, marker: null,
+            controlled: controls.open({ onMove: move, onChoose: choose, onExit: back, close: remove }, { onFailed }),
+        };
         if (!nextFirstScreenDrawing()) {
             show();
+            shown.controlled.ready();
             opening.logOpened();
             return;
         }
-        shown.isPreparing = true;
         const step = () => {
             const drawing = nextFirstScreenDrawing();
             if (!drawing) return false;
@@ -697,23 +703,21 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
         };
         opening.runVeiled(step, {
             onDone: () => {
-                shown.isPreparing = false;
                 opacity = 0;
                 show();
+                shown.controlled.ready();
                 opening.logOpened();
                 opening.fadeIn(setOpacity);
             },
-            // Logged by the drawing ahead: given up rather than left veiled.
-            onFailed: () => {
-                close();
-                onFailed();
-            },
+            // Logged by the drawing ahead: given up rather than left veiled,
+            // then onFailed.
+            onFailed: () => shown.controlled.fail(),
         });
     }
 
-    // Closes the open list or gives up the one getting ready.
-    function close() {
-        if (!shown) return;
+    // Run by the Drawn Screen controls on every close, attract mode and a
+    // given up opening included, which then tell the closed listeners.
+    function remove() {
         opening.remove();
         opacity = 1;
         stopGlide();
@@ -723,29 +727,19 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
         for (const layers of [itemLayers, pieceLayers, headerEmblemLayers, thumbLayers, exitLayers]) hideAllExcept(layers, new Set());
         // What changed while it was open is read again once it is closed.
         wakeDrawingAhead();
-        closedListeners.tell();
     }
 
-    // Fires on every mapped button press; drives the list while it is open.
-    host.on("commandbuttondown", safeHandler(SCRIPT_NAME, ev => {
-        // Already handled: the Drawn Menu's or Profile Stats' Select opens
-        // the list within the same press, which must not reach its Exit Button.
-        if (!shown || ev.defaultPrevented) return;
-        // Swallowed first, so a failing move still never reaches the wheel.
-        ev.preventDefault();
-        const isOnExitButton = !shown.isPreparing && shown.highlighted === EXIT_BUTTON;
-        if ((ev.command === "Next" || ev.command === "Prev") && !shown.isPreparing) {
-            move(ev.command === "Next" ? 1 : -1);
-        } else if (ev.command === "Exit" || (isOnExitButton && (ev.command === "Select" || ev.command === "Launch"))) {
-            const { onExit } = shown;
-            close();
-            if (onExit) onExit();
-        }
-    }));
+    function back() {
+        const { onExit, controlled } = shown;
+        controlled.close();
+        if (onExit) onExit();
+    }
 
-    // Fires when the cabinet sits idle: the list must not stay drawn over
-    // attract mode or keep the buttons.
-    host.on("attractmodestart", safeHandler(SCRIPT_NAME, close));
+    // A row is only read: Select there changes nothing. The Exit Button
+    // goes back as Exit does.
+    function choose() {
+        if (shown.highlighted === EXIT_BUTTON) back();
+    }
 
     // A switch changes what the list shows, and the Notified Achievements
     // of the Profile left may have changed while it was active.
@@ -762,5 +756,5 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
         markContentStale();
     }));
 
-    return { open, isOpen: () => shown !== null, onClosed: closedListeners.onClosed, countAll: () => countAll() };
+    return { open, isOpen: controls.isOpen, onClosed: controls.onClosed, countAll: () => countAll() };
 }

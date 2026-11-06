@@ -23,6 +23,7 @@ import { getAchievementToasts, TOAST_KIND } from "../common/achievements/achieve
 import { getMainMenu, MAIN_MENU_POSITION } from "../common/menus/main_menu.js";
 import { isSeparator } from "../common/menus/menu_separator.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
+import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
 import { getWheelDialogs } from "../common/core/wheel_dialog.js";
 import { displayNameOf } from "../common/profiles/profile_name.js";
 import lang from "../common/core/i18n.js";
@@ -47,7 +48,7 @@ export default function init() {
     let announcedPlay = null;
 
     const board = createHighScoreBoard(host, {
-        highScores, profileRewards: getProfileRewards(), drawingAhead: getDrawingAhead(), refresh: refreshBoard,
+        highScores, profileRewards: getProfileRewards(), drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls(), refresh: refreshBoard,
     });
     const mainMenu = getMainMenu();
     mainMenu.add({

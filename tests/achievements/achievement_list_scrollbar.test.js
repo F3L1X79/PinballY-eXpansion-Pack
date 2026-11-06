@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { createFakePinballYHost } from "../support/fake_pinbally_host.js";
 import { createAchievementList, ACHIEVEMENT_LIST_Z_INDEX } from "../../common/achievements/achievement_list.js";
 import { createDrawingAhead } from "../../common/core/drawing_ahead.js";
+import { createDrawnScreenControls } from "../../common/core/drawn_screen_controls.js";
 import { createProfileStore } from "../../common/profiles/profile_store.js";
 import { ACHIEVEMENT_FAMILY, ACHIEVEMENT_RANK } from "../../common/achievements/achievements.js";
 import { LIST_LOOK, computeGeometry } from "../../common/achievements/achievement_list_painter.js";
@@ -37,7 +38,7 @@ function setUp({ count, opened = true }) {
     fake.addFile(`${PROFILES}\\Alice\\profile.json`, JSON.stringify({ version: 1, notified: [] }));
     const achievements = achievementsOf(count);
     const profileStore = createProfileStore(fake);
-    const list = createAchievementList(fake, { getAchievements: () => achievements, profileStore, drawingAhead: createDrawingAhead(fake) });
+    const list = createAchievementList(fake, { getAchievements: () => achievements, profileStore, drawingAhead: createDrawingAhead(fake), drawnScreenControls: createDrawnScreenControls(fake) });
     if (opened) {
         list.open();
         untilListShown(fake);
