@@ -25,7 +25,7 @@ export const SHIPPED_SOUNDS = Object.freeze({
 });
 // The sounds with nothing shipped: silent until the player sets one.
 const UNSHIPPED_SOUNDS = Object.freeze({
-    // Played once when the Profile picker appears as the Startup Screen.
+    // Played each time the Profile picker carousel appears.
     profilePickerSoundFile: "",
     // Played once when Avatar Choice shows, after Name Entry.
     avatarChoiceSoundFile: "",

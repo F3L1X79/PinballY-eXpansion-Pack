@@ -657,8 +657,7 @@ export default function init() {
         backLayer.alpha = 1;
         placeCarousel();
         windowWatch.start(followWindow);
-        // Only the startup carousel, whether its turn or a menu opened it.
-        if (isStartupPending) playPickerSound();
+        playPickerSound();
     }
 
     // Frees the wheel dialog queue held by the startup carousel. Without

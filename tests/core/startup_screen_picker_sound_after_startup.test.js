@@ -1,7 +1,7 @@
 // ============================================================
 // Startup Screen "profilePicker" with a PROFILE_PICKER_SOUND_FILE: once
 // the startup carousel and the Welcome Screen are left, the carousel
-// opened from the main menu plays no Profile picker sound.
+// opened from the main menu plays the Profile picker sound again.
 // ============================================================
 
 import { test } from "node:test";
@@ -12,7 +12,7 @@ import { startOnProfilePicker, isCarouselOpen, PICKER_SOUND, pickerSounds, CAROU
 
 const SETTLED_MS = 3000;
 
-test("a carousel opened from the main menu after startup plays no Profile picker sound", async () => {
+test("a carousel opened from the main menu after startup plays the Profile picker sound again", async () => {
     const { fake, lang, settle } = await startOnProfilePicker({ settings: { profilePickerSoundFile: PICKER_SOUND }, files: [PICKER_SOUND] });
     await settle();
     fake.advanceTime(CAROUSEL_OPEN_MS);
@@ -27,6 +27,6 @@ test("a carousel opened from the main menu after startup plays no Profile picker
 
     await openFromMainMenu(fake, lang.profiles.menuEntry);
     assert.equal(isCarouselOpen(fake, lang), true);
-    assert.deepEqual(pickerSounds(fake), [PICKER_SOUND], "no second sound");
+    assert.deepEqual(pickerSounds(fake), [PICKER_SOUND, PICKER_SOUND], "a second sound");
     assertNoErrorLogged(fake);
 });
