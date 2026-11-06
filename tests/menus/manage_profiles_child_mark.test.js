@@ -10,7 +10,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
-import { isDrawnMenuShown, drawnMenuLines, readDrawnMenu, highlightedEntry, press, openExitMenu, chooseEntry } from "../drawn_menu/drawn_menu_reader.js";
+import { isDrawnMenuShown, drawnMenuLines, readDrawnMenu, highlightedEntry, press, openOperatorMenu, chooseEntry } from "../drawn_menu/drawn_menu_reader.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 
 const ADD_ONS_UNDER_TEST = ["customMenuCommands", "drawnMenus"];
@@ -40,7 +40,7 @@ test("setup", async () => {
 });
 
 function openProfileMenu(name) {
-    openExitMenu(fake);
+    openOperatorMenu(fake);
     chooseEntry(fake, TEXT.menuEntry);
     chooseEntry(fake, name);
 }
@@ -48,7 +48,7 @@ function openProfileMenu(name) {
 const childRow = () => readDrawnMenu(fake).rows.find(row => [TEXT.childLine(false), TEXT.childLine(true)].includes(row.title));
 
 test("Manage profiles opens the list, then the Profile's menu with its name as a heading", () => {
-    openExitMenu(fake);
+    openOperatorMenu(fake);
     chooseEntry(fake, TEXT.menuEntry);
     assert.deepEqual(drawnMenuLines(fake), [
         `[${TEXT.listTitle.toUpperCase()}]`, "---", GUEST, "Alice", "Bob", "---", TEXT.everyProfile, "---", TEXT.cancel,

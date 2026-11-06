@@ -36,7 +36,7 @@ test("after Yes, a message with OK tells whether the Profile Reset worked", asyn
     getProfileStore().switchTo("Alice");
 
     const askToReset = name => {
-        fake.openExitMenu();
+        fake.openOperatorMenu();
         fake.selectMenuItem(TEXT.menuEntry);
         fake.selectMenuItem(name);
         fake.selectMenuItem(TEXT.reset);
@@ -53,7 +53,7 @@ test("after Yes, a message with OK tells whether the Profile Reset worked", asyn
     askToReset("Bob");
     fake.selectMenuItem(TEXT.no);
     assert.equal(fake.currentMenu(), null, "No closes the menus without a message");
-    fake.openExitMenu();
+    fake.openOperatorMenu();
     fake.selectMenuItem(TEXT.menuEntry);
     fake.selectMenuItem(TEXT.cancel);
     assert.equal(fake.currentMenu(), null, "Cancel closes the menus without a message");

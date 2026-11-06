@@ -32,7 +32,7 @@ test("the same menus show natively, the greyed line in brackets", async () => {
     const shownTitles = () => fake.currentMenu().items.map(item => item.title ?? "");
     const selectedTitles = () => fake.currentMenu().items.filter(item => item.selected).map(item => item.title);
     const openProfileMenu = name => {
-        fake.openExitMenu();
+        fake.openOperatorMenu();
         fake.selectMenuItem(TEXT.menuEntry);
         fake.selectMenuItem(name);
     };

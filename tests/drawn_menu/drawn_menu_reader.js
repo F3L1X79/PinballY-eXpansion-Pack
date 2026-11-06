@@ -172,6 +172,11 @@ export function openExitMenu(fake) {
     fake.advanceTime(OPEN_OVER_MS);
 }
 
+export function openOperatorMenu(fake) {
+    fake.openOperatorMenu();
+    fake.advanceTime(OPEN_OVER_MS);
+}
+
 // Past the first of its two native openings closing.
 export function openPauseMenu(fake) {
     fake.openPauseMenu();

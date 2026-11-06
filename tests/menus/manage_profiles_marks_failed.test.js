@@ -9,7 +9,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
-import { drawnMenuLines, readDrawnMenu, highlightedEntry, squeezed, press, openExitMenu, chooseEntry } from "../drawn_menu/drawn_menu_reader.js";
+import { drawnMenuLines, readDrawnMenu, highlightedEntry, squeezed, press, openOperatorMenu, chooseEntry } from "../drawn_menu/drawn_menu_reader.js";
 import { errorLines } from "../support/error_log.js";
 
 const PROFILES = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
@@ -32,7 +32,7 @@ test("a mark that cannot be saved is told with OK and left unchanged", async () 
     store.switchTo("Alice");
 
     fake.lockFile(profileFile("Bob"));
-    openExitMenu(fake);
+    openOperatorMenu(fake);
     chooseEntry(fake, TEXT.menuEntry);
     chooseEntry(fake, "Bob");
     chooseEntry(fake, TEXT.childLine(false));

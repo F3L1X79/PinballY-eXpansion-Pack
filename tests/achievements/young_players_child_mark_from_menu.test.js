@@ -26,7 +26,7 @@ test("a Child mark cleared then set again from the menu brings Young Players bac
     // Carol, an Admin Profile, flips Bob's Child mark from his menu.
     const flipBobsChildMark = async () => {
         await switchTo("Carol");
-        fake.openExitMenu();
+        fake.openOperatorMenu();
         fake.selectMenuItem(MENU_TEXT.menuEntry);
         fake.selectMenuItem("Bob");
         fake.selectMenuItem(MENU_TEXT.childLine(store.isChild("Bob")));

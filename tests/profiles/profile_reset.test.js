@@ -1,5 +1,5 @@
 // ============================================================
-// Profile Reset from Manage profiles in the Exit menu through main.js: for
+// Profile Reset from Manage profiles in the Operator Menu through main.js: for
 // an active Admin only (none marked: "Become admin" alone), lists every
 // Profile, then "Reset" in a Profile's menu asks once on "No". "Yes" keeps a
 // dated copy, saves empty data with the marks kept, renames its Play Log files;
@@ -40,7 +40,7 @@ const BOB_DATA = {
     challenge: { week: "2026-09-28", firstWeek: "2026-09-28", games: [], completed: false, completedCount: 2, history: [] },
 };
 
-test("an Admin Profile resets another Profile from the Exit menu, after one confirmation", async () => {
+test("an Admin Profile resets another Profile from the Operator Menu, after one confirmation", async () => {
     const fake = createFakePinballYHost({ now: NOW, tables: [MEDIEVAL] });
     for (const name of ["guest", "Alice", "Bob"]) fake.addFile(`${PROFILES}\\${name}\\avatar.png`, "PNG");
     fake.addFile(profileFile("Bob"), JSON.stringify(BOB_DATA));
@@ -71,8 +71,8 @@ test("an Admin Profile resets another Profile from the Exit menu, after one conf
     await settle();
     const store = getProfileStore();
 
-    const exitMenuTitles = () => {
-        fake.openExitMenu();
+    const operatorMenuTitles = () => {
+        fake.openOperatorMenu();
         const titles = fake.currentMenu().items.map(item => item.title);
         fake.closeMenu();
         return titles;
@@ -90,7 +90,7 @@ test("an Admin Profile resets another Profile from the Exit menu, after one conf
     const askToReset = shownName => {
         // The Achievement List glides on a timer: back to the copy's date.
         fake.setNow(NOW);
-        fake.openExitMenu();
+        fake.openOperatorMenu();
         fake.selectMenuItem(TEXT.menuEntry);
         fake.selectMenuItem(shownName);
         fake.selectMenuItem(TEXT.reset);
@@ -98,7 +98,7 @@ test("an Admin Profile resets another Profile from the Exit menu, after one conf
     };
 
     store.switchTo("Alice");
-    fake.openExitMenu();
+    fake.openOperatorMenu();
     fake.selectMenuItem(TEXT.menuEntry);
     assert.deepEqual(fake.currentMenu().items.map(item => item.title ?? ""), [TEXT.becomeAdmin, "", TEXT.cancel],
         "no Admin Profile: only Become admin, nobody can reset a Profile");
@@ -106,13 +106,14 @@ test("an Admin Profile resets another Profile from the Exit menu, after one conf
 
     fake.addFile(profileFile("Alice"), JSON.stringify({ version: 1, isAdmin: true }));
     store.switchTo("Bob");
-    assert.ok(!exitMenuTitles().includes(TEXT.menuEntry), "a Profile that is not an Admin Profile never sees it");
+    assert.ok(!operatorMenuTitles().includes(TEXT.menuEntry), "a Profile that is not an Admin Profile never sees it");
     store.switchTo("Alice");
-    const exitMenu = exitMenuTitles();
-    assert.ok(exitMenu.indexOf(TEXT.menuEntry) < exitMenu.indexOf("Operator Menu"), "above the Operator Menu");
+    const operatorMenu = operatorMenuTitles();
+    assert.equal(operatorMenu.indexOf(TEXT.menuEntry), operatorMenu.indexOf(lang.expansionPackSettings.menuEntry) + 1,
+        "right after the eXpansion Pack Settings");
     assert.deepEqual(firstTableRow().owners.avatars, [`${PROFILES}\\Bob\\avatar.png`], "Bob holds the first table");
 
-    fake.openExitMenu();
+    fake.openOperatorMenu();
     fake.selectMenuItem(TEXT.menuEntry);
     const listTitles = fake.currentMenu().items.map(item => item.title ?? "");
     assert.deepEqual(listTitles, [TEXT.listTitle, "", lang.profiles.guestName, "Alice", "Bob", "", TEXT.everyProfile, "", TEXT.cancel],

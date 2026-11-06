@@ -14,7 +14,7 @@ Avec « Changer de joueur », chacun prend son Profil et son Avatar, et l'écran
 - Dès que la borne compte au moins deux Profils sans compter Invité, PinballY démarre sur « Changer de joueur », pour que chacun choisisse son Profil avant de jouer ; il peut aussi démarrer sur l'écran d'accueil ou directement sur la roue (`STARTUP_SCREEN`, voir [Réglages](settings.md)).
 - Tant que « Changer de joueur » est ouvert, le son des vidéos de la table de la roue est baissé, et revient à sa fermeture.
 
-La progression de chaque Profil est enregistrée dans `Scripts\ExpansionPack\profiles`. Un Profil admin garde les entrées de configuration pour lui, un Profil enfant cache les tables pour adultes, et **Gérer les profils**, dans le menu de sortie d'un Profil admin, marque un Profil enfant ou fait repartir un Profil de zéro : voir [Réglages](settings.md).
+La progression de chaque Profil est enregistrée dans `Scripts\ExpansionPack\profiles`. Un Profil admin garde les entrées de configuration pour lui, un Profil enfant cache les tables pour adultes, et **Gérer les profils**, dans le menu opérateur d'un Profil admin, marque un Profil enfant ou fait repartir un Profil de zéro : voir [Réglages](settings.md).
 
 ## Créer un Profil
 
@@ -45,7 +45,7 @@ Si le dossier ne peut pas être créé, la saisie du nom reste ouverte avec votr
 1. Dans `PinballY\Scripts\ExpansionPack\profiles`, créez un dossier vide au nom du joueur : c'est ce nom que la borne affiche. Un nom qui commence par `.` ou `_` est ignoré. Ne copiez pas le dossier d'Invité : la copie reprendrait sa progression, alors qu'un dossier vide part de zéro.
 2. Facultatif : placez dans ce dossier une image PNG ou JPEG carrée nommée `avatar.png` ou `avatar.jpg`. Si les deux sont là, `avatar.jpg` l'emporte : une photo déposée sous le nom `avatar.jpg` s'affiche à la place du portrait que le Choix de l'Avatar a copié en `avatar.png`. Sans aucune des deux, le Profil reçoit l'Avatar par défaut, une simple silhouette grise. Un `avatar.png` ou `avatar.jpg` remplacé par un autre fichier du même nom pendant que PinballY tourne s'affiche à son prochain démarrage.
 3. Ouvrez **Changer de joueur**, dans le menu principal ou le menu de sortie, et choisissez le nouveau Profil. Inutile de redémarrer PinballY. Tant que vous ne l'avez pas choisi, vous jouez toujours en Invité.
-4. Facultatif : pour garder les entrées de configuration pour vous seul, ouvrez **Gérer les profils** dans le menu de sortie et choisissez **Devenir admin** (voir [Profil admin](settings.md#profil-admin)).
+4. Facultatif : pour garder les entrées de configuration pour vous seul, ouvrez **Gérer les profils** dans le menu opérateur et choisissez **Devenir admin** (voir [Profil admin](settings.md#profil-admin)).
 
 Configurer le pack ne demande pas de Profil admin : tant qu'aucun Profil n'est marqué, tous les Profils, Invité compris, voient les entrées de configuration.
 

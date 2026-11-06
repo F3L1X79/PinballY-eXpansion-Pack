@@ -1,6 +1,6 @@
 // ============================================================
 // The eXpansion Pack Settings entry through main.js, with every Add-on off:
-// right after PinballY's Options in the Operator Menu for everyone while no
+// in its own group after Batch Capture in the Operator Menu for everyone while no
 // Profile is marked Admin, then for the Admin Profiles only, even when the
 // coin door's service button opens the menu.
 // ============================================================
@@ -16,7 +16,7 @@ const markAdmin = (fake, name) => fake.addFile(`${PROFILES}\\${name}\\profile.js
 
 const ENTRY = "eXpansion Pack Settings";
 
-test("the entry follows PinballY Options for whoever sees the setup entries", async () => {
+test("the entry follows Batch Capture, in its own group, for whoever sees the setup entries", async () => {
     const fake = createFakePinballYHost({ now: new Date(2026, 9, 22, 20, 0, 0) });
     fake.addFolder(`${PROFILES}\\Alice`);
     fake.addFolder(`${PROFILES}\\Bob`);
@@ -35,21 +35,23 @@ test("the entry follows PinballY Options for whoever sees the setup entries", as
         fake.closeMenu();
         return titles;
     };
-    const entryFollowsOptions = () => {
+    // Batch Capture, then a separator, then the entry, then PinballY's separator.
+    const entryInItsGroup = () => {
         const titles = operatorMenuTitles();
-        return titles[titles.indexOf("PinballY Options") + 1] === ENTRY;
+        const index = titles.indexOf("Batch Capture");
+        return titles[index + 1] === undefined && titles[index + 2] === ENTRY && titles[index + 3] === "";
     };
 
-    assert.ok(entryFollowsOptions(), "Guest, with no Admin Profile");
+    assert.ok(entryInItsGroup(), "Guest, with no Admin Profile");
     store.switchTo("Alice");
-    assert.ok(entryFollowsOptions(), "Alice, with no Admin Profile");
+    assert.ok(entryInItsGroup(), "Alice, with no Admin Profile");
 
     markAdmin(fake, "Bob");
     assert.ok(!operatorMenuTitles().includes(ENTRY), "Alice, once Bob is an Admin Profile");
     store.switchTo("guest");
     assert.ok(!operatorMenuTitles().includes(ENTRY), "Guest, once Bob is an Admin Profile");
     store.switchTo("Bob");
-    assert.ok(entryFollowsOptions(), "Bob, an Admin Profile");
+    assert.ok(entryInItsGroup(), "Bob, an Admin Profile");
 
     assertNoErrorLogged(fake);
 });

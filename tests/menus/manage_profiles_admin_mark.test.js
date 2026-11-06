@@ -10,7 +10,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
-import { isDrawnMenuShown, drawnMenuLines, readDrawnMenu, highlightedEntry, press, openExitMenu, chooseEntry } from "../drawn_menu/drawn_menu_reader.js";
+import { isDrawnMenuShown, drawnMenuLines, readDrawnMenu, highlightedEntry, press, openExitMenu, openOperatorMenu, chooseEntry } from "../drawn_menu/drawn_menu_reader.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 
 const ADD_ONS_UNDER_TEST = ["customMenuCommands", "drawnMenus"];
@@ -44,7 +44,7 @@ test("setup", async () => {
 });
 
 function openProfileMenu(name) {
-    openExitMenu(fake);
+    openOperatorMenu(fake);
     chooseEntry(fake, TEXT.menuEntry);
     chooseEntry(fake, name);
 }
@@ -55,8 +55,8 @@ function closeProfileMenu() {
     assert.ok(!isDrawnMenuShown(fake));
 }
 
-function exitMenuLines() {
-    openExitMenu(fake);
+function menuLines(open) {
+    open(fake);
     const lines = drawnMenuLines(fake);
     press(fake, "Exit");
     return lines;
@@ -88,9 +88,8 @@ test("choosing the Admin line marks the Profile at once, the cursor staying on i
 
 test("the newly marked Admin Profile gets the setup entries and Manage profiles", () => {
     store.switchTo("Bob");
-    const lines = exitMenuLines();
-    assert.ok(lines.includes(OPERATOR_MENU));
-    assert.ok(lines.includes(TEXT.menuEntry));
+    assert.ok(menuLines(openExitMenu).includes(OPERATOR_MENU));
+    assert.ok(menuLines(openOperatorMenu).includes(TEXT.menuEntry));
     store.switchTo("Alice");
 });
 
@@ -118,9 +117,8 @@ test("clearing its own Admin mark, with another admin left, closes the menus and
     assert.ok(!("isAdmin" in readProfile("Alice")));
     assert.ok(!isDrawnMenuShown(fake), "the menus close");
     assert.equal(fake.currentMenu(), null);
-    const lines = exitMenuLines();
-    assert.ok(!lines.includes(OPERATOR_MENU));
-    assert.ok(!lines.includes(TEXT.menuEntry));
+    assert.ok(!menuLines(openExitMenu).includes(OPERATOR_MENU));
+    assert.ok(!menuLines(openOperatorMenu).includes(TEXT.menuEntry), "not even from the service button");
 });
 
 test("the last Admin Profile's Admin line is greyed, and Select on it changes nothing", () => {

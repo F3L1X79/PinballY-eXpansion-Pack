@@ -28,7 +28,7 @@ test("Become admin works natively too", async () => {
     getProfileStore().switchTo("Alice");
     const shownTitles = () => fake.currentMenu().items.map(item => item.title ?? "");
 
-    fake.openExitMenu();
+    fake.openOperatorMenu();
     fake.selectMenuItem(TEXT.menuEntry);
     assert.deepEqual(shownTitles(), [TEXT.becomeAdmin, "", TEXT.cancel]);
     fake.selectMenuItem(TEXT.becomeAdmin);

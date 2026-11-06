@@ -1,5 +1,5 @@
 // ============================================================
-// eXpansion Pack Settings: their entry in the Operator Menu, after PinballY's Options, for whoever
+// eXpansion Pack Settings: their entry in the Operator Menu, in its own group after Batch Capture, for whoever
 // sees the setup entries, opens the list of Add-on categories (their Add-ons as saved in .env.local,
 // read again on each opening, one page per Add-on whose Save rewrites its one line), the Startup screen and
 // Language pages, the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
@@ -19,6 +19,7 @@ import { logError } from "../core/error_log.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { getProfileStore } from "../profiles/profile_store.js";
 import { seesSetupEntries } from "../profiles/setup_entries.js";
+import { SEPARATOR_CMD } from "../menus/menu_separator.js";
 import { getDrawnMenus, getPackMenus } from "../drawn_menu/drawn_menu.js";
 import { DRAWN_MENU_Z_INDEX } from "../drawn_menu/drawn_menu_painter.js";
 import { createLoader } from "../drawing/loader.js";
@@ -60,7 +61,7 @@ const BOLD_WEIGHT = 700;
 export function createExpansionPackSettings(host, profileStore, getMenus, running = config) {
     const { expansionPackSettings: TEXT } = lang;
     const entryCommand = host.allocateCommand("expansionPackSettings");
-    const optionsCommand = host.getBuiltInCommand("Options");
+    const batchCaptureCommand = host.getBuiltInCommand("BatchCaptureStep1");
     const operatorMenuCommand = host.getBuiltInCommand("ShowOperatorMenu");
     const menuReturnCommand = host.getBuiltInCommand("MenuReturn");
     // One command per category and per Add-on line, so that each line can be chosen.
@@ -378,7 +379,9 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     // service button opened it.
     host.on("menuopen", safeHandler(SCRIPT_NAME, ev => {
         if (ev.id !== OPERATOR_MENU_ID || !seesSetupEntries(profileStore)) return;
-        ev.addMenuItem({ after: optionsCommand }, { title: TEXT.menuEntry, cmd: entryCommand });
+        // Before "Manage profiles", which the Custom Menu Commands Add-on put
+        // right after Batch Capture earlier; PinballY's separator follows both.
+        ev.addMenuItem({ after: batchCaptureCommand }, [{ cmd: SEPARATOR_CMD }, { title: TEXT.menuEntry, cmd: entryCommand }]);
     }));
 
     // Fires on every mapped button press: while PinballY gets ready to quit,

@@ -74,7 +74,7 @@ test("an Admin Profile resetting itself starts over at once, without replaying a
     assert.deepEqual(fake.getWheelTables().map(game => game.title), ["Attack from Mars"]);
     const toastCount = toastDrawings(fake).length;
 
-    fake.openExitMenu();
+    fake.openOperatorMenu();
     fake.selectMenuItem(TEXT.menuEntry);
     fake.selectMenuItem("Alice");
     fake.selectMenuItem(TEXT.reset);

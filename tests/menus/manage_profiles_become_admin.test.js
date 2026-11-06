@@ -9,7 +9,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
-import { isDrawnMenuShown, drawnMenuLines, highlightedEntry, press, openExitMenu, chooseEntry } from "../drawn_menu/drawn_menu_reader.js";
+import { isDrawnMenuShown, drawnMenuLines, highlightedEntry, press, openExitMenu, openOperatorMenu, chooseEntry } from "../drawn_menu/drawn_menu_reader.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 
 const ADD_ONS_UNDER_TEST = ["customMenuCommands", "drawnMenus"];
@@ -41,8 +41,8 @@ test("setup", async () => {
     store = getProfileStore();
 });
 
-function exitMenuLines() {
-    openExitMenu(fake);
+function menuLines(open) {
+    open(fake);
     const lines = drawnMenuLines(fake);
     press(fake, "Exit");
     return lines;
@@ -50,18 +50,17 @@ function exitMenuLines() {
 
 test("with no Admin Profile, Manage profiles is absent for Guest and for a Child Profile", () => {
     store.switchTo("guest");
-    assert.ok(!exitMenuLines().includes(TEXT.menuEntry));
+    assert.ok(!menuLines(openOperatorMenu).includes(TEXT.menuEntry));
     store.switchTo("Kid");
-    assert.ok(!exitMenuLines().includes(TEXT.menuEntry));
+    assert.ok(!menuLines(openOperatorMenu).includes(TEXT.menuEntry));
 });
 
 test("an ordinary Profile finds Manage profiles, with Become admin as its only line", () => {
     store.switchTo("Bob");
-    const lines = exitMenuLines();
-    assert.ok(lines.includes(OPERATOR_MENU), "the Operator Menu stays for everyone");
-    assert.ok(lines.includes(TEXT.menuEntry));
+    assert.ok(menuLines(openExitMenu).includes(OPERATOR_MENU), "the Operator Menu stays for everyone");
+    assert.ok(menuLines(openOperatorMenu).includes(TEXT.menuEntry));
 
-    openExitMenu(fake);
+    openOperatorMenu(fake);
     chooseEntry(fake, TEXT.menuEntry);
     assert.deepEqual(drawnMenuLines(fake), [TEXT.becomeAdmin, "---", TEXT.cancel]);
     assert.equal(highlightedEntry(fake), TEXT.becomeAdmin);
@@ -78,8 +77,7 @@ test("Become admin marks the active Profile and opens the full list", () => {
 
 test("afterwards, another Profile no longer sees the Operator Menu nor Manage profiles", () => {
     store.switchTo("Alice");
-    const lines = exitMenuLines();
-    assert.ok(!lines.includes(OPERATOR_MENU));
-    assert.ok(!lines.includes(TEXT.menuEntry));
+    assert.ok(!menuLines(openExitMenu).includes(OPERATOR_MENU));
+    assert.ok(!menuLines(openOperatorMenu).includes(TEXT.menuEntry), "not even from the service button");
     assertNoErrorLogged(fake);
 });

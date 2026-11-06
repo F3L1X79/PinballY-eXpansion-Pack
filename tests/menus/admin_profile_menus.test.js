@@ -1,7 +1,7 @@
 ﻿// ============================================================
 // Admin Profile menus through main.js: with no isAdmin mark, everyone sees
-// "Table Setup" and "Operator Menu", and "Manage profiles" to become the
-// first admin; once one is marked, only Admins do.
+// "Table Setup" and "Operator Menu", and "Manage profiles" in the Operator
+// Menu to become the first admin; once one is marked, only Admins do.
 // - A mark on Guest or a non-boolean mark is logged and ignored.
 // ============================================================
 
@@ -18,7 +18,7 @@ const profileFile = name => `${PROFILES}\\${name}\\profile.json`;
 const markFile = (fake, name, isAdmin) => fake.addFile(profileFile(name), JSON.stringify({ version: 1, isAdmin }));
 
 // PinballY's own separators are titled "".
-const ADMIN_EXIT_MENU = ["Exit PinballY", "Shut Down", undefined, "Manage profiles", "", "Operator Menu", "", "Help", "About PinballY", "", "Cancel"];
+const ADMIN_EXIT_MENU = ["Exit PinballY", "Shut Down", "", "Operator Menu", "", "Help", "About PinballY", "", "Cancel"];
 const EXIT_MENU_WITHOUT_OPERATOR_MENU = ["Exit PinballY", "Shut Down", "", "Help", "About PinballY", "", "Cancel"];
 
 test("only the Admin Profiles keep the setup entries, once the household has one", async () => {
@@ -52,10 +52,18 @@ test("only the Admin Profiles keep the setup entries, once the household has one
         fake.closeMenu();
         return titles;
     };
+    // As the coin door's service button opens it, for anyone.
+    const seesManageProfiles = () => {
+        fake.openOperatorMenu();
+        const shown = fake.currentMenu().items.some(item => item.title === lang.profileReset.menuEntry);
+        fake.closeMenu();
+        return shown;
+    };
 
     store.switchTo("Alice");
     assert.ok(mainMenuTitles().includes(TABLE_SETUP), "no Admin Profile: everything shows");
-    assert.deepEqual(exitMenuTitles(), ADMIN_EXIT_MENU, "and Manage profiles, to become the first admin");
+    assert.deepEqual(exitMenuTitles(), ADMIN_EXIT_MENU);
+    assert.ok(seesManageProfiles(), "and Manage profiles, to become the first admin");
 
     markFile(fake, "guest", true);
     markFile(fake, "Bob", "true");
@@ -67,14 +75,17 @@ test("only the Admin Profiles keep the setup entries, once the household has one
     assert.equal(mainMenuSection(fake, TABLE_SETUP, openMainMenu), null, "a non-admin loses Table Setup");
     assert.deepEqual(mainMenuSection(fake, "Play", openMainMenu), ["Play"], "Play stays");
     assert.deepEqual(exitMenuTitles(), EXIT_MENU_WITHOUT_OPERATOR_MENU, "and the Operator Menu, nothing else");
+    assert.ok(!seesManageProfiles(), "nor Manage profiles, even from the service button");
 
     store.switchTo("Bob");
     assert.ok(mainMenuTitles().includes(TABLE_SETUP), "an Admin Profile keeps both");
-    assert.deepEqual(exitMenuTitles(), ADMIN_EXIT_MENU, "and gets Manage profiles");
+    assert.deepEqual(exitMenuTitles(), ADMIN_EXIT_MENU);
+    assert.ok(seesManageProfiles(), "and gets Manage profiles");
 
     store.switchTo("guest");
     assert.ok(!mainMenuTitles().includes(TABLE_SETUP), "Guest is never an Admin Profile");
     assert.deepEqual(exitMenuTitles(), EXIT_MENU_WITHOUT_OPERATOR_MENU);
+    assert.ok(!seesManageProfiles());
     assert.ok(fake.logLines().some(line => line.includes("guest\\profile.json") && line.includes("isAdmin")));
 
     assertNoErrorLogged(fake);

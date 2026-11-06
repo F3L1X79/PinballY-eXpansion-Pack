@@ -74,9 +74,9 @@ Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. Keep that 
 
 ## Admin Profile
 
-The first Profile [created from the cabinet](profiles.md#from-the-cabinet) while you only have Guest becomes an Admin Profile by itself: pick it in Change Player to keep the setup entries. Otherwise, to keep them for yourself, [create your Profile](profiles.md#create-a-profile) if you only have Guest, pick it in Change Player, and make it the first Admin Profile: while no Profile is marked, open **Manage profiles** in the Exit menu (Escape) and choose **Become admin**, its only line. Your Profile is marked at once and the full menu opens. Guest and Child Profiles do not see the entry, since they can never be Admin Profiles. You can also add `"isAdmin": true` at the top level of your Profile's `Scripts\ExpansionPack\profiles\<name>\profile.json`, PinballY closed; editing that file remains the way to undo the mark while it is the only Admin Profile.
+The first Profile [created from the cabinet](profiles.md#from-the-cabinet) while you only have Guest becomes an Admin Profile by itself: pick it in Change Player to keep the setup entries. Otherwise, to keep them for yourself, [create your Profile](profiles.md#create-a-profile) if you only have Guest, pick it in Change Player, and make it the first Admin Profile: while no Profile is marked, open **Manage profiles** in the Operator Menu (Escape, then "Operator Menu") and choose **Become admin**, its only line. Your Profile is marked at once and the full menu opens. Guest and Child Profiles do not see the entry, since they can never be Admin Profiles. You can also add `"isAdmin": true` at the top level of your Profile's `Scripts\ExpansionPack\profiles\<name>\profile.json`, PinballY closed; editing that file remains the way to undo the mark while it is the only Admin Profile.
 
-From then on, that Profile marks the others from the cabinet: open **Manage profiles** in the Exit menu, pick a Profile and choose "Admin: no", which turns to "Admin: yes" at once. Choose it again to clear the mark.
+From then on, that Profile marks the others from the cabinet: open **Manage profiles** in the Operator Menu, pick a Profile and choose "Admin: no", which turns to "Admin: yes" at once. Choose it again to clear the mark.
 
 - You can clear your own mark the same way while another Admin Profile remains: the menus then close, since you no longer have access to them.
 - The last Admin Profile's Admin line is greyed out ("Last admin"): only editing its `profile.json` by hand takes the household back to everyone seeing everything.
@@ -88,16 +88,16 @@ From then on, that Profile marks the others from the cabinet: open **Manage prof
 
 ## Profile Reset
 
-An Admin Profile also finds **Manage profiles** in the Exit menu (Escape), right after "Change Player", above "Operator Menu". It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)) and **Reset**. With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
+An Admin Profile also finds **Manage profiles** in the Operator Menu, right after **eXpansion Pack Settings**, in their own group below "Batch Capture". Other Profiles never see it, even when the coin door service button opens the Operator Menu. It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)) and **Reset**. With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
 
 - After one confirmation (the cursor starts on "No"), "Reset" or "Reset every profile" starts the Profile over: its plays, Streaks, session records, Random Games, Challenge progress, announced Achievements, Table Mastery, Collection Tier and Avatar Frames are erased, while its name, Avatar, marks and the High Scores it won stay.
 - A message then tells whether it worked.
 - Its former files are kept next to them, as `profile.reset-<date>.json` and `play-log-<year>.reset-<date>.json`: to undo a reset, close PinballY and rename each copy back, without its `.reset-<date>` part.
-- Manage profiles needs PinballY's Exit menu: if you disabled it in PinballY's options, the entry cannot show.
+- If you disabled PinballY's Exit menu in its options, the coin door service button still opens the Operator Menu, and Manage profiles with it.
 
 ## Child Profile
 
-To keep the Adult Tables away from a child, tag them in PinballY with the category `NSFW` (or name your own category with `ADULT_CATEGORY` in `Scripts\ExpansionPack\.env.local`, spelt exactly as in PinballY), then mark the child's Profile: from an Admin Profile, open **Manage profiles** in the Exit menu, pick the child's Profile and choose "Child: no", which turns to "Child: yes" at once. Choose it again to clear the mark.
+To keep the Adult Tables away from a child, tag them in PinballY with the category `NSFW` (or name your own category with `ADULT_CATEGORY` in `Scripts\ExpansionPack\.env.local`, spelt exactly as in PinballY), then mark the child's Profile: from an Admin Profile, open **Manage profiles** in the Operator Menu, pick the child's Profile and choose "Child: no", which turns to "Child: yes" at once. Choose it again to clear the mark.
 
 - An Admin Profile's Child line is greyed out ("Remove the admin mark first"), and so is Guest's ("Guest is never marked"): choosing it changes nothing.
 - You can still mark a Profile by hand: add `"isChild": true` at the top level of its `Scripts\ExpansionPack\profiles\<name>\profile.json`, PinballY closed.

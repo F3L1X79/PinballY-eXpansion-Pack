@@ -1,6 +1,6 @@
 // ============================================================
 // Daily Streak after a Profile Reset, through main.js on the fake
-// PinballY globals: an Admin Profile resets Alice from the exit menu, her
+// PinballY globals: an Admin Profile resets Alice from the Operator Menu, her
 // Play Log is set aside, and the Welcome Screen that greets her next shows
 // no Daily Streak line any more.
 // ============================================================
@@ -42,7 +42,7 @@ test("a Profile Reset brings the Daily Streak back to 0", async () => {
     assert.equal(dailyStreakLine(fake), `3 ${lang.welcomeScreen.cabinetStreak.playedToday}`);
     press(fake, "Exit");
 
-    fake.openExitMenu();
+    fake.openOperatorMenu();
     fake.selectMenuItem(TEXT.menuEntry);
     fake.selectMenuItem("Alice");
     fake.selectMenuItem(TEXT.reset);

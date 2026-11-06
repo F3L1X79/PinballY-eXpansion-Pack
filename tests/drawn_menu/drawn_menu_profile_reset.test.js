@@ -1,7 +1,7 @@
 // ============================================================
 // The Profile Reset menus as Drawn Menus, through main.js on the fake
 // PinballY globals: the list, its title as a heading, opened from the
-// drawn Exit menu; from a Profile's "Reset", the confirmation, its question above "Yes" and "No",
+// drawn Operator Menu; from a Profile's "Reset", the confirmation, its question above "Yes" and "No",
 // the cursor on "No"; the outcome with "OK". The Profile is reset as
 // before, and "No", "Cancel" and "OK" close the menus.
 // ============================================================
@@ -10,7 +10,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
-import { isDrawnMenuShown, drawnMenuLines, readDrawnMenu, highlightedEntry, squeezed, press, openExitMenu, chooseEntry } from "./drawn_menu_reader.js";
+import { isDrawnMenuShown, drawnMenuLines, readDrawnMenu, highlightedEntry, squeezed, press, openOperatorMenu, chooseEntry } from "./drawn_menu_reader.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 
 const ADD_ONS_UNDER_TEST = ["customMenuCommands", "drawnMenus"];
@@ -39,11 +39,11 @@ test("setup", async () => {
 });
 
 function openList() {
-    openExitMenu(fake);
+    openOperatorMenu(fake);
     chooseEntry(fake, TEXT.menuEntry);
 }
 
-test("the list is drawn from the Exit menu, its title as a heading", () => {
+test("the list is drawn from the Operator Menu, its title as a heading", () => {
     openList();
 
     assert.equal(fake.currentMenu(), null, "no native menu");

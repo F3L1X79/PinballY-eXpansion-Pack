@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
 import {
-    OPEN_OVER_MS, isDrawnMenuShown, drawnMenuLines, readDrawnMenu, highlightedEntry, press, openMainMenu, openExitMenu, openMenu, chooseEntry,
+    OPEN_OVER_MS, isDrawnMenuShown, drawnMenuLines, readDrawnMenu, highlightedEntry, press, openMainMenu, openExitMenu, openOperatorMenu, openMenu, chooseEntry,
 } from "./drawn_menu_reader.js";
 
 const ADD_ONS_UNDER_TEST = ["uiTranslation", "customMenuCommands", "profilePicker", "drawnMenus"];
@@ -78,7 +78,7 @@ test("the Exit menu is drawn with the pack's entries", () => {
     assert.equal(fake.currentMenu(), null, "no native menu");
     assert.deepEqual(drawnMenuLines(fake), [
         "Exit PinballY", "Shut Down", "---",
-        lang.profiles.menuEntry, lang.profileReset.menuEntry, "---",
+        lang.profiles.menuEntry, "---",
         "Operator Menu", "---",
         "Help", "About PinballY", "---",
         "Cancel",
@@ -97,8 +97,8 @@ test("Change Player in the Exit menu opens the Profile picker", () => {
     assert.ok(!pickerShown());
 });
 
-test("Reset profile in the Exit menu opens the Profile Reset list", () => {
-    openExitMenu(fake);
+test("Manage profiles in the Operator Menu opens the Profile Reset list", () => {
+    openOperatorMenu(fake);
     chooseEntry(fake, lang.profileReset.menuEntry);
 
     assert.equal(fake.currentMenu(), null);
@@ -259,13 +259,13 @@ test("ticking a category redraws the categories menu in place, the cursor on it"
     fake.advanceTime(OPEN_OVER_MS);
 });
 
-test("the operator menu is drawn, with the eXpansion Pack Settings", () => {
-    fake.openOperatorMenu();
-    fake.advanceTime(OPEN_OVER_MS);
+test("the operator menu is drawn, the eXpansion Pack Settings and Manage profiles in their own group", () => {
+    openOperatorMenu(fake);
 
     assert.equal(fake.currentMenu(), null);
     assert.deepEqual(drawnMenuLines(fake), [
-        "Game Setup", "Batch Capture", "---", "Reset Coins/Credits", "PinballY Options", lang.expansionPackSettings.menuEntry, "---",
+        "Game Setup", "Batch Capture", "---", lang.expansionPackSettings.menuEntry, lang.profileReset.menuEntry, "---",
+        "Reset Coins/Credits", "PinballY Options", "---",
         "Enable Videos", "Mute Videos", "---", "Help", "About PinballY", "---", "Cancel",
     ]);
     press(fake, "Exit");

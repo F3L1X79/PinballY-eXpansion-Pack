@@ -31,7 +31,7 @@ test("Every Profile resets them all, and a failing one does not stop the others"
     await settle();
 
     const openList = () => {
-        fake.openExitMenu();
+        fake.openOperatorMenu();
         fake.selectMenuItem(TEXT.menuEntry);
         return fake.currentMenu().items.map(item => item.title ?? "");
     };
