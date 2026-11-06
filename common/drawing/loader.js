@@ -1,7 +1,7 @@
 // ============================================================
 // Loader: the small gold comet turning in the middle of the playfield while
 // the player waits, or on the top third over the High Score Board, with an
-// optional caption beneath it saying what the wait is for.
+// optional caption beneath it saying what the wait is for; larger on the backglass.
 // show() and hide() are safe to call again. Takes no button.
 // - The APNG plays by itself; hide() removes the layers, so an idle Loader costs nothing.
 // ============================================================
@@ -14,7 +14,8 @@ import { STEAMBALL_COLORS as COLORS, STEAMBALL_FONTS as FONTS } from "./steambal
 // proportions without the window being measured, which is not laid out
 // yet at startup.
 export const LOADER_HEIGHT = 0.07;
-const LOADER_SCALE = Object.freeze({ ySpan: LOADER_HEIGHT });
+// Half as large again on the backglass, seen from further away.
+const BACKGLASS_LOADER_HEIGHT = LOADER_HEIGHT * 1.5;
 // Where the comet turns, chosen at creation: the centre of the playfield
 // screen, or the centre of its top third (PinballY's y axis points up, in
 // window heights); another height can be given. With a caption, the comet
@@ -52,11 +53,12 @@ function drawCaption(host, dc, words) {
 // without one keeps its comet alone, centred, whatever show() is given.
 export function createLoader(host, { zIndex, placement = LOADER_PLACEMENT.CENTRED, caption = null, screen = LOADER_SCREEN.PLAYFIELD }) {
     const imagePath = `${host.getProjectFolder()}\\${LOADER_IMAGE.folder}\\${LOADER_IMAGE.file}`;
-    const [createLayer, removeLayer] = screen === LOADER_SCREEN.BACKGLASS
-        ? [host.createBackglassDrawingLayer, host.removeBackglassDrawingLayer]
-        : [host.createDrawingLayer, host.removeDrawingLayer];
+    const [createLayer, removeLayer, cometHeight] = screen === LOADER_SCREEN.BACKGLASS
+        ? [host.createBackglassDrawingLayer, host.removeBackglassDrawingLayer, BACKGLASS_LOADER_HEIGHT]
+        : [host.createDrawingLayer, host.removeDrawingLayer, LOADER_HEIGHT];
+    const cometScale = Object.freeze({ ySpan: cometHeight });
     const cometY = caption === null ? placement : placement + CAPTION_HEIGHT / 2;
-    const captionY = placement - LOADER_HEIGHT / 2;
+    const captionY = placement - cometHeight / 2;
     let layer = null;
     let captionLayer = null;
     let shownWords = null;
@@ -79,7 +81,7 @@ export function createLoader(host, { zIndex, placement = LOADER_PLACEMENT.CENTRE
             if (!layer) {
                 layer = createLayer(zIndex);
                 layer.loadImage(imagePath);
-                layer.setScale(LOADER_SCALE);
+                layer.setScale(cometScale);
                 layer.setPos(0, cometY);
             }
             if (caption !== null) showCaption(words);
