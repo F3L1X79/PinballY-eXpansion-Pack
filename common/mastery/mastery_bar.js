@@ -2,7 +2,7 @@
 // Mastery Bar: the selected table's Table Mastery at the top right of the
 // wheel screen (level name, bar, level square). Lights up on demand. Also
 // gives the Collection Mastery's texts to the screens that show it.
-// - Every state is drawn ahead on its own layer (ADR 0010), then only shown or hidden.
+// - Every state is drawn ahead on its own layer (ADR 0010), then only shown or hidden (a point).
 // - Its place (under the Challenge Card or in its place) is asked on each show.
 // ============================================================
 
@@ -12,6 +12,7 @@ import { CHALLENGE_CARD_Z_INDEX, CARD_REFERENCE_HEIGHT } from "../challenges/cha
 import { MASTERY_STEPS, MAX_MASTERY_LEVEL, METAL_TIER_COUNT, tierOf, metalOf, tierMetalOf, withAlpha, mix, WHITE } from "./table_mastery.js";
 import { drawMasterySquare } from "./mastery_square.js";
 import { safeHandler } from "../core/safe_handler.js";
+import { createHiddenLayer, hideLayer, placeAligned, POINT_SPAN } from "../drawing/placed_layers.js";
 
 const SCRIPT_NAME = "MasteryBar";
 
@@ -133,16 +134,19 @@ export function createMasteryBar(host, drawingAhead, { topOf }) {
     let litLayer = null;
     let litTimer = null;
 
-    function place(layer) {
-        layer.setScale({ ySpan: CANVAS.height / CARD_REFERENCE_HEIGHT });
-        layer.setPos(0, -topOf() / CARD_REFERENCE_HEIGHT, "top right");
+    // At span (the bar's, or a point's while hidden) and in place.
+    const place = (layer, span) => placeAligned(layer, span, 0, -topOf() / CARD_REFERENCE_HEIGHT, "top right");
+
+    function showLayer(layer) {
+        place(layer, { ySpan: CANVAS.height / CARD_REFERENCE_HEIGHT });
+        layer.alpha = 1;
     }
 
     function drawState(state) {
-        const layer = host.createDrawingLayer(state.zIndex);
-        // Placed before it is drawn: drawn first, the layer never showed.
-        place(layer);
-        layer.alpha = 0;
+        const layer = createHiddenLayer(host, state.zIndex);
+        // Placed, still a point, before its first draw: on the cabinet, a
+        // layer drawn before it was placed never showed.
+        place(layer, POINT_SPAN);
         layer.clear(STEAMBALL_COLORS.transparent);
         layer.draw(dc => state.draw(host, dc), CANVAS.width, CANVAS.height);
         layers.set(state.key, layer);
@@ -163,13 +167,13 @@ export function createMasteryBar(host, drawingAhead, { topOf }) {
         if (litTimer === null) return;
         host.clearTimeout(litTimer);
         litTimer = null;
-        litLayer.alpha = 0;
-        for (const layer of shown) layer.alpha = 1;
+        hideLayer(litLayer);
+        for (const layer of shown) showLayer(layer);
     }
 
     function hide() {
         putOut();
-        for (const layer of shown) layer.alpha = 0;
+        for (const layer of shown) hideLayer(layer);
         shown = [];
     }
 
@@ -180,23 +184,20 @@ export function createMasteryBar(host, drawingAhead, { topOf }) {
             ? [panelKey(mastery.level), barKey(mastery), squareKey(mastery.level)]
             : [panelKey(NEVER_PLAYED), EMPTY_BAR_KEY];
         shown = keys.map(layerOf);
-        for (const layer of shown) {
-            place(layer);
-            layer.alpha = 1;
-        }
+        for (const layer of shown) showLayer(layer);
     }
 
     // Shows this mastery lit up for a moment, then the resting bar.
     function lightUp(mastery) {
         show(mastery);
-        if (!litLayer) litLayer = host.createDrawingLayer(MASTERY_BAR_Z_INDEX.lit);
-        place(litLayer);
+        if (!litLayer) litLayer = createHiddenLayer(host, MASTERY_BAR_Z_INDEX.lit);
+        place(litLayer, POINT_SPAN);
         litLayer.clear(STEAMBALL_COLORS.transparent);
         litLayer.draw(dc => drawLit(host, dc, mastery), CANVAS.width, CANVAS.height);
         // The lit layer holds the whole bar: the resting one under it would
         // double its translucent panel and its halo.
-        for (const layer of shown) layer.alpha = 0;
-        litLayer.alpha = 1;
+        for (const layer of shown) hideLayer(layer);
+        showLayer(litLayer);
         litTimer = host.setTimeout(safeHandler(SCRIPT_NAME, putOut), LIT.ms);
     }
 

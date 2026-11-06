@@ -1,7 +1,7 @@
 // ============================================================
 // Challenges over the fake host with real modules and a scripted random
 // source: the week's draw in cabinet.json, counted games in profile.json,
-// the card, the Challenge Toast and the previous week's verdict.
+// the card (a point while hidden), the Challenge Toast and the previous week's verdict.
 // ============================================================
 
 import { test } from "node:test";
@@ -16,6 +16,7 @@ import { createChallengeCard, CHALLENGE_CARD_Z_INDEX, CHALLENGE_VERDICT_MS } fro
 import { createAchievementToasts } from "../../common/achievements/achievement_toast.js";
 import config from "../../common/core/config.js";
 import lang from "../../common/core/i18n.js";
+import { isPoint, layersBreakingTheRule } from "../support/hidden_layer_rule.js";
 
 // Monday 21 September 2026, 20:00; its week is keyed "2026-09-21".
 const MONDAY = new Date(2026, 8, 21, 20, 0, 0);
@@ -132,6 +133,22 @@ test("with no visible table there is no Challenge and no card", () => {
 
     assert.deepEqual(cabinetChallenge(fake).current, { week: WEEK, template: "", param: null, target: 0 });
     assert.ok(!cardShown(fake));
+    assert.ok(isPoint(card(fake)), "nothing to show: a point");
+});
+
+test("the card is a point while hidden, and shows at its usual size and place as soon as it has something to show", () => {
+    const { fake } = setUp({ randoms: [0, 0, 0.99] });
+    const usual = { scale: card(fake).scale(), position: card(fake).position() };
+    assert.deepEqual(layersBreakingTheRule(fake), [], "shown at startup");
+    assert.ok(!isPoint(card(fake)));
+
+    fake.gameStarted(TABLES[0]);
+    assert.ok(isPoint(card(fake)), "a point while a game runs");
+    assert.deepEqual(layersBreakingTheRule(fake), []);
+    fake.gameOver(TABLES[0]);
+    assert.deepEqual({ scale: card(fake).scale(), position: card(fake).position() }, usual, "back at its usual size and place");
+    assert.ok(cardShown(fake));
+    assert.deepEqual(layersBreakingTheRule(fake), []);
 });
 
 test("an unconfigured table counts neither in a draw nor in a Challenge's progress", () => {

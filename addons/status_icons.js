@@ -6,13 +6,14 @@
 // changes and once the Update Check's reply is handled.
 // - A fixed slot right of the widest time: never follows the minute, nor moves with the clock off.
 // - An icon that comes or goes while shown fades once; none at "wheelmode", never a loop.
-// - Hidden on "gamestarted", nothing drawn until "wheelmode".
+// - Hidden (points) on "gamestarted", nothing drawn until "wheelmode".
 // - Discord's symbol is an image, drawn as is: only its own layer's alpha can fade it.
 // ============================================================
 
 import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { fadeIn } from "../common/drawing/screen_opening.js";
+import { createHiddenLayer, hideLayer, placeAligned } from "../common/drawing/placed_layers.js";
 import { WHEEL_CLOCK, widestTimeWidth } from "../common/clock/wheel_clock_layout.js";
 import { isCabinetPublicOnDiscord, onCabinetPublicChange } from "../common/discord/discord_client.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
@@ -40,14 +41,15 @@ export default function init() {
     const host = createPinballYHost();
     const profileStore = getProfileStore();
     const updateState = getUpdateState();
-    function createIconLayer() {
-        const iconLayer = host.createDrawingLayer(WHEEL_CLOCK.zIndex);
-        iconLayer.setScale({ ySpan: CANVAS.height / WHEEL_CLOCK.referenceHeight });
-        iconLayer.setPos(0, 0, "top left");
-        return iconLayer;
+    // At the clock's scale and place.
+    function showLayer(iconLayer) {
+        placeAligned(iconLayer, { ySpan: CANVAS.height / WHEEL_CLOCK.referenceHeight }, 0, 0, "top left");
+        iconLayer.alpha = 1;
     }
-    const glyphLayer = createIconLayer();
-    const symbolLayer = createIconLayer();
+    const glyphLayer = host.createDrawingLayer(WHEEL_CLOCK.zIndex);
+    showLayer(glyphLayer);
+    // A point until the symbol is drawn on it.
+    const symbolLayer = createHiddenLayer(host, WHEEL_CLOCK.zIndex);
     const slotLeft = WHEEL_CLOCK.left + widestTimeWidth(host) + SLOT_GAP;
     // By absolute path: drawImage resolves relative paths from the PinballY folder.
     const symbolPath = `${host.getProjectFolder()}\\${DISCORD_SYMBOL_FILE}`;
@@ -71,12 +73,18 @@ export default function init() {
 
     const fullyShown = icons => icons.map(icon => ({ icon, opacity: 1 }));
 
-    // symbol: its entry, undefined for none. Drawn once, however long its fade.
+    // symbol: its entry, undefined for none. Drawn once, however long its
+    // fade; its layer a point without it.
     function showSymbol(symbol) {
         if (Boolean(symbol) !== isSymbolDrawn) {
             isSymbolDrawn = Boolean(symbol);
-            if (symbol) symbolLayer.draw(dc => dc.drawImage(symbolPath, slotLeft, DISCORD_SYMBOL.top, DISCORD_SYMBOL.width, DISCORD_SYMBOL.height), CANVAS.width, CANVAS.height);
-            else symbolLayer.clear(TRANSPARENT);
+            if (symbol) {
+                symbolLayer.draw(dc => dc.drawImage(symbolPath, slotLeft, DISCORD_SYMBOL.top, DISCORD_SYMBOL.width, DISCORD_SYMBOL.height), CANVAS.width, CANVAS.height);
+                showLayer(symbolLayer);
+            } else {
+                symbolLayer.clear(TRANSPARENT);
+                hideLayer(symbolLayer);
+            }
         }
         if (symbol) symbolLayer.alpha = symbol.opacity;
     }
@@ -140,14 +148,14 @@ export default function init() {
     host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
         isShown = false;
         finishFade();
-        glyphLayer.alpha = 0;
-        symbolLayer.alpha = 0;
+        hideLayer(glyphLayer);
+        hideLayer(symbolLayer);
     }));
     // Back on the wheel, after a game, a menu or a dialog: shown as they are now, without a fade.
     host.on("wheelmode", safeHandler(SCRIPT_NAME, () => {
         isShown = true;
-        glyphLayer.alpha = 1;
-        symbolLayer.alpha = 1;
+        showLayer(glyphLayer);
+        if (isSymbolDrawn) showLayer(symbolLayer);
         refresh({ fade: false });
     }));
     profileStore.onSwitch(safeHandler(SCRIPT_NAME, () => refresh({ fade: true })));

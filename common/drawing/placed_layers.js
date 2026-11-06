@@ -9,11 +9,20 @@
 
 export const POINT_SPAN = Object.freeze({ xSpan: 0.001, ySpan: 0.001 });
 // PinballY's default span: the whole window.
-const WINDOW_SPAN = Object.freeze({ xSpan: 1, ySpan: 1 });
+export const WINDOW_SPAN = Object.freeze({ xSpan: 1, ySpan: 1 });
 
 export function hideLayer(layer) {
     layer.alpha = 0;
     layer.setScale(POINT_SPAN);
+}
+
+// A layer aligned on the window (align: "top right" or the like, undefined for the
+// centre) back at its span, then at its place: the alignment is on its size.
+export function placeAligned(layer, span, x, y, align) {
+    layer.setScale(span);
+    // No undefined handed to PinballY: the help documents only an omitted align.
+    if (align === undefined) layer.setPos(x, y);
+    else layer.setPos(x, y, align);
 }
 
 // Still measures the window: a draw without a size gets a canvas the size of the window.

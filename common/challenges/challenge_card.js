@@ -3,12 +3,13 @@
 // the top right of the wheel screen, on its own layer (see docs/adr/0003).
 // Lights up once on something new; shows last week's verdict first in a new
 // week. Redrawn at startup, on a Profile switch and on "wheelmode".
-// - Hidden with no Challenge and while a game runs.
+// - Hidden, a point, with no Challenge and while a game runs.
 // ============================================================
 
 import lang from "../core/i18n.js";
 import { safeHandler } from "../core/safe_handler.js";
 import { STEAMBALL_COLORS, STEAMBALL_FONTS } from "../drawing/steamball_palette.js";
+import { createHiddenLayer, hideLayer, placeAligned } from "../drawing/placed_layers.js";
 import { challengeTitleOf } from "./challenge.js";
 
 const SCRIPT_NAME = "ChallengeCard";
@@ -124,8 +125,8 @@ function drawCard(host, dc, face, lit, extra) {
 
 // underBadge: false when there is no Profile badge to leave room for.
 export function createChallengeCard(host, challenges, profileStore, { underBadge = true } = {}) {
-    const layer = host.createDrawingLayer(CHALLENGE_CARD_Z_INDEX);
-    layer.setPos(0, underBadge ? -BADGE_HEIGHT / CARD_REFERENCE_HEIGHT : 0, "top right");
+    const layer = createHiddenLayer(host, CHALLENGE_CARD_Z_INDEX);
+    const yOffset = underBadge ? -BADGE_HEIGHT / CARD_REFERENCE_HEIGHT : 0;
     let timer = null;
 
     function stopTimer() {
@@ -144,7 +145,7 @@ export function createChallengeCard(host, challenges, profileStore, { underBadge
     function draw(face, lit) {
         layer.clear(COLORS.transparent);
         if (!face) {
-            layer.alpha = 0;
+            hideLayer(layer);
             return;
         }
         layer.alpha = 1;
@@ -153,7 +154,7 @@ export function createChallengeCard(host, challenges, profileStore, { underBadge
         const view = challenges.getActiveView();
         const extra = Math.max(titleExtraHeight(host, face.challenge), view ? titleExtraHeight(host, view.challenge) : 0);
         // The span follows the canvas height, so a taller card keeps its proportions.
-        layer.setScale({ ySpan: (CANVAS.height + extra) / CARD_REFERENCE_HEIGHT });
+        placeAligned(layer, { ySpan: (CANVAS.height + extra) / CARD_REFERENCE_HEIGHT }, 0, yOffset, "top right");
         layer.draw(dc => drawCard(host, dc, face, lit, extra), CANVAS.width, CANVAS.height + extra);
     }
 
@@ -200,7 +201,7 @@ export function createChallengeCard(host, challenges, profileStore, { underBadge
     // Never over a game.
     host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
         stopTimer();
-        layer.alpha = 0;
+        hideLayer(layer);
     }));
     // Fires back on the wheel, after a game, a menu or a dialog.
     host.on("wheelmode", safeHandler(SCRIPT_NAME, () => refresh()));

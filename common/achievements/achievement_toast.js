@@ -18,6 +18,7 @@ import { playerLevelColorOf } from "../drawing/steamball_drawing.js";
 import { getConfettiShower } from "../celebrations/confetti_shower.js";
 import { getFireworks } from "../celebrations/fireworks.js";
 import { getWheelDialogs } from "../core/wheel_dialog.js";
+import { createHiddenLayer, hideLayer, placeAligned, WINDOW_SPAN } from "../drawing/placed_layers.js";
 
 const SCRIPT_NAME = "AchievementToast";
 
@@ -258,7 +259,7 @@ export function createAchievementToasts(host, {
     // layout height, its lift above the bottom slot (layout pixels, up is
     // positive), its alpha and whether it is leaving.
     const cards = [];
-    // Layers of cards that left, kept for the next ones.
+    // Layers of cards that left, points kept for the next ones.
     const freeLayers = [];
     let frameTimer = null;
     // False for ARRIVAL_GAP_MS after a card arrives, so a batch arrives staggered.
@@ -334,6 +335,7 @@ export function createAchievementToasts(host, {
             for (const card of gone) {
                 cards.splice(cards.indexOf(card), 1);
                 card.layer.clear(COLORS.transparent);
+                hideLayer(card.layer);
                 freeLayers.push(card.layer);
             }
             showNext();
@@ -380,7 +382,9 @@ export function createAchievementToasts(host, {
         if (holdForShower(waiting[0])) return;
 
         const toast = waiting.shift();
-        const layer = freeLayers.pop() || host.createDrawingLayer(ACHIEVEMENT_TOAST_Z_INDEX);
+        const layer = freeLayers.pop() || createHiddenLayer(host, ACHIEVEMENT_TOAST_Z_INDEX);
+        // The card is drawn on a canvas the window's size, stretched back over it.
+        placeAligned(layer, WINDOW_SPAN, 0, 0);
         let drawn = null;
         layer.draw(dc => { drawn = drawCard(host, dc, look, toast, iconOf); });
         // Starts just below the bottom edge, then rises into place.

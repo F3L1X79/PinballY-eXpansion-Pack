@@ -2,7 +2,7 @@
 // Achievement Toast module on the fake host: stacking (at most five), hold
 // duration, scale and sound settings (out of range values logged), Challenge
 // and Error Toasts in the same queue, Confetti Shower and Fireworks starts,
-// and rank emblems with the trophy fallback.
+// rank emblems with the trophy fallback, and a gone card's layer a point until reused.
 // ============================================================
 
 import { test } from "node:test";
@@ -13,6 +13,7 @@ import lang from "../../common/core/i18n.js";
 import { ACHIEVEMENT_RANK } from "../../common/achievements/achievements.js";
 import { RANK_COLORS, STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 import { playerLevelColorOf } from "../../common/drawing/steamball_drawing.js";
+import { isPoint, layersBreakingTheRule } from "../support/hidden_layer_rule.js";
 
 const ARRIVAL_GAP_MS = 350;
 const MAX_CARDS = 5;
@@ -22,6 +23,7 @@ const SETTLE_MS = 1000;
 const ASSETS = "C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images";
 const TROPHY = `${ASSETS}\\achievement_trophy.png`;
 const emblemOf = rank => `${ASSETS}\\rank_${rank}_tile.png`;
+const WINDOW_SPAN = { xSpan: 1, ySpan: 1 };
 
 // Titles of the cards on screen, oldest (highest) first.
 function cardsOnScreen(fake) {
@@ -281,4 +283,32 @@ test("a missing Rank emblem falls back to the trophy, logged once", () => {
         assert.ok(layer.fills().includes(RANK_COLORS[SILVER]), "still in its Rank's colour");
     }
     assert.equal(fake.logLines().filter(line => line.includes(emblemOf(SILVER))).length, 1);
+});
+
+test("a gone toast's layer is a point, and the toasts reusing it show at the window's span", () => {
+    const fake = createFakePinballYHost();
+    fake.installGlobals();
+    const toasts = createAchievementToasts(fake);
+    const placesOf = titles => titles.map(title => {
+        const layer = fake.drawingLayers().find(candidate => candidate.texts()[1] === title);
+        return { scale: layer.scale(), position: layer.position(), alpha: layer.alpha };
+    });
+    const firstBatch = ["1", "2", "3"];
+    for (const title of firstBatch) submitOne(toasts, title);
+    fake.advanceTime(SETTLE_MS);
+    const usualPlaces = placesOf(firstBatch);
+    assert.deepEqual(layersBreakingTheRule(fake), [], "on screen");
+    assert.deepEqual(usualPlaces.map(place => place.scale), firstBatch.map(() => WINDOW_SPAN));
+
+    fake.advanceTime(60000);
+    assert.equal(cardsOnScreen(fake).length, 0, "every card gone");
+    assert.ok(fake.drawingLayers().every(isPoint), "every gone card's layer is a point");
+
+    const secondBatch = ["4", "5", "6"];
+    for (const title of secondBatch) submitOne(toasts, title);
+    fake.advanceTime(SETTLE_MS);
+    assert.equal(fake.drawingLayers().length, firstBatch.length, "the layers reused");
+    assert.deepEqual(placesOf(secondBatch), usualPlaces, "at the usual place and size, several at once");
+    assert.deepEqual(layersBreakingTheRule(fake), []);
+    assert.deepEqual(fake.logLines(), []);
 });
