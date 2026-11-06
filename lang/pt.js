@@ -1010,6 +1010,10 @@ export default {
         packUpdateFailed: (version, logPath) => `A atualização para v${version} falhou: a versão anterior continua no lugar. Detalhes em ${logPath}`,
     },
     releaseHighlights: {
+        "1.3.0": [
+            "Um novo perfil agora escolhe seu avatar entre 24 retratos, logo depois de digitar o nome.",
+            "Enquanto uma mesa carrega, o cometa dourado também gira no backglass.",
+        ],
         "1.2.0": [
             "Crie um novo perfil direto da máquina: escolha o \"+\" em Trocar de jogador.",
             "O Discord agora pode mostrar a mesa em que você está jogando: ative-o nas Configurações do pack.",

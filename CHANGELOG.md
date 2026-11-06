@@ -2,6 +2,14 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.3.0 (2026-11-06)
+
+- **Avatar Choice**: right after Name Entry, a new Profile picks its Avatar among 24 portraits with the flippers, on a wide or a tall screen. Exit asks before keeping the default Avatar, now a plain grey silhouette. A photo dropped as `avatar.jpg` in the Profile's folder wins over `avatar.png`, and `AVATAR_CHOICE_SOUND_FILE` can play a sound as the screen shows.
+- **PinballY version notice**: when the PinballY on the cabinet is newer than the one the pack was tested on, has a version the pack cannot read, or is older than its minimum, an Admin Profile is told once per PinballY version, at startup or when it becomes active. It never turns anything off.
+- **Backglass comet**: while a table loads and closes, the gold comet also turns in the middle of the backglass.
+- **Menus**: Change Player and Manage profiles have their own group in the Exit menu, after Shut Down; in the Operator Menu, the eXpansion Pack Settings and Manage profiles have theirs, after Batch Capture.
+- **Small touches**: unconfigured tables (found by PinballY but never set up) no longer count anywhere a Profile's tables do, the World Tour included; the sound set in `PROFILE_PICKER_SOUND_FILE` plays each time the Change Player carousel appears; a broken `profile.json` set aside at startup is kept in the Error Log, and the guide explains how to fix it by hand; screens follow a change of window size more smoothly.
+
 ## v1.2.0 (2026-11-04)
 
 - **Create a Profile from the cabinet**: the "+" at the end of Change Player opens Name Entry, a ring of characters you move along with the flippers, no keyboard or Windows needed. The first Profile created on a cabinet that only has Guest becomes an Admin Profile.

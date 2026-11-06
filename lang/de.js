@@ -1010,6 +1010,10 @@ export default {
         packUpdateFailed: (version, logPath) => `Die Aktualisierung auf v${version} ist fehlgeschlagen: Die vorherige Version bleibt erhalten. Details in ${logPath}`,
     },
     releaseHighlights: {
+        "1.3.0": [
+            "Ein neues Profil wählt jetzt direkt nach der Namenseingabe seinen Avatar aus 24 Porträts.",
+            "Während ein Tisch lädt, dreht sich der goldene Komet jetzt auch auf dem Backglass.",
+        ],
         "1.2.0": [
             "Erstelle ein neues Profil direkt am Automaten: Wähle das \"+\" unter Spieler wechseln.",
             "Discord kann jetzt den Tisch zeigen, den du spielst: Schalte es in den Expansion-Pack-Einstellungen ein.",

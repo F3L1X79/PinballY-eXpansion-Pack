@@ -1014,6 +1014,10 @@ export default {
         packUpdateFailed: (version, logPath) => `La mise à jour en v${version} a échoué : la version précédente reste en place. Détails dans ${logPath}`,
     },
     releaseHighlights: {
+        "1.3.0": [
+            "Un nouveau profil choisit maintenant son avatar parmi 24 portraits, juste après avoir saisi son nom.",
+            "Pendant le chargement d'une table, la comète dorée tourne aussi sur le backglass.",
+        ],
         "1.2.0": [
             "Créez un profil directement depuis la borne : choisissez le « + » dans Changer de joueur.",
             "Discord peut maintenant montrer la table à laquelle vous jouez : activez-le dans les Réglages de l'eXpansion pack.",

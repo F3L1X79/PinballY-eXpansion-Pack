@@ -1009,6 +1009,10 @@ export default {
         packUpdateFailed: (version, logPath) => `L'aggiornamento alla v${version} non è riuscito: la versione precedente resta al suo posto. Dettagli in ${logPath}`,
     },
     releaseHighlights: {
+        "1.3.0": [
+            "Un nuovo profilo ora sceglie il suo avatar tra 24 ritratti, subito dopo aver inserito il nome.",
+            "Mentre un tavolo si carica, la cometa dorata gira anche sul backglass.",
+        ],
         "1.2.0": [
             "Crea un nuovo profilo direttamente dal cabinato: scegli il \"+\" in Cambia giocatore.",
             "Discord ora può mostrare il tavolo a cui stai giocando: attivalo nelle Impostazioni del pack.",

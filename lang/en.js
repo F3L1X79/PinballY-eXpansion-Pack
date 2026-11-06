@@ -951,6 +951,10 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.3.0": [
+            "A new Profile now picks its Avatar among 24 portraits, right after its name is entered.",
+            "While a table loads, the gold comet also turns on the backglass.",
+        ],
         "1.2.0": [
             "Create a new Profile right from the cabinet: choose the \"+\" in Change Player.",
             "Discord can now show the table you are playing: turn it on in the eXpansion Pack Settings.",
