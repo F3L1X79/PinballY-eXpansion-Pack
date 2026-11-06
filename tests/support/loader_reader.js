@@ -1,5 +1,5 @@
 // ============================================================
-// Reads the Loader on the fake PinballY host's playfield layers: the layer
+// Reads the Loader on the fake PinballY host's playfield or backglass layers: the layer
 // showing the comet image, whether it shows, its z-index, scale and
 // position; and its caption, the words drawn by the other layers with their
 // colour and black outline. Never loaded by PinballY.
@@ -20,8 +20,18 @@ export const loaderLayerCount = fake => fake.drawingLayers().filter(isLoaderLaye
 
 // { shown: false } without a Loader on screen, else { shown: true, zIndex,
 // scale, position }.
-export function readLoader(fake) {
-    const shown = fake.drawingLayers().filter(layer => isLoaderLayer(layer) && layer.alpha > 0);
+export const readLoader = fake => readLoaderAmong(fake.drawingLayers());
+
+// The same, on the backglass window's layers, and whether any other layer
+// shows there (a caption, say).
+export function readBackglassLoader(fake) {
+    const layers = fake.backglassDrawingLayers();
+    const loader = readLoaderAmong(layers);
+    return { ...loader, otherLayers: layers.filter(layer => !isLoaderLayer(layer)).length };
+}
+
+function readLoaderAmong(layers) {
+    const shown = layers.filter(layer => isLoaderLayer(layer) && layer.alpha > 0);
     assert.ok(shown.length <= 1, "a single Loader at a time");
     if (shown.length === 0) return { shown: false };
     const [layer] = shown;

@@ -1,13 +1,16 @@
 ﻿// ============================================================
 // Hides the wheel while a table launches and closes, showing the Loader and
 // the current step beneath it instead of PinballY's launch message, to avoid
-// a black flash before the table's own loading screen. Listens to
-// "launchoverlayshow", "launchoverlaymessage" and "launchoverlayhide".
+// a black flash before the table's own loading screen; the comet alone also
+// turns in the middle of the backglass. Listens to "launchoverlayshow",
+// "launchoverlaymessage" and "launchoverlayhide".
+// - Never looks at Force Backglass: the backglass comet is seen whenever its window shows.
+// - The backglass comet stays off during a capture, never to land in the captured media.
 // ============================================================
 
 import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
-import { createLoader } from "../common/drawing/loader.js";
+import { createLoader, LOADER_SCREEN } from "../common/drawing/loader.js";
 import lang from "../common/core/i18n.js";
 
 const SCRIPT_NAME = "SeamlessLaunchOverlay";
@@ -23,6 +26,7 @@ const STEP_TEXT = lang.launchSteps;
 export default function init() {
     const host = createPinballYHost();
     const loader = createLoader(host, { zIndex: LOADER_Z_INDEX, caption: STEP_TEXT.loading });
+    const backglassLoader = createLoader(host, { zIndex: LOADER_Z_INDEX, screen: LOADER_SCREEN.BACKGLASS });
 
     // Fires when the launch overlay appears: hides the wheel and replaces the
     // default overlay background (preventDefault suppresses PinballY's own).
@@ -32,6 +36,7 @@ export default function init() {
         host.getLaunchOverlayBackground().clear(0x20FF00FF);
         ev.preventDefault();
         loader.show();
+        backglassLoader.show();
     }));
 
     // Fires at each step of a launch; preventDefault suppresses PinballY's
@@ -44,13 +49,23 @@ export default function init() {
     // after a capture, sends only "gameover".
     host.on("launchoverlaymessage", safeHandler(SCRIPT_NAME, ev => {
         ev.preventDefault();
-        if (ev.id === "running") loader.hide();
-        if (ev.id === "terminating" || ev.id === "gameover") loader.show(STEP_TEXT.closing);
-        if (ev.id === "capturing" && loader.isShown()) loader.show(STEP_TEXT.capturing);
+        if (ev.id === "running") {
+            loader.hide();
+            backglassLoader.hide();
+        }
+        if (ev.id === "terminating" || ev.id === "gameover") {
+            loader.show(STEP_TEXT.closing);
+            backglassLoader.show();
+        }
+        if (ev.id === "capturing") {
+            if (loader.isShown()) loader.show(STEP_TEXT.capturing);
+            backglassLoader.hide();
+        }
     }));
 
     host.on("launchoverlayhide", safeHandler(SCRIPT_NAME, () => {
         host.showWheel(true);
         loader.hide();
+        backglassLoader.hide();
     }));
 }

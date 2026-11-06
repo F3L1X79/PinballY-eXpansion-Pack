@@ -601,6 +601,9 @@ export function createPinballYHost() {
         // The backglass window's frame on the desktop, { left, top, right,
         // bottom }, the backglass screen on a cabinet; null without a frame.
         getBackglassWindowRect: () => backglassRectOf(backglassWindow),
+        // The backglass window's own layers, drawn over its picture or video.
+        createBackglassDrawingLayer: (zIndex) => backglassWindow.createDrawingLayer(zIndex),
+        removeBackglassDrawingLayer: (layer) => { backglassWindow.removeDrawingLayer(layer); },
         // desc: createMediaWindow's (MainWindowObject.html); see mediaWindowOf().
         createMediaWindow: (desc) => mediaWindowOf(mainWindow.createMediaWindow(desc), HWND),
         // Through the Windows Media Player COM component, like the launch

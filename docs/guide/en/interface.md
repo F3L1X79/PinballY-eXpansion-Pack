@@ -45,6 +45,7 @@ They keep their place when the minute changes and when the clock is turned off, 
 ## Launches, waits and sounds
 
 - Launches without a black flash, with a gold comet turning while you wait, the step under way written in gold beneath it while a table launches or closes ("Loading…", "Returning to tables…"): during a launch, at startup, while a high score board is read and while the Profile Stats, the Household Stats, the Achievement List or the Avatar Frame list get ready.
+- While a table loads and closes, the comet also turns alone in the middle of the backglass, never while PinballY captures a table's media.
 - The backglass hidden during a game.
 - Sounds for launches, Achievements, greetings, confetti and fireworks, or your own (see [Settings](settings.md)).
 

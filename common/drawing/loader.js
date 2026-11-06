@@ -20,6 +20,8 @@ const LOADER_SCALE = Object.freeze({ ySpan: LOADER_HEIGHT });
 // window heights); another height can be given. With a caption, the comet
 // and its caption are centred together on that height.
 export const LOADER_PLACEMENT = Object.freeze({ CENTRED: 0, TOP_THIRD: 1 / 6 });
+// The window the Loader draws on, chosen at creation.
+export const LOADER_SCREEN = Object.freeze({ PLAYFIELD: "playfield", BACKGLASS: "backglass" });
 
 // The caption's canvas, drawn at twice a 1080-pixel-high window's pixels so
 // that its one-pixel outline shows half as thick, and scaled by height
@@ -48,8 +50,11 @@ function drawCaption(host, dc, words) {
 // caption: the words shown beneath the comet, already translated; show()
 // can be given others, such as the launch's next step. A Loader created
 // without one keeps its comet alone, centred, whatever show() is given.
-export function createLoader(host, { zIndex, placement = LOADER_PLACEMENT.CENTRED, caption = null }) {
+export function createLoader(host, { zIndex, placement = LOADER_PLACEMENT.CENTRED, caption = null, screen = LOADER_SCREEN.PLAYFIELD }) {
     const imagePath = `${host.getProjectFolder()}\\${LOADER_IMAGE.folder}\\${LOADER_IMAGE.file}`;
+    const [createLayer, removeLayer] = screen === LOADER_SCREEN.BACKGLASS
+        ? [host.createBackglassDrawingLayer, host.removeBackglassDrawingLayer]
+        : [host.createDrawingLayer, host.removeDrawingLayer];
     const cometY = caption === null ? placement : placement + CAPTION_HEIGHT / 2;
     const captionY = placement - LOADER_HEIGHT / 2;
     let layer = null;
@@ -61,7 +66,7 @@ export function createLoader(host, { zIndex, placement = LOADER_PLACEMENT.CENTRE
     function showCaption(words) {
         if (words === shownWords) return;
         if (!captionLayer) {
-            captionLayer = host.createDrawingLayer(zIndex);
+            captionLayer = createLayer(zIndex);
             captionLayer.setScale(CAPTION_SCALE);
             captionLayer.setPos(0, captionY);
         }
@@ -72,7 +77,7 @@ export function createLoader(host, { zIndex, placement = LOADER_PLACEMENT.CENTRE
     return {
         show(words = caption) {
             if (!layer) {
-                layer = host.createDrawingLayer(zIndex);
+                layer = createLayer(zIndex);
                 layer.loadImage(imagePath);
                 layer.setScale(LOADER_SCALE);
                 layer.setPos(0, cometY);
@@ -81,10 +86,10 @@ export function createLoader(host, { zIndex, placement = LOADER_PLACEMENT.CENTRE
         },
         hide() {
             if (!layer) return;
-            host.removeDrawingLayer(layer);
+            removeLayer(layer);
             layer = null;
             if (!captionLayer) return;
-            host.removeDrawingLayer(captionLayer);
+            removeLayer(captionLayer);
             captionLayer = null;
             shownWords = null;
         },

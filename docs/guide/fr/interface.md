@@ -45,6 +45,7 @@ Elles gardent leur place quand la minute change et quand l'horloge est désactiv
 ## Lancements, attentes et sons
 
 - Un lancement sans flash noir, avec une comète dorée qui tourne pendant l'attente, l'étape en cours écrite en doré dessous quand une table se lance ou se ferme (« Chargement en cours… », « Retour aux tables… ») : au lancement, au démarrage, pendant la lecture d'un tableau des scores et pendant la préparation des statistiques, de la liste des succès et de la liste des cadres d'Avatar.
+- Pendant qu'une table se charge et se ferme, la comète tourne aussi, seule, au milieu du backglass, jamais pendant que PinballY capture les médias d'une table.
 - Le backglass masqué pendant une partie.
 - Des sons au lancement, aux succès, à l'accueil, aux confettis et au feu d'artifice, ou les vôtres (voir [Réglages](settings.md)).
 

@@ -231,6 +231,8 @@ export function createFakePinballYHost({
     // The view is as large as the layers' window once laid out.
     const viewSize = () => ({ ...(isPastInit ? currentLayoutSize : viewSizeAtInit) });
     const layers = [];
+    // The backglass window's own layers, never listed with the playfield's.
+    const backglassLayers = [];
     // Every layer draw, in order: { zIndex, texts, images }.
     const drawingList = [];
     // The underlay a script set, null until one does.
@@ -752,6 +754,20 @@ export function createFakePinballYHost({
     function removeDrawingLayer(layer) {
         const index = layers.indexOf(layer);
         if (index >= 0) layers.splice(index, 1);
+    }
+
+    // Every window has its own layers (docs/pinbally/pinbally-help.md §2.1).
+    // Whether a layer posed while the window is hidden shows when it returns
+    // is not documented: the layers are listed whatever the window's state.
+    function createBackglassDrawingLayer(zIndex) {
+        const layer = createLayerObject(zIndex);
+        backglassLayers.push(layer);
+        return layer;
+    }
+
+    function removeBackglassDrawingLayer(layer) {
+        const index = backglassLayers.indexOf(layer);
+        if (index >= 0) backglassLayers.splice(index, 1);
     }
 
     const isImageReadable = path => files.has(path) && !unreadableImages.has(path);
@@ -1508,6 +1524,8 @@ export function createFakePinballYHost({
         countMonitors: () => monitorCount,
         showBackglass: (visible) => { backglassShowCalls.push(visible); },
         getBackglassWindowRect: () => backglassRectOf({ hwndFrame: backglassFrame }),
+        createBackglassDrawingLayer,
+        removeBackglassDrawingLayer,
         createMediaWindow: (desc) => mediaWindowOf(createRawMediaWindow(desc), FAKE_HWND),
         playSound,
         createSoundRotation,
@@ -1562,6 +1580,8 @@ export function createFakePinballYHost({
         // seen by the next draw without a size and by getViewSize(), and told to no script.
         setLayoutSize(size) { currentLayoutSize = { ...size }; },
         drawingLayers: () => [...layers],
+        // The backglass window's layers, listed whatever the window's state.
+        backglassDrawingLayers: () => [...backglassLayers],
         underlay: () => underlayFile,
         wheelShown: () => wheelShown,
         // The launch overlay's layers, { bg, fg }.
@@ -2009,6 +2029,8 @@ export function createFakePinballYHost({
                 backglassWindow: {
                     showWindow: (visible) => { backglassShowCalls.push(visible); },
                     hwndFrame: backglassFrame,
+                    createDrawingLayer: createBackglassDrawingLayer,
+                    removeDrawingLayer: removeBackglassDrawingLayer,
                 },
                 // Only User32's GetSystemMetrics, for the monitor count
                 // (SM_CMONITORS), and Shell32's ShellExecuteW, for cmd.exe
