@@ -37,9 +37,10 @@ export function createDrawnScreenControls(host) {
         if (!entry || ev.defaultPrevented || entry.isSetAside) return;
         // Swallowed first, so a failing choice still never reaches the wheel.
         ev.preventDefault();
-        if (isHeldSelectLaunchOrExit(ev)) return undefined;
-        // Logged under the screen's own name.
-        return safeHandler(entry.screen.scriptName, route)(entry, ev);
+        if (isHeldSelectLaunchOrExit(ev)) return;
+        // Logged under the screen's own name, a rejected choice included; its
+        // promise not returned, or the module's own guard would log it again.
+        safeHandler(entry.screen.scriptName, route)(entry, ev);
     }
 
     function route({ handlers, isReady }, ev) {

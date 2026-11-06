@@ -97,7 +97,9 @@ test("a choice that throws still swallows the press, and the error is logged", a
     b.open({ onChoose: () => Promise.reject(new Error("broken random game")) }).ready();
     press(fake, "Select");
     await new Promise(resolve => setTimeout(resolve, 0));
-    assert.ok(fake.logLines().some(line => line.includes("broken random game")), "a rejected choice logged too");
+    const rejected = fake.logLines().filter(line => line.includes("broken random game"));
+    assert.equal(rejected.length, 1, "a rejected choice logged too, once");
+    assert.ok(rejected[0].startsWith("[B] ERROR"), "under the screen's name");
 });
 
 test("a press acts once, on the top opening only, also when it opens or closes one", () => {

@@ -6,8 +6,8 @@
 // A drawn dialog of the wheel dialog module at the startup priority (docs/adr/0011).
 // - At startup only, the startup veil dims the wheel until the panel is in.
 // - Drawn at its turn, then redrawn in place when PinballY lays the window out while it is open.
-// - Swallows every button through "commandbuttondown" while open; reading the Period cards locks this Period's tables.
-// - Writes the Lost Records seen marker to high_scores.json.
+// - Buttons and attract mode go through the Drawn Screen controls from its turn on; never handed to waitFor().
+// - Reading the Period cards locks this Period's tables; drawing it writes the Lost Records seen marker to high_scores.json.
 // - Holds the quiet wheel while open; gives it up at once to a launch or attract mode (docs/adr/0015).
 // ============================================================
 
@@ -16,6 +16,7 @@ import config from "../common/core/config.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getWheelDialogs, DIALOG_PRIORITY } from "../common/core/wheel_dialog.js";
+import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
 import { getStartupScreen, onStartupPickerDone, STARTUP_SCREEN } from "../common/core/startup_screen.js";
 import { getMainMenu, MAIN_MENU_POSITION } from "../common/menus/main_menu.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
@@ -97,6 +98,7 @@ export default function init() {
     const startupVeil = getStartupVeil();
     const quietWheel = getQuietWheel();
     const placed = createPlacedLayers(host, { referenceHeight: REFERENCE_HEIGHT });
+    const controls = getDrawnScreenControls().register(SCRIPT_NAME);
 
     // The grey line: played this Period, or else a Streak of at least 2.
     function greyLineOf(periodTable, texts) {
@@ -294,7 +296,16 @@ export default function init() {
         navigationSound.load();
         const selected = Math.max(0, screen.choices.indexOf(firstChoice));
         drawn.marker.moveTo(drawn.targets[selected]);
-        shown = { ...drawn, screen, selected, opacity: 0, stopFade: () => {} };
+        const controlled = controls.open({
+            onMove: move,
+            onChoose: choose,
+            onExit: () => close(),
+            // Attract mode: closed at once, nothing follows it.
+            close: () => close({ atOnce: true }),
+        });
+        // Drawn in one go: ready as it opens.
+        controlled.ready();
+        shown = { ...drawn, screen, selected, opacity: 0, stopFade: () => {}, controlled };
         windowWatch.start(followWindow);
         // The comet would freeze while the screen is drawn on the UI thread:
         // it goes as the panel fades in, the veil once the panel is fully in.
@@ -348,23 +359,34 @@ export default function init() {
         waiting = null;
         closeDialog = close;
         quietWheel.hold(SCRIPT_NAME);
-        draw();
+        try {
+            draw();
+        } catch (error) {
+            // Never left holding the queue and the quiet wheel.
+            close({ atOnce: true });
+            throw error;
+        }
     }
 
-    // Removes the screen and frees the queue. atOnce: nothing follows (a
-    // table chosen, attract mode), back at its own volume before the wheel moves.
+    // Removes the screen, takes it off the Drawn Screen controls and frees
+    // the queue. atOnce: nothing follows (a table chosen, attract mode), back
+    // at its own volume before the wheel moves. Safe to call again.
     function close({ atOnce = false } = {}) {
+        const done = closeDialog;
+        if (!done) return;
+        // First: the controls' close below calls back in, which then finds nothing to do.
+        closeDialog = null;
         windowWatch.stop();
         startupVeil.hide();
-        if (shown) {
-            shown.stopFade();
-            removeLayers(shown);
-            shown = null;
+        const closing = shown;
+        shown = null;
+        if (closing) {
+            closing.stopFade();
+            removeLayers(closing);
+            closing.controlled.close();
         }
         quietWheel.release(SCRIPT_NAME, { atOnce });
-        const done = closeDialog;
-        closeDialog = null;
-        if (done) done();
+        done();
     }
 
     // direction: 1 for Next, -1 for Prev.
@@ -376,6 +398,7 @@ export default function init() {
         shown.marker.moveTo(shown.targets[shown.selected]);
     }
 
+    // A Random Game animates the wheel: the Drawn Screen controls log its rejection.
     function choose() {
         const choice = shown.screen.choices[shown.selected];
         const { challengeTable } = shown.screen;
@@ -430,19 +453,6 @@ export default function init() {
     // Profile: the new player is welcomed too.
     store.onSwitch(safeHandler(SCRIPT_NAME, reopenWelcomeScreen));
 
-    // Fires on every mapped button press; drives the screen while it is
-    // open. Async because the Random Game animates the wheel, so its
-    // rejections are logged too.
-    host.on("commandbuttondown", safeHandler(SCRIPT_NAME, async ev => {
-        if (!shown) return;
-        // Swallowed first, so a failing choice still never reaches the wheel.
-        ev.preventDefault();
-        if (ev.command === "Next" || ev.command === "Prev") move(ev.command === "Next" ? 1 : -1);
-        // Launch is the plunger, which selects in PinballY's own menus too.
-        else if (ev.command === "Select" || ev.command === "Launch") await choose();
-        else if (ev.command === "Exit") close();
-    }));
-
     // Fires when a table starts: one launched while the screen waits its
     // turn (from a menu opened at startup) means the player already chose,
     // so the screen must not show after the game.
@@ -450,11 +460,5 @@ export default function init() {
         if (!waiting) return;
         waiting.isDropped = true;
         waiting = null;
-    }));
-
-    // Fires when the cabinet sits idle: the screen must not stay over
-    // attract mode nor keep the buttons.
-    host.on("attractmodestart", safeHandler(SCRIPT_NAME, () => {
-        if (closeDialog) close({ atOnce: true });
     }));
 }
