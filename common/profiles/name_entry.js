@@ -5,13 +5,13 @@
 // create nothing. Opens directly: the player asked for it. Writes one folder.
 // - A folder that cannot be created keeps the screen open with a message, logged, with no Error Toast.
 // - Moving along the ring only moves layers: each draw blocks PinballY 20 to 45 ms on the cabinet.
-// - Swallows every button through "commandbuttondown" while open.
-// - Registered before the Profile picker's listener, which then sees each press as handled.
+// - Buttons and attract mode go through the Drawn Screen controls, set up before the Profile picker's listener.
 // - Opens through the shared screen opening (docs/adr/0014).
+// - Never handed to the wheel dialogs: its close must not let a Dialog show over the carousel.
 // ============================================================
 
 import lang from "../core/i18n.js";
-import { safeHandler, logHandlerError } from "../core/safe_handler.js";
+import { logHandlerError } from "../core/safe_handler.js";
 import { createNavigationSound } from "../core/navigation_sound.js";
 import { createWindowWatch, readViewSize, sameSize, sizeText } from "../core/window_watch.js";
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
@@ -36,8 +36,9 @@ const ERASE_ARROW = String.fromCharCode(0x2190);
 // The strip's characters fade away from the current one, by this much per place.
 const FADE_PER_PLACE = 0.2;
 
-// drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js).
-export function createNameEntry(host, { profileStore, drawingAhead }) {
+// drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js);
+// drawnScreenControls: the shared Drawn Screen controls (common/core/drawn_screen_controls.js).
+export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenControls }) {
     const { profiles: { nameEntry: TEXT, guestName } } = lang;
     // A character, or what erasing and OK show, in the ring's order.
     const RING = [...LETTERS, ...LETTERS.toLowerCase(), HYPHEN, ERASE_ARROW, TEXT.ok];
@@ -47,11 +48,14 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
     const windowWatch = createWindowWatch(host, SCRIPT_NAME);
     const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: Z_INDEX.backdrop - 2, drawingAhead });
     const placed = createPlacedLayers(host, { referenceHeight: REFERENCE_HEIGHT });
+    // Here, before the Profile picker adds its own button listener.
+    const controls = drawnScreenControls.register(SCRIPT_NAME);
     // The open screen, null when closed: the name so far and why it is
     // refused, the Profiles listed at the opening, the first Profile's notice (null
     // once the Household has a Profile), whether its folder just failed, the current
-    // character's index, what OK hands the name to, the window it is laid out
-    // for and its layers (null marker while getting ready).
+    // character's index, what OK hands the name to, its place among the Drawn
+    // Screen controls, the window it is laid out for and its layers (null
+    // marker while getting ready).
     let shown = null;
 
     const isOkGreyed = () => shown.refusal !== null;
@@ -202,7 +206,7 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
             useBackdrop(backdrop);
             for (const step of pieceSteps()) step();
         } catch (error) {
-            close();
+            leave();
             throw error;
         }
         placeMarker();
@@ -211,13 +215,18 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
         return true;
     }
 
-    function close() {
-        if (!shown) return;
+    // Run by the Drawn Screen controls on every close, attract mode included.
+    function remove() {
         windowWatch.stop();
         opening.remove();
         removeLayers();
         shown = null;
     }
+
+    // Exit, a failed draw, and OK once the Profile is created.
+    const leave = () => {
+        if (shown) shown.controlled.close();
+    };
 
     // onCreated(name): called once the Profile is created and the screen closed.
     function open(onCreated) {
@@ -228,7 +237,8 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
         const listedNames = profileStore.listProfileNames();
         const notice = profileStore.isHouseholdEmpty() ? TEXT.firstProfileLine : null;
         shown = {
-            name: "", refusal: NAME_REFUSAL.EMPTY, listedNames, notice, hasFolderFailed: false, cursor: 0, onCreated, isPreparing: true, opacity: 0,
+            name: "", refusal: NAME_REFUSAL.EMPTY, listedNames, notice, hasFolderFailed: false, cursor: 0, onCreated, opacity: 0,
+            controlled: controls.open({ onMove: move, onChoose: choose, onExit: leave, close: remove }),
             view: null, size: null, referenceWidth: 0, geometry: null, backdrop: null, fixedLayers: [], ringLayers: [], nameLayer: null, reasonLayer: null, marker: null,
         };
         opening.begin();
@@ -238,7 +248,7 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
             return steps.length > 0;
         }, {
             onDone: () => {
-                shown.isPreparing = false;
+                shown.controlled.ready();
                 placeMarker();
                 setOpacity(0);
                 opening.logOpened();
@@ -248,7 +258,7 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
                 windowWatch.start(followWindow, shown.view);
             },
             // Logged by the drawing ahead: given up rather than left veiled.
-            onFailed: close,
+            onFailed: leave,
         });
     }
 
@@ -288,7 +298,7 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
             redrawReason();
             return;
         }
-        close();
+        leave();
         onCreated(createdName);
     }
 
@@ -311,29 +321,11 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
         }
     }
 
-    // Fires on every mapped button press; drives the screen while it is open.
-    host.on("commandbuttondown", safeHandler(SCRIPT_NAME, ev => {
-        if (!shown || ev.defaultPrevented) return;
-        // Swallowed first, so a failing creation still never reaches the wheel.
-        ev.preventDefault();
-        if (ev.command === "Next" || ev.command === "Prev") {
-            if (shown.isPreparing) return;
-            navigationSound.play();
-            shown.cursor = (shown.cursor + (ev.command === "Next" ? 1 : -1) + RING.length) % RING.length;
-            placeRing();
-            return;
-        }
-        // A held button must not choose a character after the one it chose,
-        // nor leave a screen as soon as it came back.
-        if (ev.repeat) return;
-        if (ev.command === "Exit") close();
-        // Launch is the plunger, which selects in PinballY's own menus too.
-        else if ((ev.command === "Select" || ev.command === "Launch") && !shown.isPreparing) choose();
-    }));
-
-    // Fires when the cabinet sits idle: the screen must not stay over attract
-    // mode nor keep the buttons. Nothing is created.
-    host.on("attractmodestart", safeHandler(SCRIPT_NAME, close));
+    function move(direction) {
+        navigationSound.play();
+        shown.cursor = (shown.cursor + direction + RING.length) % RING.length;
+        placeRing();
+    }
 
     return { open };
 }

@@ -38,9 +38,11 @@ export const portraitOf = number => `${PORTRAITS_FOLDER}\\avatar_choice_${String
 const ALL_PORTRAITS = Array.from({ length: PORTRAIT_COUNT }, (_, index) => index + 1);
 
 // profiles: the Household's folders; admins, children: those of them
-// marked. portraits: the numbers of the portraits seeded.
+// marked. portraits: the numbers of the portraits seeded. addOns: the
+// Add-ons on, the Profile picker alone by default.
 export async function startOnWheel({
     profiles = ["Alice", "Bob"], admins = [], children = [], activeProfile = "Bob", language = "en", portraits = ALL_PORTRAITS, fakeOptions = {},
+    addOns = ["profilePicker"],
 } = {}) {
     const fake = createFakePinballYHost(fakeOptions);
     for (const number of portraits) fake.addFile(portraitOf(number), `portrait ${number}`);
@@ -51,7 +53,7 @@ export async function startOnWheel({
     fake.addFile("C:\\PinballY\\Assets\\Button Sounds\\Next.wav");
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
-    for (const key of Object.keys(config.addOns)) config.addOns[key] = key === "profilePicker";
+    for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);
     config.language = language;
     config.startupScreen = "wheel";
 

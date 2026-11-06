@@ -29,6 +29,7 @@ import { registerChangePlayer } from "../common/profiles/change_player.js";
 import { drawShadowedText } from "../common/drawing/shadowed_text.js";
 import { STEAMBALL_COLORS } from "../common/drawing/steamball_palette.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
+import { getDrawnScreenControls, isHeldSelectLaunchOrExit } from "../common/core/drawn_screen_controls.js";
 import { getShownPlayerLevel } from "../common/levels/shown_player_level.js";
 import { drawLevelPip, levelPipOn, drawAvatarFrame, avatarFrameSide, AVATAR_FRAME_MARGIN } from "../common/drawing/steamball_drawing.js";
 import { getProfileRewards } from "../common/avatar_frames/profile_rewards.js";
@@ -132,7 +133,7 @@ export default function init() {
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
     // Before this Add-on's own button listener, which then sees each press
     // Name Entry and Avatar Choice took as handled.
-    const nameEntry = createNameEntry(host, { profileStore, drawingAhead: getDrawingAhead() });
+    const nameEntry = createNameEntry(host, { profileStore, drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls() });
     const avatarChoice = createAvatarChoice(host, { profileStore, drawingAhead: getDrawingAhead(), soundFile: config.avatarChoiceSoundFile });
     // Every carousel and greeting layer, in the window's layout pixels; the
     // overlays are never placed, so they show at the window's size.
@@ -769,14 +770,12 @@ export default function init() {
         if (!slots || ev.defaultPrevented) return;
         // Swallowed first, so a failing switch still never reaches the wheel.
         ev.preventDefault();
+        // Also the button held on Name Entry's OK or Exit, which must not
+        // pick a Profile or close the carousel that just came back.
+        if (isHeldSelectLaunchOrExit(ev)) return;
         if (ev.command === "Next" || ev.command === "Prev") {
             move(ev.command === "Next" ? 1 : -1);
-            return;
-        }
-        // The button held on Name Entry's OK or Exit must not pick a Profile
-        // or close the carousel that just came back.
-        if (ev.repeat) return;
-        if (ev.command === "Select" || ev.command === "Launch") {
+        } else if (ev.command === "Select" || ev.command === "Launch") {
             const chosen = slots[highlighted];
             if (chosen === NEW_PROFILE_SLOT) nameEntry.open(name => avatarChoice.open(name, () => showCreated(name)));
             else pick(chosen);
