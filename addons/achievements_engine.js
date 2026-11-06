@@ -42,6 +42,7 @@ import { getDailyStreak } from "../common/achievements/daily_streak.js";
 import { HALL_OF_FAME_FULL_FILTER_ID } from "../common/stats/hall_of_fame.js";
 import { TABLES_TO_DISCOVER_FULL_FILTER_ID } from "../common/tables/tables_to_discover.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
+import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
 import { getTableOfTheDay, getTableOfTheWeek } from "../common/tables/period_table.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
@@ -134,7 +135,7 @@ export default function init() {
         action: () => achievementList.open(() => mainMenu.reopenOn(ACHIEVEMENT_LIST_ENTRY)),
     });
     const frameList = createAvatarFrameList(createPinballYHost(), {
-        profileStore, profileRewards, drawingAhead: getDrawingAhead(),
+        profileStore, profileRewards, drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls(),
     });
     // Its values read through the Profile Stats' reader, and its columns
     // opening the Profile Stats, created just after.
@@ -144,6 +145,7 @@ export default function init() {
         openProfileStats: (profileName, onBack, onFailed) => profileStats.openReadOnly(profileName, onBack, onFailed),
         profileRewards,
         drawingAhead: getDrawingAhead(),
+        drawnScreenControls: getDrawnScreenControls(),
         hasCollectionMastery: config.addOns.tableMastery !== false,
     });
     const profileStats = createProfileStats(createPinballYHost(), {
@@ -151,6 +153,7 @@ export default function init() {
         householdStats,
         achievementList,
         drawingAhead: getDrawingAhead(),
+        drawnScreenControls: getDrawnScreenControls(),
         profileRewards,
         frameList,
         // Read on each opening, for the active Profile or another one.

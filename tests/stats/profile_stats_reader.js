@@ -18,6 +18,8 @@ import { buttonHintsOn, windowRect, textsInsideLayer } from "../support/button_h
 export const PROFILE_STATS_OPEN_MS = 300;
 
 export const press = (fake, buttonCommand) => fake.fire("commandbuttondown", { command: buttonCommand, repeat: false });
+// The press PinballY fires again on each auto-repeat of a held button.
+export const hold = (fake, buttonCommand) => fake.fire("commandbuttondown", { command: buttonCommand, repeat: true });
 
 export const isProfileStatsOpen = fake => shownLayers(fake, PROFILE_STATS_Z_INDEX.backdrop).length > 0;
 

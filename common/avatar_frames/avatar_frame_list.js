@@ -6,13 +6,12 @@
 // Opens directly, not through the wheel dialog module: the player asked for it.
 // - Every layer is drawn ahead from startup and kept between openings.
 // - Rows that do not fit scroll with the selection and its scrollbar: those out of view stay hidden.
-// - Swallows every button through "commandbuttondown" while open.
+// - Its buttons and attract mode go through the Drawn Screen controls.
 // - Opens through the shared screen opening when not drawn ahead (docs/adr/0014).
 // ============================================================
 
 import lang from "../core/i18n.js";
 import { safeHandler } from "../core/safe_handler.js";
-import { createClosedListeners } from "../core/closed_listeners.js";
 import { createNavigationSound } from "../core/navigation_sound.js";
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
 import { createSelectionMarker } from "../drawing/selection_marker.js";
@@ -33,8 +32,9 @@ const NONE_KEY = "none";
 const EXIT_TOOLTIP = "exitTooltip";
 
 // profileRewards: the Profile Rewards module (common/avatar_frames/profile_rewards.js);
-// drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js).
-export function createAvatarFrameList(host, { profileStore, profileRewards, drawingAhead }) {
+// drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js);
+// drawnScreenControls: the shared Drawn Screen controls (common/core/drawn_screen_controls.js).
+export function createAvatarFrameList(host, { profileStore, profileRewards, drawingAhead, drawnScreenControls }) {
     const { profileStats: { frameList: TEXT } } = lang;
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
     const placed = createPlacedLayers(host, { referenceHeight: REFERENCE_HEIGHT });
@@ -53,11 +53,11 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
     let exitLook = EXIT_BUTTON_LOOK.BACK;
     // The open list, null when closed: the selected row's index (or
     // EXIT_BUTTON), the index of the top row shown, its Selection Marker
-    // (null while getting ready), what Select and Exit return to and
-    // whether it is still getting ready.
+    // (null while getting ready), what Select and Exit return to and its
+    // place among the Drawn Screen controls' openings (controlled).
     let shown = null;
     const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: AVATAR_FRAME_LIST_Z_INDEX.backdrop - 2, drawingAhead });
-    const closedListeners = createClosedListeners(SCRIPT_NAME);
+    const controls = drawnScreenControls.register(SCRIPT_NAME);
 
     function readRows() {
         const { avatarPath } = profileStore.getActiveProfile();
@@ -254,16 +254,17 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
         opening.draw(() => readContent(rows));
         const isOpenedOn = row => (selectedFrameId === null ? row.isWorn : row.frameId === selectedFrameId);
         shown = {
-            onBack, onClosed, marker: null, opacity: 0, selected: Math.max(0, content.rows.findIndex(isOpenedOn)), topIndex: 0, isPreparing: false,
+            onBack, onClosed, marker: null, opacity: 0, selected: Math.max(0, content.rows.findIndex(isOpenedOn)), topIndex: 0,
+            controlled: controls.open({ onMove: move, onChoose: choose, onExit: () => back(), close: remove }, { onFailed }),
         };
         scrollToSelected();
         const nextMissing = () => pieces().find(piece => !isDrawn(piece));
         if (!nextMissing()) {
             show(1);
+            shown.controlled.ready();
             opening.logOpened();
             return;
         }
-        shown.isPreparing = true;
         const step = () => {
             const piece = nextMissing();
             if (!piece) return false;
@@ -272,16 +273,14 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
         };
         opening.runVeiled(step, {
             onDone: () => {
-                shown.isPreparing = false;
                 show(0);
+                shown.controlled.ready();
                 opening.logOpened();
                 opening.fadeIn(setOpacity);
             },
-            // Logged by the drawing ahead: given up rather than left veiled.
-            onFailed: () => {
-                close();
-                onFailed();
-            },
+            // Logged by the drawing ahead: given up rather than left veiled,
+            // then onFailed.
+            onFailed: () => shown.controlled.fail(),
         });
     }
 
@@ -290,9 +289,13 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
         return worn ? worn.id : null;
     };
 
-    // Closes the open list or gives up the one getting ready.
+    // Closes the open list or gives up the one getting ready, through the
+    // Drawn Screen controls, which run remove() then tell the closed listeners.
     function close() {
-        if (!shown) return;
+        if (shown) shown.controlled.close();
+    }
+
+    function remove() {
         const { onClosed, marker } = shown;
         shown = null;
         opening.remove();
@@ -302,7 +305,6 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
         // What changed while it was open is read again once it is closed.
         wakeDrawingAhead();
         onClosed();
-        closedListeners.tell();
     }
 
     // direction: 1 for Next, -1 for Prev, through the Exit Button then
@@ -336,28 +338,6 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
         back(wornFrameId() !== wornBefore);
     }
 
-    // Fires on every mapped button press; drives the list while it is open.
-    host.on("commandbuttondown", safeHandler(SCRIPT_NAME, ev => {
-        // Already handled: the Profile Stats' button opened the list within
-        // the same press, which must not pick a row too.
-        if (!shown || ev.defaultPrevented) return;
-        // Swallowed first, so a failing choice still never reaches the wheel.
-        ev.preventDefault();
-        // Getting ready: Exit gives up, as it would close the open list.
-        if (shown.isPreparing) {
-            if (ev.command === "Exit") back();
-            return;
-        }
-        if (ev.command === "Next" || ev.command === "Prev") move(ev.command === "Next" ? 1 : -1);
-        // Launch is the plunger, which selects in PinballY's own menus too.
-        else if (ev.command === "Select" || ev.command === "Launch") choose();
-        else if (ev.command === "Exit") back();
-    }));
-
-    // Fires when the cabinet sits idle: the list must not stay over attract
-    // mode nor keep the buttons.
-    host.on("attractmodestart", safeHandler(SCRIPT_NAME, close));
-
     profileStore.onSwitch(safeHandler(SCRIPT_NAME, markContentStale));
     // Fires after any change of a Profile's data: the Collection Tier kept
     // or the choice may have changed.
@@ -365,8 +345,8 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
 
     return {
         open,
-        isOpen: () => shown !== null,
-        onClosed: closedListeners.onClosed,
+        isOpen: controls.isOpen,
+        onClosed: controls.onClosed,
         // The active Profile's frames unlocked and in all, null when there
         // are none (Table Mastery and the Profile picker off).
         count() {

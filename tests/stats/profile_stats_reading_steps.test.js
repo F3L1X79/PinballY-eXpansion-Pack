@@ -11,6 +11,7 @@ import assert from "node:assert/strict";
 import { createFakePinballYHost } from "../support/fake_pinbally_host.js";
 import { createProfileStore } from "../../common/profiles/profile_store.js";
 import { createProfileStats } from "../../common/stats/profile_stats.js";
+import { createDrawnScreenControls } from "../../common/core/drawn_screen_controls.js";
 
 const PROFILES = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 
@@ -39,7 +40,7 @@ test("the Profile Stats read each section in its own step", () => {
     let foregroundStep = null;
     const drawingAhead = { runInForeground: step => { foregroundStep = step; return () => {}; } };
     const profileStats = createProfileStats(fake, {
-        profileStore: createProfileStore(fake), achievementList: { open() {} }, drawingAhead, ...readers(reads),
+        profileStore: createProfileStore(fake), achievementList: { open() {} }, drawingAhead, drawnScreenControls: createDrawnScreenControls(fake), ...readers(reads),
     });
 
     profileStats.open();

@@ -5,7 +5,7 @@
 // read-only. Exit calls the return given to open().
 // Opens directly, not through the wheel dialog module: the player asked for it.
 // - Read again on each opening, one Profile per step (docs/adr/0014).
-// - Swallows every button through "commandbuttondown" while open.
+// - Its buttons and attract mode go through the Drawn Screen controls.
 // - Past five columns, they glide sideways to keep the marker in view.
 // - isOpen() and onClosed() let the wheel dialogs wait for it.
 // ============================================================
@@ -13,7 +13,6 @@
 import lang from "../core/i18n.js";
 import { displayNameOf } from "../profiles/profile_name.js";
 import { safeHandler } from "../core/safe_handler.js";
-import { createClosedListeners } from "../core/closed_listeners.js";
 import { createNavigationSound } from "../core/navigation_sound.js";
 import { prepareDrawnScreen, FRAME_MS } from "./drawn_screen.js";
 import { MAX_MASTERY_LEVEL } from "../mastery/table_mastery.js";
@@ -40,20 +39,15 @@ const GLIDE_SNAP_PX = 0.5;
 // profileRewards: the worn Avatar Frames (null: none);
 // hasCollectionMastery: false without the Table Mastery Add-on, which
 // takes the Collection Mastery line away; drawingAhead: the shared drawing
-// ahead (common/core/drawing_ahead.js), which runs the opening.
+// ahead (common/core/drawing_ahead.js), which runs the opening;
+// drawnScreenControls: the shared Drawn Screen controls (common/core/drawn_screen_controls.js).
 export function createHouseholdStats(host, {
-    profileStore, readStats, openProfileStats, drawingAhead, profileRewards = null, hasCollectionMastery = true,
+    profileStore, readStats, openProfileStats, drawingAhead, drawnScreenControls, profileRewards = null, hasCollectionMastery = true,
 }) {
     const { profileStats: TEXT } = lang;
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
     const log = message => host.log(`[${SCRIPT_NAME}] ${message}`);
-    const closedListeners = createClosedListeners(SCRIPT_NAME);
-    // The screen on show, or getting ready (isPreparing): its layers,
-    // columns' rects and selection; null when closed.
-    let shown = null;
-    // The screen hidden while another Profile's Profile Stats are open over
-    // it, its state kept; null otherwise.
-    let screenSetAside = null;
+    const controls = drawnScreenControls.register(SCRIPT_NAME);
 
     // Every Profile but Guest, in the Profile picker's order, from either
     // of the store's lists: Guest always comes first in both.
@@ -160,17 +154,22 @@ export function createHouseholdStats(host, {
     // this screen. Reads and draws every layer hidden, step by step, then
     // fades them in together: it never shows up half drawn.
     function open(onBack = null, { onFailed = () => {} } = {}) {
-        if (shown) return;
+        if (controls.isShown()) return;
         const drawn = prepareDrawnScreen(host, SCRIPT_NAME, {
             referenceHeight: REFERENCE_HEIGHT, backdropZIndex: HOUSEHOLD_STATS_Z_INDEX.backdrop, drawingAhead,
         });
         // Apart from the other layers: their alpha also fades them at the view's edges.
         const columnLayers = [];
         // Completed by setUp() once every step ran.
-        const opening = {
-            onBack, onFailed, drawn, columnLayers, isPreparing: true, marker: null, glideTimer: null, glideMs: 0, opacity: 0,
-        };
-        shown = opening;
+        const opening = { onBack, drawn, columnLayers, marker: null, glideTimer: null, glideMs: 0, opacity: 0 };
+        opening.controlled = controls.open({
+            onMove: direction => move(opening, direction),
+            onChoose: () => choose(opening),
+            onExit: () => back(opening),
+            close: () => remove(opening),
+            setAside: () => setAside(opening),
+            showAgain: () => showAgain(opening),
+        }, { onFailed });
         let screen = null;
         let geometry = null;
         let exitTooltip = null;
@@ -214,19 +213,17 @@ export function createHouseholdStats(host, {
             // first: the first column in view once the glide is over; scroll:
             // how far the columns have glided, in reference pixels.
             Object.assign(opening, {
-                isPreparing: false, columns: screen.columns, exitTooltip, marker, marked: null, geometry, selected: 0, first: 0, scroll: 0,
+                columns: screen.columns, exitTooltip, marker, marked: null, geometry, selected: 0, first: 0, scroll: 0,
             });
             placeColumns(opening);
+            opening.controlled.ready();
         }
 
         drawn.read(() => queueSteps(readProfiles()));
         drawn.start({
             onReady: setUp,
             setOpacity: opacity => setOpacity(opening, opacity),
-            onFailed: () => {
-                close();
-                onFailed();
-            },
+            onFailed: () => opening.controlled.fail(),
         });
     }
 
@@ -303,67 +300,33 @@ export function createHouseholdStats(host, {
         placeColumns(screen);
     }
 
-    // Also gives up an opening still getting ready.
-    function close() {
-        if (!shown) return;
-        stopGlide(shown);
-        if (shown.marker) shown.marker.remove();
-        shown.drawn.close(shown.columnLayers);
-        shown = null;
-        closedListeners.tell();
+    // The Drawn Screen controls' close: also gives up an opening still getting ready.
+    function remove(screen) {
+        stopGlide(screen);
+        if (screen.marker) screen.marker.remove();
+        screen.drawn.close(screen.columnLayers);
     }
 
-    // The screen on show hidden, keeping its state, while another Profile's
-    // Profile Stats open over it: no closed listener told, the screen is
-    // still open. The glide ends at once, so the columns come back still.
-    function setShownAside() {
-        stopGlide(shown);
-        shown.scroll = targetScroll(shown);
-        shown.drawn.setAside(shown.columnLayers);
-        shown.marker.setAside();
-        screenSetAside = shown;
-        shown = null;
+    // Hidden, keeping its state, while another Profile's Profile Stats open
+    // over it. The glide ends at once, so the columns come back still.
+    function setAside(screen) {
+        stopGlide(screen);
+        screen.scroll = targetScroll(screen);
+        screen.drawn.setAside(screen.columnLayers);
+        screen.marker.setAside();
     }
 
-    // Exit on those Profile Stats: the screen set aside shows again at once, as it was left.
-    function showAgain() {
-        if (!screenSetAside) return;
-        shown = screenSetAside;
-        screenSetAside = null;
-        shown.marker.showAgain();
-        shown.drawn.showAgain(opacity => setOpacity(shown, opacity));
-    }
-
-    // Removes the screen set aside, which is then closed.
-    function discardSetAside() {
-        if (!screenSetAside) return;
-        screenSetAside.marker.remove();
-        screenSetAside.drawn.close(screenSetAside.columnLayers);
-        screenSetAside = null;
-        closedListeners.tell();
-    }
-
-    // Those Profile Stats failed to open: the screen set aside goes, then
-    // what it was opened over.
-    function discardSetAsideAfterFailure() {
-        if (!screenSetAside) return;
-        const { onFailed } = screenSetAside;
-        discardSetAside();
-        onFailed();
-    }
-
-    // The screen on show and the one set aside under it.
-    function closeAll() {
-        close();
-        discardSetAside();
+    // Exit on those Profile Stats: shown again at once, as it was left.
+    function showAgain(screen) {
+        screen.marker.showAgain();
+        screen.drawn.showAgain(opacity => setOpacity(screen, opacity));
     }
 
     // direction: 1 for Next, -1 for Prev, through the Exit Button then each
     // column. Brings the selected column into view, gliding unless it comes
     // from the Exit Button: the columns then stay where they were.
-    function move(direction) {
+    function move(screen, direction) {
         navigationSound.play();
-        const screen = shown;
         const { columns, view } = screen.geometry;
         const previous = screen.selected;
         screen.selected = stepThroughExitButton(previous, direction, columns.length);
@@ -379,58 +342,29 @@ export function createHouseholdStats(host, {
         placeColumns(screen);
     }
 
-    function back() {
-        const { onBack } = shown;
-        close();
-        if (onBack) onBack();
+    function back(screen) {
+        screen.controlled.close();
+        if (screen.onBack) screen.onBack();
     }
 
     // Another Profile's column opens its Profile Stats over this screen,
-    // set aside, whose Exit shows it again on that column; one's own and
-    // the Exit Button go back as Exit does.
-    function choose() {
-        const { columns, selected } = shown;
-        if (selected === EXIT_BUTTON) return back();
+    // set aside, whose Exit shows it again on that column; their failing
+    // to open takes this screen away too, then what it was opened over.
+    // One's own column and the Exit Button go back as Exit does.
+    function choose(screen) {
+        const { columns, selected } = screen;
+        if (selected === EXIT_BUTTON) return back(screen);
         const column = columns[selected];
-        if (column.isActive) return back();
-        setShownAside();
-        try {
-            openProfileStats(column.profileName, showAgain, discardSetAsideAfterFailure);
-        } catch (error) {
-            discardSetAsideAfterFailure();
-            throw error;
-        }
+        if (column.isActive) return back(screen);
+        return screen.controlled.openChild((onExit, onFailed) => openProfileStats(column.profileName, onExit, onFailed));
     }
-
-    // Fires on every mapped button press; drives the screen while it is open.
-    host.on("commandbuttondown", safeHandler(SCRIPT_NAME, ev => {
-        // Already handled: the Profile Stats' button or Exit opened or showed
-        // this screen within the same press, which must not act here too.
-        // Set aside, the screen is not shown: the Profile Stats take the buttons.
-        if (!shown || ev.defaultPrevented) return;
-        // Swallowed first, so a failing move still never reaches the wheel.
-        ev.preventDefault();
-        // Getting ready: Exit gives up, as it would close the open screen.
-        if (shown.isPreparing) {
-            if (ev.command === "Exit") back();
-            return;
-        }
-        if (ev.command === "Next" || ev.command === "Prev") move(ev.command === "Next" ? 1 : -1);
-        // Launch is the plunger, which selects in PinballY's own menus too.
-        else if (ev.command === "Select" || ev.command === "Launch") choose();
-        else if (ev.command === "Exit") back();
-    }));
-
-    // Fires when the cabinet sits idle: the screen must not stay over
-    // attract mode nor keep the buttons.
-    host.on("attractmodestart", safeHandler(SCRIPT_NAME, closeAll));
 
     return {
         open,
         // How many Profiles the screen sets side by side; offered from two.
         // By name only: listing the Profiles also checks their Avatars.
         countProfiles: () => householdOf(profileStore.listProfileNames()).length,
-        isOpen: () => shown !== null || screenSetAside !== null,
-        onClosed: closedListeners.onClosed,
+        isOpen: controls.isOpen,
+        onClosed: controls.onClosed,
     };
 }

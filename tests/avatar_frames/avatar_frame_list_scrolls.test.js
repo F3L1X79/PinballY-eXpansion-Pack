@@ -12,6 +12,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { createAvatarFrameList } from "../../common/avatar_frames/avatar_frame_list.js";
 import { AVATAR_FRAME_LIST_Z_INDEX } from "../../common/avatar_frames/avatar_frame_list_painter.js";
 import { createDrawingAhead } from "../../common/core/drawing_ahead.js";
+import { createDrawnScreenControls } from "../../common/core/drawn_screen_controls.js";
 import { createProfileStore } from "../../common/profiles/profile_store.js";
 import { press, frameRows, highlightedRow, untilFrameListShown } from "../stats/profile_stats_reader.js";
 import { isMarkerOnExitButton, frameListFooterLayout } from "./avatar_frame_list_reader.js";
@@ -45,7 +46,7 @@ function setUp({ wornTier = 1, drawnAhead = true } = {}) {
     fake.addFile(`${PROFILES}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: "Alice" }));
     fake.addFile(`${PROFILES}\\Alice\\profile.json`, JSON.stringify({ version: 1, notified: [] }));
     const list = createAvatarFrameList(fake, {
-        profileStore: createProfileStore(fake), profileRewards: fakeProfileRewards(wornTier), drawingAhead: createDrawingAhead(fake),
+        profileStore: createProfileStore(fake), profileRewards: fakeProfileRewards(wornTier), drawingAhead: createDrawingAhead(fake), drawnScreenControls: createDrawnScreenControls(fake),
     });
     if (drawnAhead) fake.advanceTime(DRAWN_AHEAD_MS);
     return { fake, list };
