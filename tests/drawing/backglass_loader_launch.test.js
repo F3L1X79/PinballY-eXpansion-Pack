@@ -17,14 +17,12 @@ const TABLE = { configId: "afm", title: "Attack from Mars" };
 const fake = createFakePinballYHost({ now: new Date(2026, 10, 6, 20, 0, 0), tables: [TABLE] });
 const game = fake.getAllTables()[0];
 
-// The comet alone in the very middle of the backglass window, half as
-// large again as the playfield's 7 %.
+// The comet alone in the very middle of the backglass window, 12 % high.
 function assertBackglassComet() {
     const comet = readBackglassLoader(fake);
     assert.equal(comet.shown, true, "the comet turns on the backglass");
     assert.deepEqual(comet.position, { x: 0, y: 0 }, "in the very middle");
-    assert.ok(Math.abs(comet.scale.ySpan - 0.105) < 1e-9, "10.5 % of the window's height");
-    assert.deepEqual(Object.keys(comet.scale), ["ySpan"], "scaled by height only");
+    assert.deepEqual(comet.scale, { ySpan: 0.12 }, "12 % of the window's height, by height only");
     assert.equal(comet.otherLayers, 0, "no caption on the backglass");
 }
 

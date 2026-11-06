@@ -14,8 +14,8 @@ import { STEAMBALL_COLORS as COLORS, STEAMBALL_FONTS as FONTS } from "./steambal
 // proportions without the window being measured, which is not laid out
 // yet at startup.
 export const LOADER_HEIGHT = 0.07;
-// Half as large again on the backglass, seen from further away.
-const BACKGLASS_LOADER_HEIGHT = LOADER_HEIGHT * 1.5;
+// Larger on the backglass, seen from further away and over a busy picture.
+const BACKGLASS_LOADER_HEIGHT = 0.12;
 // Where the comet turns, chosen at creation: the centre of the playfield
 // screen, or the centre of its top third (PinballY's y axis points up, in
 // window heights); another height can be given. With a caption, the comet
