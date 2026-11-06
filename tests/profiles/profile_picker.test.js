@@ -127,7 +127,7 @@ test("the Profile picker moves, wraps, switches, cancels and sees new folders", 
         { title: "Quit", cmd: fake.getBuiltInCommand("Quit") },
         { title: "Cancel", cmd: fake.getBuiltInCommand("MenuReturn") },
     ]);
-    assert.deepEqual(fake.currentMenu().items.map(item => item.title), ["Quit", menuEntry, "Cancel"]);
+    assert.deepEqual(fake.currentMenu().items.map(item => item.title), ["Quit", undefined, menuEntry, "Cancel"], "after Quit when Shut Down is missing");
     fake.selectMenuItem(menuEntry);
     await settle();
     assert.equal(highlightedName(fake, names), "Bob", "the exit menu opens the carousel too");

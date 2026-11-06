@@ -77,8 +77,9 @@ test("the Exit menu is drawn with the pack's entries", () => {
 
     assert.equal(fake.currentMenu(), null, "no native menu");
     assert.deepEqual(drawnMenuLines(fake), [
-        "Exit PinballY", lang.profiles.menuEntry, "Shut Down", "---",
-        "Operator Menu", lang.profileReset.menuEntry, "---",
+        "Exit PinballY", "Shut Down", "---",
+        lang.profiles.menuEntry, lang.profileReset.menuEntry, "---",
+        "Operator Menu", "---",
         "Help", "About PinballY", "---",
         "Cancel",
     ]);

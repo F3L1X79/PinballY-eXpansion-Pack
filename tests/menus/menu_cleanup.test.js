@@ -20,7 +20,7 @@ const SEPARATOR = "---";
 // The Filter Picker's entry, naming the Active Filter.
 const FILTER_PICKER = "Active filter: All Tables";
 const INFORMATION_ENTRIES = ["Information", "Flyer", "Table Scores", "Instruction Card"];
-const CLEANED_ADMIN_EXIT_MENU = ["Exit PinballY", "Shut Down", SEPARATOR, "Operator Menu", "Manage profiles", SEPARATOR, "Cancel"];
+const CLEANED_ADMIN_EXIT_MENU = ["Exit PinballY", "Shut Down", SEPARATOR, "Manage profiles", SEPARATOR, "Operator Menu", SEPARATOR, "Cancel"];
 const CLEANED_EXIT_MENU_WITHOUT_OPERATOR_MENU = ["Exit PinballY", "Shut Down", SEPARATOR, "Cancel"];
 
 const fake = createFakePinballYHost({ now: new Date(2026, 8, 30, 20, 0, 0) });

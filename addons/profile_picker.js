@@ -20,6 +20,7 @@ import { seesSetupEntries } from "../common/profiles/setup_entries.js";
 import { createNameEntry } from "../common/profiles/name_entry.js";
 import { createAvatarChoice } from "../common/profiles/avatar_choice.js";
 import { getMainMenu, MAIN_MENU_POSITION } from "../common/menus/main_menu.js";
+import { addToPlayerGroup, PLAYER_GROUP_RANK } from "../common/menus/exit_menu.js";
 import { getWheelDialogs, DIALOG_PRIORITY } from "../common/core/wheel_dialog.js";
 import { getStartupScreen, notifyStartupPickerDone, STARTUP_SCREEN } from "../common/core/startup_screen.js";
 import { getStartupVeil } from "../common/drawing/startup_veil.js";
@@ -751,7 +752,7 @@ export default function init() {
     // Fires when any menu opens, with a fresh item list each time.
     host.on("menuopen", safeHandler(SCRIPT_NAME, ev => {
         if (ev.id !== "exit") return;
-        ev.addMenuItem({ after: host.getBuiltInCommand("Quit") }, { title: TEXT.menuEntry, cmd: exitMenuCommand });
+        addToPlayerGroup(ev, host, { title: TEXT.menuEntry, cmd: exitMenuCommand }, PLAYER_GROUP_RANK.CHANGE_PLAYER);
     }));
 
     // Fires on every command.

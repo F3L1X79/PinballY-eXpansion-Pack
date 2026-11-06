@@ -88,7 +88,7 @@ From then on, that Profile marks the others from the cabinet: open **Manage prof
 
 ## Profile Reset
 
-An Admin Profile also finds **Manage profiles** in the Exit menu (Escape), right after "Operator Menu". It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)) and **Reset**. With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
+An Admin Profile also finds **Manage profiles** in the Exit menu (Escape), right after "Change Player", above "Operator Menu". It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)) and **Reset**. With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
 
 - After one confirmation (the cursor starts on "No"), "Reset" or "Reset every profile" starts the Profile over: its plays, Streaks, session records, Random Games, Challenge progress, announced Achievements, Table Mastery, Collection Tier and Avatar Frames are erased, while its name, Avatar, marks and the High Scores it won stay.
 - A message then tells whether it worked.

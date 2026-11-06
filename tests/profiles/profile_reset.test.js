@@ -109,7 +109,7 @@ test("an Admin Profile resets another Profile from the Exit menu, after one conf
     assert.ok(!exitMenuTitles().includes(TEXT.menuEntry), "a Profile that is not an Admin Profile never sees it");
     store.switchTo("Alice");
     const exitMenu = exitMenuTitles();
-    assert.equal(exitMenu[exitMenu.indexOf("Operator Menu") + 1], TEXT.menuEntry, "right after the Operator Menu");
+    assert.ok(exitMenu.indexOf(TEXT.menuEntry) < exitMenu.indexOf("Operator Menu"), "above the Operator Menu");
     assert.deepEqual(firstTableRow().owners.avatars, [`${PROFILES}\\Bob\\avatar.png`], "Bob holds the first table");
 
     fake.openExitMenu();
