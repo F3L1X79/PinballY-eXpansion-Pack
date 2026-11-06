@@ -39,7 +39,7 @@ export function createWindowRedraw(host, scriptName, { placed, zIndex, reference
     }
 
     // The backdrop the screen opens on: { layer, referenceWidth, geometry }, the layer the screen's.
-    function drawBackdropLayer() {
+    function drawOpeningBackdrop() {
         const { layer, view, size, referenceWidth, geometry } = measureBackdrop();
         drawnFor = { view, size };
         return { layer, referenceWidth, geometry };
@@ -75,11 +75,11 @@ export function createWindowRedraw(host, scriptName, { placed, zIndex, reference
     // Once the screen shows, against the view its backdrop was drawn for:
     // getting ready can outlast the watch's retries. screen: keep() returns
     // what restores the screen's state once redrawn; removeLayers();
-    // useBackdrop(backdrop), as drawBackdrop() returns it; pieceSteps(), the
+    // useBackdrop(backdrop), as drawOpeningBackdrop() returns it; pieceSteps(), the
     // steps drawing every other piece; onFailed(), a redraw threw (logged).
     function start(screen) {
         watch.start((previousView, nextView) => follow(screen, previousView, nextView), drawnFor.view);
     }
 
-    return { drawBackdrop: drawBackdropLayer, start, stop: watch.stop };
+    return { drawOpeningBackdrop, start, stop: watch.stop };
 }

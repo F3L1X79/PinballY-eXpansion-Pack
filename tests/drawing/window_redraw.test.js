@@ -33,7 +33,7 @@ function openScreen({ failingStep = null } = {}) {
         placed, zIndex: Z_INDEX, referenceHeight: REFERENCE_HEIGHT, layout: referenceWidth => ({ referenceWidth, panel: PANEL }),
     });
     const calls = [];
-    let backdrop = redraw.drawBackdrop();
+    let backdrop = redraw.drawOpeningBackdrop();
     const screen = {
         keep: () => {
             calls.push("keep");
@@ -95,7 +95,7 @@ test("once stopped, a new window size redraws nothing", () => {
     assert.deepEqual(redrawLines(fake), []);
 });
 
-test("a piece that fails to draw gives the screen up, the error logged", () => {
+test("a piece that fails to draw gives the screen up", () => {
     const { fake, calls } = openScreen({ failingStep: "piece" });
     fake.setLayoutSize(OTHER);
     fake.advanceTime(WATCH_OVER_MS);

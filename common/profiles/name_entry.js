@@ -206,7 +206,7 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
             referenceWidth: 0, geometry: null, backdrop: null, fixedLayers: [], ringLayers: [], nameLayer: null, reasonLayer: null, marker: null,
         };
         opening.begin();
-        const steps = [() => useBackdrop(windowRedraw.drawBackdrop()), ...pieceSteps()];
+        const steps = [() => useBackdrop(windowRedraw.drawOpeningBackdrop()), ...pieceSteps()];
         opening.runVeiled(() => {
             opening.draw(steps.shift());
             return steps.length > 0;

@@ -14,12 +14,12 @@ import lang from "../core/i18n.js";
 import { safeHandler, logHandlerError } from "../core/safe_handler.js";
 import { logError } from "../core/error_log.js";
 import { createNavigationSound } from "../core/navigation_sound.js";
-import { createWindowWatch, readViewSize, sameSize, sizeText } from "../core/window_watch.js";
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
 import { createSelectionMarker } from "../drawing/selection_marker.js";
 import { createScreenOpening } from "../drawing/screen_opening.js";
+import { createWindowRedraw } from "../drawing/window_redraw.js";
 import { createPlacedLayers } from "../drawing/placed_layers.js";
-import { drawBackdrop, drawExitButton, exitTooltipRectOf, drawExitTooltip, drawButtonHintsBand, EXIT_BUTTON_LOOK } from "../drawing/steamball_drawing.js";
+import { drawExitButton, exitTooltipRectOf, drawExitTooltip, drawButtonHintsBand, EXIT_BUTTON_LOOK } from "../drawing/steamball_drawing.js";
 import { buttonHintGroupsOf, exitButtonWordOf, FLIPPER_HINT } from "../drawing/button_hints.js";
 import { EXIT_BUTTON, stepThroughExitButton } from "../drawing/exit_button_loop.js";
 import {
@@ -61,42 +61,20 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
     const playOpeningSound = safeHandler(SCRIPT_NAME, () => {
         if (soundFile) host.playSound(soundFile);
     });
-    const windowWatch = createWindowWatch(host, SCRIPT_NAME);
     const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: Z_INDEX.backdrop - 2, drawingAhead });
     const placed = createPlacedLayers(host, { referenceHeight: REFERENCE_HEIGHT });
+    const windowRedraw = createWindowRedraw(host, SCRIPT_NAME, { placed, zIndex: Z_INDEX.backdrop, referenceHeight: REFERENCE_HEIGHT, layout: layoutAvatarChoice });
     // Here, before the Profile picker adds its own button listener.
     const controls = drawnScreenControls.register(SCRIPT_NAME);
     // The open screen, null when closed: the Profile's name, the portraits'
     // paths, the selected portrait's index (or EXIT_BUTTON), what closing
-    // hands back to, its place among the Drawn Screen controls, the window it
-    // is laid out for and its layers (null marker while getting ready), and
-    // the Exit confirmation while it shows.
+    // hands back to, its place among the Drawn Screen controls, its layout
+    // and its layers (null marker while getting ready), and the Exit
+    // confirmation while it shows.
     let shown = null;
 
-    // Draws the backdrop, which measures the window the layout depends on.
-    // A draw that throws leaves no layer behind. Never placed: it shows over
-    // the whole window.
-    function drawBackdropLayer() {
-        const view = readViewSize(host, SCRIPT_NAME);
-        const layer = placed.create(Z_INDEX.backdrop);
-        let measured = null;
-        try {
-            layer.draw(dc => {
-                const size = dc.getSize();
-                placed.measure(size);
-                const geometry = layoutAvatarChoice(placed.referenceWidth);
-                drawBackdrop(dc, size, REFERENCE_HEIGHT, geometry.panel);
-                measured = { size, referenceWidth: placed.referenceWidth, geometry };
-            });
-        } catch (error) {
-            placed.remove(layer);
-            throw error;
-        }
-        return { layer, view, ...measured };
-    }
-
-    function useBackdrop({ layer, view, size, referenceWidth, geometry }) {
-        Object.assign(shown, { view, size, referenceWidth, geometry, backdrop: layer });
+    function useBackdrop({ layer, referenceWidth, geometry }) {
+        Object.assign(shown, { referenceWidth, geometry, backdrop: layer });
     }
 
     // A hidden layer placed on rect and drawn in its own coordinates, kept in
@@ -181,33 +159,20 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
         Object.assign(shown, { marker: null, backdrop: null, layers: [], tooltip: null });
     }
 
-    // The window watch saw the view's size change: drawn again in place for
-    // the new grid shape, the current portrait and the confirmation kept, the
-    // fade going on. False, nothing kept, while the layers' window keeps its
-    // old size. A draw that fails gives the screen up, back to the picker.
-    function followWindow(previousView, nextView) {
-        const previousSize = shown.size;
-        const confirmed = shown.confirmation ? shown.confirmation.selected : null;
-        let backdrop = null;
-        try {
-            backdrop = drawBackdropLayer();
-            if (sameSize(backdrop.size, previousSize)) {
-                placed.remove(backdrop.layer);
-                return false;
-            }
-            removeLayers();
-            useBackdrop(backdrop);
-            for (const step of pieceSteps()) step();
-            placeMarker();
-            if (confirmed !== null) askToConfirm(confirmed);
-        } catch (error) {
-            leave();
-            throw error;
-        }
-        setOpacity(shown.opacity);
-        host.log(`[${SCRIPT_NAME}] The screen is redrawn for the window's new size: view ${sizeText(previousView)} to ${sizeText(nextView)}, layers ${sizeText(previousSize)} to ${sizeText(backdrop.size)}.`);
-        return true;
-    }
+    // Redrawn for a new window size and grid shape: the current portrait stays
+    // in shown, the confirmation is asked again on its current choice, the
+    // fade goes on. A redraw that fails gives the screen up, back to the picker.
+    const followedScreen = {
+        keep() {
+            const confirmed = shown.confirmation ? shown.confirmation.selected : null;
+            return () => {
+                placeMarker();
+                if (confirmed !== null) askToConfirm(confirmed);
+                setOpacity(shown.opacity);
+            };
+        },
+        removeLayers, useBackdrop, pieceSteps, onFailed: () => leave(),
+    };
 
     // Exit, or the Exit Button: a small panel drawn over the grid asks to
     // confirm, "Choose an Avatar" current unless a redraw keeps another.
@@ -244,7 +209,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
 
     // Run by the Drawn Screen controls on every close, attract mode included.
     function remove() {
-        windowWatch.stop();
+        windowRedraw.stop();
         opening.remove();
         removeLayers();
         shown = null;
@@ -277,9 +242,9 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
         shown = {
             profileName, portraits, onClosed, selected: 0, isPreparing: true, opacity: 0,
             controlled: controls.open({ onMove: move, onChoose: choose, onExit: exit, close: remove }),
-            view: null, size: null, referenceWidth: 0, geometry: null, backdrop: null, layers: [], tooltip: null, marker: null, confirmation: null,
+            referenceWidth: 0, geometry: null, backdrop: null, layers: [], tooltip: null, marker: null, confirmation: null,
         };
-        const pending = [() => useBackdrop(drawBackdropLayer()), ...pieceSteps()];
+        const pending = [() => useBackdrop(windowRedraw.drawOpeningBackdrop()), ...pieceSteps()];
         opening.runVeiled(() => {
             opening.draw(pending.shift());
             return pending.length > 0;
@@ -292,9 +257,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
                 opening.logOpened({ profileName });
                 opening.fadeIn(setOpacity);
                 playOpeningSound();
-                // Only now, against what the backdrop measured: getting ready
-                // can outlast the watch's retries.
-                windowWatch.start(followWindow, shown.view);
+                windowRedraw.start(followedScreen);
             },
             // Logged by the drawing ahead: the picker comes back on the Profile.
             onFailed: leave,
