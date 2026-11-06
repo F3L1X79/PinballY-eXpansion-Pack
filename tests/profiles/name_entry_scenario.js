@@ -160,6 +160,40 @@ export function currentPortrait(fake) {
     return exitButton.includes(layer) ? "exit" : layer.images()[0];
 }
 
+// The grid's portraits as the player sees them: rows top to bottom, each left to right.
+export function portraitRows(fake) {
+    const rows = new Map();
+    for (const layer of portraitLayers(fake)) {
+        const { x, y } = layer.position();
+        if (!rows.has(y)) rows.set(y, []);
+        rows.get(y).push({ x, path: layer.images()[0] });
+    }
+    // A layer's y grows upwards.
+    return [...rows.entries()].sort(([a], [b]) => b - a).map(([, row]) => row.sort((a, b) => a.x - b.x).map(cell => cell.path));
+}
+
+// The portraits' paths, by number, cut in rows of that many.
+export function portraitsInRows(columns) {
+    const rows = [];
+    for (let number = 1; number <= PORTRAIT_COUNT; number += columns) {
+        rows.push(Array.from({ length: columns }, (_, offset) => portraitOf(number + offset)));
+    }
+    return rows;
+}
+
+// Next from the first portrait: every portrait in turn, then the Exit Button, then the first again.
+export function assertNextGoesInOrder(fake) {
+    assert.equal(currentPortrait(fake), portraitOf(1));
+    for (let number = 2; number <= PORTRAIT_COUNT; number++) {
+        press(fake, "Next");
+        assert.equal(currentPortrait(fake), portraitOf(number));
+    }
+    press(fake, "Next");
+    assert.equal(currentPortrait(fake), "exit");
+    press(fake, "Next");
+    assert.equal(currentPortrait(fake), portraitOf(1));
+}
+
 // Avatar Choice's confirmation, which Exit shows over the grid.
 export const isConfirmationOpen = fake => shownLayers(fake, AVATAR_Z.confirmationPanel).length > 0;
 export const confirmationTexts = fake => shownLayers(fake, AVATAR_Z.confirmationPanel).flatMap(layer => layer.texts());
