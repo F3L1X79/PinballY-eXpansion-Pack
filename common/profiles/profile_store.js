@@ -4,13 +4,14 @@
 // Decides which game is a Play (ADR 0007) and tells its listeners of each
 // switch, update and Play (onPlay, ADR 0008). Handles the Profile Reset.
 // Listens to "gamestarted" / "gameover"; tells of a Play it could not save or log (onPlayFailed).
-// - Every write is whole: tmp, backup, rename; a broken or newer file comes back from its backup.
+// - Every write is whole: tmp, backup, rename; a broken or newer file comes back from its backup, the recovery written to the Error Log.
 // - isAdmin and isChild: by hand or setMark, which writes true or removes the key (ADR 0020); a first Profile created gets isAdmin (ADR 0023).
 // - Other cabinet-level files sit next to cabinet.json; no Profile Reset touches them.
 // - Another Profile's profile.json is read afresh on each call, but once per withCachedReads run.
 // ============================================================
 
 import { safeHandler, logHandlerError } from "../core/safe_handler.js";
+import { logError } from "../core/error_log.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { markRefusal } from "./setup_entries.js";
 import { GUEST_NAME, nameRefusal, sameName, withoutTrailingHyphen } from "./profile_name_rules.js";
@@ -73,6 +74,9 @@ export function createProfileStore(host) {
     const playListeners = [];
     const playFailedListeners = [];
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
+    // A file that could not be read, and what was kept aside or restored:
+    // in the Error Log too, the file an owner attaches to a report.
+    const logRecovery = text => logError(SCRIPT_NAME, text, host);
     // Logged once per session: the picker lists the Profiles on every opening.
     const loggedUnreadableAvatars = new Set();
     // Logged once per session too: the menus check the marks on every opening.
@@ -120,9 +124,9 @@ export function createProfileStore(host) {
         try {
             const data = JSON.parse(files.readText(path));
             if (isRecord(data)) return data;
-            log(`${path} does not hold a JSON object.`);
+            logRecovery(`${path} does not hold a JSON object.`);
         } catch (error) {
-            log(`${path} cannot be read: ${error.message}`);
+            logRecovery(`${path} cannot be read: ${error.message}`);
         }
         return null;
     }
@@ -150,7 +154,7 @@ export function createProfileStore(host) {
     function setAsideIfNewer(folder, name, data, codeVersion) {
         if (codeVersion === undefined || !(Number(data.version) > codeVersion)) return null;
         const asideName = setAside(folder, name, "newer");
-        log(`${folder}\\${name}.json has version ${data.version}, newer than this pack's ${codeVersion};`
+        logRecovery(`${folder}\\${name}.json has version ${data.version}, newer than this pack's ${codeVersion};`
             + ` kept aside as ${asideName}, never read.`);
         return asideName;
     }
@@ -174,7 +178,7 @@ export function createProfileStore(host) {
         const newerBackup = backup ? setAsideIfNewer(folder, `${baseName}.bak`, backup, codeVersion) : null;
         if (backup && !newerBackup) {
             saveJson(folder, baseName, backup);
-            log(`${label} is ${newerFile ? "newer" : "missing or unreadable"}; restored from its backup`
+            logRecovery(`${label} is ${newerFile ? "newer" : "missing or unreadable"}; restored from its backup`
                 + `${asideFile ? ` (${asideKind} file kept as ${asideFile})` : ""}.`);
             return backup;
         }
@@ -182,7 +186,7 @@ export function createProfileStore(host) {
         if (newerBackup) asideFiles.push(newerBackup);
         else if (files.fileExists(backupPath)) asideFiles.push(setAside(folder, `${baseName}.bak`));
         const problem = newerFile || newerBackup ? "cannot be read by this pack" : "are unreadable";
-        log(`${label} and its backup ${problem}; kept aside as ${asideFiles.join(" and ")}, starting from zero.`);
+        logRecovery(`${label} and its backup ${problem}; kept aside as ${asideFiles.join(" and ")}, starting from zero.`);
         return null;
     }
 
@@ -279,7 +283,7 @@ export function createProfileStore(host) {
         const saved = loadJson(profile.folder, baseName, label, PLAY_LOG_VERSION);
         if (!saved) return [];
         if (Array.isArray(saved.plays)) return saved.plays;
-        log(`${label} has no "plays" list; kept aside as ${setAside(profile.folder, baseName)}, starting from zero.`);
+        logRecovery(`${label} has no "plays" list; kept aside as ${setAside(profile.folder, baseName)}, starting from zero.`);
         return [];
     }
 

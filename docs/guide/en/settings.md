@@ -74,7 +74,18 @@ Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. Keep that 
 
 ## Admin Profile
 
-The first Profile [created from the cabinet](profiles.md#from-the-cabinet) while you only have Guest becomes an Admin Profile by itself: pick it in Change Player to keep the setup entries. Otherwise, to keep them for yourself, [create your Profile](profiles.md#create-a-profile) if you only have Guest, pick it in Change Player, and make it the first Admin Profile: while no Profile is marked, open **Manage profiles** in the Exit menu (Escape) or the Operator Menu and choose **Become admin**, its only line. Your Profile is marked at once and the full menu opens. Guest and Child Profiles do not see the entry, since they can never be Admin Profiles. You can also add `"isAdmin": true` at the top level of your Profile's `Scripts\ExpansionPack\profiles\<name>\profile.json`, PinballY closed; editing that file remains the way to undo the mark while it is the only Admin Profile.
+The first Profile [created from the cabinet](profiles.md#from-the-cabinet) while you only have Guest becomes an Admin Profile by itself: pick it in Change Player to keep the setup entries. Otherwise, to keep them for yourself, [create your Profile](profiles.md#create-a-profile) if you only have Guest, pick it in Change Player, and make it the first Admin Profile: while no Profile is marked, open **Manage profiles** in the Exit menu (Escape) or the Operator Menu and choose **Become admin**, its only line. Your Profile is marked at once and the full menu opens. Guest and Child Profiles do not see the entry, since they can never be Admin Profiles.
+
+You can also mark it by hand, PinballY closed: in your Profile's `Scripts\ExpansionPack\profiles\<name>\profile.json`, add `"isAdmin": true,` as the first key, just after the opening brace. The comma at its end is required: JSON needs one between two keys.
+
+```json
+{
+  "isAdmin": true,
+  "version": 1,
+  "plays": {
+```
+
+Editing that file remains the way to undo the mark while it is the only Admin Profile: remove the whole line, comma included. A `profile.json` the pack cannot read is set aside as `profile.broken-<date>.json` and your edit seems to vanish: see [Troubleshooting](troubleshooting.md).
 
 From then on, that Profile marks the others from the cabinet: open **Manage profiles** in the Exit menu or the Operator Menu, pick a Profile and choose "Admin: no", which turns to "Admin: yes" at once. Choose it again to clear the mark.
 

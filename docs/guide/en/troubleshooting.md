@@ -44,7 +44,7 @@ The pack reacts only to what is installed: it never checks what PinballY has pub
 PinballY starts a new `PinballY.log` at each launch, so the pack also writes every error it meets to its own Error Log, which survives restarts:
 
 - **Where**: `PinballY\Scripts\ExpansionPack\errors.log`.
-- **What**: one line per error, with its date, time, Pack Version and the Add-on at fault, and the call stack indented below. Warnings and information go to `PinballY.log` only.
+- **What**: one line per error, with its date, time, Pack Version and the Add-on at fault, and the call stack indented below. It also says why a file of the `profiles` folder could not be read, under which name it was kept, and whether its data came back from its backup or started from zero. Warnings and information go to `PinballY.log` only.
 - **Size**: once over 1 MB, it becomes `errors.old.log` at the next start, and a new `errors.log` begins.
 - It is kept through every Pack Update, and can never be turned off.
 
@@ -74,7 +74,9 @@ PinballY's own log, in the PinballY folder, covers the current session only. At 
 
 **"Manage profiles" is missing from the Exit menu or the Operator Menu.** Once a Profile is marked, it shows to Admin Profiles only; while none is, it shows to every Profile but Guest and Child Profiles, with "Become admin" alone (see [Admin Profile](settings.md#admin-profile)). With PinballY's Exit menu disabled in its options, open the Operator Menu with the coin door service button.
 
-**A Profile mark (`isAdmin`, `isChild`) has no effect.** It must be `true` or `false`, at the top level of `profile.json`, with its key spelt exactly; a wrong mark is ignored and logged in `PinballY.log`. Edit `profile.json` with PinballY closed: while it runs, its next save of the active Profile overwrites your edit, without any line in the log.
+**A Profile mark (`isAdmin`, `isChild`) has no effect.** It must be `true` or `false`, at the top level of `profile.json`, with its key spelt exactly; a wrong mark is ignored and logged in `PinballY.log`. Edit `profile.json` with PinballY closed: while it runs, its next save of the active Profile overwrites your edit, without any line in the log. If your edit is gone and a `profile.broken-<date>.json` file appeared, see the next question.
+
+**A hand edit of `profile.json` disappeared, and a `profile.broken-<date>.json` file appeared next to it.** The pack could not read your edited file, most often for a missing or extra comma, and never reads or saves over a file it does not understand: it renamed it to `profile.broken-<date>.json`, which it keeps and never deletes, and brought the Profile back from its backup, `profile.bak.json`, the version saved before the last one, so without your edit. With no readable backup, the Profile starts from zero, and a broken backup is kept as `profile.bak.broken-<date>.json` too. `errors.log` says why the file could not be read, and whether the Profile came back from its backup or started from zero. To get your file back, close PinballY, fix the mistake in `profile.broken-<date>.json` (an editor that checks JSON shows where it is), then delete `profile.json` and rename the repaired file to `profile.json`. The Plays recorded since the recovery are in the `profile.json` you delete: they are lost. A file still unreadable is set aside again, and nothing else is lost. An unreadable `cabinet.json` or Play Log file (`play-log-<year>.json`) is set aside the same way.
 
 **The confetti or fireworks slow the cabinet down.** Turn them off with `CONFETTI=false` or `FIREWORKS=false`.
 

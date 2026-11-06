@@ -74,7 +74,18 @@ La progression de chaque Profil est enregistrée dans `Scripts\ExpansionPack\pro
 
 ## Profil admin
 
-Le premier Profil [créé depuis la borne](profiles.md#depuis-la-borne) alors que vous n'avez qu'Invité devient Profil admin de lui-même : choisissez-le dans « Changer de joueur » pour garder les entrées de configuration. Sinon, pour les garder pour vous seul, [créez votre Profil](profiles.md#créer-un-profil) si vous n'avez qu'Invité, choisissez-le dans « Changer de joueur » et faites-en le premier Profil admin : tant qu'aucun Profil n'est marqué, ouvrez **Gérer les profils** dans le menu de sortie (Échap) ou le menu opérateur et choisissez **Devenir admin**, sa seule ligne. Votre Profil est marqué aussitôt et le menu complet s'ouvre. Invité et les Profils enfants ne voient pas l'entrée, puisqu'ils ne peuvent jamais être Profils admin. Vous pouvez aussi ajouter `"isAdmin": true` au premier niveau du `Scripts\ExpansionPack\profiles\<nom>\profile.json` de votre Profil, PinballY fermé ; modifier ce fichier reste le moyen de retirer la marque tant que c'est le seul Profil admin.
+Le premier Profil [créé depuis la borne](profiles.md#depuis-la-borne) alors que vous n'avez qu'Invité devient Profil admin de lui-même : choisissez-le dans « Changer de joueur » pour garder les entrées de configuration. Sinon, pour les garder pour vous seul, [créez votre Profil](profiles.md#créer-un-profil) si vous n'avez qu'Invité, choisissez-le dans « Changer de joueur » et faites-en le premier Profil admin : tant qu'aucun Profil n'est marqué, ouvrez **Gérer les profils** dans le menu de sortie (Échap) ou le menu opérateur et choisissez **Devenir admin**, sa seule ligne. Votre Profil est marqué aussitôt et le menu complet s'ouvre. Invité et les Profils enfants ne voient pas l'entrée, puisqu'ils ne peuvent jamais être Profils admin.
+
+Vous pouvez aussi le marquer à la main, PinballY fermé : dans le `Scripts\ExpansionPack\profiles\<nom>\profile.json` de votre Profil, ajoutez `"isAdmin": true,` comme première clé, juste après l'accolade ouvrante. La virgule finale est obligatoire : le JSON en exige une entre deux clés.
+
+```json
+{
+  "isAdmin": true,
+  "version": 1,
+  "plays": {
+```
+
+Modifier ce fichier reste le moyen de retirer la marque tant que c'est le seul Profil admin : supprimez toute la ligne, virgule comprise. Un `profile.json` que le pack ne peut pas lire est mis de côté en `profile.broken-<date>.json` et votre modification semble disparaître : voir [Dépannage](troubleshooting.md).
 
 Ce Profil marque ensuite les autres depuis la borne : ouvrez **Gérer les profils** dans le menu de sortie ou le menu opérateur, choisissez un Profil puis « Admin : non », qui passe aussitôt à « Admin : oui ». Choisissez-le de nouveau pour retirer la marque.
 
