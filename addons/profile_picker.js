@@ -6,7 +6,7 @@
 // top right of the wheel, and greets each pick when the Welcome Screen is off.
 // - As the Startup Screen only, a drawn dialog of the wheel dialog module, which the Welcome Screen follows.
 // - Swallows every button through "commandbuttondown" while open.
-// - Layers are drawn ahead and kept: each draw blocks PinballY 20 to 45 ms on the cabinet.
+// - Carousel layers are drawn ahead and kept, points while hidden: each draw blocks PinballY 20 to 45 ms on the cabinet.
 // - The startup greeting waits for a wheel free of menus, screens and dialogs.
 // - Holds the quiet wheel while open, until the Welcome Screen that follows takes it (docs/adr/0015).
 // ============================================================
@@ -33,6 +33,7 @@ import { drawLevelPip, levelPipOn, drawAvatarFrame, avatarFrameSide, AVATAR_FRAM
 import { getProfileRewards } from "../common/avatar_frames/profile_rewards.js";
 import { createNavigationSound } from "../common/core/navigation_sound.js";
 import { createWindowWatch, readViewSize, sameSize, sizeText } from "../common/core/window_watch.js";
+import { createPlacedLayers } from "../common/drawing/placed_layers.js";
 import config from "../common/core/config.js";
 
 const SCRIPT_NAME = "ProfilePicker";
@@ -132,10 +133,13 @@ export default function init() {
     // Name Entry and Avatar Choice took as handled.
     const nameEntry = createNameEntry(host, { profileStore, drawingAhead: getDrawingAhead() });
     const avatarChoice = createAvatarChoice(host, { profileStore, drawingAhead: getDrawingAhead() });
-    const hiddenLayer = zIndex => {
-        const layer = host.createDrawingLayer(zIndex);
-        layer.alpha = 0;
-        return layer;
+    // Every carousel and greeting layer, in the window's layout pixels; the
+    // overlays are never placed, so they show at the window's size.
+    const placed = createPlacedLayers(host);
+    const hiddenLayer = zIndex => placed.create(zIndex);
+    // Hiding an already hidden layer is skipped: it runs on every glide frame.
+    const hide = layer => {
+        if (placed.isShown(layer)) placed.hide(layer);
     };
     // The carousel's overlay, title and hint, drawn ahead; the greeting's
     // overlay and text, drawn when it starts.
@@ -342,13 +346,18 @@ export default function init() {
         goldFrame.isDrawn = true;
     }
 
+    // Shows a layer centred on (x, y), in layout pixels, width by height.
+    function showCentred(layer, x, y, width, height, opacity) {
+        placed.place(layer, { x: x - width / 2, y: y - height / 2, w: width, h: height });
+        placed.show(layer);
+        layer.alpha = opacity;
+    }
+
     // Centres a layer drawn around an Avatar's image on (x, y), in layout
     // pixels, the image size pixels wide.
     function placeAroundImage(layer, canvasSide, x, y, size, opacity) {
         const side = size * canvasSide / AVATAR_ART.image;
-        layer.setScale({ ySpan: side / layout.height });
-        layer.setPos(x / layout.width - 0.5, 0.5 - y / layout.height);
-        layer.alpha = opacity;
+        showCentred(layer, x, y, side, side, opacity);
     }
 
     function placeAvatar(profile, x, y, size, opacity, gold) {
@@ -357,7 +366,7 @@ export default function init() {
         if (!gold) return;
         const shown = framePathOf(profile) ? goldFrames.framed : goldFrames.plain;
         const hidden = shown === goldFrames.framed ? goldFrames.plain : goldFrames.framed;
-        if (hidden.layer.alpha !== 0) hidden.layer.alpha = 0;
+        hide(hidden.layer);
         if (!shown.isDrawn) drawGoldFrame(shown);
         placeAroundImage(shown.layer, shown.side, x, y, size, opacity);
     }
@@ -368,21 +377,17 @@ export default function init() {
         if (!layer) return;
         const scale = size / AVATAR_ART.image;
         const offset = (PIP_ART.cx - AVATAR_SIDE / 2) * scale;
-        layer.setScale({ ySpan: PIP_CANVAS.height * scale / layout.height });
-        layer.setPos((x + offset) / layout.width - 0.5, 0.5 - (y + offset) / layout.height);
-        layer.alpha = opacity;
+        showCentred(layer, x + offset, y + offset, PIP_CANVAS.width * scale, PIP_CANVAS.height * scale, opacity);
     }
 
     const hideAll = records => {
-        for (const { layer } of records.values()) {
-            if (layer.alpha !== 0) layer.alpha = 0;
-        }
+        for (const { layer } of records.values()) hide(layer);
     };
 
     function hideCarousel() {
-        backLayer.alpha = 0;
-        goldFrames.plain.layer.alpha = 0;
-        goldFrames.framed.layer.alpha = 0;
+        hide(backLayer);
+        hide(goldFrames.plain.layer);
+        hide(goldFrames.framed.layer);
         hideAll(avatarLayers);
         hideAll(nameLayers);
         hideAll(pipLayers);
@@ -392,14 +397,11 @@ export default function init() {
     function placeName() {
         const current = glide === 0 ? slots[highlighted] : null;
         for (const [name, { layer }] of nameLayers) {
-            if ((!current || name !== current.name) && layer.alpha !== 0) layer.alpha = 0;
+            if (!current || name !== current.name) hide(layer);
         }
         if (!current) return;
-        const layer = nameLayer(current);
         const top = layout.height * ROW_HEIGHT_RATIO + NAME.top + textShift();
-        layer.setScale({ ySpan: NAME_LAYER_HEIGHT / layout.height });
-        layer.setPos(0, 0.5 - (top + NAME_LAYER_HEIGHT / 2) / layout.height);
-        layer.alpha = 1;
+        showCentred(nameLayer(current), layout.width / 2, top + NAME_LAYER_HEIGHT / 2, layout.width, NAME_LAYER_HEIGHT, 1);
     }
 
     // Runs on every frame of a glide: shows, moves and hides layers only.
@@ -411,7 +413,7 @@ export default function init() {
         const shownNames = new Set([...shownSlots.keys()].map(slot => slot.name));
         for (const records of [avatarLayers, pipLayers]) {
             for (const [name, { layer }] of records) {
-                if (!shownNames.has(name) && layer.alpha !== 0) layer.alpha = 0;
+                if (!shownNames.has(name)) hide(layer);
             }
         }
         for (const [slot, offset] of shownSlots) {
@@ -434,6 +436,7 @@ export default function init() {
             drawShadowedText(host, dc, TITLE, COLORS.text, TEXT.pickerTitle, centerY + TITLE.top);
             drawShadowedText(host, dc, HINT, COLORS.hint, TEXT.pickerHint, centerY + HINT.top + textShift());
         });
+        placed.measure(layout);
     }
 
     const isShowing = () => slots !== null || greetingDelayTimer !== null || greetingTimer !== null;
@@ -511,7 +514,6 @@ export default function init() {
     // the Avatar at its grown size, or under its Avatar Frame.
     function drawGreetingBack(profile) {
         greetingLayer.clear(COLORS.transparent);
-        greetingLayer.alpha = 1;
         greetingLayer.draw(dc => {
             layout = dc.getSize();
             dc.fillRect(0, 0, layout.width, layout.height, COLORS.overlay);
@@ -519,6 +521,9 @@ export default function init() {
             const textTop = layout.height * ROW_HEIGHT_RATIO + grownSide / 2 + GREETING_TEXT.gap;
             drawShadowedText(host, dc, GREETING_TEXT, COLORS.text, TEXT.greeting(displayNameOf(profile)), textTop);
         });
+        placed.measure(layout);
+        placed.show(greetingLayer);
+        greetingLayer.alpha = 1;
     }
 
     // Stops the pause or the greeting, and hides it with the carousel,
@@ -528,7 +533,7 @@ export default function init() {
         greetingDelayTimer = null;
         host.clearInterval(greetingTimer);
         greetingTimer = null;
-        greetingLayer.alpha = 0;
+        hide(greetingLayer);
         hideCarousel();
         wakeDrawingAhead();
     }
@@ -648,6 +653,7 @@ export default function init() {
         if (isLayoutStale()) measure();
         // Here rather than on the first move, which it would slow down.
         navigationSound.load();
+        placed.show(backLayer);
         backLayer.alpha = 1;
         placeCarousel();
         windowWatch.start(followWindow);

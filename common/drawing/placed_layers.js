@@ -37,19 +37,24 @@ export function placementOf(rect, referenceWidth, referenceHeight) {
 // tall, or in the window's own pixels without one (measured while every
 // layer is hidden). A layer never placed shows at the window's size, like a backdrop.
 export function createPlacedLayers(host, { referenceHeight: fixedHeight = null } = {}) {
-    // Each layer's rect (null: the window) and whether it shows.
+    // Each layer's rect (null: the window), whether it shows, and the ySpan
+    // it shows at on its rect (null at the window's size); a new window's
+    // measure changes it for the same rect.
     const records = new Map();
     let referenceHeight = fixedHeight;
     let referenceWidth = 0;
 
+    const newRecord = () => ({ rect: null, isShown: false, ySpan: null });
+
     // A layer from elsewhere is taken as hidden, not yet placed.
     function recordOf(layer) {
-        if (!records.has(layer)) records.set(layer, { rect: null, isShown: false });
+        if (!records.has(layer)) records.set(layer, newRecord());
         return records.get(layer);
     }
 
-    function applyScale(layer, rect) {
-        layer.setScale(rect === null ? WINDOW_SPAN : { ySpan: rect.h / referenceHeight });
+    function applyScale(layer, record) {
+        record.ySpan = record.rect === null ? null : record.rect.h / referenceHeight;
+        layer.setScale(record.rect === null ? WINDOW_SPAN : { ySpan: record.ySpan });
     }
 
     return {
@@ -62,17 +67,16 @@ export function createPlacedLayers(host, { referenceHeight: fixedHeight = null }
         isShown: layer => records.has(layer) && records.get(layer).isShown,
         create(zIndex) {
             const layer = createHiddenLayer(host, zIndex);
-            records.set(layer, { rect: null, isShown: false });
+            records.set(layer, newRecord());
             return layer;
         },
         // Moved at once; a hidden layer stays a point until shown, and a
-        // shown one keeping its height is only moved, as a glide's frame needs.
+        // shown one keeping its span is only moved, as a glide's frame needs.
         place(layer, rect) {
             const record = recordOf(layer);
-            const isResized = record.rect === null || record.rect.h !== rect.h;
             record.rect = rect;
             const { x, y } = placementOf(rect, referenceWidth, referenceHeight);
-            if (record.isShown && isResized) applyScale(layer, rect);
+            if (record.isShown && record.ySpan !== rect.h / referenceHeight) applyScale(layer, record);
             layer.setPos(x, y);
         },
         hide(layer) {
@@ -85,7 +89,7 @@ export function createPlacedLayers(host, { referenceHeight: fixedHeight = null }
             const record = recordOf(layer);
             if (record.isShown) return;
             record.isShown = true;
-            applyScale(layer, record.rect);
+            applyScale(layer, record);
         },
         remove(layer) {
             records.delete(layer);

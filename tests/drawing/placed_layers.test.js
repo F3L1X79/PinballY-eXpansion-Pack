@@ -2,7 +2,8 @@
 // Placed layers tests: over the fake PinballY host, a layer is created
 // hidden and reduced to a point, still measuring the window when drawn
 // without a size; a placed layer shows in reference pixels; hide then show
-// brings a placed or a window-sized layer back; remove takes it away.
+// brings a placed or a window-sized layer back, a new window's measure
+// rescales a shown one; remove takes it away.
 // ============================================================
 
 import { test } from "node:test";
@@ -134,6 +135,27 @@ test("a set without a reference height places in the window's own pixels, measur
     placed.show(layer);
     assert.deepEqual(layer.scale(), { ySpan: 540 / 1920 });
     assert.ok(near(layer.position().x, 0) && near(layer.position().y, 0), JSON.stringify(layer.position()));
+});
+
+test("a shown layer placed on the same rect after a new window's measure takes the new window's span", () => {
+    const fake = createFakePinballYHost();
+    const placed = createPlacedLayers(fake);
+    placed.measure({ width: 1920, height: 1080 });
+    const layer = placed.create(Z_INDEX);
+    const rect = { x: 0, y: 0, w: 1920, h: 54 };
+    placed.place(layer, rect);
+    placed.show(layer);
+    placed.measure({ width: 1080, height: 1920 });
+    placed.place(layer, rect);
+    assert.deepEqual(layer.scale(), { ySpan: 54 / 1920 });
+});
+
+test("a layer shown at the window's size, then placed on a full-height rect, loses the window's width", () => {
+    const { placed } = openSet();
+    const layer = placed.create(Z_INDEX);
+    placed.show(layer);
+    placed.place(layer, { x: 0, y: 0, w: 400, h: REFERENCE_HEIGHT });
+    assert.deepEqual(layer.scale(), { ySpan: 1 });
 });
 
 test("isShown tells a shown layer from a hidden one", () => {
