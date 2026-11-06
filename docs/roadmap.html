@@ -227,7 +227,6 @@
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
         </div>
         <div class="cell">
-          <a class="chip tr-share" href="#drawn-screen-controls"><b></b>Commandes des Drawn Screens</a>
           <a class="chip tr-profiles" href="#ratings"><b></b>Notes, favoris, masquées</a>
           <a class="chip tr-profiles" href="#year-in-pinball"><b></b>Year in Pinball</a>
           <a class="chip tr-share" href="#themes"><b></b>Thèmes</a>
@@ -279,32 +278,6 @@
     </div>
 
     <ol class="queue">
-
-      <li draggable="true" tabindex="0" class="item tr-share" id="drawn-screen-controls" data-track="share" data-rank="platinum">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Commandes communes des Drawn Screens</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">gros</span><span class="tag">Architecture</span></div>
-          </div>
-          <p>Un module, <code>drawn_screen_controls.js</code>, possède les boutons d'un Drawn Screen une fois ouvert, pour qu'une règle commune ne se paie plus en un ticket par écran. Seul effet visible : un bouton maintenu n'enchaîne plus les choix ni les retours. Grillé le 04/11/2026.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/implement</code>. <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/418">Spec #418</a>, tickets #440 à #445 · Candidat 1 de la revue d'architecture du 04/11/2026 · Nouveau terme Drawn Screen</div>
-          <details>
-            <summary>Décisions du grill (6)</summary>
-            <ul>
-              <li>7 écrans entrent dans le module : d'abord Profile Stats, Household Stats et la liste des Avatar Frames, puis High Score Board, Name Entry, Achievement List et Welcome Screen. Le Drawn Menu et le Profile Picker restent dehors et n'appliquent que la garde du bouton maintenu.</li>
-              <li><code>Next</code> et <code>Prev</code> se répètent toujours ; <code>Select</code>, <code>Launch</code> et <code>Exit</code> ignorent la répétition, sur les Drawn Screens et les Drawn Menus. Il faut donc un appui par niveau pour remonter.</li>
-              <li>Un seul écouteur de <code>commandbuttondown</code> et d'<code>attractmodestart</code>, avec une pile d'ouvertures, pas d'écrans : Profile Stats peut y figurer deux fois (Profile Stats, Household Stats, Profile Stats d'un autre Profile). Le test <code>defaultPrevented</code> reste à l'entrée, pour les appuis pris par un Drawn Menu. L'écouteur s'inscrit à la première création d'écran, avant celui du Profile Picker.</li>
-              <li>Le module possède le routage des boutons, l'état « en préparation », l'attract mode, la pile (mise de côté, réapparition, abandon quand un enfant échoue) et les écouteurs de fermeture. L'écran fournit <code>onMove</code>, <code>onChoose</code>, <code>onExit</code>, <code>setAside</code>, <code>showAgain</code> et <code>close</code>, et garde l'ouverture, le fondu, le marqueur, le son, le glissement et le défilement.</li>
-              <li>L'inscription à la file des Dialogs reste un <code>waitFor</code> explicite dans l'Add-on : le module fournit <code>isOpen</code> et <code>onClosed</code>. L'automatique se tromperait sur le Welcome Screen, déjà dans la file (ADR 0011), et sur Name Entry, dont la fermeture ferait passer un Dialog sur le carrousel.</li>
-              <li>Les fichiers <code>*_give_up*</code> et <code>*_set_aside*</code> par écran et les cas de boutons redondants sont supprimés. Il reste un scénario de branchement par écran : ouverture, Exit, appui maintenu, et abandon pendant la préparation quand l'écran en a une. Les <code>*_button_hints_*</code> restent.</li>
-            </ul>
-            <p class="ctx">L'absence de <code>defaultPrevented</code> dans le Welcome Screen est sans effet : la file l'ouvre un tick plus tard, jamais pendant l'appui qui l'a demandé. L'enchaînement par un bouton maintenu vient de la lecture du code et de la doc PinballY, il n'a pas été observé sur la borne.</p>
-          </details>
-        </div>
-      </li>
 
       <li draggable="true" tabindex="0" class="item tr-play" id="backglass-loader" data-track="play" data-rank="bronze">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
@@ -658,7 +631,7 @@
           </div>
           <p>Des transitions entre les écrans et une réaction visuelle aux appuis, toujours ponctuelles et dans le style Steamball.</p>
           <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après <a href="#drawn-screen-controls">Commandes communes (n° <span data-ref="drawn-screen-controls"></span>)</a>, qui reprend les boutons de ces écrans ; leurs calques passent déjà par <code>common/drawing/placed_layers.js</code></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Les calques des écrans passent déjà par <code>common/drawing/placed_layers.js</code>, et leurs boutons par <code>common/core/drawn_screen_controls.js</code></div>
           <details>
             <summary>Questions ouvertes (3)</summary>
             <ul>
@@ -666,7 +639,7 @@
               <li>Quelle durée, pour qu'une animation ne retarde jamais le bouton suivant ? Un joueur pressé doit pouvoir enchaîner sans attendre la fin d'une transition.</li>
               <li>Un module commun, pour ne pas les refaire écran par écran ?</li>
             </ul>
-            <p class="ctx">Idée de Félix du 04/11/2026, assez bas dans la file à sa demande. Les fondus d'ouverture des écrans existent déjà.</p>
+            <p class="ctx">Idée de Félix du 04/11/2026, assez bas dans la file à sa demande. Les fondus d'ouverture des écrans existent déjà. Depuis la spec #418, les boutons de tous les Drawn Screens passent par un seul module, <code>common/core/drawn_screen_controls.js</code> : une réaction aux appuis peut s'y brancher une fois pour tous.</p>
           </details>
         </div>
       </li>
