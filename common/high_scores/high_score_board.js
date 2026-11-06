@@ -14,6 +14,7 @@ import { displayNameOf } from "../profiles/profile_name.js";
 import { safeHandler } from "../core/safe_handler.js";
 import { createClosedListeners } from "../core/closed_listeners.js";
 import { openDrawnScreen } from "../stats/drawn_screen.js";
+import { createHiddenLayer, hideLayer } from "../drawing/placed_layers.js";
 import { createLoader, LOADER_PLACEMENT } from "../drawing/loader.js";
 import { createSelectionMarker } from "../drawing/selection_marker.js";
 import { drawExitButton } from "../drawing/steamball_drawing.js";
@@ -26,9 +27,6 @@ import {
 } from "./high_score_board_painter.js";
 
 const TRANSPARENT = 0x00000000;
-// A hidden layer shrunk to a point: PinballY would otherwise fill every
-// pixel of the window with it at each frame, even invisible.
-const POINT_SCALE = Object.freeze({ xSpan: 0.001, ySpan: 0.001 });
 
 // highScores: the High Score store; profileRewards: the worn Avatar
 // Frames; drawingAhead: the shared drawing ahead
@@ -42,13 +40,9 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
     // On the top third, so that the comet never hides the scores.
     const loader = createLoader(host, { zIndex: HIGH_SCORE_BOARD_LOADER_Z_INDEX, placement: LOADER_PLACEMENT.TOP_THIRD });
 
-    function hideCrown(crown) {
-        crown.layer.alpha = 0;
-        crown.layer.setScale(POINT_SCALE);
-    }
-    // The 1st, 2nd and 3rd places' crowns, each on its own layer, drawn once.
-    const crowns = CROWN_IMAGES.map((_, index) => ({ index, layer: host.createDrawingLayer(HIGH_SCORE_BOARD_CROWN_Z_INDEX), isDrawn: false }));
-    crowns.forEach(hideCrown);
+    // The 1st, 2nd and 3rd places' crowns, each on its own layer, drawn once;
+    // hidden through the open screen's placed layers, else through hideLayer().
+    const crowns = CROWN_IMAGES.map((_, index) => ({ index, layer: createHiddenLayer(host, HIGH_SCORE_BOARD_CROWN_Z_INDEX), isDrawn: false }));
 
     function drawCrownLayer(crown) {
         crown.layer.clear(TRANSPARENT);
@@ -121,16 +115,23 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         return screen;
     }
 
-    // Sets every content layer's alpha to the screen's opacity, the rows
-    // out of view hidden, and puts each row in its scrolled place.
+    // Shows every content layer at the screen's opacity, the rows out of
+    // view hidden, and puts each row in its scrolled place.
     function showContent(opened) {
         const { drawn, geometry, rowLayers, firstRow } = opened;
-        for (const layer of [...opened.content, ...opened.crownLayers]) layer.alpha = opened.opacity;
+        const showAt = (layer, opacity) => {
+            drawn.show(layer);
+            layer.alpha = opacity;
+        };
+        for (const layer of [...opened.content, ...opened.crownLayers]) {
+            if (!rowLayers.includes(layer)) showAt(layer, opened.opacity);
+        }
         opened.marker.setOpacity(opened.opacity);
         rowLayers.forEach((layer, index) => {
             drawn.place(layer, placedRect(geometry, geometry.rows[index], firstRow * geometry.rowPitch));
             const inView = index >= firstRow && index < firstRow + geometry.rowsInView;
-            layer.alpha = inView ? opened.opacity : 0;
+            if (inView) showAt(layer, opened.opacity);
+            else drawn.hide(layer);
         });
     }
 
@@ -156,7 +157,7 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
             const rect = geometry.steps[index];
             piece(Z_INDEX.podium, rect, dc => drawStep(host, dc, place, index, TEXT.record, rect.w));
         });
-        crowns.forEach(hideCrown);
+        for (const crown of crowns) drawn.hide(crown.layer);
         // Drawn now when the board opens before the drawing ahead reached them.
         const crownLayers = crowns.slice(0, Math.min(PODIUM_PLACES, screen.places.length)).map((crown, index) => {
             if (!crown.isDrawn) drawCrownLayer(crown);
@@ -233,7 +234,7 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
             opened.isReading = false;
             if (shown !== opened) return;
             loader.hide();
-            for (const layer of opened.content) host.removeDrawingLayer(layer);
+            for (const layer of opened.content) opened.drawn.remove(layer);
             // A read whose recording threw resolves to nothing, logged: shown as failed.
             drawContent(opened, screenFor(game, status || "failed", defaultImages));
         }));
@@ -244,7 +245,7 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         shown.drawn.close(shown.content);
         shown.marker.remove();
         loader.hide();
-        crowns.forEach(hideCrown);
+        for (const crown of crowns) hideLayer(crown.layer);
         shown = null;
         closedListeners.tell();
     }

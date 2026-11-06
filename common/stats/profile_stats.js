@@ -439,7 +439,14 @@ export function createProfileStats(host, {
     function setOpacity(screen, opacity) {
         screen.opacity = opacity;
         const unselected = screen.tooltipLayers.filter((layer, index) => layer && index !== screen.selected);
-        for (const layer of screen.drawn.layers) layer.alpha = unselected.includes(layer) ? 0 : opacity;
+        for (const layer of screen.drawn.layers) {
+            if (unselected.includes(layer)) {
+                screen.drawn.hide(layer);
+                continue;
+            }
+            screen.drawn.show(layer);
+            layer.alpha = opacity;
+        }
         screen.marker.setOpacity(opacity);
     }
 

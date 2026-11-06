@@ -1,48 +1,47 @@
 // ============================================================
 // Drawn screen: the layer plumbing shared by the Profile Stats, the Household
-// Stats and the High Score Board: placing, fading in, setting aside and
-// removing. openDrawnScreen() draws at once; prepareDrawnScreen() goes
-// through the shared screen opening (docs/adr/0014). Writes nothing.
+// Stats and the High Score Board, built on the placed layers: placing, fading
+// in, setting aside and removing. openDrawnScreen() draws at once;
+// prepareDrawnScreen() goes through the shared screen opening (docs/adr/0014).
+// - Layers kept apart (other) or hidden alone go through the screen's show() and hide().
 // ============================================================
 
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
 import { createScreenOpening, fadeIn, FRAME_MS } from "../drawing/screen_opening.js";
+import { createPlacedLayers } from "../drawing/placed_layers.js";
 
 export { FRAME_MS };
 
-// A hidden layer is reduced to a point: PinballY otherwise stretches it to
-// the whole window and fills every pixel of it each frame, even invisible.
-const HIDDEN_SPAN = { xSpan: 0.001, ySpan: 0.001 };
-// PinballY's default span, the backdrop's: the whole window.
-const WINDOW_SPAN = { xSpan: 1, ySpan: 1 };
-
 // The layers, their placing and fade in, shared by both openings.
 function createScreenLayers(host, scriptName, referenceHeight) {
+    const placed = createPlacedLayers(host, { referenceHeight });
     const layers = [];
-    // Each placed layer's rect, to put it back once shown again.
-    const rects = new Map();
-    let referenceWidth = 0;
     let stopFade = () => {};
 
     function hiddenLayer(zIndex) {
-        const layer = host.createDrawingLayer(zIndex);
-        layer.alpha = 0;
+        const layer = placed.create(zIndex);
         layer.clear(STEAMBALL_COLORS.transparent);
         return layer;
     }
 
-    // rect in reference pixels, from the window's top left.
-    function place(layer, rect) {
-        rects.set(layer, rect);
-        layer.setScale({ ySpan: rect.h / referenceHeight });
-        layer.setPos((rect.x + rect.w / 2) / referenceWidth - 0.5, 0.5 - (rect.y + rect.h / 2) / referenceHeight);
+    // Every layer of the screen at its size; their alpha is the screen's to set.
+    function showAll() {
+        for (const layer of layers) placed.show(layer);
     }
 
     return {
         layers,
-        place,
+        // rect in reference pixels, from the window's top left.
+        place: placed.place,
+        // A layer the screen hides alone (a tooltip, a row out of view), or
+        // shows again at its size before setting its alpha.
+        hide: placed.hide,
+        show: placed.show,
+        // A layer kept apart (other), removed before the screen closes.
+        remove: placed.remove,
+        showAll,
         // Known once the backdrop is drawn: PinballY draws a layer within draw().
-        get referenceWidth() { return referenceWidth; },
+        get referenceWidth() { return placed.referenceWidth; },
         // drawBackdrop(dc, size, referenceWidth): dims the wheel behind the panel.
         drawBackdrop(zIndex, drawBackdrop) {
             const backdrop = hiddenLayer(zIndex);
@@ -50,8 +49,8 @@ function createScreenLayers(host, scriptName, referenceHeight) {
             layers.unshift(backdrop);
             backdrop.draw(dc => {
                 const size = dc.getSize();
-                referenceWidth = referenceHeight * size.width / size.height;
-                drawBackdrop(dc, size, referenceWidth);
+                placed.measure(size);
+                drawBackdrop(dc, size, placed.referenceWidth);
             });
         },
         // A hidden layer placed on rect and drawn in its own coordinates,
@@ -60,39 +59,34 @@ function createScreenLayers(host, scriptName, referenceHeight) {
         drawPiece(zIndex, rect, draw, into = layers, canvas = rect) {
             const layer = hiddenLayer(zIndex);
             into.push(layer);
-            place(layer, rect);
+            placed.place(layer, rect);
             layer.draw(draw, canvas.w, canvas.h);
             return layer;
         },
-        // setOpacity(opacity) every frame, from 0 to 1, then onFaded().
+        // Every layer at its size, then setOpacity(opacity) every frame, from
+        // 0 to 1, then onFaded().
         fadeIn(setOpacity, onFaded) {
+            showAll();
             stopFade = fadeIn(host, scriptName, setOpacity, onFaded);
         },
         // Every layer hidden and reduced to a point, those of other included.
         setAside(other = []) {
             stopFade();
-            for (const layer of [...layers, ...other]) {
-                layer.alpha = 0;
-                layer.setScale(HIDDEN_SPAN);
-            }
+            for (const layer of [...layers, ...other]) placed.hide(layer);
         },
-        // Every layer back in its place, then setOpacity(1): the screen
-        // decides which layers show, and must place again those it set
+        // Every layer back at its size, then setOpacity(1): the screen
+        // hides again those it keeps hidden, and shows again those it set
         // aside apart (other), which stay reduced to a point until then.
         showAgain(setOpacity) {
-            for (const layer of layers) {
-                if (rects.has(layer)) place(layer, rects.get(layer));
-                else layer.setScale(WINDOW_SPAN);
-            }
+            showAll();
             setOpacity(1);
         },
         // Removes the layers, those of other included; safe to call again.
         close(other = []) {
             stopFade();
-            for (const layer of [...layers, ...other]) host.removeDrawingLayer(layer);
+            for (const layer of [...layers, ...other]) placed.remove(layer);
             layers.length = 0;
             other.length = 0;
-            rects.clear();
         },
     };
 }
@@ -137,6 +131,8 @@ export function prepareDrawnScreen(host, scriptName, { referenceHeight, backdrop
     return {
         layers: screen.layers,
         place: screen.place,
+        hide: screen.hide,
+        show: screen.show,
         get referenceWidth() { return screen.referenceWidth; },
         drawBackdrop: draw => screen.drawBackdrop(backdropZIndex, draw),
         drawPiece: screen.drawPiece,
@@ -151,14 +147,16 @@ export function prepareDrawnScreen(host, scriptName, { referenceHeight, backdrop
         // At once, without a veil, a fade in nor an opening time line.
         showAgain: screen.showAgain,
         // Dims the wheel at once and runs the steps; once they are over,
-        // onReady() (the screen set up, still hidden), then the fade in
-        // through setOpacity(opacity). onFailed(): a step threw (logged)
-        // and the opening is given up, everything already removed.
+        // onReady() (the screen set up, its layers at their size, still
+        // transparent), then the fade in through setOpacity(opacity).
+        // onFailed(): a step threw (logged) and the opening is given up,
+        // everything already removed.
         start({ onReady, setOpacity, onFailed }) {
             opening.begin();
             opening.runVeiled(runNextStep, {
                 onDone: () => {
                     opening.logOpened({ profileName, isReadOnly });
+                    screen.showAll();
                     onReady();
                     opening.fadeIn(setOpacity);
                 },

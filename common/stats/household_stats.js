@@ -251,10 +251,19 @@ export function createHouseholdStats(host, {
             const rect = geometry.columns[index];
             const x = rect.x - screen.scroll;
             drawn.place(layer, { ...rect, x });
-            layer.alpha = screen.opacity * edgeAlpha(geometry, x, rect.w);
+            const alpha = edgeAlpha(geometry, x, rect.w);
+            if (alpha === 0) {
+                drawn.hide(layer);
+                return;
+            }
+            drawn.show(layer);
+            layer.alpha = screen.opacity * alpha;
         });
         const isOnExitButton = screen.selected === EXIT_BUTTON;
-        screen.exitTooltip.alpha = isOnExitButton ? screen.opacity : 0;
+        if (isOnExitButton) {
+            drawn.show(screen.exitTooltip);
+            screen.exitTooltip.alpha = screen.opacity;
+        } else drawn.hide(screen.exitTooltip);
         let marked = geometry.exitButton;
         if (!isOnExitButton) {
             const selected = geometry.columns[screen.selected];
