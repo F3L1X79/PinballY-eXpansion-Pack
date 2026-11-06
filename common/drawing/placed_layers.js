@@ -34,10 +34,12 @@ export function placementOf(rect, referenceWidth, referenceHeight) {
 }
 
 // The layers of one screen, its window referenceHeight reference pixels
-// tall. A layer never placed shows at the window's size, like a backdrop.
-export function createPlacedLayers(host, { referenceHeight }) {
+// tall, or in the window's own pixels without one (measured while every
+// layer is hidden). A layer never placed shows at the window's size, like a backdrop.
+export function createPlacedLayers(host, { referenceHeight: fixedHeight = null } = {}) {
     // Each layer's rect (null: the window) and whether it shows.
     const records = new Map();
+    let referenceHeight = fixedHeight;
     let referenceWidth = 0;
 
     // A layer from elsewhere is taken as hidden, not yet placed.
@@ -54,8 +56,10 @@ export function createPlacedLayers(host, { referenceHeight }) {
         get referenceWidth() { return referenceWidth; },
         // size: the window's, as a draw without a size measures it.
         measure(size) {
+            if (fixedHeight === null) referenceHeight = size.height;
             referenceWidth = referenceHeight * size.width / size.height;
         },
+        isShown: layer => records.has(layer) && records.get(layer).isShown,
         create(zIndex) {
             const layer = createHiddenLayer(host, zIndex);
             records.set(layer, { rect: null, isShown: false });

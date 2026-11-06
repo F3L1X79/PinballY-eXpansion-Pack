@@ -4,7 +4,7 @@
 // Profile Stats. Unlocked ones first, then missing ones by Unlock Rate and
 // Achievement Progress. Exit calls the return given to open().
 // Opens directly, not through the wheel dialog module: the player asked for it.
-// - Every layer is drawn ahead from startup and kept between openings.
+// - Every layer is drawn ahead from startup and kept between openings, a point while hidden.
 // - Swallows every button through "commandbuttondown" while open.
 // - Opens at once when drawn ahead, else through the shared screen opening (docs/adr/0014).
 // - isOpen() and onClosed() let the wheel dialogs wait for it.
@@ -20,6 +20,7 @@ import { EXIT_BUTTON_LOOK, drawExitButton, drawExitTooltip } from "../drawing/st
 import { buttonHintGroupsOf, exitButtonLookOf, exitButtonWordOf, FLIPPER_HINT } from "../drawing/button_hints.js";
 import { EXIT_BUTTON } from "../drawing/exit_button_loop.js";
 import { createSelectionMarker } from "../drawing/selection_marker.js";
+import { createPlacedLayers } from "../drawing/placed_layers.js";
 import { RANKS_IN_ORDER } from "./achievements.js";
 import {
     LIST_LOOK, AVATAR_FRAME_WIDTH, computeGeometry, drawBackdrop, drawMask, drawSectionHeader, drawRow, layoutOwners, layoutRowEmblem, layoutHeaderEmblems,
@@ -54,13 +55,10 @@ const EMBLEM_VARIANT = Object.freeze({ UNLOCKED: "_plain", MISSING: "_missing", 
 // drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js).
 export function createAchievementList(host, { getAchievements, profileStore, drawingAhead, profileRewards = null }) {
     const { achievementList: TEXT } = lang;
-    const hiddenLayer = zIndex => {
-        const layer = host.createDrawingLayer(zIndex);
-        layer.alpha = 0;
-        return layer;
-    };
-    const backdropLayer = hiddenLayer(ACHIEVEMENT_LIST_Z_INDEX.backdrop);
-    const mask = { layer: hiddenLayer(ACHIEVEMENT_LIST_Z_INDEX.mask), signature: null };
+    // In the window's own pixels, as the geometry is.
+    const placed = createPlacedLayers(host);
+    const backdropLayer = placed.create(ACHIEVEMENT_LIST_Z_INDEX.backdrop);
+    const mask = { layer: placed.create(ACHIEVEMENT_LIST_Z_INDEX.mask), signature: null };
     // The header's emblem images, by rank.
     const headerEmblemLayers = new Map();
     // By item key, each with the signature of what it was drawn with.
@@ -303,30 +301,29 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
             geometry = computeGeometry(dc.getSize());
             drawBackdrop(dc, geometry);
         });
+        placed.measure(geometry);
     }
 
     // Enough slots for every item the rows area can show at once, even
     // only section headers, partly out at both ends.
     const slotCount = () => Math.ceil(geometry.areaHeight / (LIST_LOOK.sectionHeight + LIST_LOOK.itemGap)) + 2;
 
-    // What a layer was drawn with: what it shows, its size and the window
-    // height, which its scale depends on.
-    const signatureOf = (look, width, height) => JSON.stringify([look, width, height, geometry.height]);
+    // What a layer was drawn with: what it shows and its size. Its scale
+    // follows the window when it is placed.
+    const signatureOf = (look, width, height) => JSON.stringify([look, width, height]);
 
     // The layer drawn with draw(dc) at this size, created on first use and
-    // drawn again only when its signature changed; shown shownHeight tall
-    // in layout pixels.
-    function signedLayer(layers, key, zIndex, look, width, height, draw, shownHeight = height) {
+    // drawn again only when its signature changed; a hidden one stays a point.
+    function signedLayer(layers, key, zIndex, look, width, height, draw) {
         let record = layers.get(key);
         if (!record) {
-            record = { layer: hiddenLayer(zIndex), signature: null };
+            record = { layer: placed.create(zIndex), signature: null };
             layers.set(key, record);
         }
         const signature = signatureOf(look, width, height);
         if (record.signature !== signature) {
             record.layer.clear(TRANSPARENT);
             record.layer.draw(draw, width, height);
-            record.layer.setScale({ ySpan: shownHeight / geometry.height });
             record.signature = signature;
         }
         return record.layer;
@@ -377,17 +374,17 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
     // The Exit Button and its tooltip, each drawn in the reference pixels of
     // the other drawn screens and shown at its rect in the geometry.
     const EXIT_PIECES = Object.freeze({
-        button: { zIndex: ACHIEVEMENT_LIST_Z_INDEX.exitButton, canvas: EXIT_BUTTON_CANVAS, rectOf: g => g.exitButton, draw: dc => drawExitButton(dc, exitLook) },
+        button: { zIndex: ACHIEVEMENT_LIST_Z_INDEX.exitButton, canvas: EXIT_BUTTON_CANVAS, draw: dc => drawExitButton(dc, exitLook) },
         tooltip: {
-            zIndex: ACHIEVEMENT_LIST_Z_INDEX.tooltip, canvas: EXIT_TOOLTIP_CANVAS, rectOf: g => g.exitTooltip,
+            zIndex: ACHIEVEMENT_LIST_Z_INDEX.tooltip, canvas: EXIT_TOOLTIP_CANVAS,
             draw: dc => drawExitTooltip(host, dc, exitButtonWordOf(exitLook)),
         },
     });
     const isExitPieceDrawn = key => isDrawn(exitLayers, key, exitLook, EXIT_PIECES[key].canvas.width, EXIT_PIECES[key].canvas.height);
 
     function exitLayer(key) {
-        const { zIndex, canvas, rectOf, draw } = EXIT_PIECES[key];
-        return signedLayer(exitLayers, key, zIndex, exitLook, canvas.width, canvas.height, draw, rectOf(geometry).h);
+        const { zIndex, canvas, draw } = EXIT_PIECES[key];
+        return signedLayer(exitLayers, key, zIndex, exitLook, canvas.width, canvas.height, draw);
     }
 
     // The rail's place only depends on the geometry; whether it shows, on
@@ -474,9 +471,16 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
 
     const hideAllExcept = (records, shownLayers) => {
         for (const { layer } of records.values()) {
-            if (!shownLayers.has(layer) && layer.alpha !== 0) layer.alpha = 0;
+            if (!shownLayers.has(layer) && placed.isShown(layer)) placed.hide(layer);
         }
     };
+
+    // Shown at its rect, in window pixels, at this alpha.
+    function showAt(layer, rect, alpha) {
+        placed.place(layer, rect);
+        placed.show(layer);
+        layer.alpha = alpha;
+    }
 
     // Shows the items overlapping the rows area at their place with their
     // emblem image and Unlock Rate, each dimmed by its distance to the
@@ -485,29 +489,23 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
     // not drawn ahead yet is drawn on the spot.
     function placeItems() {
         const g = geometry;
-        const toX = x => x / g.width - 0.5;
-        const centerX = toX(g.rowX + g.rowWidth / 2);
         const ownersLeft = g.rowX + g.rowWidth - LIST_LOOK.ownersWidth;
         const shownLayers = new Set();
         content.items.forEach((item, index) => {
             const top = g.areaTop + item.top - glide.scroll;
             if (top + item.height <= g.areaTop || top >= g.areaTop + g.areaHeight) return;
             const layer = itemLayer(item);
-            const centerY = 0.5 - (top + item.height / 2) / g.height;
-            layer.setPos(centerX, centerY);
             // A section header is never highlighted: always dimmed, even
             // right above the highlighted row.
             const distance = item.kind === ITEM_KIND.SECTION ? 1 : Math.min(1, Math.abs(item.top - glide.highlightTop) / ROW_PITCH);
-            layer.alpha = opacity * (1 - (1 - DIMMED_ALPHA) * distance);
+            const alpha = opacity * (1 - (1 - DIMMED_ALPHA) * distance);
+            showAt(layer, { x: g.rowX, y: top, w: g.rowWidth, h: item.height }, alpha);
             shownLayers.add(layer);
             for (const piece of item.pieces) {
-                const placedLayer = pieceLayer(index, piece);
-                // From the row's centre, so a piece centred on the row sits
-                // exactly at its height.
-                placedLayer.setPos(toX((piece.inOwners ? ownersLeft : g.rowX) + piece.x + piece.width / 2),
-                    centerY - (piece.y + piece.height / 2 - item.height / 2) / g.height);
-                placedLayer.alpha = layer.alpha;
-                shownLayers.add(placedLayer);
+                const shownPiece = pieceLayer(index, piece);
+                const left = (piece.inOwners ? ownersLeft : g.rowX) + piece.x;
+                showAt(shownPiece, { x: left, y: top + piece.y, w: piece.width, h: piece.height }, alpha);
+                shownLayers.add(shownPiece);
             }
         });
         hideAllExcept(itemLayers, shownLayers);
@@ -521,9 +519,8 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
         const shownLayers = new Set();
         if (bar) {
             const layer = thumbLayer(bar);
-            const top = thumbTopAt(bar, glide.scroll);
-            layer.setPos(bar.centerX / geometry.width - 0.5, 0.5 - (top + bar.thumbHeight / 2) / geometry.height);
-            layer.alpha = opacity;
+            const rect = { x: bar.centerX - bar.thumbWidth / 2, y: thumbTopAt(bar, glide.scroll), w: bar.thumbWidth, h: bar.thumbHeight };
+            showAt(layer, rect, opacity);
             shownLayers.add(layer);
         }
         hideAllExcept(thumbLayers, shownLayers);
@@ -610,18 +607,14 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
         }
     }
 
-    const placeAt = (layer, rect) => layer.setPos((rect.x + rect.w / 2) / geometry.width - 0.5, 0.5 - (rect.y + rect.h / 2) / geometry.height);
-
     // The Exit Button at its place, and while it is selected its tooltip and
     // the Selection Marker round it; drawn on the spot if not drawn ahead.
     function placeExitButton() {
         const isSelected = shown.highlighted === EXIT_BUTTON;
-        const button = exitLayer("button");
-        placeAt(button, geometry.exitButton);
-        button.alpha = opacity;
+        showAt(exitLayer("button"), geometry.exitButton, opacity);
         const tooltipLayer = exitLayer("tooltip");
-        placeAt(tooltipLayer, geometry.exitTooltip);
-        tooltipLayer.alpha = isSelected ? opacity : 0;
+        if (isSelected) showAt(tooltipLayer, geometry.exitTooltip, opacity);
+        else if (placed.isShown(tooltipLayer)) placed.hide(tooltipLayer);
         if (isSelected && !shown.marker) {
             // In the shared reference pixels, so it looks as on the other screens.
             shown.marker = createSelectionMarker(host, {
@@ -645,8 +638,7 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
         const shownLayers = new Set();
         for (const emblem of headerEmblems()) {
             const layer = headerEmblemLayer(emblem);
-            layer.setPos((emblem.x + emblem.width / 2) / geometry.width - 0.5, 0.5 - (emblem.y + emblem.height / 2) / geometry.height);
-            layer.alpha = opacity;
+            showAt(layer, { x: emblem.x, y: emblem.y, w: emblem.width, h: emblem.height }, opacity);
             shownLayers.add(layer);
         }
         hideAllExcept(headerEmblemLayers, shownLayers);
@@ -654,8 +646,10 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
 
     // Shows the list drawn for it.
     function show() {
-        backdropLayer.alpha = opacity;
-        mask.layer.alpha = opacity;
+        for (const layer of [backdropLayer, mask.layer]) {
+            placed.show(layer);
+            layer.alpha = opacity;
+        }
         showHeaderEmblems();
         jumpToTarget();
         placeExitButton();
@@ -725,7 +719,7 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
         stopGlide();
         if (shown.marker) removeMarker();
         shown = null;
-        for (const layer of [backdropLayer, mask.layer]) layer.alpha = 0;
+        for (const layer of [backdropLayer, mask.layer]) placed.hide(layer);
         for (const layers of [itemLayers, pieceLayers, headerEmblemLayers, thumbLayers, exitLayers]) hideAllExcept(layers, new Set());
         // What changed while it was open is read again once it is closed.
         wakeDrawingAhead();

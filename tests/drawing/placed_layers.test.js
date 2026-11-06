@@ -118,6 +118,34 @@ test("show and hide set no alpha but hide's 0, and add no clear", () => {
     assert.equal(layer.clearColor(), 0xff102030, "never cleared");
 });
 
+test("a set without a reference height places in the window's own pixels, measured again on a new window", () => {
+    const fake = createFakePinballYHost();
+    const placed = createPlacedLayers(fake);
+    placed.measure({ width: 1920, height: 1080 });
+    const layer = placed.create(Z_INDEX);
+    placed.place(layer, { x: 860, y: 270, w: 200, h: 540 });
+    placed.show(layer);
+    assert.deepEqual(layer.scale(), { ySpan: 0.5 });
+    assert.ok(near(layer.position().x, 0) && near(layer.position().y, 0), JSON.stringify(layer.position()));
+    placed.hide(layer);
+    placed.measure({ width: 1080, height: 1920 });
+    assert.equal(placed.referenceWidth, 1080);
+    placed.place(layer, { x: 440, y: 690, w: 200, h: 540 });
+    placed.show(layer);
+    assert.deepEqual(layer.scale(), { ySpan: 540 / 1920 });
+    assert.ok(near(layer.position().x, 0) && near(layer.position().y, 0), JSON.stringify(layer.position()));
+});
+
+test("isShown tells a shown layer from a hidden one", () => {
+    const { placed } = openSet();
+    const layer = placed.create(Z_INDEX);
+    assert.equal(placed.isShown(layer), false);
+    placed.show(layer);
+    assert.equal(placed.isShown(layer), true);
+    placed.hide(layer);
+    assert.equal(placed.isShown(layer), false);
+});
+
 test("remove takes the layer away", () => {
     const { fake, placed } = openSet();
     const layer = placed.create(Z_INDEX);
