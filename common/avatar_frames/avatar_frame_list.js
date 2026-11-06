@@ -26,11 +26,10 @@ import {
 import { exitButtonLookOf, exitButtonWordOf, buttonHintGroupsOf, FLIPPER_HINT } from "../drawing/button_hints.js";
 import { EXIT_BUTTON, stepThroughExitButton } from "../drawing/exit_button_loop.js";
 import { createScreenOpening } from "../drawing/screen_opening.js";
+import { createPlacedLayers } from "../drawing/placed_layers.js";
 
 const SCRIPT_NAME = "AvatarFrameList";
 const NONE_KEY = "none";
-const HIDDEN_SCALE = Object.freeze({ xSpan: 0.001, ySpan: 0.001 });
-const WINDOW_SCALE = Object.freeze({ xSpan: 1, ySpan: 1 });
 const EXIT_TOOLTIP = "exitTooltip";
 
 // profileRewards: the Profile Rewards module (common/avatar_frames/profile_rewards.js);
@@ -38,18 +37,9 @@ const EXIT_TOOLTIP = "exitTooltip";
 export function createAvatarFrameList(host, { profileStore, profileRewards, drawingAhead }) {
     const { profileStats: { frameList: TEXT } } = lang;
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
-    // Shrunk to a point while hidden: PinballY otherwise fills every pixel
-    // of a window-sized layer on each frame, even at alpha 0.
-    const hide = layer => {
-        layer.alpha = 0;
-        layer.setScale(HIDDEN_SCALE);
-    };
-    const hiddenLayer = zIndex => {
-        const layer = host.createDrawingLayer(zIndex);
-        hide(layer);
-        return layer;
-    };
-    const backdropLayer = hiddenLayer(AVATAR_FRAME_LIST_Z_INDEX.backdrop);
+    const placed = createPlacedLayers(host, { referenceHeight: REFERENCE_HEIGHT });
+    // Never placed: it shows over the whole window.
+    const backdropLayer = placed.create(AVATAR_FRAME_LIST_Z_INDEX.backdrop);
     // By key ("title" or a row's), each with the signature of what
     // it was drawn with.
     const layers = new Map();
@@ -91,18 +81,14 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
     // backdrop, which measures the window the layout depends on.
     function readContent(rows = readRows()) {
         let geometry = null;
-        let referenceWidth = 0;
         backdropLayer.clear(STEAMBALL_COLORS.transparent);
-        // Window-sized while it measures: its canvas must be the window's.
-        backdropLayer.setScale(WINDOW_SCALE);
         backdropLayer.draw(dc => {
             const size = dc.getSize();
-            referenceWidth = REFERENCE_HEIGHT * size.width / size.height;
-            geometry = layoutFrameList(referenceWidth, rows.length);
+            placed.measure(size);
+            geometry = layoutFrameList(placed.referenceWidth, rows.length);
             drawBackdrop(dc, size, REFERENCE_HEIGHT, geometry.panel);
         });
-        if (!shown) backdropLayer.setScale(HIDDEN_SCALE);
-        content = { rows, geometry, referenceWidth };
+        content = { rows, geometry, referenceWidth: placed.referenceWidth };
         isContentStale = false;
     }
 
@@ -160,7 +146,7 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
     function layerOf(piece) {
         let record = layers.get(piece.key);
         if (!record) {
-            record = { layer: hiddenLayer(piece.zIndex), signature: null };
+            record = { layer: placed.create(piece.zIndex), signature: null };
             layers.set(piece.key, record);
         }
         if (!isDrawn(piece)) {
@@ -171,15 +157,16 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
         return record.layer;
     }
 
-    // Scaled only once shown, so it stays a point while hidden.
-    function place(layer, rect) {
-        layer.setScale({ ySpan: rect.h / REFERENCE_HEIGHT });
-        layer.setPos((rect.x + rect.w / 2) / content.referenceWidth - 0.5, 0.5 - (rect.y + rect.h / 2) / REFERENCE_HEIGHT);
-    }
-
     // A row scrolled out of view stays hidden while the list is open.
     const isShowing = piece => piece.isInView !== false;
-    const placeOrHide = (layer, piece) => (isShowing(piece) ? place(layer, piece.rect) : hide(layer));
+    function placeOrHide(layer, piece) {
+        if (isShowing(piece)) {
+            placed.place(layer, piece.rect);
+            placed.show(layer);
+        } else {
+            placed.hide(layer);
+        }
+    }
 
     // One step of the drawing ahead. What the list shows is read again only
     // while it is closed: the open list keeps what it opened with.
@@ -221,7 +208,7 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
     // Shows the list drawn for it at this opacity, the Selection Marker on
     // the selected choice.
     function show(opacity) {
-        backdropLayer.setScale(WINDOW_SCALE);
+        placed.show(backdropLayer);
         for (const piece of pieces()) placeOrHide(layerOf(piece), piece);
         // Not drawn ahead: it lives only while the list is open, its timer
         // with it.
@@ -234,12 +221,17 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
 
     // Each frame of the fade in, and each move. Every layer is drawn by
     // now: no layerOf(), which could draw on the spot within a frame. The
-    // Exit Button's tooltip shows only while it is selected.
+    // Exit Button's tooltip shows only while it is selected, a point otherwise.
     function setOpacity(opacity) {
         shown.opacity = opacity;
         backdropLayer.alpha = opacity;
-        for (const piece of pieces()) if (isShowing(piece)) layers.get(piece.key).layer.alpha = opacity;
-        if (shown.selected !== EXIT_BUTTON) layers.get(EXIT_TOOLTIP).layer.alpha = 0;
+        const tooltip = layers.get(EXIT_TOOLTIP).layer;
+        if (shown.selected === EXIT_BUTTON) placed.show(tooltip);
+        else if (placed.isShown(tooltip)) placed.hide(tooltip);
+        for (const piece of pieces()) {
+            const { layer } = layers.get(piece.key);
+            if (isShowing(piece) && placed.isShown(layer)) layer.alpha = opacity;
+        }
         shown.marker.setOpacity(opacity);
     }
 
@@ -305,8 +297,8 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
         shown = null;
         opening.remove();
         if (marker) marker.remove();
-        hide(backdropLayer);
-        for (const { layer } of layers.values()) hide(layer);
+        placed.hide(backdropLayer);
+        for (const { layer } of layers.values()) placed.hide(layer);
         // What changed while it was open is read again once it is closed.
         wakeDrawingAhead();
         onClosed();

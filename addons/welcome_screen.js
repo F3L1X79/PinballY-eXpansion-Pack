@@ -37,6 +37,8 @@ import { createNavigationSound } from "../common/core/navigation_sound.js";
 import { createWindowWatch, sameSize, sizeText } from "../common/core/window_watch.js";
 import { STEAMBALL_COLORS } from "../common/drawing/steamball_palette.js";
 import { createSelectionMarker } from "../common/drawing/selection_marker.js";
+import { createPlacedLayers } from "../common/drawing/placed_layers.js";
+import { fadeIn } from "../common/drawing/screen_opening.js";
 import { getStartupVeil } from "../common/drawing/startup_veil.js";
 import { getQuietWheel } from "../common/core/quiet_wheel.js";
 import { EXIT_BUTTON_LOOK } from "../common/drawing/steamball_drawing.js";
@@ -47,8 +49,6 @@ import {
 
 const SCRIPT_NAME = "WelcomeScreen";
 
-const FADE_MS = 220;
-const FRAME_MS = 16;
 // The Lost Records line names this many tables at most, then counts the others.
 const MAX_NAMED_LOST_RECORDS = 3;
 // Exit always leaves the bare wheel.
@@ -96,6 +96,7 @@ export default function init() {
     let firstChoice = null;
     const startupVeil = getStartupVeil();
     const quietWheel = getQuietWheel();
+    const placed = createPlacedLayers(host, { referenceHeight: REFERENCE_HEIGHT });
 
     // The grey line: played this Period, or else a Streak of at least 2.
     function greyLineOf(periodTable, texts) {
@@ -239,36 +240,28 @@ export default function init() {
         };
     }
 
-    function place(layer, rect, referenceWidth) {
-        layer.setScale({ ySpan: rect.h / REFERENCE_HEIGHT });
-        layer.setPos((rect.x + rect.w / 2) / referenceWidth - 0.5, 0.5 - (rect.y + rect.h / 2) / REFERENCE_HEIGHT);
-    }
-
-    function hiddenLayer(zIndex) {
-        const layer = host.createDrawingLayer(zIndex);
-        layer.alpha = 0;
-        layer.clear(STEAMBALL_COLORS.transparent);
-        return layer;
-    }
-
-    // The backdrop, hidden: it measures the window and dims the wheel.
+    // The backdrop, hidden: it measures the window and dims the wheel. Never
+    // placed: it shows over the whole window.
     function drawBackdropLayer(screen) {
-        const layer = hiddenLayer(WELCOME_SCREEN_Z_INDEX.backdrop);
+        const layer = placed.create(WELCOME_SCREEN_Z_INDEX.backdrop);
+        layer.clear(STEAMBALL_COLORS.transparent);
         let size = null;
         layer.draw(dc => {
             size = dc.getSize();
-            drawBackdrop(dc, size, REFERENCE_HEIGHT * size.width / size.height, screen);
+            placed.measure(size);
+            drawBackdrop(dc, size, placed.referenceWidth, screen);
         });
         return { layer, size };
     }
 
     // Every other layer and the marker, hidden, for the window the backdrop measured.
     function drawPieces(screen, backdrop) {
-        const referenceWidth = REFERENCE_HEIGHT * backdrop.size.width / backdrop.size.height;
+        const { referenceWidth } = placed;
         const layers = [backdrop.layer];
         const drawPiece = piece => {
-            const layer = hiddenLayer(piece.zIndex);
-            place(layer, piece.rect, referenceWidth);
+            const layer = placed.create(piece.zIndex);
+            layer.clear(STEAMBALL_COLORS.transparent);
+            placed.place(layer, piece.rect);
             layer.draw(piece.draw, piece.rect.w, piece.rect.h);
             layers.push(layer);
             return layer;
@@ -284,7 +277,7 @@ export default function init() {
 
     function removeLayers({ layers, marker }) {
         marker.remove();
-        for (const layer of layers) host.removeDrawingLayer(layer);
+        for (const layer of layers) placed.remove(layer);
     }
 
     // Draws every layer at once, hidden, then fades them in together:
@@ -301,12 +294,15 @@ export default function init() {
         navigationSound.load();
         const selected = Math.max(0, screen.choices.indexOf(firstChoice));
         drawn.marker.moveTo(drawn.targets[selected]);
-        shown = { ...drawn, screen, selected, opacity: 0, fadeTimer: null };
+        shown = { ...drawn, screen, selected, opacity: 0, stopFade: () => {} };
         windowWatch.start(followWindow);
         // The comet would freeze while the screen is drawn on the UI thread:
         // it goes as the panel fades in, the veil once the panel is fully in.
         startupVeil.hideLoader();
-        fadeIn(shown);
+        // This opening's screen: shown is null once it closes. A window
+        // change redraws it in place, so the fade goes on with the new layers.
+        const fading = shown;
+        fading.stopFade = fadeIn(host, SCRIPT_NAME, opacity => setOpacity(fading, opacity), () => startupVeil.hideVeil());
         playGreetingSound();
         log(`Opened, drawn in ${host.now().getTime() - openedAt} ms.`);
     }
@@ -319,7 +315,7 @@ export default function init() {
         const backdrop = drawBackdropLayer(shown.screen);
         const previousSize = shown.size;
         if (sameSize(backdrop.size, previousSize)) {
-            host.removeDrawingLayer(backdrop.layer);
+            placed.remove(backdrop.layer);
             return false;
         }
         removeLayers(shown);
@@ -330,31 +326,20 @@ export default function init() {
         return true;
     }
 
-    // The marker and every layer to the same opacity, except the unselected
-    // choices' tooltips, kept hidden.
+    // The marker and every layer to the same opacity, at their size, except
+    // the unselected choices' tooltips, kept hidden as points.
     function setOpacity(screen, opacity) {
         screen.opacity = opacity;
         const unselected = screen.tooltipLayers.filter((layer, index) => layer && index !== screen.selected);
-        for (const layer of screen.layers) layer.alpha = unselected.includes(layer) ? 0 : opacity;
-        screen.marker.setOpacity(opacity);
-    }
-
-    function fadeIn(screen) {
-        const startMs = host.now().getTime();
-        // Timed on the clock: Windows timers fire late.
-        screen.fadeTimer = host.setInterval(safeHandler(SCRIPT_NAME, () => {
-            const opacity = Math.min(1, (host.now().getTime() - startMs) / FADE_MS);
-            setOpacity(screen, opacity);
-            if (opacity >= 1) {
-                stopFade(screen);
-                startupVeil.hideVeil();
+        for (const layer of screen.layers) {
+            if (unselected.includes(layer)) {
+                if (placed.isShown(layer)) placed.hide(layer);
+                continue;
             }
-        }), FRAME_MS);
-    }
-
-    function stopFade(screen) {
-        host.clearInterval(screen.fadeTimer);
-        screen.fadeTimer = null;
+            placed.show(layer);
+            layer.alpha = opacity;
+        }
+        screen.marker.setOpacity(opacity);
     }
 
     // Its turn in the wheel dialog module: the wheel is free. Drawn at once,
@@ -372,7 +357,7 @@ export default function init() {
         windowWatch.stop();
         startupVeil.hide();
         if (shown) {
-            stopFade(shown);
+            shown.stopFade();
             removeLayers(shown);
             shown = null;
         }

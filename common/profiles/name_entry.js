@@ -17,6 +17,7 @@ import { createWindowWatch, readViewSize, sameSize, sizeText } from "../core/win
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
 import { createSelectionMarker } from "../drawing/selection_marker.js";
 import { createScreenOpening } from "../drawing/screen_opening.js";
+import { createPlacedLayers } from "../drawing/placed_layers.js";
 import { drawBackdrop, drawButtonHintsBand, EXIT_BUTTON_LOOK } from "../drawing/steamball_drawing.js";
 import { buttonHintGroupsOf, FLIPPER_HINT } from "../drawing/button_hints.js";
 import {
@@ -34,7 +35,6 @@ const HYPHEN = "-";
 const ERASE_ARROW = String.fromCharCode(0x2190);
 // The strip's characters fade away from the current one, by this much per place.
 const FADE_PER_PLACE = 0.2;
-const HIDDEN_SPAN = Object.freeze({ xSpan: 0.001, ySpan: 0.001 });
 
 // drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js).
 export function createNameEntry(host, { profileStore, drawingAhead }) {
@@ -46,6 +46,7 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
     const windowWatch = createWindowWatch(host, SCRIPT_NAME);
     const opening = createScreenOpening(host, SCRIPT_NAME, { zIndex: Z_INDEX.backdrop - 2, drawingAhead });
+    const placed = createPlacedLayers(host, { referenceHeight: REFERENCE_HEIGHT });
     // The open screen, null when closed: the name so far and why it is
     // refused, the Profiles listed at the opening, the first Profile's notice (null
     // once the Household has a Profile), whether its folder just failed, the current
@@ -63,41 +64,34 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
     }
 
     // Draws the backdrop, which measures the window the layout depends on.
-    // A draw that throws leaves no window-sized layer behind, which PinballY
-    // would fill on every frame.
+    // A draw that throws leaves no layer behind. Never placed: it shows
+    // over the whole window.
     function drawBackdropLayer() {
         const view = readViewSize(host, SCRIPT_NAME);
-        const layer = host.createDrawingLayer(Z_INDEX.backdrop);
-        layer.alpha = 0;
+        const layer = placed.create(Z_INDEX.backdrop);
         let measured = null;
         try {
             layer.draw(dc => {
                 const size = dc.getSize();
-                const referenceWidth = REFERENCE_HEIGHT * size.width / size.height;
-                const geometry = layoutNameEntry(referenceWidth, TEXT.lines.length + (shown.notice === null ? 0 : 1));
+                placed.measure(size);
+                const geometry = layoutNameEntry(placed.referenceWidth, TEXT.lines.length + (shown.notice === null ? 0 : 1));
                 drawBackdrop(dc, size, REFERENCE_HEIGHT, geometry.panel);
-                measured = { size, referenceWidth, geometry };
+                measured = { size, referenceWidth: placed.referenceWidth, geometry };
             });
         } catch (error) {
-            host.removeDrawingLayer(layer);
+            placed.remove(layer);
             throw error;
         }
         return { layer, view, ...measured };
     }
 
-    function place(layer, rect) {
-        layer.setScale({ ySpan: rect.h / REFERENCE_HEIGHT });
-        layer.setPos((rect.x + rect.w / 2) / shown.referenceWidth - 0.5, 0.5 - (rect.y + rect.h / 2) / REFERENCE_HEIGHT);
-    }
-
     // A hidden layer placed on rect and drawn in its own coordinates, kept
     // in into before drawing, so a draw that throws leaves nothing behind once closed.
     function drawPiece(zIndex, rect, draw, into) {
-        const layer = host.createDrawingLayer(zIndex);
+        const layer = placed.create(zIndex);
         into.push(layer);
-        layer.alpha = 0;
         layer.clear(STEAMBALL_COLORS.transparent);
-        place(layer, rect);
+        placed.place(layer, rect);
         layer.draw(draw, rect.w, rect.h);
         return layer;
     }
@@ -142,35 +136,35 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
             },
             ...RING.map((character, index) => () => {
                 const rect = cellRectOf(shown.geometry, 0);
-                drawPiece(Z_INDEX.ring, rect, drawCharacterOn(index, rect), shown.ringLayers).setScale(HIDDEN_SPAN);
+                drawPiece(Z_INDEX.ring, rect, drawCharacterOn(index, rect), shown.ringLayers);
             }),
         ];
     }
 
     // The strip around the current character: moves and fades layers only.
-    // The others wait reduced to a point (see conventions: Drawing ahead).
+    // The others wait reduced to a point.
     function placeRing() {
         const half = (shown.geometry.cellsShown - 1) / 2;
         const shownOffsets = new Map();
         for (let offset = -half; offset <= half; offset++) shownOffsets.set((shown.cursor + offset + RING.length) % RING.length, offset);
         shown.ringLayers.forEach((layer, index) => {
             if (!shownOffsets.has(index)) {
-                if (layer.alpha !== 0) {
-                    layer.alpha = 0;
-                    layer.setScale(HIDDEN_SPAN);
-                }
+                if (placed.isShown(layer)) placed.hide(layer);
                 return;
             }
             const offset = shownOffsets.get(index);
-            place(layer, cellRectOf(shown.geometry, offset));
+            placed.place(layer, cellRectOf(shown.geometry, offset));
+            placed.show(layer);
             layer.alpha = shown.opacity * (1 - FADE_PER_PLACE * Math.abs(offset));
         });
     }
 
     function setOpacity(opacity) {
         shown.opacity = opacity;
-        shown.backdrop.alpha = opacity;
-        for (const layer of shown.fixedLayers) layer.alpha = opacity;
+        for (const layer of [shown.backdrop, ...shown.fixedLayers]) {
+            placed.show(layer);
+            layer.alpha = opacity;
+        }
         placeRing();
         shown.marker.setOpacity(opacity);
     }
@@ -185,8 +179,8 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
     function removeLayers() {
         if (shown.marker) shown.marker.remove();
         shown.marker = null;
-        if (shown.backdrop) host.removeDrawingLayer(shown.backdrop);
-        for (const layer of [...shown.fixedLayers, ...shown.ringLayers]) host.removeDrawingLayer(layer);
+        if (shown.backdrop) placed.remove(shown.backdrop);
+        for (const layer of [...shown.fixedLayers, ...shown.ringLayers]) placed.remove(layer);
         shown.fixedLayers = [];
         shown.ringLayers = [];
     }
@@ -201,7 +195,7 @@ export function createNameEntry(host, { profileStore, drawingAhead }) {
         try {
             backdrop = drawBackdropLayer();
             if (sameSize(backdrop.size, previousSize)) {
-                host.removeDrawingLayer(backdrop.layer);
+                placed.remove(backdrop.layer);
                 return false;
             }
             removeLayers();
