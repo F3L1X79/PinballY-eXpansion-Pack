@@ -2,8 +2,8 @@
 // Temporary NVRAM probe for the cabinet checks of #482: only when the folder
 // nvram_probe exists in the pack's folder, runs "vpxtool nvram show" once on
 // every .nv of the NVRAM folder, then on the table's .nv copied at each
-// launch and on every .nv the game changed. Saves each answer as a .json and
-// logs a summary to logfile.log and nvram_probe\probe.log.
+// launch and on every .nv the game changed. Saves each answer as a .json; logs
+// a summary and the values a game changed to logfile.log and probe.log.
 // - Never runs vpxtool during a game; one run at a time.
 // - Remove with the Play Scores tickets: nothing else depends on it.
 // ============================================================
@@ -49,24 +49,53 @@ function describeValue(descriptor) {
 
 const describeList = list => (Array.isArray(list) ? `[${list.map(describeValue).join(", ")}]` : describeValue(list));
 
-// What "vpxtool nvram show" said, in one line: { hasScores, text }.
+// What "vpxtool nvram show" said, in one line: { hasScores, text, data }
+// (data: the parsed answer, null when unreadable).
 export function summarizeNvramShow(output) {
     const start = output.indexOf("{");
     const firstLine = (output.split(/\r?\n/).find(line => line.trim() !== "") || "").trim().slice(0, 200);
-    if (start < 0) return { hasScores: false, text: `no JSON in the answer ("${firstLine}")` };
+    if (start < 0) return { hasScores: false, text: `no JSON in the answer ("${firstLine}")`, data: null };
     let data;
     try {
         data = JSON.parse(output.slice(start));
     } catch (error) {
-        return { hasScores: false, text: `answer not readable as JSON (${error.message}; first line "${firstLine}")` };
+        return { hasScores: false, text: `answer not readable as JSON (${error.message}; first line "${firstLine}")`, data: null };
     }
     const gameState = findGameState(data);
-    if (!gameState) return { hasScores: false, text: "no game_state in the answer" };
+    if (!gameState) return { hasScores: false, text: "no game_state in the answer", data };
     const parts = [`scores ${describeList(gameState.scores)}`];
     if (gameState.final_scores !== undefined) parts.push(`final_scores ${describeList(gameState.final_scores)}`);
-    for (const key of GAME_STATE_EXTRAS) if (gameState[key] !== undefined) parts.push(`${key} ${describeValue(gameState[key])}`);
+    // The usual fields first, then whatever else the map puts in game_state.
+    const otherKeys = Object.keys(gameState).filter(key => key !== "scores" && key !== "final_scores" && !GAME_STATE_EXTRAS.includes(key));
+    for (const key of [...GAME_STATE_EXTRAS, ...otherKeys]) if (gameState[key] !== undefined) parts.push(`${key} ${describeList(gameState[key])}`);
     const hasScores = Array.isArray(gameState.scores) && gameState.scores.some(hasValue);
-    return { hasScores, text: parts.join("; ") };
+    return { hasScores, text: parts.join("; "), data };
+}
+
+// Every resolved value of the answer by its path ("audits.Games Started"),
+// game_state left out: the summary line already gives it.
+function valuesByPath(node, path = "", values = new Map()) {
+    if (node === null || typeof node !== "object") return values;
+    if (!Array.isArray(node) && node.value !== undefined) {
+        values.set(path, JSON.stringify(node.value));
+        return values;
+    }
+    const entries = Array.isArray(node)
+        ? node.map((child, index) => [child && typeof child === "object" && typeof child.label === "string" ? child.label : String(index), child])
+        : Object.entries(node).filter(([key]) => key !== "game_state");
+    for (const [key, child] of entries) valuesByPath(child, path === "" ? key : `${path}.${key}`, values);
+    return values;
+}
+
+const MAX_CHANGES_LOGGED = 60;
+
+// The values that differ between two parsed answers, as "path: a -> b" texts.
+export function changedValues(beforeData, afterData) {
+    const before = valuesByPath(beforeData);
+    const after = valuesByPath(afterData);
+    const paths = [...new Set([...before.keys(), ...after.keys()])];
+    return paths.filter(path => before.get(path) !== after.get(path))
+        .map(path => `${path}: ${before.get(path) ?? "absent"} -> ${after.get(path) ?? "absent"}`);
 }
 
 export function startNvramProbe(host, vpxtoolPath) {
@@ -160,8 +189,10 @@ export function startNvramProbe(host, vpxtoolPath) {
         });
     }
 
-    // At launch: { configId, rom, folder, dates, startMs, playFolder, beforePath }.
+    // At launch: { play, configId, folder, dates, startMs, playFolder, beforePath }.
     let launched = null;
+    // Numbered from 1 at each start of PinballY, so the owner's notes match the log.
+    let playCount = 0;
 
     function nvDatesIn(folder) {
         const infos = host.files.listFileInfos(folder);
@@ -194,17 +225,18 @@ export function startNvramProbe(host, vpxtoolPath) {
         }
         const rom = typeof game.rom === "string" ? game.rom.trim() : "";
         const startMs = host.now().getTime();
-        const playFolder = createFolder(`${createFolder(`${probeFolder}\\plays`)}\\${stampOf(host.now())}`);
+        const play = ++playCount;
+        const playFolder = createFolder(`${createFolder(`${probeFolder}\\plays`)}\\${stampOf(host.now())} play ${play}`);
         let beforePath = null;
-        if (rom === "") log(`launch of "${game.configId}": ROM field empty, no .nv copied before the game.`);
-        else if (!host.files.fileExists(`${folder}\\${rom}.nv`)) log(`launch of "${game.configId}": no ${rom}.nv yet in ${folder}.`);
+        if (rom === "") log(`play ${play}, launch of "${game.configId}": ROM field empty, no .nv copied before the game.`);
+        else if (!host.files.fileExists(`${folder}\\${rom}.nv`)) log(`play ${play}, launch of "${game.configId}": no ${rom}.nv yet in ${folder}.`);
         else {
             // Keeps the ROM's file name: vpxtool picks the map from it.
             beforePath = `${createFolder(`${playFolder}\\before`)}\\${rom}.nv`;
             host.files.copyFile(`${folder}\\${rom}.nv`, beforePath);
-            log(`launch of "${game.configId}" (ROM ${rom}): ${rom}.nv copied before the game.`);
+            log(`play ${play}, launch of "${game.configId}" (ROM ${rom}): ${rom}.nv copied before the game.`);
         }
-        launched = { configId: game.configId, folder, dates, startMs, playFolder, beforePath };
+        launched = { play, configId: game.configId, folder, dates, startMs, playFolder, beforePath };
     }));
 
     // Fires after the game: reads the copy taken at launch and each changed .nv.
@@ -215,12 +247,19 @@ export function startNvramProbe(host, vpxtoolPath) {
             const seconds = Math.round((host.now().getTime() - before.startMs) / 1000);
             const after = nvDatesIn(before.folder) || new Map();
             const changed = [...after].filter(([name, modified]) => before.dates.get(name) !== modified).map(([name]) => name);
-            log(`end of "${before.configId}" after ${seconds} s; .nv changed: ${changed.join(", ") || "none"}.`);
+            const label = `play ${before.play}, "${before.configId}"`;
+            log(`${label}: ended after ${seconds} s; .nv changed: ${changed.join(", ") || "none"}.`);
+            // The answer read from the copy, compared with the same .nv after the game.
+            let beforeData = null;
+            let beforeName = null;
             if (before.beforePath) {
-                const name = before.beforePath.slice(before.beforePath.lastIndexOf("\\") + 1);
+                beforeName = before.beforePath.slice(before.beforePath.lastIndexOf("\\") + 1);
                 submit({
-                    nvPath: before.beforePath, savePath: `${before.playFolder}\\before ${name}.json`,
-                    done: summary => log(`"${before.configId}" before the game, ${name}: ${summary.text}`),
+                    nvPath: before.beforePath, savePath: `${before.playFolder}\\before ${beforeName}.json`,
+                    done: summary => {
+                        beforeData = summary.data;
+                        log(`${label}, before the game, ${beforeName}: ${summary.text}`);
+                    },
                 });
             }
             const afterFolder = changed.length > 0 ? createFolder(`${before.playFolder}\\after`) : null;
@@ -229,7 +268,14 @@ export function startNvramProbe(host, vpxtoolPath) {
                 host.files.copyFile(`${before.folder}\\${name}`, copyPath);
                 submit({
                     nvPath: copyPath, savePath: `${before.playFolder}\\after ${name}.json`,
-                    done: summary => log(`"${before.configId}" after the game, ${name}: ${summary.text}`),
+                    done: summary => {
+                        log(`${label}, after the game, ${name}: ${summary.text}`);
+                        if (name !== beforeName || !beforeData || !summary.data) return;
+                        const changes = changedValues(beforeData, summary.data);
+                        const shown = changes.slice(0, MAX_CHANGES_LOGGED);
+                        const more = changes.length > shown.length ? ` (and ${changes.length - shown.length} more)` : "";
+                        log(`${label}, values changed in ${name} besides game_state${more}: ${shown.join(" | ") || "none"}`);
+                    },
                 });
             }
         }
