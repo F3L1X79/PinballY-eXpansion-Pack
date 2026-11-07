@@ -196,7 +196,7 @@
         <span class="recap" id="recap" aria-label="Chantiers par effort"></span>
       </div>
       <div class="gauge" aria-hidden="true"><i id="hero-gauge" style="width:0"></i></div>
-      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 05.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
+      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 07.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
     </div>
   </header>
 
@@ -218,7 +218,6 @@
 
         <div class="ax row">Moyen</div>
         <div class="cell sweet">
-          <a class="chip tr-play" href="#rated-tables-achievements"><b></b>Achievements des tables notées</a>
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
@@ -278,30 +277,6 @@
     </div>
 
     <ol class="queue">
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="rated-tables-achievements" data-track="play" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Achievements des tables notées</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span></div>
-          </div>
-          <p>La famille Ratings : des Achievements pour 1, 5, 10 et 25 tables notées par le Profile.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Spec #474 : #475 et #476 livrés, reste la vérification sur la borne (<a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/477">#477</a>) · Flow Matt : <code>/implement</code>. Lit les Ratings par Profile, livrées (spec #460)</div>
-          <details>
-            <summary>Décisions du grill (07/11/2026)</summary>
-            <ul>
-              <li>Comptent toutes les entrées du <code>ratings.json</code> du Profile, tables sorties de la game list et Adult Tables comprises.</li>
-              <li>Paliers 1, 5, 10, 25 : Bronze, Silver, Gold, Platinum donnés par l'échelle. Une note retirée peut faire perdre un palier (Unlocked tel quel).</li>
-              <li>Guest et les Child Profiles ont la famille ; les notes recopiées par #460 comptent ; après une Profile Reset, les paliers reviennent et sont réannoncés.</li>
-              <li>Nouvelle vérification du moteur à <code>popupclose</code> de <code>"rate game"</code> (à vérifier sur la borne : colonne déjà à jour, sinon relue un tick plus tard).</li>
-              <li>Famille absente sans l'Add-on Profile Ratings, dont le texte « sans lui » le dit. Titres : First Verdict, Armchair Critic, Grand Inquisitor, Oracle of the Playfield (fr : Premier verdict, Critique de canapé, Grand Inquisiteur, Oracle des plateaux ; de/es/it/pt fixés au grill). Guide achievements_and_challenges en/fr à mettre à jour.</li>
-            </ul>
-          </details>
-        </div>
-      </li>
 
       <li draggable="true" tabindex="0" class="item tr-play" id="scores-below-board" data-track="play" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
