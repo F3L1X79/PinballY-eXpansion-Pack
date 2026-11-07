@@ -1348,7 +1348,7 @@ export function createFakePinballYHost({
     }
 
     // Like gameList.setCurFilter(): "All" shows every visible, configured
-    // table in collection order, a script filter runs; the current table
+    // table in collection order, "Favorites" the favourite ones, a script filter runs; the current table
     // stays current when the new filter keeps it.
     function setCurrentFilter(filterId) {
         const [current] = host.getWheelTables();
@@ -1356,6 +1356,13 @@ export function createFakePinballYHost({
             currentFilterId = filterId;
             wheelConfigIds = allTables
                 .filter(game => canBeOnWheel(game))
+                .map(game => game.configId);
+            runMetaFilters();
+        } else if (filterId === "Favorites") {
+            // PinballY's system filter: the visible, configured tables marked isFavorite.
+            currentFilterId = filterId;
+            wheelConfigIds = allTables
+                .filter(game => canBeOnWheel(game) && game.isFavorite === true)
                 .map(game => game.configId);
             runMetaFilters();
         } else if (nativeGroupOf(filterId)) {

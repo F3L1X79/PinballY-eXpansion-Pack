@@ -16,6 +16,16 @@ Avec « Changer de joueur », chacun prend son Profil et son Avatar, et l'écran
 
 La progression de chaque Profil est enregistrée dans `Scripts\ExpansionPack\profiles`. Un Profil admin garde les entrées de configuration pour lui, un Profil enfant cache les tables pour adultes, et **Gérer les profils**, dans le menu de sortie et le menu opérateur d'un Profil admin, marque un Profil enfant ou fait repartir un Profil de zéro : voir [Réglages](settings.md).
 
+## Notes et tables favorites
+
+Chaque Profil a ses propres notes en étoiles et ses propres favoris. Tant que votre Profil est actif, tout ce que PinballY affiche utilise les vôtres : les étoiles, la fenêtre de notation, les « Tables favorites », les filtres par note et « Ajouter aux favoris » / « Retirer des favoris ». Les tables masquées restent les mêmes pour tout le monde.
+
+- Un nouveau Profil commence sans aucune note ni aucun favori.
+- Faire repartir un Profil de zéro garde ses notes et ses favoris.
+- La première fois que le pack tourne avec cette fonction, les notes et les favoris déjà présents sur la borne sont donnés à tous les Profils, Invité compris : personne ne perd un favori, et chacun fait ensuite son propre tri.
+- Une note que vous donnez est gardée même si PinballY se ferme ou plante avant que vous changiez de Profil.
+- Pour revenir à une seule série de notes et de favoris pour tout le monde, désactivez **Notes par Profil** dans les réglages de l'eXpansion Pack (voir [Réglages](settings.md)).
+
 ## Créer un Profil
 
 Le pack est livré avec le seul Profil Invité. Un Profil se crée depuis la borne ou depuis Windows.

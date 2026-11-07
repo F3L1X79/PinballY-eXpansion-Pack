@@ -54,7 +54,8 @@ Pour lire les tableaux d'environ 300 ROM de plus, mettez PINemHi à jour (voir [
 
 - Une table au hasard est tirée sur une roue de la fortune (`SKIP_RANDOM_GAME_ANIMATION=true` la lance aussitôt). Lancez-la depuis l'écran d'accueil, ou depuis « Lancer une table au hasard » dans le menu principal, sous « Jouer » : elle est tirée parmi les tables de la roue, filtre actif compris.
 - Derrière « Changer de filtre » dans le menu principal : « Tables à découvrir », « Tables les plus jouées », « Mes meilleurs scores » (les tables où vous avez une place au tableau), « Tables favorites », « Tables masquées » (tant qu'une table est masquée), « Tables Originales » (le fabricant réglé par `COMMUNITY_TABLES_MANUFACTURER`) et « Tables du défi ».
-- Un rappel vous propose de noter une table une fois que vous y avez assez joué (`ASK_TO_RATE_AFTER_MINUTES_PLAYED`).
+- Un rappel vous propose de noter une table une fois que vous y avez assez joué (`ASK_TO_RATE_AFTER_MINUTES_PLAYED`), sauf si votre Profil l'a déjà notée.
+- Les notes en étoiles et les « Tables favorites » sont celles du Profil actif : ce que vous notez ou ajoutez aux favoris ne change rien pour les autres (voir [Profils](profiles.md#notes-et-tables-favorites)).
 
 ---
 

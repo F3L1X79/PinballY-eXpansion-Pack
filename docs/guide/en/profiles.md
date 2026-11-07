@@ -16,6 +16,16 @@ With Change Player, each of you picks your own Profile and Avatar, and the Welco
 
 Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. An Admin Profile keeps the setup entries for itself, a Child Profile hides the Adult Tables, and an Admin Profile's **Manage profiles**, in the Exit menu and the Operator Menu, marks a Child Profile or starts a Profile over: see [Settings](settings.md).
 
+## Ratings and Favorite Tables
+
+Each Profile has its own star ratings and its own favourites. While your Profile is active, everything PinballY shows uses yours: the stars, the rating dialog, "Favorite Tables", the rating filters and "Add to Favorites" / "Remove from Favorites". Hidden tables stay the same for everyone.
+
+- A new Profile starts with no rating and no favourite.
+- A Profile Reset keeps the Profile's ratings and favourites.
+- The first time the pack runs with this, the ratings and favourites already on the cabinet are given to every Profile, Guest included: nobody loses a favourite, and each of you then sorts your own.
+- A rating you give is kept even if PinballY closes or crashes before you change Profile.
+- To go back to one set of ratings and favourites for everyone, turn off **Ratings per Profile** in eXpansion Pack Settings (see [Settings](settings.md)).
+
 ## Create a Profile
 
 The pack ships with Guest alone. A Profile is created from the cabinet or from Windows.

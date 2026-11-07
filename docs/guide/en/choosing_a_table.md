@@ -54,7 +54,8 @@ To read the boards of about 300 more ROMs, update PINemHi (see [Install](install
 
 - A Random Game is spun on a wheel of fortune (`SKIP_RANDOM_GAME_ANIMATION=true` launches it at once). Launch one from the Welcome Screen, or from "Launch a random table" in the main menu, under "Play": it draws from the tables on the wheel, the Active Filter included.
 - Behind "Change Filter" in the main menu: "Tables to Discover", "Most Played Tables", "My High Scores" (the tables where you hold a place on the board), "Favorite Tables", "Hidden Tables" (while a table is hidden), "Original Tables" (the manufacturer set by `COMMUNITY_TABLES_MANUFACTURER`) and "Challenge Tables".
-- A reminder asks you to rate a table once you have played it long enough (`ASK_TO_RATE_AFTER_MINUTES_PLAYED`).
+- A reminder asks you to rate a table once you have played it long enough (`ASK_TO_RATE_AFTER_MINUTES_PLAYED`), unless your Profile has rated it already.
+- Star ratings and "Favorite Tables" are the active Profile's own: what you rate or add to the favourites changes nobody else's (see [Profiles](profiles.md#ratings-and-favorite-tables)).
 
 ---
 
