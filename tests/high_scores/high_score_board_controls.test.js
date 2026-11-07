@@ -1,8 +1,8 @@
 // ============================================================
 // The High Score Board on the Drawn Screen controls, through main.js on the
 // fake PinballY globals: a held Select, Launch or Exit counts once, so the
-// board just opened stays; a held flipper keeps scrolling; Select, Launch
-// and Exit go back to the main menu; attract mode closes it, its Loader and
+// board just opened stays; a held flipper keeps scrolling; Select and Launch
+// turn the view, Exit goes back to the main menu; attract mode closes it, its Loader and
 // crowns hidden.
 // ============================================================
 
@@ -13,14 +13,14 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { loaderLayerCount, readLoader } from "../support/loader_reader.js";
 import { startHighScores, board, MEDIEVAL } from "./high_scores_scenario.js";
 import { hold } from "../stats/profile_stats_reader.js";
-import { openBoard, press, isBoardOpen, boardLayerCount, rows, crownsWaitHidden, BOARD_OPEN_MS } from "./high_score_board_reader.js";
+import { openBoard, press, isBoardOpen, boardLayerCount, rows, viewName, crownsWaitHidden, BOARD_OPEN_MS } from "./high_score_board_reader.js";
 
 const TEN_PLACES = board(
     ["SLL", "52000000"], ["BRE", "40000000"], ["LFS", "30000000"], ["ZAP", "20000000"], ["RCF", "10000000"],
     ["DTW", "9000000"], ["CPG", "8000000"], ["JAB", "7000000"], ["MRP", "6000000"], ["KOZ", "5000000"],
 );
 
-test("the High Score Board counts a held Select, Launch or Exit once, scrolls on a held flipper, and goes with attract mode", async () => {
+test("the High Score Board counts a held Select, Launch or Exit once, scrolls on a held flipper, turns its view on Select and Launch, and goes with attract mode", async () => {
     const { fake, setBoard } = await startHighScores({ profiles: { Alice: {} }, active: "Alice" });
     const { default: lang } = await import("../../common/core/i18n.js");
     fake.setNativeCommand(globalThis.command.ShowMainMenu, () => fake.openMainMenu());
@@ -43,17 +43,19 @@ test("the High Score Board counts a held Select, Launch or Exit once, scrolls on
     hold(fake, "Prev");
     assert.equal(firstRowInView(), "RCF");
 
-    for (const button of ["Select", "Launch", "Exit"]) {
+    for (const button of ["Select", "Launch"]) {
         assert.ok(press(fake, button).defaultPrevented);
-        assert.equal(boardLayerCount(fake), 0, `${button} closes the board`);
-        assert.deepEqual(selectedEntry(), ["High Scores"], `${button} goes back to the main menu on the entry`);
-        fake.closeMenu();
-        openBoard(fake, lang);
+        assert.ok(isBoardOpen(fake), `${button} turns the view, the board stays`);
+        assert.equal(viewName(fake), lang.highScores.board.views.household, `${button} turns to the Household Board`);
+        press(fake, button);
+        assert.equal(viewName(fake), lang.highScores.board.views.table, `${button} turns back to the Table Board`);
     }
+    assert.ok(press(fake, "Exit").defaultPrevented);
+    assert.equal(boardLayerCount(fake), 0, "Exit closes the board");
+    assert.deepEqual(selectedEntry(), ["High Scores"], "Exit goes back to the main menu on the entry");
+    fake.closeMenu();
 
     // Read again, slowly: the Loader turns above the board.
-    press(fake, "Exit");
-    fake.closeMenu();
     setBoard(MEDIEVAL, TEN_PLACES, { durationMs: 5000 });
     openBoard(fake, lang);
     assert.equal(readLoader(fake).shown, true);

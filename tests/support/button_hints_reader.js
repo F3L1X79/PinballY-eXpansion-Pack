@@ -33,13 +33,13 @@ export function buttonHintsOn(fake, zIndex) {
 
 // The Button Hints a screen should show, in capitals as drawn, from the
 // shared texts (lang.buttonHints): flippers "browse", "scroll" or null,
-// select whether Select chooses, exit "back" or "close".
+// select whether Select chooses (or its word when not "Choose"), exit "back" or "close".
 export function expectedButtonHints(lang, { flippers = "browse", select = true, exit }) {
     const TEXT = lang.buttonHints;
     const upper = text => text.toLocaleUpperCase();
     return [
         ...(flippers ? [{ keys: [upper(TEXT.keyCaps.prev), upper(TEXT.keyCaps.next)], label: upper(TEXT[flippers]) }] : []),
-        ...(select ? [{ keys: [upper(TEXT.keyCaps.select)], label: upper(TEXT.choose) }] : []),
+        ...(select ? [{ keys: [upper(TEXT.keyCaps.select)], label: upper(typeof select === "string" ? select : TEXT.choose) }] : []),
         { keys: [upper(TEXT.keyCaps.exit)], label: upper(TEXT[exit]) },
     ];
 }

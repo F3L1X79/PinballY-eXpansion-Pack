@@ -48,6 +48,12 @@ const firstText = (fake, zIndex) => {
 
 export const title = fake => firstText(fake, HIGH_SCORE_BOARD_Z_INDEX.title);
 
+// The name of the view on show ("The table"), under the table's title.
+export function viewName(fake) {
+    const [layer] = shownLayers(fake, HIGH_SCORE_BOARD_Z_INDEX.title);
+    return layer ? layer.texts()[1] || null : null;
+}
+
 // The message shown in place of the board ("No score yet"), or null.
 export const message = fake => firstText(fake, HIGH_SCORE_BOARD_Z_INDEX.message);
 
@@ -85,6 +91,14 @@ export const podium = (fake, lang) => mapSteps(stepLayers(fake), layer => placeO
 const rowLayers = fake => shownLayers(fake, HIGH_SCORE_BOARD_Z_INDEX.rows).sort((a, b) => b.position().y - a.position().y);
 
 export const rows = (fake, lang) => rowLayers(fake).map(layer => placeOf(layer, lang.highScores.board, false));
+
+// The places of the Household Board in rank order, the podium's then the
+// rows in view: { rank, name, avatar, score, date (of the Play) }.
+export function viewPlaces(fake, lang) {
+    const { left, middle, right } = podium(fake, lang);
+    return [middle, left, right, ...rows(fake, lang)].filter(Boolean)
+        .map(({ rank, name, avatar, initials, score }) => ({ rank, name, avatar, score, date: initials }));
+}
 
 // The Avatar Frame a place's layer draws: { tier, size (of the image),
 // isAroundAvatar (a quarter of the Avatar's box beyond it on every side),

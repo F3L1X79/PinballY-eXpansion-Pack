@@ -50,6 +50,11 @@ When you enter a table's high score board, the place is yours: the pack reads th
 - the board is read again from the table each time you open it, so it always shows what the table holds now;
 - the flippers scroll a board too long for the screen.
 
+Select turns to the board's next view, named under the table's title; Exit closes it from either one:
+
+- **The table**: the table's own board, as above, where every opening starts;
+- **The household**: each Profile of the household (Guest left out, children in) once, with its best High Score on this table, a score since pushed off the table's board included, and the date of that game; after a Profile Reset, only the High Scores won since count.
+
 To read the boards of about 300 more ROMs, update PINemHi (see [Install](install.md#pinemhi-368)).
 
 ## Random Game and filters

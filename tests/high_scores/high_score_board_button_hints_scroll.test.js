@@ -31,7 +31,7 @@ test("Scroll shows only for a board longer than the window, and the flippers sti
     setBoard(MEDIEVAL, TEN_PLACES);
 
     await openRead();
-    assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { flippers: "scroll", select: false, exit: "back" }));
+    assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { flippers: "scroll", select: lang.highScores.board.views.household, exit: "back" }));
     const firstInView = rows(fake, lang)[0].initials;
     press(fake, "Next");
     assert.notEqual(rows(fake, lang)[0].initials, firstInView, "Next scrolls the rows");
@@ -41,7 +41,7 @@ test("Scroll shows only for a board longer than the window, and the flippers sti
 
     fake.setLayoutSize({ width: 1080, height: 1920 });
     await openRead();
-    assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { flippers: null, select: false, exit: "back" }));
+    assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { flippers: null, select: lang.highScores.board.views.household, exit: "back" }));
     press(fake, "Exit");
     assertNoErrorLogged(fake);
 });

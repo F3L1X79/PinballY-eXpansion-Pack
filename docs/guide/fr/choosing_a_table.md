@@ -50,6 +50,11 @@ Quand vous entrez au tableau des meilleurs scores d'une table, la place est à v
 - le tableau est relu sur la table à chaque ouverture, il montre donc toujours ce qu'elle contient ;
 - les flippers font défiler un tableau trop long pour l'écran.
 
+Select passe à la vue suivante du tableau, nommée sous le titre de la table ; Exit le ferme depuis chacune :
+
+- **Le tableau** : le tableau de la table, comme ci-dessus, où commence chaque ouverture ;
+- **La maison** : chaque Profil de la maison (sans Invité, enfants compris) une fois, avec son meilleur score sur cette table, même un score depuis sorti du tableau de la table, et la date de cette partie ; quand un Profil repart de zéro, seuls ses meilleurs scores gagnés depuis comptent.
+
 Pour lire les tableaux d'environ 300 ROM de plus, mettez PINemHi à jour (voir [Installation](install.md#pinemhi-368)).
 
 ## Table au hasard et filtres

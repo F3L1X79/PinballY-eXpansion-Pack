@@ -783,6 +783,9 @@ export default {
             notSupported: "Las puntuaciones de esta mesa no son compatibles",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Juega una partida para ver las puntuaciones de esta mesa",
+            views: { table: "La mesa", household: "La casa" },
+            noHouseholdScore: "Nadie de la casa tiene aún una puntuación en esta mesa",
+            date: (day, month, year) => `${day}/${month}/${year}`,
         },
     },
 

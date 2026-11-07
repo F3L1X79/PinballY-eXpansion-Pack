@@ -51,7 +51,9 @@ const LOOK = Object.freeze({
     // title's line; at the bottom, to the footer, which takes most of the room the
     // Drawn Menu leaves there, so a 5-place board still fits a landscape window.
     sideInset: DRAWN_MENU_FACE_INSET + DRAWN_MENU_LIST_INSET, topInset: DRAWN_MENU_FACE_INSET + 16, bottomInset: DRAWN_MENU_FACE_INSET + 4,
-    titleH: 50, titleSize: 34, minTitleSize: 22, noteH: 30, noteSize: 15, titleGap: 6,
+    // The title holds the table's title, then the view's name under it;
+    // tight, so a 5-place board still fits a landscape window.
+    titleH: 68, titleLineH: 46, titleSize: 34, minTitleSize: 22, viewNameSize: 16, noteH: 24, noteSize: 15, titleGap: 4,
     messageH: 200, messageSize: 26,
     // The podium's steps, the 1st's first: the crown's room, the Avatar,
     // the block under it; the steps stand on the same floor. The crown
@@ -59,9 +61,10 @@ const LOOK = Object.freeze({
     // reaches into the crown's room when one is worn.
     stepGap: 14, crownH: [150, 132, 118], crownGap: 10, avatar: [120, 106, 92], avatarGap: 10, blockH: [204, 184, 164],
     edge: 4, blockPad: 10, rankH: 44, rankSize: 28, recordH: 24, recordSize: 14,
-    nameH: 36, nameSize: 20, minNameSize: 14, scoreH: 40, scoreSize: 22, recordScoreSize: 26, minScoreSize: 14, initialsH: 28, initialsSize: 15,
+    // The detail: the initials, or a date shrunk as far as minDetailSize to fit.
+    nameH: 36, nameSize: 20, minNameSize: 14, scoreH: 40, scoreSize: 22, recordScoreSize: 26, minScoreSize: 14, initialsH: 28, initialsSize: 15, minDetailSize: 11,
     // The rows from the 4th place on.
-    rowsGap: 18, rowH: 64, rowGap: 8, rowPad: 8, tile: 48, rowAvatar: 48, cellGap: 14, rowInitialsW: 80, rowScoreW: 200,
+    rowsGap: 10, rowH: 64, rowGap: 8, rowPad: 8, tile: 48, rowAvatar: 48, cellGap: 14, rowInitialsW: 100, rowScoreW: 200,
     rowRankSize: 18, rowNameSize: 18, rowInitialsSize: 15, rowScoreSize: 20,
     // The Exit Button in the panel's top right corner, the other drawn screens'
     // once on its canvas, with less room on its left for its tooltip;
@@ -193,8 +196,12 @@ export const drawPanel = (dc, projectFolder, w, h) => drawSlices(dc, projectFold
 // Over the texts, as on the Drawn Menu.
 export const drawGlass = (dc, projectFolder, w, h) => drawSlices(dc, projectFolder, DRAWN_MENU_IMAGES.glass, w, h, false);
 
-export function drawTitle(host, dc, title, w, h) {
-    oneLine(host, dc, title, { x: 0, y: 0, width: w, height: h, size: LOOK.titleSize, minSize: LOOK.minTitleSize, weight: 700, color: COLORS.gold, font: FONTS.display, align: "center" });
+// The table's title, then the name of the view on show under it.
+export function drawTitle(host, dc, title, viewName, w) {
+    oneLine(host, dc, title, { x: 0, y: 0, width: w, height: LOOK.titleLineH, size: LOOK.titleSize, minSize: LOOK.minTitleSize, weight: 700, color: COLORS.gold, font: FONTS.display, align: "center" });
+    oneLine(host, dc, viewName, {
+        x: 0, y: LOOK.titleLineH, width: w, height: LOOK.titleH - LOOK.titleLineH, size: LOOK.viewNameSize, weight: 600, color: COLORS.description, font: FONTS.display, align: "center",
+    });
 }
 
 // A discreet line under the title, over a board shown: "Reading...", or
@@ -209,13 +216,13 @@ export function drawMessage(host, dc, message, w, h) {
 }
 
 // place: { rank, name, isDefaultScore, avatarPath (null: none), framePath
-// (the worn Avatar Frame's image, null: none), initials (a mark when
-// empty), score (formatted), isTableRecord } on the podium's step index (0
-// for the 1st); recordLabel: the Table Record's mark. From the top: the
-// crown's room (the crown on its own layer), the Avatar in its frame
-// (reaching into the crown's room, below the crown), then
-// the block with its metal edge: rank, the mark on the Table Record, name,
-// score, initials.
+// (the worn Avatar Frame's image, null: none), detail (the initials, a
+// mark when empty, or the date of the Play), score (formatted),
+// isTableRecord } on the podium's step index (0 for the 1st); recordLabel:
+// the Table Record's mark. From the top: the crown's room (the crown on
+// its own layer), the Avatar in its frame (reaching into the crown's
+// room, below the crown), then the block with its metal edge: rank, the
+// mark on the Table Record, name, score, detail.
 export function drawStep(host, dc, place, index, recordLabel, w) {
     const metal = METALS[index];
     const avatar = LOOK.avatar[index];
@@ -239,11 +246,11 @@ export function drawStep(host, dc, place, index, recordLabel, w) {
     centred(place.score, LOOK.scoreH, {
         size: place.isTableRecord ? LOOK.recordScoreSize : LOOK.scoreSize, minSize: LOOK.minScoreSize, weight: 700, color: place.isTableRecord ? LIGHT_GOLD : COLORS.title, font: FONTS.display,
     });
-    centred(place.initials, LOOK.initialsH, { size: LOOK.initialsSize, weight: 600, color: COLORS.description, font: FONTS.display });
+    centred(place.detail, LOOK.initialsH, { size: LOOK.initialsSize, minSize: LOOK.minDetailSize, weight: 600, color: COLORS.description, font: FONTS.display });
 }
 
 // A compact row, left to right: the rank's tile, the Avatar, the name,
-// the initials, the score at the right end. A framed Avatar is smaller,
+// the detail (initials or date), the score at the right end. A framed Avatar is smaller,
 // centred on the same spot, so its frame stays within the row's height.
 export function drawRow(host, dc, place, w) {
     const { rowH: h, rowPad: pad, tile, rowAvatar: avatar, cellGap: gap } = LOOK;
@@ -265,6 +272,8 @@ export function drawRow(host, dc, place, w) {
         x: nameX, y: 0, width: initialsX - gap - nameX, height: h, size: LOOK.rowNameSize, minSize: LOOK.minNameSize, weight: 600,
         color: place.isDefaultScore ? COLORS.dim : COLORS.title,
     });
-    oneLine(host, dc, place.initials, { x: initialsX, y: 0, width: LOOK.rowInitialsW, height: h, size: LOOK.rowInitialsSize, weight: 600, color: COLORS.description, font: FONTS.display, align: "center" });
+    oneLine(host, dc, place.detail, {
+        x: initialsX, y: 0, width: LOOK.rowInitialsW, height: h, size: LOOK.rowInitialsSize, minSize: LOOK.minDetailSize, weight: 600, color: COLORS.description, font: FONTS.display, align: "center",
+    });
     oneLine(host, dc, place.score, { x: scoreX, y: 0, width: LOOK.rowScoreW, height: h, size: LOOK.rowScoreSize, minSize: LOOK.minScoreSize, weight: 700, color: COLORS.title, font: FONTS.display, align: "right" });
 }

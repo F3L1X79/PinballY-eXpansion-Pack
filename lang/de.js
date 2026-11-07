@@ -782,6 +782,9 @@ export default {
             notSupported: "Die Highscores dieses Tisches werden nicht unterstützt",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Spielen Sie eine Partie, um die Highscores dieses Tisches anzuzeigen",
+            views: { table: "Der Tisch", household: "Die Familie" },
+            noHouseholdScore: "Noch hat niemand aus der Familie einen Highscore auf diesem Tisch",
+            date: (day, month, year) => `${day}.${month}.${year}`,
         },
     },
 
