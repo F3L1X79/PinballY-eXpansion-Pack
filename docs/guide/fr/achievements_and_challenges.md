@@ -24,6 +24,7 @@ Des dizaines de Succès, du Bronze au Platine : fabricants et décennies complé
 - Chacun est annoncé par un petit encart dans un coin, sans interrompre vos parties ; un Succès Platine fait aussi pleuvoir des confettis sur tout l'écran de la roue.
 - « Succès personnels », ouvert depuis **Mes succès** dans le menu principal, montre où vous en êtes de chaque Succès manquant, et quels avatars de la maison l'ont déjà.
 - Compléter la collection, un fabricant, une décennie ou une catégorie laisse de côté les tables masquées et non configurées : un Succès peut donc se débloquer quand sa dernière table jamais jouée quitte la liste.
+- Une catégorie n'a son Succès qu'à partir de deux tables que vous voyez. Quand une catégorie tombe à une seule table (une table masquée, ou sa catégorie retirée), son Succès disparaît, même si vous l'aviez, et ses points quittent votre niveau.
 - Quelques-uns restent secrets : vous ne voyez que « ??? » et un indice, jusqu'à ce que vous tombiez dessus.
 - Un Profil enfant en a trois de plus, rien qu'à lui : « L'heure du goûter », « Mercredi, c'est permis » et « Plus fort que les grands », un record de table pris à un grand.
 

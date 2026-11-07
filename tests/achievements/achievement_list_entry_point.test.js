@@ -81,7 +81,6 @@ test("the Achievement List entry sits in the player section, lists the real Achi
         ...[10, 25, 50].map(percent => ACHIEVEMENT.collectionPercentTitles[percent]),
         ...[1, 5].map(hours => ACHIEVEMENT.playTimeMilestoneTitles[hours]),
         ...[1970, 2020].map(year => ACHIEVEMENT.decadeCompletionTitle(year)),
-        ...["Fantasy", "Monsters"].map(name => ACHIEVEMENT.categoryCompletionTitle(name)),
     ]));
     assert.ok(rows.filter(row => row.unlocked).every(row => row.progress === null), "an Unlocked row shows no Achievement Progress");
 

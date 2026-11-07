@@ -2,13 +2,14 @@
 // Drawn Menu painter: the layout of a Drawn Menu in the window and the
 // drawing of its live parts (texts, selected entry, backdrop, images).
 // Only drawing: no layer, no event.
-// - A line estimated to fit is drawn unmeasured; each style's line height is measured once.
+// - A line estimated to fit is drawn unmeasured, but for a label followed by stars; each style's line height is measured once.
 // - A heading estimated too wide wraps whole, its row taller by its measured extra lines.
 // ============================================================
 
 import { STEAMBALL_COLORS as COLORS, STEAMBALL_FONTS as FONTS } from "../drawing/steamball_palette.js";
 import { oneLine, text, UNBOUNDED } from "../drawing/steamball_drawing.js";
 import { withAlpha } from "../mastery/table_mastery.js";
+import { fillStar } from "../drawing/pixel_shapes.js";
 import {
     DRAWN_MENU_PANEL_WIDTH, DRAWN_MENU_FACE_INSET, DRAWN_MENU_LIST_WIDTH, DRAWN_MENU_ENTRY_HEIGHT,
     DRAWN_MENU_SELECTION_MARGIN, DRAWN_MENU_IMAGES,
@@ -59,6 +60,9 @@ export const DRAWN_MENU_LOOK = Object.freeze({
     reason: Object.freeze({ size: 26, minSize: 20, weight: 600, height: 32, lift: 10 }),
     // An entry's note, after its label on the same line.
     note: Object.freeze({ size: 26, weight: 600 }),
+    // A note drawn as five stars (a Rating), half stars included: before,
+    // the space from the label to the first star.
+    stars: Object.freeze({ count: 5, radius: 11, gap: 5, before: 14 }),
     separatorWidth: 320,
     // The rows fading at an edge the list scrolls past.
     edgeAlpha: 0x60,
@@ -80,6 +84,9 @@ export const DRAWN_MENU_LOOK = Object.freeze({
         // tests' reader tells from the reason's. Provisional, to be checked
         // on the cabinet.
         note: 0xFF8C96A3,
+        // A Rating's stars, highlighted or not, as the Rating Plate's.
+        starFilled: COLORS.gold,
+        starEmpty: COLORS.track,
         backdrop: 0xB0080A0E,
         // Hides a native menu kept open under the Drawn Menu.
         cover: 0xFF000000,
@@ -308,14 +315,46 @@ function drawNotedLabel(host, dc, row, { x, y, width, height, k, color }) {
     styled.draw(dc, { x, y: y + (height - lineHeight) / 2, width, height: lineHeight });
 }
 
+// An entry's label then five stars, gold up to its Rating (to the half
+// star), on one centred line: both shrunk alike, down to the label's
+// minSize, when estimated too wide. The label is measured, the stars
+// being drawn where it ends.
+function drawStarredLabel(host, dc, row, { x, y, width, height, k, color, shade }) {
+    const { count, radius, gap, before } = LOOK.stars;
+    const labelSize = LOOK.entry.size * k;
+    const starsWidthAt = scale => (before + count * 2 * radius + (count - 1) * gap) * k * scale;
+    const estimated = estimatedWidthPx(row.title, labelSize) + starsWidthAt(1);
+    const shrink = Math.max(LOOK.entry.minSize / LOOK.entry.size, Math.min(1, width / estimated));
+    const textStyle = { font: FONTS.body, size: pointsOf(labelSize * shrink), weight: LOOK.entry.weight, color };
+    const styled = host.createStyledText({ textAlign: "left", textStyle });
+    styled.add(row.title);
+    const measured = styled.measure(UNBOUNDED);
+    const labelWidth = Math.min(measured.width, width - starsWidthAt(shrink));
+    const left = x + (width - labelWidth - starsWidthAt(shrink)) / 2;
+    // A little wider than measured, so the label never wraps on rounding.
+    styled.draw(dc, { x: left, y: y + (height - measured.height) / 2, width: labelWidth + 4, height: measured.height });
+    const starRadius = Math.round(radius * k * shrink);
+    const step = (2 * radius + gap) * k * shrink;
+    const firstX = left + labelWidth + before * k * shrink + radius * k * shrink;
+    const centerY = Math.round(y + height / 2);
+    const rating = Math.min(count, Math.round(row.stars * 2) / 2);
+    for (let star = 0; star < count; star++) {
+        const centerX = Math.round(firstX + star * step);
+        const colorUpTo = reached => shade(rating >= star + reached ? LOOK.colors.starFilled : LOOK.colors.starEmpty);
+        fillStar(dc, centerX, centerY, starRadius, colorUpTo(0.5), { maxX: centerX });
+        fillStar(dc, centerX, centerY, starRadius, colorUpTo(1), { minX: centerX });
+    }
+}
+
 // An entry's title and mark, in its colour, in the box, and its note after
-// the title; a disabled one's reason under them, in smaller type, the title
-// and mark in the top part.
-function drawEntry(host, dc, row, { x, y, width, height: rowHeight, k, color, markColor, reasonColor }) {
+// the title (as stars for a Rating); a disabled one's reason under them, in
+// smaller type, the title and mark in the top part.
+function drawEntry(host, dc, row, { x, y, width, height: rowHeight, k, color, markColor, reasonColor, shade = same => same }) {
     const markRoom = (LOOK.mark.right + LOOK.mark.width) * k;
     const labelHeight = row.disabled ? (LOOK.rowHeights.entry - LOOK.reason.lift) * k : rowHeight;
     const labelBox = { x: x + markRoom, y, width: width - 2 * markRoom, height: labelHeight };
-    if (row.note) drawNotedLabel(host, dc, row, { ...labelBox, k, color });
+    if (typeof row.stars === "number") drawStarredLabel(host, dc, row, { ...labelBox, k, color, shade });
+    else if (row.note) drawNotedLabel(host, dc, row, { ...labelBox, k, color });
     else line(host, dc, row.title, { ...labelBox, size: LOOK.entry.size * k, minSize: LOOK.entry.minSize * k, weight: LOOK.entry.weight, color });
     const mark = markGlyphOf(row);
     if (mark) {
@@ -370,9 +409,9 @@ export function drawTexts(host, dc, geometry, model, scroll) {
             drawHeading(host, dc, row, { ...box, k, color: shade(LOOK.colors.heading) });
         } else if (row.disabled) {
             const color = shade(LOOK.colors.disabledEntry);
-            drawEntry(host, dc, row, { ...box, k, color, markColor: color, reasonColor: shade(LOOK.colors.reason) });
+            drawEntry(host, dc, row, { ...box, k, color, markColor: color, reasonColor: shade(LOOK.colors.reason), shade });
         } else {
-            drawEntry(host, dc, row, { ...box, k, color: shade(LOOK.colors.entry), markColor: shade(LOOK.colors.gold) });
+            drawEntry(host, dc, row, { ...box, k, color: shade(LOOK.colors.entry), markColor: shade(LOOK.colors.gold), shade });
         }
     });
     if (model.footer) drawFooter(host, dc, model.footer, { x: 0, y: areaOffset + areaHeight, width: listWidth, k });

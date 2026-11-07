@@ -109,7 +109,7 @@ export function createMainMenu(host) {
     // Score Board's name; the pause menu keeps "High Scores". Rate Table
     // names the selected table's Rating (none when PinballY holds -1), read
     // again at each opening, after UI Translation's title; its note is the
-    // Rating alone, which the Drawn Menu draws smaller.
+    // Rating alone, which the Drawn Menu draws as stars.
     function withMainMenuTitle(item) {
         if (item.cmd === host.getBuiltInCommand("HighScores")) return { ...item, title: lang.customMenuLabels.tableScores };
         if (item.cmd === host.getBuiltInCommand("RateGame")) {
@@ -117,7 +117,7 @@ export function createMainMenu(host) {
             const rating = table ? ratingOf(table) : null;
             if (rating !== null) {
                 const note = lang.customMenuLabels.currentRating(rating);
-                return { ...item, title: `${item.title} ${note}`, note };
+                return { ...item, title: `${item.title} ${note}`, note, stars: rating };
             }
         }
         return item;

@@ -24,6 +24,7 @@ There are dozens of Achievements, from Bronze to Platinum: manufacturers and dec
 - Each one is announced by a small toast in a corner, without interrupting your games; a Platinum also brings a shower of confetti across the wheel screen.
 - The Achievement List, opened from **My Achievements** in the main menu, shows how far you are from each missing one, and which of the household's Avatars already have it.
 - Completing the collection, a manufacturer, a decade or a category leaves out hidden and unconfigured tables, so one can unlock when its last unplayed table leaves the list.
+- A category needs at least two tables you can see to have its Achievement. When a category drops to one table (a table hidden, or its category removed), its Achievement goes, even if you had it, and its points leave your Player Level.
 - A few stay secret, shown as "???" with a hint, until you stumble upon them.
 - A Child Profile has three more of its own: Snack Time, Wednesday Off and Beat the Grown-Ups, a Table Record taken from a grown-up.
 

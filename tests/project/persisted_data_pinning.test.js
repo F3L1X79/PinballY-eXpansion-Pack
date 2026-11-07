@@ -45,7 +45,8 @@ const TABLES = [
     },
     {
         id: 3, configId: "Space Trip (VPX Community 2021)", title: "Space Trip (VPX Community 2021)",
-        manufacturer: "VPX Community", year: 2021, categories: [],
+        // Gives each category its second table: one table gives no Category Achievement.
+        manufacturer: "VPX Community", year: 2021, categories: ["Fantasy", "SciFi", "Classic"],
         playCount: 1, playTime: 100, lastPlayed: new Date(2026, 7, 1), rating: 3, isHidden: false,
     },
     {

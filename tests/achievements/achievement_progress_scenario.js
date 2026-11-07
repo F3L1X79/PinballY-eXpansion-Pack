@@ -65,12 +65,17 @@ export async function startScenario({ now, tables, files = {}, folders = [] }) {
     // of its Achievement Progress or null. A title given again is the next
     // row showing it, such as a second Secret Achievement's "???". Opened
     // from the main menu and closed again with Exit.
-    function readShown(titles) {
+    function readAllRows() {
         fake.openMenu("main", [{ title: "Play", cmd: globalThis.command.PlayGame }]);
         fake.selectMenuItem(TEXT.menuEntry);
         untilListShown(fake);
         const rows = readRows(fake, TEXT);
         pressAndGlide(fake, "Exit");
+        return rows;
+    }
+
+    function readShown(titles) {
+        const rows = readAllRows();
         const taken = new Set();
         return titles.map(title => {
             const row = rows.find(shownRow => shownRow.title === title && !taken.has(shownRow));
@@ -80,6 +85,9 @@ export async function startScenario({ now, tables, files = {}, folders = [] }) {
         });
     }
 
+    // The titles of every row of the list, opened and closed as above.
+    const listedTitles = () => readAllRows().map(row => row.title);
+
     const unlockedRow = title => ({ title, progress: null, unlocked: true });
     // Without a unit, a missing Achievement showing no Achievement Progress.
     const missingRow = (title, unit, current, target) => ({
@@ -88,5 +96,5 @@ export async function startScenario({ now, tables, files = {}, folders = [] }) {
         unlocked: false,
     });
 
-    return { fake, lang, getProfileStore, play, showEveryToast, readShown, unlockedRow, missingRow };
+    return { fake, lang, getProfileStore, play, showEveryToast, readShown, listedTitles, unlockedRow, missingRow };
 }

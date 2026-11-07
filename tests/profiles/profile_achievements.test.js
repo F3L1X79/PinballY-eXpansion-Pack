@@ -100,14 +100,14 @@ test("each Profile unlocks and is announced its own Achievements", async () => {
     await showEveryToast(fake);
 
     const aliceIds = [
-        "categoryCompletion:Fantasy", "collectionMilestone:10percent", "collectionMilestone:25percent", "collectionMilestone:50percent",
+        "collectionMilestone:10percent", "collectionMilestone:25percent", "collectionMilestone:50percent",
         "collectionMilestone:firstTable", "manufacturerCompletion:Williams",
     ];
     assert.deepEqual(notifiedOf(fake, "Alice"), aliceIds, "every toast of Alice's game is hers, even after the switch");
 
     // Bob's hour on Attack from Mars is announced at the switch.
     const bobIds = [
-        "categoryCompletion:SciFi", "collectionMilestone:10percent", "collectionMilestone:25percent", "collectionMilestone:50percent",
+        "collectionMilestone:10percent", "collectionMilestone:25percent", "collectionMilestone:50percent",
         "collectionMilestone:firstTable", "manufacturerCompletion:Bally",
         "playTimeMilestone:1h",
     ];

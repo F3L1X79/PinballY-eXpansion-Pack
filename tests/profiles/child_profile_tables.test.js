@@ -26,8 +26,8 @@ const table = (id, title, manufacturer, year, categories) => ({
 const PLAYBOY = table(1, "Playboy", "Bally", 1978, ["NSFW", "Classic"]);
 const CLOSE_ENCOUNTERS = table(2, "Close Encounters", "Gottlieb", 1978, ["SciFi"]);
 const MEDIEVAL = table(3, "Medieval Madness", "Williams", 1997, ["Fantasy", "Classic"]);
-const MARS = table(4, "Attack from Mars", "Bally", 1995, ["SciFi"]);
-// The only table of its manufacturer, of its decade and of the NSFW category.
+const MARS = table(4, "Attack from Mars", "Bally", 1995, ["SciFi", "Classic"]);
+// The only table of its manufacturer and of its decade.
 const PARTY_NIGHT = table(5, "Party Night", "VPX Community", 2023, ["NSFW"]);
 const TABLES = [PLAYBOY, CLOSE_ENCOUNTERS, MEDIEVAL, MARS, PARTY_NIGHT];
 
@@ -128,7 +128,7 @@ test("a Child Profile's Challenge, Profile Stats and Achievements leave out the 
     const childRows = readAchievementRows();
     assert.deepEqual(ADULT_ONLY_GROUPS.filter(title => titlesOf(childRows).includes(title)), [],
         "no completion Achievement for a group made only of Adult Tables");
-    assert.equal(classicDescription(childRows), ACHIEVEMENTS.categoryCompletionDescription("Classic", 1));
+    assert.equal(classicDescription(childRows), ACHIEVEMENTS.categoryCompletionDescription("Classic", 2));
 
     // A game on an Adult Table, however it was launched, never counts for the child.
     fake.gameStarted(PLAYBOY);
@@ -142,7 +142,7 @@ test("a Child Profile's Challenge, Profile Stats and Achievements leave out the 
     const adultRows = readAchievementRows();
     assert.deepEqual(ADULT_ONLY_GROUPS.filter(title => titlesOf(adultRows).includes(title)), ADULT_ONLY_GROUPS,
         "an adult Profile gets every group back");
-    assert.equal(classicDescription(adultRows), ACHIEVEMENTS.categoryCompletionDescription("Classic", 2));
+    assert.equal(classicDescription(adultRows), ACHIEVEMENTS.categoryCompletionDescription("Classic", 3));
     assert.deepEqual(selectionOf(STATS.buttons.mostPlayedTables), [], "nothing played by Bob");
     assert.equal(selectionOf(STATS.buttons.tablesToDiscover).length, 5, "every table for an adult Profile");
     assert.deepEqual(collectionShown(), ["0/5", "0%"]);
