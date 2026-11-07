@@ -770,6 +770,8 @@ export default {
         toastHeader: "Meilleur score",
         toastTitle: (table, place) => `Meilleur score sur ${table} : ${place === 1 ? "1ère" : `${place}e`} place`,
         tableRecordTitle: (table) => `Record sur ${table} !`,
+        personalBestTitle: (table) => `Record perso sur ${table} !`,
+        houseRecordTitle: (table) => `Record de la maison sur ${table} !`,
         toastScore: (score) => `${score} points`,
         takenFrom: (profile) => `pris à ${profile}`,
         // The High Score Board.

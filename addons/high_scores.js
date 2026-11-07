@@ -2,8 +2,8 @@
 // High Scores: credits each score that entered a table's board during a Play
 // to the Profile active when it started, whatever initials were typed, and
 // submits a High Score Toast for the best place won. With vpxtool, keeps the
-// Play Score read from the ROM's .nv, copied to play_scores\ at launch.
-// Adds "High Scores" and "My High Scores" to the main menu. Rules in common/high_scores/.
+// Play Score read from the ROM's .nv (copied to play_scores\ at launch), toasting a
+// House Record or Personal Best when no place was won. Adds "High Scores" and "My High Scores" to the main menu.
 // - The board is read at "prelaunch" and again a little after "postlaunch".
 // - Without a ROM, the board comes from VPX's User folder, never read while VPX runs.
 // - Replaces PinballY's own "High Scores": removes its entry, cancels HighScores.
@@ -385,19 +385,27 @@ export default function init() {
         return { status: "failed", logged: true };
     }
 
-    // One toast per Play, for the best place won; the toast module holds
-    // it until the wheel is back and the toasts before it have shown.
-    function announce(configId, place) {
+    // A High Score Toast: titleOf(table) gives its title; the toast module
+    // holds it until the wheel is back and the toasts before it have shown.
+    function submitHighScoreToast(configId, { titleOf, score, tileNumber, takenFrom }) {
         const TEXT = lang.highScores;
         const game = host.getGameInfo(configId);
-        const table = game ? game.title : configId;
         toasts.submit({
             kind: TOAST_KIND.HIGH_SCORE,
-            tileNumber: place.rank,
-            title: place.rank === 1 ? TEXT.tableRecordTitle(table) : TEXT.toastTitle(table, place.rank),
-            description: TEXT.toastScore(lang.profileStats.number(place.score)),
-            extraLine: place.takenFromProfile ? TEXT.takenFrom(displayNameOf(place.takenFromProfile)) : undefined,
+            tileNumber,
+            title: titleOf(game ? game.title : configId),
+            description: TEXT.toastScore(lang.profileStats.number(score)),
+            extraLine: takenFrom ? TEXT.takenFrom(displayNameOf(takenFrom)) : undefined,
             onShown: () => {},
+        });
+    }
+
+    // One toast per Play, for the best place won.
+    function announce(configId, place) {
+        const TEXT = lang.highScores;
+        submitHighScoreToast(configId, {
+            titleOf: table => (place.rank === 1 ? TEXT.tableRecordTitle(table) : TEXT.toastTitle(table, place.rank)),
+            score: place.score, tileNumber: place.rank, takenFrom: place.takenFromProfile,
         });
     }
 
@@ -479,10 +487,21 @@ export default function init() {
         });
     }
 
+    // A Play that won no place on the table's board: its Play Score's
+    // House Record or Personal Best, without a place number.
+    function announceRecord(configId, record, score) {
+        const TEXT = lang.highScores;
+        submitHighScoreToast(configId, {
+            titleOf: record.kind === "houseRecord" ? TEXT.houseRecordTitle : TEXT.personalBestTitle,
+            score, takenFrom: record.takenFrom,
+        });
+    }
+
     // After the board read settled the Play: its Play Score, when the
     // game changed only the table's own .nv; why not logged otherwise,
-    // silently for a launch shorter than a Play.
-    async function settlePlayScore(bracket, play) {
+    // silently for a launch shorter than a Play. placeWon: the High Score
+    // Toast stands for the Play, so its Play Score announces nothing.
+    async function settlePlayScore(bracket, play, placeWon) {
         const copy = bracket.nvCopy;
         if (copy === null || play === null) return;
         const changed = bracket.nvChanged;
@@ -503,29 +522,31 @@ export default function init() {
         const after = await readLastGameIn(bracket.configId, copy.nvPath);
         if (after === undefined) return;
         const result = playScoreOf(before, after);
-        if (result.none) noPlayScore(result.none);
-        else highScores.recordPlayScore(bracket.configId, play, result.score);
+        if (result.none) {
+            noPlayScore(result.none);
+            return;
+        }
+        const record = highScores.recordPlayScore(bracket.configId, play, result.score);
+        if (record !== null && !placeWon) announceRecord(bracket.configId, record, result.score);
     }
 
     profileStore.onPlay(safeHandler(SCRIPT_NAME, (play) => {
         if (launched && play.configId === launched.configId) announcedPlay = play;
     }));
 
-    // The board read after the game, settled against the last known one.
+    // The board read after the game, settled against the last known one:
+    // resolves to whether the Play won a place.
     async function settleAfterGame(bracket, play) {
         await bracket.launchRead;
         await wait(AFTER_READ_DELAY_MS);
         const places = await readPlaces(bracket.configId, { forget: true });
-        if (places !== null) {
-            settleAndAnnounce(bracket.configId, places, play);
-            return;
-        }
+        if (places !== null) return settleAndAnnounce(bracket.configId, places, play);
         try {
             const after = takeSnapshot(bracket.configId, bracket.snapshot);
             const boards = romlessBoards(bracket.configId, bracket.snapshot, after);
-            if (boards === null) return;
+            if (boards === null) return false;
             if (boards.before !== null) highScores.recordBoardBeforePlay(bracket.configId, boards.before);
-            settleAndAnnounce(bracket.configId, boards.after, play);
+            return settleAndAnnounce(bracket.configId, boards.after, play);
         } finally {
             // The launch made PinballY forget the board: handed again, the
             // last known one when nothing was read.
@@ -536,6 +557,7 @@ export default function init() {
     function settleAndAnnounce(configId, places, play) {
         const best = highScores.settlePlay(configId, places, play);
         if (best) announce(configId, best);
+        return Boolean(best);
     }
 
     // Fires after the game, back on the wheel, once the Table ROMs Add-on
@@ -548,9 +570,11 @@ export default function init() {
         if (!bracket) return;
         // The board stays held until the Play Score is settled too.
         const release = highScores.holdBoardForPlay(bracket.configId);
-        const settlePlayScoreSafely = () => safeHandler(SCRIPT_NAME, settlePlayScore)(bracket, play);
+        // At most one toast per Play: a board settle that failed (logged)
+        // may have won a place, so the Play Score then announces nothing.
+        const settlePlayScoreSafely = placeWon => safeHandler(SCRIPT_NAME, settlePlayScore)(bracket, play, placeWon);
         safeHandler(SCRIPT_NAME, settleAfterGame)(bracket, play)
-            .then(settlePlayScoreSafely, settlePlayScoreSafely)
+            .then(settlePlayScoreSafely, () => settlePlayScoreSafely(true))
             .then(release, release);
     }));
 }

@@ -38,6 +38,7 @@ Chaque minute passée sur une table fait monter votre maîtrise de celle-ci, sur
 Quand vous entrez au tableau des meilleurs scores d'une table, la place est à vous : le pack relit le tableau avant et après chaque partie et, pour une partie d'au moins une minute, attribue chaque nouveau score au Profil qui jouait, quelles que soient les initiales tapées, les autres joueurs d'une partie à plusieurs compris.
 
 - Un encart annonce votre meilleure place, ou le record et à qui vous l'avez pris.
+- Avec [vpxtool](install.md#vpxtool), une partie qui ne gagne aucune place peut aussi avoir son encart : **Record de la maison** quand son score prend à un autre Profil la première place de **Scores de la maison** (et le nomme), sinon **Record perso** quand il bat tous vos scores précédents sur la table, jamais pour le premier. Invité peut avoir un record perso, jamais un record de la maison. Un seul encart par partie, le plus fort.
 - Les scores déjà au tableau au premier relevé, ceux d'usine compris, n'appartiennent à personne, et une remise à zéro de la ROM qui les ramène n'est jamais attribuée.
 - Un meilleur score gagné le reste même chassé du tableau par des scores plus récents, et rapporte ses propres succès.
 - **Mon profil** montre les meilleurs scores et records que vous détenez encore, et **Stats de la maison** qui détient le plus de records.

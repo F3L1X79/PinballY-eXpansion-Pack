@@ -676,6 +676,9 @@ export default {
             return `High score on ${table}: ${place}${suffix} place`;
         },
         tableRecordTitle: (table) => `Table Record on ${table}!`,
+        // A Play that won no place on the table's board: its Play Score's toasts.
+        personalBestTitle: (table) => `Personal Best on ${table}!`,
+        houseRecordTitle: (table) => `House Record on ${table}!`,
         // The score, thousands separated.
         toastScore: (score) => `${score} points`,
         // A Table Record taken from another Profile.

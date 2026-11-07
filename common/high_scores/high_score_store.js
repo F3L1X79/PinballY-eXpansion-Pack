@@ -87,6 +87,28 @@ export function createHighScoreStore(host, profileStore) {
     // What the Household and Personal Boards rank: High Scores and Play Scores together.
     const countedScoresOn = configId => [...countedHighScoresOn(configId), ...countedPlayScoresOn(configId)];
     const profileExists = name => profileStore.listProfileNames().some(candidate => profileKeyOf(candidate) === profileKeyOf(name));
+    // The Household Board of the table: for each Household Profile
+    // (Guest left out, Child Profiles in), its best High Score or Play
+    // Score there since its last Profile Reset, best first, the older
+    // first on equal scores: { rank, score, date, owner }, the owner the
+    // Profile store's Profile. A removed Profile's scores are skipped,
+    // nothing rewritten: a Profile re-created under its name gets them back.
+    function householdBoardOf(configId) {
+        const bestByProfile = new Map();
+        for (const score of countedScoresOn(configId)) {
+            const profileKey = profileKeyOf(score.profile);
+            const best = bestByProfile.get(profileKey);
+            if (!best || ranksBefore(score, best)) bestByProfile.set(profileKey, score);
+        }
+        return rankedPlaces(profileStore.listProfiles()
+            .filter(profile => !profile.isGuest && bestByProfile.has(profileKeyOf(profile.name)))
+            .map(owner => ({ highScore: bestByProfile.get(profileKeyOf(owner.name)), owner })));
+    }
+    // The Profile first on the table's Household Board, or null.
+    const householdLeaderOf = (configId) => {
+        const first = householdBoardOf(configId)[0];
+        return first ? first.owner : null;
+    };
     // Called with the Profile's name after a Play credited it High Scores.
     const creditedListeners = [];
     // The tables whose Play is being settled, by config ID: the board
@@ -235,19 +257,32 @@ export function createHighScoreStore(host, profileStore) {
         // The score read from the table's memory after a Play (play as for
         // settlePlay), kept as a Play Score unless a High Score of that
         // Play has the same score. The list is written only then, so a file
-        // without Play Scores keeps its first shape.
+        // without Play Scores keeps its first shape. Returns the record it
+        // sets: { kind: "houseRecord", takenFrom } (the Profile store's
+        // Profile whose first place on the Household Board it took),
+        // { kind: "personalBest" } (above all the Profile's earlier scores
+        // there), or null.
         recordPlayScore(configId, play, score) {
+            const profileKey = profileKeyOf(play.profileName);
+            const isOwn = entry => typeof entry.profile === "string" && profileKeyOf(entry.profile) === profileKey;
             const date = toLocalIsoString(play.start);
-            const isOfPlay = highScore => highScore.configId === configId && highScore.date === date
-                && typeof highScore.profile === "string" && profileKeyOf(highScore.profile) === profileKeyOf(play.profileName);
-            if (data.highScores.some(highScore => isOfPlay(highScore) && Number(highScore.score) === score)) {
+            if (data.highScores.some(highScore => isOwn(highScore) && highScore.configId === configId && highScore.date === date
+                && Number(highScore.score) === score)) {
                 log(`"${configId}": Play Score ${score} for ${play.profileName} is the Play's High Score; not kept twice.`);
-                return;
+                return null;
             }
+            const earlierScores = countedScoresOn(configId).filter(isOwn);
+            const leaderBefore = householdLeaderOf(configId);
             if (!Array.isArray(data.playScores)) data.playScores = [];
             data.playScores.push({ profile: play.profileName, configId, score, date });
             save();
             log(`"${configId}": Play Score for ${play.profileName}: ${score}.`);
+            const leaderAfter = householdLeaderOf(configId);
+            const tookLead = leaderBefore !== null && leaderAfter !== null
+                && profileKeyOf(leaderBefore.name) !== profileKey && profileKeyOf(leaderAfter.name) === profileKey;
+            if (tookLead) return { kind: "houseRecord", takenFrom: leaderBefore };
+            const personalBest = earlierScores.length > 0 && earlierScores.every(earlier => score > Number(earlier.score));
+            return personalBest ? { kind: "personalBest" } : null;
         },
         // What the named Profile's High Score Achievements count, from the
         // High Scores it won since its last Profile Reset: the tables with
@@ -312,23 +347,7 @@ export function createHighScoreStore(host, profileStore) {
             const profiles = profileStore.listProfiles();
             return known.map(({ rank, initials, score, owner }) => ({ rank, initials, score, owner: profileNamed(owner, profiles) }));
         },
-        // The Household Board of the table: for each Household Profile
-        // (Guest left out, Child Profiles in), its best High Score or Play
-        // Score there since its last Profile Reset, best first, the older
-        // first on equal scores: { rank, score, date, owner }, the owner the
-        // Profile store's Profile. A removed Profile's scores are skipped,
-        // nothing rewritten: a Profile re-created under its name gets them back.
-        householdBoardOf(configId) {
-            const bestByProfile = new Map();
-            for (const score of countedScoresOn(configId)) {
-                const profileKey = profileKeyOf(score.profile);
-                const best = bestByProfile.get(profileKey);
-                if (!best || ranksBefore(score, best)) bestByProfile.set(profileKey, score);
-            }
-            return rankedPlaces(profileStore.listProfiles()
-                .filter(profile => !profile.isGuest && bestByProfile.has(profileKeyOf(profile.name)))
-                .map(owner => ({ highScore: bestByProfile.get(profileKeyOf(owner.name)), owner })));
-        },
+        householdBoardOf,
         // The Personal Board of the table: the named Profile's (Guest
         // included) PERSONAL_BOARD_PLACES best High Scores and Play Scores
         // there since its last Profile Reset, each place of a multiplayer

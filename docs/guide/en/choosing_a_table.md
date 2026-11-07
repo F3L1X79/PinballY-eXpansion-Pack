@@ -38,6 +38,7 @@ Every minute you play a table builds your Table Mastery of it, through ten Maste
 When you enter a table's high score board, the place is yours: the pack reads the board before and after each game and, for a game of a minute or more, credits every new score to the Profile that was playing, whatever initials were typed, the other players of a multiplayer game included.
 
 - A toast announces your best place, or the Table Record and whom you took it from.
+- With [vpxtool](install.md#vpxtool), a game that wins no place can still get a toast: **House Record** when its score takes the first place of **Household scores** from another Profile (and names it), else **Personal Best** when it beats all your earlier scores on the table, never for your first one. Guest can get a Personal Best, never a House Record. One toast per game, the strongest.
 - The scores already on the board at the first read, factory ones included, belong to no one, and a ROM reset that brings them back is never credited.
 - A High Score stays won even once later scores push it off the board, and earns its own Achievements.
 - **My Profile** shows the High Scores and Table Records you still hold, and **Household Stats** who holds the most Table Records.
