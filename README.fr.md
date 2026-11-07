@@ -28,7 +28,7 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 
 - L'écran d'accueil propose la table du jour et la table de la semaine : jouez-les plusieurs jours ou semaines d'affilée pour faire une série sur la table du jour ou de la semaine.
 - Chaque minute passée sur une table fait monter votre maîtrise de celle-ci, de Novice à Mage du flipper.
-- Les meilleurs scores sont attribués au Profil qui jouait, quelles que soient les initiales, et présentés sur un podium.
+- Les meilleurs scores sont attribués au Profil qui jouait, quelles que soient les initiales, et présentés sur un podium : le tableau de la table, les meilleurs de la maison, et vos cinq meilleurs.
 - À court d'idées ? Une table au hasard tourne sur une roue de la fortune.
 
 → [Choisir une table](docs/guide/fr/choosing_a_table.md)

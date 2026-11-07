@@ -211,7 +211,6 @@
         <div class="cell sweet">
         </div>
         <div class="cell">
-          <a class="chip tr-play" href="#three-score-boards"><b></b>Trois tableaux de scores</a>
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#household-mission"><b></b>Mission du foyer</a>
@@ -304,32 +303,6 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-play" id="three-score-boards" data-track="play" data-rank="gold">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Trois tableaux de scores : la table, la maison, mes 5 meilleurs</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
-          </div>
-          <p>Le High Score Board de la table sélectionnée prend trois vues, que Select fait tourner : le Table Board (« Le tableau », celui d'aujourd'hui), le Household Board (« La maison ») et le Personal Board (« Mes 5 meilleurs »), ces deux derniers lus dans le High Score store, qui garde les High Scores sortis du tableau.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Spec #478, tickets #479 et #480. Lit le High Score store (spec #195)</div>
-          <details>
-            <summary>Décisions du grill (07/11/2026)</summary>
-            <ul>
-              <li>Seulement les High Scores déjà gardés : les scores sous les Default Scores restent inconnus, la piste nvram est une entrée à part.</li>
-              <li>Un seul écran, la table sélectionnée : Select passe à la vue suivante (table → maison → moi), Exit referme, les flippers font défiler. Toujours ouvert sur le Table Board ; les indications de boutons nomment la vue suivante.</li>
-              <li>Household Board : une place par Profile de la Household (sans Guest), son meilleur High Score sur la table depuis son dernier Profile Reset, même sorti du tableau.</li>
-              <li>Personal Board : les 5 meilleurs High Scores du Profile actif (Guest compris) sur la table, depuis son dernier Profile Reset.</li>
-              <li>Même dessin que le Table Board (podium, couronnes, lignes), avec la date de la partie ; à score égal, le plus ancien devant ; pas de marque « sorti du tableau ».</li>
-              <li>Les trois vues toujours là, chacune avec son message quand elle est vide, y compris sur une table non prise en charge.</li>
-            </ul>
-            <p class="ctx">Idée de Félix du 07/11/2026.</p>
-          </details>
-        </div>
-      </li>
-
       <li draggable="true" tabindex="0" class="item tr-play" id="scores-below-board" data-track="play" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -340,7 +313,7 @@
           </div>
           <p>Lire le score de la dernière partie dans la NVRAM des tables avec ROM, pour remplir le Personal Board même sous des Default Scores élevés.</p>
           <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">research</span><i>›</i><span class="here">grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après les trois vues du High Score Board. Research : <code>docs/research/scores-below-board.md</code></div>
+          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Les trois vues du High Score Board existent (spec #478). Research : <code>docs/research/scores-below-board.md</code></div>
           <details>
             <summary>Questions ouvertes (2)</summary>
             <ul>

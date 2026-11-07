@@ -28,7 +28,7 @@ An unofficial extension of [PinballY](http://mjrnet.org/pinscape/PinballY.php) t
 
 - The Welcome Screen offers the Table of the Day and the Table of the Week: play them several days or weeks in a row to build a Table of the Day or Table of the Week Streak.
 - Every minute on a table builds your Mastery Level of it, from Rookie to Pinball Wizard.
-- High Scores are credited to the Profile that played, whatever the initials, and shown on a podium.
+- High Scores are credited to the Profile that played, whatever the initials, and shown on a podium: the table's board, the household's best, and your own best five.
 - Short of ideas? A Random Game spins on a wheel of fortune.
 
 → [Choosing a table](docs/guide/en/choosing_a_table.md)
