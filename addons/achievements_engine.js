@@ -94,17 +94,46 @@ export function getAllAchievements({ asNonChild = false, profileName } = {}) {
     ];
 }
 
+// Inside withAchievementSets: each set built so far, by the lower-case
+// Profile name (null key: the non-child set); null outside, every read then
+// building its own.
+let builtSets = null;
+
+// Runs run() with each Achievement set built once, whichever readers ask
+// for it: on the cabinet a set costs about 100 ms, and both the Player Level
+// and the Achievements count need it (a child's level the non-child set
+// too). Never kept past run(), so an Unlock or a hidden table shows on the
+// next read.
+function withAchievementSets(run) {
+    if (builtSets) return run();
+    builtSets = new Map();
+    try {
+        return run();
+    } finally {
+        builtSets = null;
+    }
+}
+
+// seenBy: getAllAchievements()'s, a named Profile unless asNonChild.
+function achievementSetOf(seenBy) {
+    const key = seenBy.asNonChild ? null : seenBy.profileName.toLowerCase();
+    if (builtSets && builtSets.has(key)) return builtSets.get(key);
+    const achievements = getAllAchievements(seenBy);
+    if (builtSets) builtSets.set(key, achievements);
+    return achievements;
+}
+
 // What a Child Profile's points are scaled by: the set a Profile that is
 // not a child would have, only built for a child (the named Profile, the
 // active one by default); null otherwise.
 const nonChildAchievementsFor = (profileStore, profileName) =>
-    (profileStore.isChild(profileName) ? getAllAchievements({ asNonChild: true }) : null);
+    (profileStore.isChild(profileName) ? achievementSetOf({ asNonChild: true }) : null);
 
 // The named Profile's Player Level, from its Notified Achievements over the
 // set it would see, a Child Profile's points scaled up: the same for every
 // screen, whichever Profile is active.
 function readPlayerLevelOf(profileStore, profileName) {
-    return getPlayerLevel(profileStore.getNotifiedOf(profileName), getAllAchievements({ profileName }),
+    return getPlayerLevel(profileStore.getNotifiedOf(profileName), achievementSetOf({ profileName }),
         nonChildAchievementsFor(profileStore, profileName));
 }
 
@@ -159,12 +188,13 @@ export default function init() {
         frameList,
         // Read on each opening, for the active Profile or another one.
         readPlayerLevel: profileName => readPlayerLevelOf(profileStore, profileName),
+        withAchievementSets,
         // The active Profile's live count, as its Achievement List shows it;
         // another Profile's Notified Achievements, the only Unlocks known
         // without it active, out of the set it would see.
         countAchievements(profileName) {
             if (profileName.toLowerCase() === profileStore.getActiveProfile().name.toLowerCase()) return achievementList.countAll();
-            const ids = new Set(getAllAchievements({ profileName }).map(achievement => achievement.id));
+            const ids = new Set(achievementSetOf({ profileName }).map(achievement => achievement.id));
             return { unlocked: profileStore.getNotifiedOf(profileName).filter(id => ids.has(id)).length, total: ids.size };
         },
         dailyStreak: getDailyStreak(),

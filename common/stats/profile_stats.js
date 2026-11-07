@@ -33,9 +33,12 @@ const MINUTES_PER_HOUR = 60;
 const MISSING_IMAGE_FILE = "assets\\images\\missing_image.png";
 const NO_PLAY = Object.freeze({ count: 0, seconds: 0 });
 const untimed = (reader, read) => read();
+const unshared = run => run();
 
+// withAchievementSets(run): runs run() with the Achievement sets that
+// readPlayerLevel and countAchievements build shared between them.
 export function createProfileStats(host, {
-    profileStore, readPlayerLevel, countAchievements, achievementList, profileRewards = null, frameList = null, dailyStreak, tableOfTheDay, tableOfTheWeek, challenges = null,
+    profileStore, readPlayerLevel, countAchievements, withAchievementSets = unshared, achievementList, profileRewards = null, frameList = null, dailyStreak, tableOfTheDay, tableOfTheWeek, challenges = null,
     highScores = null, hallOfFameFilter = null, tablesToDiscoverFilter = null, householdStats = null, drawingAhead, drawnScreenControls,
 }) {
     const { profileStats: TEXT } = lang;
@@ -66,13 +69,14 @@ export function createProfileStats(host, {
     }
 
     // The card's values that another Profile's can be set beside; timeReader:
-    // readStats()'s.
+    // readStats()'s. The Player Level and the Achievements count share one
+    // build of each Achievement set, its time under the Player Level.
     function readCardStats(profileName, { data, profileTables }, timeReader = untimed) {
-        return {
+        return withAchievementSets(() => ({
             playerLevel: timeReader("Player Level", () => readPlayerLevel(profileName)),
             collectionMastery: timeReader("Collection Mastery", () => collectionMasteryOfProfile(profileTables, data)),
             achievements: timeReader("Achievements", () => countAchievements(profileName)),
-        };
+        }));
     }
 
     // The PROGRESSION section's values that another Profile's can be set beside.
