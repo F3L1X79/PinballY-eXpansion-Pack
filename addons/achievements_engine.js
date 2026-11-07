@@ -6,6 +6,7 @@
 // main menu, and starts the World Tour and Surprises trackers.
 // - An Achievement becomes Notified when its toast starts, not when it unlocks.
 // - The level at startup, at a switch or after a Profile Reset is a baseline, never announced.
+// - The startup check's toasts are dropped if the Startup Screen picks another Profile.
 // - A Child Profile's level scales its points by the set a non-child Profile would have.
 // - The Challenges / High Scores / Ratings families exist only while their Add-on is on.
 // ============================================================
@@ -48,6 +49,7 @@ import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js"
 import { getTableOfTheDay, getTableOfTheWeek } from "../common/tables/period_table.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
+import { sameName } from "../common/profiles/profile_name_rules.js";
 import { getChallenges } from "../common/challenges/challenge.js";
 import config from "../common/core/config.js";
 import lang from "../common/core/i18n.js";
@@ -252,8 +254,9 @@ export default function init() {
     }
 
     // isBaseline: the check at startup or at a Profile switch, whose level,
-    // toasts included, is never announced.
-    function checkForNewAchievements({ isBaseline = false } = {}) {
+    // toasts included, is never announced. isStartup: the startup check,
+    // whose toasts are dropped if the Startup Screen picks another Profile.
+    function checkForNewAchievements({ isBaseline = false, isStartup = false } = {}) {
         // A toast may start after a switch: it is credited to the Profile
         // active when it was unlocked.
         const profileName = profileStore.getActiveProfile().name;
@@ -271,13 +274,20 @@ export default function init() {
         evaluateAchievements(achievements, profileStore, (achievement) => {
             if (submittedIds.has(achievement.id)) return;
             submittedIds.add(achievement.id);
+            // Decided at the toast's turn. Forgotten as submitted, so the
+            // Profile's next switch announces it: it was never Notified.
+            function isPickedAway() {
+                if (!isStartup || sameName(profileStore.getActiveProfile().name, profileName)) return false;
+                submittedIds.delete(achievement.id);
+                return true;
+            }
             achievementToasts.submit({
                 title: achievement.getTitle(),
                 description: achievement.getDescription(),
                 rank: achievement.rank,
                 celebrate: achievement.rank === ACHIEVEMENT_RANK.PLATINUM,
                 onShown: () => markNotified(profileStore, profileName, achievement.id),
-                isStale: () => resetCountOf(profileKey) !== resetCount,
+                isStale: () => resetCountOf(profileKey) !== resetCount || isPickedAway(),
             });
         });
         const levelAfter = levelOnceShown(submittedIds, achievements, nonChildAchievements);
@@ -289,6 +299,7 @@ export default function init() {
     // needs its own guard.
     const safeCheckForNewAchievements = safeHandler(SCRIPT_NAME, () => checkForNewAchievements());
     const safeCheckBaseline = safeHandler(SCRIPT_NAME, () => checkForNewAchievements({ isBaseline: true }));
+    const safeCheckStartup = safeHandler(SCRIPT_NAME, () => checkForNewAchievements({ isBaseline: true, isStartup: true }));
 
     // Fire on table launch and exit (the launch check catches the "grand
     // return" flag set at launch). Deferred by one tick so the stats trackers'
@@ -335,5 +346,5 @@ export default function init() {
     // Startup check, one tick after the inits, so a Welcome Screen submitted
     // at startup is already waiting whatever the order in main.js, and its
     // toasts wait for it.
-    setTimeout(safeCheckBaseline, 0);
+    setTimeout(safeCheckStartup, 0);
 }
