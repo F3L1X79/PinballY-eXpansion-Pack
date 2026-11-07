@@ -1,14 +1,16 @@
 // ============================================================
-// A long High Score Board: in a short landscape window the flippers scroll
-// the rows one place at a time, the podium staying; a board that fits makes
-// the flippers do nothing; a portrait window shows all ten places.
+// A long High Score Board: in a short landscape window the flippers walk
+// the Exit Button, each row, then the view buttons, scrolling the rows the
+// least it takes to keep the marked one in view, the podium staying; Select
+// on a row does nothing; a board that fits leaves its rows out of the walk.
 // ============================================================
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
+import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, board, FACTORY, MEDIEVAL } from "./high_scores_scenario.js";
-import { openBoard, press, podium, rows } from "./high_score_board_reader.js";
+import { openBoard, press, podium, rows, marked, viewName, isBoardOpen } from "./high_score_board_reader.js";
 
 const TEN_PLACES = board(
     ["SLL", "52000000"], ["BRE", "40000000"], ["LFS", "30000000"], ["ZAP", "20000000"], ["RCF", "10000000"],
@@ -16,11 +18,13 @@ const TEN_PLACES = board(
 );
 const ROW_INITIALS = ["ZAP", "RCF", "DTW", "CPG", "JAB", "MRP", "KOZ"];
 
-test("the flippers scroll a long board's rows under the fixed podium, and do nothing on a board that fits", async () => {
+test("the flippers walk a long board's rows, scrolling them under the fixed podium; a board that fits leaves them out", async () => {
     const { fake, setBoard } = await startHighScores({ profiles: { Alice: {} }, active: "Alice" });
     const { default: lang } = await import("../../common/core/i18n.js");
+    const VIEWS = lang.highScores.board.views;
     const rowsInView = () => rows(fake, lang).map(row => row.initials);
     const podiumInitials = () => Object.values(podium(fake, lang)).map(step => step.initials);
+    const rankOf = initials => String(ROW_INITIALS.indexOf(initials) + 4);
     // Opens the board and lets its fresh read end.
     const openRead = async () => {
         openBoard(fake, lang);
@@ -36,29 +40,39 @@ test("the flippers scroll a long board's rows under the fixed podium, and do not
     assert.deepEqual(rowsInView(), ROW_INITIALS.slice(0, shownAtOnce));
     assert.deepEqual(podiumInitials(), ["BRE", "SLL", "LFS"]);
 
-    for (let first = 1; first <= ROW_INITIALS.length - shownAtOnce; first++) {
+    ROW_INITIALS.forEach((initials, index) => {
         assert.ok(press(fake, "Next").defaultPrevented);
-        assert.deepEqual(rowsInView(), ROW_INITIALS.slice(first, first + shownAtOnce));
+        assert.deepEqual(marked(fake, lang), { row: rankOf(initials) });
+        const first = Math.max(0, index - shownAtOnce + 1);
+        assert.deepEqual(rowsInView(), ROW_INITIALS.slice(first, first + shownAtOnce), `row ${initials} in view, the least scrolled`);
         assert.deepEqual(podiumInitials(), ["BRE", "SLL", "LFS"], "the podium stays in place");
-    }
-    assert.ok(press(fake, "Next").defaultPrevented, "past the last place");
-    assert.deepEqual(rowsInView(), ROW_INITIALS.slice(-shownAtOnce));
+    });
+    assert.ok(press(fake, "Select").defaultPrevented);
+    assert.ok(isBoardOpen(fake), "Select on a row does nothing");
+    assert.equal(viewName(fake), VIEWS.table);
 
-    for (let first = ROW_INITIALS.length - shownAtOnce - 1; first >= 0; first--) {
-        assert.ok(press(fake, "Prev").defaultPrevented);
-        assert.deepEqual(rowsInView(), ROW_INITIALS.slice(first, first + shownAtOnce));
+    press(fake, "Next");
+    assert.deepEqual(marked(fake, lang), { view: VIEWS.household }, "the view buttons come after the last row");
+    assert.deepEqual(rowsInView(), ROW_INITIALS.slice(-shownAtOnce));
+    press(fake, "Next");
+    press(fake, "Next");
+    assert.equal(marked(fake, lang), "exitButton");
+    press(fake, "Prev");
+    press(fake, "Prev");
+    press(fake, "Prev");
+    assert.deepEqual(marked(fake, lang), { row: "10" }, "Prev from the view buttons comes back to the last row");
+    for (let index = ROW_INITIALS.length - 2; index >= 0; index--) {
+        press(fake, "Prev");
+        const first = Math.min(index, ROW_INITIALS.length - shownAtOnce);
+        assert.deepEqual(rowsInView(), ROW_INITIALS.slice(first, first + shownAtOnce), `back up to row ${ROW_INITIALS[index]}`);
     }
-    assert.ok(press(fake, "Prev").defaultPrevented, "before the 4th place");
-    assert.deepEqual(rowsInView(), ROW_INITIALS.slice(0, shownAtOnce));
     press(fake, "Exit");
 
     setBoard(MEDIEVAL, FACTORY);
     await openRead();
     assert.deepEqual(rowsInView(), ["ZAP", "RCF"]);
-    for (const button of ["Next", "Prev"]) {
-        assert.ok(press(fake, button).defaultPrevented, `${button} never reaches the wheel`);
-        assert.deepEqual(rowsInView(), ["ZAP", "RCF"]);
-    }
+    press(fake, "Next");
+    assert.deepEqual(marked(fake, lang), { view: VIEWS.household }, "rows that all fit are left out");
     press(fake, "Exit");
 
     fake.setLayoutSize({ width: 1080, height: 1920 });
@@ -66,5 +80,7 @@ test("the flippers scroll a long board's rows under the fixed podium, and do not
     await openRead();
     assert.deepEqual(rowsInView(), ROW_INITIALS, "a portrait window shows every place");
     press(fake, "Next");
-    assert.deepEqual(rowsInView(), ROW_INITIALS);
+    assert.deepEqual(marked(fake, lang), { view: VIEWS.household });
+    press(fake, "Exit");
+    assertNoErrorLogged(fake);
 });

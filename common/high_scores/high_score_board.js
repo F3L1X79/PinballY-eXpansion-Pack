@@ -2,9 +2,9 @@
 // High Score Board: the drawn screen opened from the main menu or the
 // HighScores button, on the selected table's views (Table, Household and
 // Personal Boards; podium with crowns, then rows) from the High Score
-// store; Select turns the view. Opens on the Table Board's last known board
-// while it is read fresh. Opens directly, not through the wheel dialog module.
-// - Its buttons and attract mode go through the Drawn Screen controls; the flippers scroll the rows.
+// store; two buttons under it turn to the other views. Opens on the Table Board's
+// last known board while it is read fresh. Opens directly, not through the wheel dialog module.
+// - Buttons and attract mode go through the Drawn Screen controls; the flippers walk the Exit Button, the rows when they overflow, then the view buttons.
 // - The read's Loader, notes and messages are the Table Board's only.
 // - Crowns are drawn ahead once: PinballY reads an image file again on every draw.
 // - isOpen() and onClosed() let the wheel dialogs wait for it.
@@ -18,17 +18,29 @@ import { createHiddenLayer, hideLayer } from "../drawing/placed_layers.js";
 import { createLoader, LOADER_PLACEMENT } from "../drawing/loader.js";
 import { drawExitButton } from "../drawing/steamball_drawing.js";
 import { exitButtonLookOf, exitButtonWordOf, buttonHintGroupsOf, FLIPPER_HINT } from "../drawing/button_hints.js";
+import { createSelectionMarker } from "../drawing/selection_marker.js";
+import { createNavigationSound } from "../core/navigation_sound.js";
 import { SCRIPT_NAME } from "./high_score_store.js";
 import { readDefaultScoreImages, pickDefaultScoreImages } from "./default_score_images.js";
 import {
     HIGH_SCORE_BOARD_Z_INDEX as Z_INDEX, HIGH_SCORE_BOARD_CROWN_Z_INDEX, HIGH_SCORE_BOARD_LOADER_Z_INDEX, CROWN_IMAGES, CROWN_CANVAS, REFERENCE_HEIGHT, PODIUM_PLACES, AVATAR_FRAME_WIDTH, CANVAS_ZOOM,
     layoutHighScoreBoard, placedRect, drawBackdrop, drawPanel, drawGlass, drawCrown, drawTitle, drawNote, drawMessage, drawStep, drawRow, drawExitTooltip, drawButtonHints,
+    drawViewButton,
 } from "./high_score_board_painter.js";
 
 const TRANSPARENT = 0x00000000;
-// The views Select turns through, by their names' keys in lang.highScores.board.views.
+// The views, by their names' keys in lang.highScores.board.views.
 const VIEWS = Object.freeze(["table", "household", "personal"]);
 const isTableBoard = opened => VIEWS[opened.view] === "table";
+// The view buttons' views, in VIEWS' order: every view but the one on show.
+const otherViews = view => VIEWS.map((_, index) => index).filter(index => index !== view);
+
+// The choices the flippers walk, as { kind, index }: the Exit Button, each
+// row when they do not all fit (so the flippers bring each into view), then the view buttons.
+function choicesOf(geometry) {
+    const rows = geometry.rows.length > geometry.rowsInView ? geometry.rows.map((_, index) => ({ kind: "row", index })) : [];
+    return [{ kind: "exitButton", index: 0 }, ...rows, ...geometry.viewButtons.map((_, index) => ({ kind: "view", index }))];
+}
 
 // highScores: the High Score store; profileRewards: the worn Avatar
 // Frames; drawingAhead: the shared drawing ahead
@@ -40,6 +52,7 @@ const isTableBoard = opened => VIEWS[opened.view] === "table";
 export function createHighScoreBoard(host, { highScores, profileRewards, drawingAhead, drawnScreenControls, refresh, activeProfileName }) {
     const log = message => host.log(`[${SCRIPT_NAME}] ${message}`);
     const controls = drawnScreenControls.register(SCRIPT_NAME);
+    const navigationSound = createNavigationSound(host, SCRIPT_NAME);
     const projectFolder = host.getProjectFolder();
     // On the top third, so that the comet never hides the scores.
     const loader = createLoader(host, { zIndex: HIGH_SCORE_BOARD_LOADER_Z_INDEX, placement: LOADER_PLACEMENT.TOP_THIRD });
@@ -63,8 +76,9 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
     });
     // The screen on show: its drawn screen, return, opacity, the layers
     // of its content (all but the backdrop), its layout, its rows' layers,
-    // the first row in view and its place among the Drawn Screen controls'
-    // openings (controlled); null when closed.
+    // the first row in view, its choices, the selected one and its Selection
+    // Marker, and its place among the Drawn Screen controls' openings
+    // (controlled); null when closed.
     let shown = null;
 
     // Each line once: the Default Score images are read again on every opening.
@@ -151,16 +165,29 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
     });
     const screenOf = opened => SCREENS[VIEWS[opened.view]](opened);
 
+    const selectedChoice = opened => opened.choices[opened.selected];
+
+    // Where the selected choice shows, in reference pixels, a row as scrolled.
+    function markedRect(opened) {
+        const { geometry } = opened;
+        const { kind, index } = selectedChoice(opened);
+        if (kind === "row") return placedRect(geometry, geometry.rows[index], opened.firstRow * geometry.rowPitch);
+        return placedRect(geometry, kind === "view" ? geometry.viewButtons[index] : geometry.exitButton);
+    }
+
     // Shows every content layer at the screen's opacity, the rows out of
-    // view hidden, and puts each row in its scrolled place.
+    // view and the Exit Button's tooltip off it hidden, puts each row in
+    // its scrolled place and the Selection Marker round the selected choice.
     function showContent(opened) {
         const { drawn, geometry, rowLayers, firstRow } = opened;
         const showAt = (layer, opacity) => {
             drawn.show(layer);
             layer.alpha = opacity;
         };
+        const isOnExitButton = selectedChoice(opened).kind === "exitButton";
         for (const layer of [...opened.content, ...opened.crownLayers]) {
-            if (!rowLayers.includes(layer)) showAt(layer, opened.opacity);
+            if (layer === opened.exitTooltip && !isOnExitButton) drawn.hide(layer);
+            else if (!rowLayers.includes(layer)) showAt(layer, opened.opacity);
         }
         rowLayers.forEach((layer, index) => {
             drawn.place(layer, placedRect(geometry, geometry.rows[index], firstRow * geometry.rowPitch));
@@ -168,6 +195,8 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
             if (inView) showAt(layer, opened.opacity);
             else drawn.hide(layer);
         });
+        opened.marker.moveTo(markedRect(opened));
+        opened.marker.setOpacity(opened.opacity);
     }
 
     // Draws the panel and everything on it for the view on show into
@@ -179,7 +208,6 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         const { drawn } = opened;
         for (const layer of opened.content) drawn.remove(layer);
         const screen = screenOf(opened);
-        const nextView = VIEWS[(opened.view + 1) % VIEWS.length];
         const geometry = layoutHighScoreBoard(drawn.referenceWidth, screen.places.length);
         const content = [];
         const piece = (zIndex, rect, draw) => drawn.drawPiece(zIndex, placedRect(geometry, rect), draw, content, rect);
@@ -210,16 +238,25 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         });
         piece(Z_INDEX.glass, panel, dc => drawGlass(dc, projectFolder, panel.w, panel.h));
         const { exitLook } = opened;
-        const flippers = geometry.rows.length > geometry.rowsInView ? FLIPPER_HINT.SCROLL : null;
-        const hints = buttonHintGroupsOf({ flippers, select: TEXT.views[nextView], exitLook });
+        const hints = buttonHintGroupsOf({ flippers: FLIPPER_HINT.BROWSE, select: true, exitLook });
         finePiece(Z_INDEX.buttonHints, geometry.buttonHints, dc => drawButtonHints(host, dc, hints, geometry.buttonHints.w, geometry.buttonHints.h));
+        const viewButtons = otherViews(opened.view);
+        geometry.viewButtons.forEach((rect, index) => {
+            finePiece(Z_INDEX.viewButtons, rect, dc => drawViewButton(host, dc, TEXT.views[VIEWS[viewButtons[index]]], rect.w, rect.h));
+        });
         // At its default size: the board's Exit Button, CANVAS_ZOOM times.
         finePiece(Z_INDEX.exitButton, geometry.exitButton, dc => drawExitButton(dc, exitLook));
-        finePiece(Z_INDEX.tooltip, geometry.exitTooltip, dc => drawExitTooltip(host, dc, exitButtonWordOf(exitLook)));
+        opened.exitTooltip = finePiece(Z_INDEX.tooltip, geometry.exitTooltip, dc => drawExitTooltip(host, dc, exitButtonWordOf(exitLook)));
+        const previous = opened.choices.length > 0 ? selectedChoice(opened) : null;
         opened.content = content;
         opened.geometry = geometry;
         opened.rowLayers = rowLayers;
         opened.crownLayers = crownLayers;
+        opened.viewButtons = viewButtons;
+        opened.choices = choicesOf(geometry);
+        // The same choice stays selected, a view button across the turn; the Exit Button when it is gone.
+        const kept = previous ? opened.choices.findIndex(choice => choice.kind === previous.kind && choice.index === previous.index) : 0;
+        opened.selected = Math.max(0, kept);
         opened.firstRow = Math.min(opened.firstRow, lastFirstRow(opened));
         showContent(opened);
     }
@@ -227,12 +264,17 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
     // The first row in view once scrolled to the last place.
     const lastFirstRow = ({ geometry }) => Math.max(0, geometry.rows.length - geometry.rowsInView);
 
-    // direction: 1 for Next, -1 for Prev; one row at a time, stopping at
-    // either end. Does nothing when every row is in view.
-    function scroll(direction) {
-        const firstRow = Math.max(0, Math.min(lastFirstRow(shown), shown.firstRow + direction));
-        if (firstRow === shown.firstRow) return;
-        shown.firstRow = firstRow;
+    // direction: 1 for Next, -1 for Prev, looping; a selected row is
+    // scrolled into view, the least it takes.
+    function move(direction) {
+        navigationSound.play();
+        const count = shown.choices.length;
+        shown.selected = (shown.selected + direction + count) % count;
+        const { kind, index } = selectedChoice(shown);
+        if (kind === "row") {
+            const { rowsInView } = shown.geometry;
+            shown.firstRow = Math.min(Math.max(shown.firstRow, index - rowsInView + 1), index);
+        }
         showContent(shown);
     }
 
@@ -253,9 +295,12 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
             drawn, onBack, exitLook: exitButtonLookOf(onBack !== null), game,
             view: 0, tableStatus: game ? "reading" : "read", defaultImages: readDefaultScoreImages(host, logImageLine),
             opacity: 0, content: [], geometry: null, rowLayers: [], crownLayers: [], firstRow: 0,
-            controlled: controls.open({ onMove: scroll, onChoose: turnView, onExit: back, close: remove }),
+            exitTooltip: null, viewButtons: [], choices: [], selected: 0,
+            marker: createSelectionMarker(host, { zIndex: Z_INDEX.marker, referenceWidth: drawn.referenceWidth, referenceHeight: REFERENCE_HEIGHT }),
+            controlled: controls.open({ onMove: move, onChoose: choose, onExit: back, close: remove }),
         };
         shown = opened;
+        navigationSound.load();
         // Opens at once on the last known board: ready from the start.
         opened.controlled.ready();
         drawContent(opened);
@@ -285,17 +330,23 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         else loader.hide();
     }
 
-    // Select and Launch: the next view, drawn in place, scrolled to its top.
-    function turnView() {
-        shown.view = (shown.view + 1) % VIEWS.length;
+    // Select and Launch: the Exit Button goes back, a view button turns to
+    // its view, drawn in place and scrolled to its top; a row does nothing.
+    function choose() {
+        const { kind, index } = selectedChoice(shown);
+        if (kind === "exitButton") return back();
+        if (kind !== "view") return undefined;
+        shown.view = shown.viewButtons[index];
         shown.firstRow = 0;
         drawContent(shown);
         showLoaderIfReading(shown);
+        return undefined;
     }
 
     // Run by the Drawn Screen controls on every close, attract mode
     // included, which then tell the closed listeners.
     function remove() {
+        shown.marker.remove();
         shown.drawn.close(shown.content);
         loader.hide();
         for (const crown of crowns) hideLayer(crown.layer);

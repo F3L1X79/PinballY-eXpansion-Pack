@@ -367,7 +367,11 @@ _Avoid_: level-up popup, mastery achievement (Table Mastery has no Achievement)
 
 **High Score**:
 A place on a table's own high score board that a Profile won with a Play, whatever initials were typed. It stays won even when better scores push it off the board. Shown as "meilleur score" in French.
-_Avoid_: record (the Table Record is only the best one), hi-score, score (the score of a game that did not reach the board is never known)
+_Avoid_: record (the Table Record is only the best one), hi-score, score (the score of a game that did not reach the board is known only as a Play Score)
+
+**Play Score**:
+The best score of a Play, read from the table's memory after it, credited to the Profile active when it started even when another player made it. Known only on tables with a ROM whose memory gives it, and never for a game left unfinished, when the table tells it.
+_Avoid_: last game score, NVRAM score, High Score (a Play Score won no place on the table's board)
 
 **Default Score**:
 A score that belongs to no Profile: already on a table's high score board when the pack first read it, or a High Score whose Profile was removed. Shown as "score par défaut" in French.
@@ -393,11 +397,11 @@ _Avoid_: high scores popup, leaderboard
 The view of the High Score Board that shows the table's own high score board with each place's owner. Not the table's own board, which it shows. Shown as "Le tableau" in French.
 
 **Household Board**:
-The view of the High Score Board that ranks the Household's Profiles by their best High Score on the table since their last Profile Reset, one place each. Shown as "La maison" in French.
+The view of the High Score Board that ranks the Household's Profiles by their best High Score or Play Score on the table since their last Profile Reset, one place each. Shown as "La maison" in French.
 _Avoid_: leaderboard, family board
 
 **Personal Board**:
-The view of the High Score Board that shows the active Profile's five best High Scores on the table since its last Profile Reset, those pushed off the table's board included. Shown as "Mes 5 meilleurs" in French.
+The view of the High Score Board that shows the active Profile's five best scores on the table since its last Profile Reset: its High Scores, those pushed off the table's board included, and its Play Scores, a Play counted once. Shown as "Mes 5 meilleurs" in French.
 _Avoid_: Personal 5, My High Scores (the wheel selection of tables where it still holds one)
 
 ### Achievements

@@ -1,7 +1,7 @@
 // ============================================================
 // The High Score Board's Personal Board in French, through main.js on the
-// fake PinballY globals: its name under the title and in the Household
-// Board's Select hint, its empty message, a place's date day first.
+// fake PinballY globals: its name under the title, the other views' on its
+// buttons, its empty message, a place's date day first.
 // ============================================================
 
 import { test } from "node:test";
@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, board, FACTORY, MEDIEVAL, avatarFiles } from "./high_scores_scenario.js";
-import { openBoard, press, viewName, viewPlaces, buttonHints, message, BOARD_OPEN_MS } from "./high_score_board_reader.js";
+import { openBoard, press, showView, viewName, viewPlaces, viewButtons, message, BOARD_OPEN_MS } from "./high_score_board_reader.js";
 
 test("the Personal Board speaks French", async () => {
     const { fake, setBoard, play } = await startHighScores({ profiles: { Alice: {} }, active: "Alice", files: avatarFiles("Alice"), language: "fr" });
@@ -19,9 +19,8 @@ test("the Personal Board speaks French", async () => {
         await settle();
         fake.advanceTime(1000);
         await settle();
-        press(fake, "Select");
-        assert.deepEqual(buttonHints(fake).at(-2), { keys: ["SELECT"], label: "MES 5 MEILLEURS" });
-        press(fake, "Select");
+        showView(fake, lang, "personal");
+        assert.deepEqual(viewButtons(fake), ["Le tableau", "La maison"]);
         assert.equal(viewName(fake), "Mes 5 meilleurs");
     };
     setBoard(MEDIEVAL, FACTORY);

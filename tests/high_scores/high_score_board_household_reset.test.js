@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, board, FACTORY, MEDIEVAL, PROFILES_FOLDER, avatarFiles } from "./high_scores_scenario.js";
-import { openBoard, press, viewPlaces, BOARD_OPEN_MS } from "./high_score_board_reader.js";
+import { openBoard, press, showView, viewPlaces, BOARD_OPEN_MS } from "./high_score_board_reader.js";
 
 test("the Household Board counts a Profile's High Scores since its last Profile Reset, and forgets a removed Profile until it comes back", async () => {
     const { fake, setBoard, play, switchTo, resetProfile } = await startHighScores({
@@ -22,7 +22,7 @@ test("the Household Board counts a Profile's High Scores since its last Profile 
         await settle();
         fake.advanceTime(1000);
         await settle();
-        press(fake, "Select");
+        showView(fake, lang, "household");
         const shown = viewPlaces(fake, lang).map(place => [place.rank, place.name, place.score]);
         press(fake, "Exit");
         fake.advanceTime(BOARD_OPEN_MS);

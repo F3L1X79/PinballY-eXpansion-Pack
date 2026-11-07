@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, ZELDA_TABLE, ZELDA_FACTORY, OTHER_SECTIONS } from "./high_scores_scenario.js";
-import { openBoard, press, message, note, podium } from "./high_score_board_reader.js";
+import { openBoard, press, showView, message, note, podium } from "./high_score_board_reader.js";
 
 test("an unlearned original table asks for a game to bring up its high scores", async () => {
     const { fake, setVpreg, saved } = await startHighScores({ tables: [ZELDA_TABLE] });
@@ -27,9 +27,9 @@ test("an unlearned original table asks for a game to bring up its high scores", 
     assert.deepEqual(podium(fake, lang), { left: null, middle: null, right: null });
     assert.equal(saved(), undefined);
 
-    press(fake, "Select");
+    showView(fake, lang, "household");
     assert.equal(message(fake), "No one in the household has a high score on this table yet", "its Household Board is just empty");
-    press(fake, "Select");
+    showView(fake, lang, "personal");
     assert.equal(message(fake), "Get onto this table's board to see your best scores here", "its Personal Board too");
     assertNoErrorLogged(fake);
 });

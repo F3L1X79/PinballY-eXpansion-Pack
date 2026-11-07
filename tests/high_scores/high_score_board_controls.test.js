@@ -1,8 +1,8 @@
 // ============================================================
 // The High Score Board on the Drawn Screen controls, through main.js on the
 // fake PinballY globals: a held Select, Launch or Exit counts once, so the
-// board just opened stays; a held flipper keeps scrolling; Select and Launch
-// turn the view, Exit goes back to the main menu; attract mode closes it, its Loader and
+// board just opened stays; a held flipper keeps moving the marker; Select and Launch
+// on a view button turn the view, Exit goes back to the main menu; attract mode closes it, its Loader and
 // crowns hidden.
 // ============================================================
 
@@ -13,14 +13,14 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { loaderLayerCount, readLoader } from "../support/loader_reader.js";
 import { startHighScores, board, MEDIEVAL } from "./high_scores_scenario.js";
 import { hold } from "../stats/profile_stats_reader.js";
-import { openBoard, press, isBoardOpen, boardLayerCount, rows, viewName, crownsWaitHidden, BOARD_OPEN_MS } from "./high_score_board_reader.js";
+import { openBoard, press, isBoardOpen, boardLayerCount, rows, viewName, marked, crownsWaitHidden, BOARD_OPEN_MS } from "./high_score_board_reader.js";
 
 const TEN_PLACES = board(
     ["SLL", "52000000"], ["BRE", "40000000"], ["LFS", "30000000"], ["ZAP", "20000000"], ["RCF", "10000000"],
     ["DTW", "9000000"], ["CPG", "8000000"], ["JAB", "7000000"], ["MRP", "6000000"], ["KOZ", "5000000"],
 );
 
-test("the High Score Board counts a held Select, Launch or Exit once, scrolls on a held flipper, turns its view on Select and Launch, and goes with attract mode", async () => {
+test("the High Score Board counts a held Select, Launch or Exit once, moves its marker on a held flipper, turns its view on Select and Launch, and goes with attract mode", async () => {
     const { fake, setBoard } = await startHighScores({ profiles: { Alice: {} }, active: "Alice" });
     const { default: lang } = await import("../../common/core/i18n.js");
     fake.setNativeCommand(globalThis.command.ShowMainMenu, () => fake.openMainMenu());
@@ -36,21 +36,20 @@ test("the High Score Board counts a held Select, Launch or Exit once, scrolls on
         assert.ok(hold(fake, button).defaultPrevented, `a held ${button} never reaches the wheel`);
         assert.ok(isBoardOpen(fake), `a held ${button} leaves the board open`);
     }
-    assert.equal(firstRowInView(), "ZAP");
+    assert.equal(marked(fake, lang), "exitButton");
     assert.ok(hold(fake, "Next").defaultPrevented);
     hold(fake, "Next");
-    assert.equal(firstRowInView(), "DTW", "a held flipper keeps scrolling");
+    assert.deepEqual(marked(fake, lang), { row: "5" }, "a held flipper keeps moving the marker");
     hold(fake, "Prev");
-    assert.equal(firstRowInView(), "RCF");
+    assert.deepEqual(marked(fake, lang), { row: "4" });
+    assert.equal(firstRowInView(), "ZAP");
 
-    for (const button of ["Select", "Launch"]) {
+    for (let guard = 0; guard < 20 && !marked(fake, lang).view; guard++) press(fake, "Next");
+    // The marker stays on the first button, which names the Table Board once on the Household Board.
+    for (const [button, view] of [["Select", "household"], ["Launch", "table"]]) {
         assert.ok(press(fake, button).defaultPrevented);
         assert.ok(isBoardOpen(fake), `${button} turns the view, the board stays`);
-        assert.equal(viewName(fake), lang.highScores.board.views.household, `${button} turns to the Household Board`);
-        press(fake, button);
-        assert.equal(viewName(fake), lang.highScores.board.views.personal, `${button} turns to the Personal Board`);
-        press(fake, button);
-        assert.equal(viewName(fake), lang.highScores.board.views.table, `${button} turns back to the Table Board`);
+        assert.equal(viewName(fake), lang.highScores.board.views[view], `${button} on a view button turns to its view`);
     }
     assert.ok(press(fake, "Exit").defaultPrevented);
     assert.equal(boardLayerCount(fake), 0, "Exit closes the board");

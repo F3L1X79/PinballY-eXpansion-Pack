@@ -6,7 +6,7 @@
 
 import { STEAMBALL_COLORS as COLORS, STEAMBALL_FONTS as FONTS, RANK_COLORS } from "../drawing/steamball_palette.js";
 import {
-    text, oneLine, drawAvatar, drawAvatarFrame, avatarFrameSide, AVATAR_FRAME_MARGIN, exitTooltipRectOf,
+    text, oneLine, fillGradient, drawAvatar, drawAvatarFrame, avatarFrameSide, AVATAR_FRAME_MARGIN, exitTooltipRectOf,
     drawExitTooltip as drawExitTooltipOn, drawButtonHintsFooter, EXIT_AND_HINTS_METRICS as EXIT_AND_HINTS,
 } from "../drawing/steamball_drawing.js";
 import { ACHIEVEMENT_RANK } from "../achievements/achievements.js";
@@ -14,11 +14,11 @@ import { DRAWN_MENU_IMAGES, DRAWN_MENU_IMAGES_FOLDER, DRAWN_MENU_PANEL_WIDTH, DR
 
 // Between the Household Stats and the Drawn Menus, which never show at the
 // same time, so each reader sees only its own layers. The Button Hints,
-// the Exit Button and its tooltip stand above the glass and the Loader,
-// crisp. No Selection Marker: Select turns the view, it never presses the Exit Button.
+// the Exit Button, the view buttons, the tooltip and the Selection Marker
+// stand above the glass and the Loader, crisp.
 export const HIGH_SCORE_BOARD_Z_INDEX = Object.freeze({
     backdrop: 6180, panel: 6181, title: 6182, note: 6183, message: 6184, podium: 6185, rows: 6186, glass: 6188,
-    buttonHints: 6190, exitButton: 6191, tooltip: 6193,
+    buttonHints: 6190, exitButton: 6191, viewButtons: 6192, tooltip: 6193, marker: 6194,
 });
 // The crowns' layers, drawn ahead and kept while the board is closed: over
 // the podium, under the glass.
@@ -72,10 +72,14 @@ const LOOK = Object.freeze({
     exitButton: EXIT_AND_HINTS.exitButton / CANVAS_ZOOM, exitTooltipRoom: 100, tooltipMargin: EXIT_AND_HINTS.tooltipMargin / CANVAS_ZOOM,
     // The Exit Button's room from the panel's face, in its top right corner.
     exitCorner: 14,
-    // The Button Hints' footer under the board, shorter than the other
-    // drawn screens' so a 5-place board still fits a landscape window.
-    footerGap: 12, footerH: 58,
+    // The two view buttons side by side under the board, then the Button
+    // Hints' footer, shorter than the other drawn screens' so a 5-place
+    // board still fits a landscape window.
+    viewButtonsGap: 12, viewButtonH: 44, viewButtonGap: 14, viewButtonSize: 17, minViewButtonSize: 12,
+    footerGap: 8, footerH: 58,
 });
+// The buttons to the other views, under the board.
+export const VIEW_BUTTONS = 2;
 
 // How wide an Avatar Frame is drawn at most, for its image's size.
 export const AVATAR_FRAME_WIDTH = avatarFrameSide(Math.max(...LOOK.avatar, LOOK.rowAvatar));
@@ -100,21 +104,21 @@ const MIN_PANEL_H = Math.max(
 // either the message's box or the podium's steps (the 1st's first, those
 // with no place included), the crowns over them (framed: over an Avatar
 // wearing an Avatar Frame, bare: over one without), one rect per row
-// as if none were scrolled, the Exit Button, its tooltip's layer and the
-// Button Hints' footer.
+// as if none were scrolled, the Exit Button, its tooltip's layer, the view
+// buttons left to right and the Button Hints' footer.
 // zoom: board to reference pixels; rowsInView: how many rows show at
 // once (all of them when they fit), the others scrolling rowPitch apart.
 export function layoutHighScoreBoard(referenceWidth, placeCount) {
     const w = DRAWN_MENU_PANEL_WIDTH;
     const rowCount = Math.max(0, placeCount - PODIUM_PLACES);
     const panelOf = bodyH => Math.max(MIN_PANEL_H,
-        LOOK.topInset + LOOK.titleH + LOOK.noteH + LOOK.titleGap + bodyH + LOOK.footerGap + LOOK.footerH + LOOK.bottomInset);
+        LOOK.topInset + LOOK.titleH + LOOK.noteH + LOOK.titleGap + bodyH + LOOK.viewButtonsGap + LOOK.viewButtonH + LOOK.footerGap + LOOK.footerH + LOOK.bottomInset);
     const panelH = rowsShown => panelOf(placeCount === 0 ? LOOK.messageH : PODIUM_H + rowsHeight(rowsShown));
     const maxH = FIT.heightShare * REFERENCE_HEIGHT;
-    // Small enough for the podium and one row at least, whatever the
-    // board holds: the "Reading..." message keeps the zoom of the board
-    // that replaces it.
-    const zoom = Math.min(FIT.maxZoom, FIT.widthShare * referenceWidth / w, maxH / panelOf(PODIUM_H + rowsHeight(1)));
+    // Small enough for the podium and two rows, a 5-place board whole,
+    // whatever the board holds: the "Reading..." message keeps the zoom of
+    // the board that replaces it.
+    const zoom = Math.min(FIT.maxZoom, FIT.widthShare * referenceWidth / w, maxH / panelOf(PODIUM_H + rowsHeight(2)));
     let rowsInView = rowCount;
     while (rowsInView > 1 && panelH(rowsInView) * zoom > maxH) rowsInView--;
     const h = panelH(rowsInView);
@@ -147,7 +151,24 @@ export function layoutHighScoreBoard(referenceWidth, placeCount) {
     const rowsY = bodyY + PODIUM_H + LOOK.rowsGap;
     const rows = Array.from({ length: rowCount }, (_, index) => ({ x, y: rowsY + index * rowPitch, w: contentW, h: LOOK.rowH }));
     const buttonHints = { x, y: h - LOOK.bottomInset - LOOK.footerH, w: contentW, h: LOOK.footerH };
-    return { zoom, origin, panel, title, note, message, steps, crowns, rows, rowsInView, rowPitch, exitButton, exitTooltip, buttonHints };
+    const viewButtonW = (contentW - (VIEW_BUTTONS - 1) * LOOK.viewButtonGap) / VIEW_BUTTONS;
+    const viewButtonsY = buttonHints.y - LOOK.footerGap - LOOK.viewButtonH;
+    const viewButtons = Array.from({ length: VIEW_BUTTONS }, (_, index) => ({
+        x: x + index * (viewButtonW + LOOK.viewButtonGap), y: viewButtonsY, w: viewButtonW, h: LOOK.viewButtonH,
+    }));
+    return { zoom, origin, panel, title, note, message, steps, crowns, rows, rowsInView, rowPitch, exitButton, exitTooltip, viewButtons, buttonHints };
+}
+
+// A button to another view, w by h board pixels, on its canvas: a tile
+// with the view's name centred.
+export function drawViewButton(host, dc, label, w, h) {
+    const [cw, ch] = [w * CANVAS_ZOOM, h * CANVAS_ZOOM];
+    fillGradient(dc, 0, 0, cw, ch, COLORS.rowUnlocked, COLORS.tile);
+    dc.frameRect(0, 0, cw, ch, 1, COLORS.border);
+    oneLine(host, dc, label, {
+        x: LOOK.rowPad * CANVAS_ZOOM, y: 0, width: cw - 2 * LOOK.rowPad * CANVAS_ZOOM, height: ch,
+        size: LOOK.viewButtonSize * CANVAS_ZOOM, minSize: LOOK.minViewButtonSize * CANVAS_ZOOM, weight: 600, font: FONTS.display, align: "center",
+    });
 }
 
 // On the Exit Button's left, on its tooltip's canvas.

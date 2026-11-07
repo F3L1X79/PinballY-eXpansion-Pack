@@ -48,9 +48,9 @@ Quand vous entrez au tableau des meilleurs scores d'une table, la place est à v
 - les trois premières places sur un podium sous une couronne d'or, d'argent et de bronze, les autres en lignes en dessous ;
 - chacune avec son rang, son score, ses initiales et le Profil qui l'a gagnée (nom, Avatar et cadre d'Avatar), ou « Score par défaut » avec un portrait choisi d'après ses initiales, le même sur toutes les tables ;
 - le tableau est relu sur la table à chaque ouverture, il montre donc toujours ce qu'elle contient ;
-- les flippers font défiler un tableau trop long pour l'écran.
+- sur un tableau trop long pour l'écran, les flippers s'arrêtent aussi sur chaque place sous le podium, en la faisant défiler à l'écran.
 
-Select passe à la vue suivante du tableau, nommée sous le titre de la table, puis revient à la première ; Exit le ferme depuis chacune :
+Deux boutons sous le tableau nomment ses autres vues ; la vue affichée est nommée sous le titre de la table. Les flippers passent du bouton Retour au premier bouton, puis au second ; Select (ou Launch) ouvre la vue du bouton choisi, ou ferme le tableau sur le bouton Retour ; Exit le ferme depuis chaque vue :
 
 - **Le tableau** : le tableau de la table, comme ci-dessus, où commence chaque ouverture ;
 - **La maison** : chaque Profil de la maison (sans Invité, enfants compris) une fois, avec son meilleur score sur cette table, même un score depuis sorti du tableau de la table, et la date de cette partie ; quand un Profil repart de zéro, seuls ses meilleurs scores gagnés depuis comptent ;

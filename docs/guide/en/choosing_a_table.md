@@ -48,9 +48,9 @@ When you enter a table's high score board, the place is yours: the pack reads th
 - the three first places on a podium under a Gold, Silver and Bronze crown, the others in rows below;
 - each with its rank, score, initials and the Profile that won it (name, Avatar and Avatar Frame), or "Default score" with a portrait picked by its initials, the same on every table;
 - the board is read again from the table each time you open it, so it always shows what the table holds now;
-- the flippers scroll a board too long for the screen.
+- on a board too long for the screen, the flippers also stop on each place below the podium, scrolling it into view.
 
-Select turns to the board's next view, named under the table's title, then back to the first; Exit closes it from any of them:
+Two buttons under the board name its other views; the view on show is named under the table's title. The flippers move from the Exit Button to the first button, then the second; Select (or Launch) opens the view of the button chosen, or closes the board on the Exit Button; Exit closes it from any view:
 
 - **The table**: the table's own board, as above, where every opening starts;
 - **The household**: each Profile of the household (Guest left out, children in) once, with its best High Score on this table, a score since pushed off the table's board included, and the date of that game; after a Profile Reset, only the High Scores won since count;

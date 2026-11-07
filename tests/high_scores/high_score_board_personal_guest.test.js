@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, board, FACTORY, MEDIEVAL, avatarOf, avatarFiles } from "./high_scores_scenario.js";
-import { openBoard, press, viewName, viewPlaces, message, BOARD_OPEN_MS } from "./high_score_board_reader.js";
+import { openBoard, press, showView, viewName, viewPlaces, message, BOARD_OPEN_MS } from "./high_score_board_reader.js";
 
 test("with Guest active, the Personal Board is Guest's", async () => {
     const { fake, setBoard, play } = await startHighScores({ profiles: { Alice: {} }, active: "guest", files: avatarFiles("guest") });
@@ -19,8 +19,7 @@ test("with Guest active, the Personal Board is Guest's", async () => {
         await settle();
         fake.advanceTime(1000);
         await settle();
-        press(fake, "Select");
-        press(fake, "Select");
+        showView(fake, lang, "personal");
         assert.equal(viewName(fake), "My best 5");
     };
     setBoard(MEDIEVAL, FACTORY);

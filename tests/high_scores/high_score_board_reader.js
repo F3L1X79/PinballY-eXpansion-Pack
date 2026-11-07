@@ -1,14 +1,17 @@
 // ============================================================
 // Reads the drawn High Score Board as the player sees it, on the fake host:
 // title, message, podium and rows (rank, owner, Avatar, frame, crown,
-// score), Exit Button, Button Hints, and leftover layers after close.
-// Opens it from the main menu entry. Never loaded by PinballY.
+// score), Exit Button, view buttons, Selection Marker, Button Hints, and
+// leftover layers after close. Opens it from the main menu entry, turns
+// its views with showView(). Never loaded by PinballY.
 // ============================================================
 
 import { HIGH_SCORE_BOARD_Z_INDEX, HIGH_SCORE_BOARD_CROWN_Z_INDEX } from "../../common/high_scores/high_score_board_painter.js";
 import { shownFrame, isFrameImage } from "../avatar_frames/avatar_frame_reader.js";
 import { buttonHintsOn, exitButtonTooltipOn } from "../support/button_hints_reader.js";
 import { shownLayers } from "../support/shown_layers.js";
+import * as selectionMarker from "../support/selection_marker_reader.js";
+import assert from "node:assert/strict";
 
 // Past the fade in.
 export const BOARD_OPEN_MS = 300;
@@ -190,6 +193,36 @@ export function panelSlices(fake) {
         if (part) slices[part] = stroke.rect;
     }
     return slices;
+}
+
+const viewButtonLayers = fake => shownLayers(fake, HIGH_SCORE_BOARD_Z_INDEX.viewButtons).sort((a, b) => a.position().x - b.position().x);
+
+// The view buttons' names, left to right.
+export const viewButtons = fake => viewButtonLayers(fake).map(layer => layer.texts()[0]);
+
+// What the Selection Marker surrounds: "exitButton", { view: the button's
+// name }, or { row: the row's rank }.
+export function marked(fake, lang) {
+    const zIndex = HIGH_SCORE_BOARD_Z_INDEX.marker;
+    if (selectionMarker.layerUnderMarker(fake, zIndex, shownLayers(fake, HIGH_SCORE_BOARD_Z_INDEX.exitButton))) return "exitButton";
+    const button = selectionMarker.layerUnderMarker(fake, zIndex, viewButtonLayers(fake));
+    if (button) return { view: button.texts()[0] };
+    const row = selectionMarker.layerUnderMarker(fake, zIndex, rowLayers(fake));
+    return row ? { row: placeOf(row, lang.highScores.board, false).rank } : null;
+}
+
+// Moves the marker with Next to the button of that view ("household"),
+// then presses Select; returns the press.
+export function showView(fake, lang, view) {
+    const name = lang.highScores.board.views[view];
+    for (let guard = 0; guard < 20 && !isMarkedView(fake, lang, name); guard++) press(fake, "Next");
+    assert.ok(isMarkedView(fake, lang, name), `the board offers "${name}"`);
+    return press(fake, "Select");
+}
+
+function isMarkedView(fake, lang, name) {
+    const shown = marked(fake, lang);
+    return shown !== null && shown.view === name;
 }
 
 // The footer's groups of key caps and words, null when none shows.

@@ -1,7 +1,7 @@
 // ============================================================
 // The High Score Board's Household Board in French, through main.js on the
-// fake PinballY globals: the views' names under the title and in the
-// Select hint, a place's date day first, and the empty Household Board's
+// fake PinballY globals: the views' names under the title and on the
+// view buttons, a place's date day first, and the empty Household Board's
 // message.
 // ============================================================
 
@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, board, FACTORY, MEDIEVAL, avatarFiles } from "./high_scores_scenario.js";
-import { openBoard, press, viewName, viewPlaces, buttonHints, message } from "./high_score_board_reader.js";
+import { openBoard, press, showView, viewName, viewPlaces, viewButtons, message } from "./high_score_board_reader.js";
 
 test("the Household Board speaks French", async () => {
     const { fake, setBoard, play } = await startHighScores({ profiles: { Alice: {} }, active: "Alice", files: avatarFiles("Alice"), language: "fr" });
@@ -24,16 +24,16 @@ test("the Household Board speaks French", async () => {
     setBoard(MEDIEVAL, FACTORY);
     await open();
     assert.equal(viewName(fake), "Le tableau");
-    assert.deepEqual(buttonHints(fake).at(-2), { keys: ["SELECT"], label: "LA MAISON" });
-    press(fake, "Select");
+    assert.deepEqual(viewButtons(fake), ["La maison", "Mes 5 meilleurs"]);
+    showView(fake, lang, "household");
     assert.equal(viewName(fake), "La maison");
     assert.equal(message(fake), "Aucun joueur de la maison n'a encore de meilleur score sur cette table");
-    assert.deepEqual(buttonHints(fake).at(-2), { keys: ["SELECT"], label: "MES 5 MEILLEURS" });
+    assert.deepEqual(viewButtons(fake), ["Le tableau", "Mes 5 meilleurs"]);
     press(fake, "Exit");
 
     await play(MEDIEVAL, { after: board(["SLL", "52000000"], ["ALI", "45000000"], ["BRE", "40000000"], ["LFS", "30000000"], ["ZAP", "20000000"]) });
     await open();
-    press(fake, "Select");
+    showView(fake, lang, "household");
     assert.deepEqual(viewPlaces(fake, lang).map(place => [place.rank, place.name, place.date]), [["1", "Alice", "12/10/2026"]]);
     press(fake, "Exit");
     assertNoErrorLogged(fake);

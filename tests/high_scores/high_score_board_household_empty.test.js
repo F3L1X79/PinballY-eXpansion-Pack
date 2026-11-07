@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, MEDIEVAL, NOT_SUPPORTED } from "./high_scores_scenario.js";
-import { openBoard, press, message, note, viewName, podium } from "./high_score_board_reader.js";
+import { openBoard, press, showView, message, note, viewName, podium } from "./high_score_board_reader.js";
 
 test("an unsupported table keeps its three views, the Household and Personal Boards with their empty messages", async () => {
     const { fake, setBoard } = await startHighScores({ profiles: { Alice: {} }, active: "Alice" });
@@ -24,17 +24,17 @@ test("an unsupported table keeps its three views, the Household and Personal Boa
     await settle();
     assert.equal(message(fake), "This table's high scores are not supported");
 
-    press(fake, "Select");
+    showView(fake, lang, "household");
     assert.equal(viewName(fake), "The household");
     assert.equal(message(fake), "No one in the household has a high score on this table yet");
     assert.equal(note(fake), null);
     assert.deepEqual(podium(fake, lang), { left: null, middle: null, right: null });
 
-    press(fake, "Select");
+    showView(fake, lang, "personal");
     assert.equal(viewName(fake), "My best 5");
     assert.equal(message(fake), "Get onto this table's board to see your best scores here");
 
-    press(fake, "Select");
+    showView(fake, lang, "table");
     assert.equal(message(fake), "This table's high scores are not supported", "the Table Board keeps its message");
     press(fake, "Exit");
     assertNoErrorLogged(fake);

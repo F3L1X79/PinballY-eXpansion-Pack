@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, board, FACTORY, MEDIEVAL, avatarOf, avatarFiles } from "./high_scores_scenario.js";
-import { openBoard, press, viewPlaces, frames, message } from "./high_score_board_reader.js";
+import { openBoard, press, showView, viewPlaces, frames, message } from "./high_score_board_reader.js";
 import { AVATAR_FRAME_IMAGES } from "../mastery/mastery_bar_scenario.js";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -43,7 +43,7 @@ test("the Household Board ranks each Household Profile's best High Score on the 
     await settle();
     fake.advanceTime(1000);
     await settle();
-    press(fake, "Select");
+    showView(fake, lang, "household");
     assert.equal(message(fake), null);
     assert.deepEqual(viewPlaces(fake, lang), [
         { rank: "1", name: "Bob", avatar: avatarOf("Bob"), score: "50,000,000", date: "10/13/2026" },
