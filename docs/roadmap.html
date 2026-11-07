@@ -218,6 +218,7 @@
 
         <div class="ax row">Moyen</div>
         <div class="cell sweet">
+          <a class="chip tr-play" href="#rated-tables-achievements"><b></b>Achievements des tables notées</a>
         </div>
         <div class="cell">
           <a class="chip tr-profiles" href="#ratings"><b></b>Notes et favoris par Profile</a>
@@ -298,6 +299,30 @@
               <li>Premier démarrage : les notes et favoris actuels sont copiés dans chaque Profile, Guest compris. Un nouveau Profile commence vide ; un Profile Reset les garde.</li>
               <li>À mesurer sur la borne : le temps d'un changement de Profile, une écriture <code>update()</code> par table qui diffère.</li>
             </ul>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="rated-tables-achievements" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Achievements des tables notées</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span></div>
+          </div>
+          <p>Une famille d'Achievements pour les tables notées par le Profile : 1, 3, 5 et 10 Ratings données.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après les <a href="#ratings">notes et favoris par Profile (n° <span data-ref="ratings"></span>)</a>, dont elle lit les Ratings</div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Ce qui compte : une Rating du Profile actif, sur une table qu'il voit seulement, ou aussi une table masquée depuis ?</li>
+              <li>Retirer une note fait-il perdre l'Achievement (un Unlock perdu garde ses points) ?</li>
+              <li>Guest et les Child Profiles ont-ils la famille ?</li>
+              <li>Les Ranks des quatre paliers, et le nom de la famille dans les six langues.</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 07/11/2026, grillée une fois les Ratings par Profile livrées : on saura alors ce que le joueur voit et ce qu'une note compte.</p>
           </details>
         </div>
       </li>
