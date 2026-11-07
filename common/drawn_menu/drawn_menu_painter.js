@@ -57,6 +57,8 @@ export const DRAWN_MENU_LOOK = Object.freeze({
     // the label's box shorter by lift and the reason's taller by it, so the
     // two read as one line and its note.
     reason: Object.freeze({ size: 26, minSize: 20, weight: 600, height: 32, lift: 10 }),
+    // An entry's note, after its label on the same line.
+    note: Object.freeze({ size: 26, weight: 600 }),
     separatorWidth: 320,
     // The rows fading at an edge the list scrolls past.
     edgeAlpha: 0x60,
@@ -74,6 +76,10 @@ export const DRAWN_MENU_LOOK = Object.freeze({
         disabledEntry: 0xFF808A98,
         disabledSelected: 0xFF9C8651,
         reason: 0xFF96A0AD,
+        // An entry's note, highlighted or not: a grey of its own, which the
+        // tests' reader tells from the reason's. Provisional, to be checked
+        // on the cabinet.
+        note: 0xFF8C96A3,
         backdrop: 0xB0080A0E,
         // Hides a native menu kept open under the Drawn Menu.
         cover: 0xFF000000,
@@ -285,15 +291,32 @@ function drawHeading(host, dc, row, { x, y, width, height, k, color }) {
 
 const markGlyphOf = row => DRAWN_MENU_MARKS[row.mark] || null;
 
-// An entry's title and mark, in its colour, in the box; a disabled one's
-// reason under them, in smaller type, the title and mark in the top part.
+// An entry's label then its note, smaller and grey, on one centred line:
+// both shrunk alike, down to the label's minSize, when estimated too wide
+// (two sizes on one line, which oneLine() cannot draw).
+function drawNotedLabel(host, dc, row, { x, y, width, height, k, color }) {
+    const notePart = ` ${row.note}`;
+    const labelSize = LOOK.entry.size * k;
+    const noteSize = LOOK.note.size * k;
+    const estimated = estimatedWidthPx(row.title, labelSize) + estimatedWidthPx(notePart, noteSize);
+    const shrink = Math.max(LOOK.entry.minSize / LOOK.entry.size, Math.min(1, width / estimated));
+    const textStyle = { font: FONTS.body, size: pointsOf(labelSize * shrink), weight: LOOK.entry.weight, color };
+    const lineHeight = lineHeightOf(host, textStyle);
+    const styled = host.createStyledText({ textAlign: "center", textStyle });
+    styled.add(Object.assign({}, textStyle, { text: row.title }));
+    styled.add(Object.assign({}, textStyle, { size: pointsOf(noteSize * shrink), weight: LOOK.note.weight, color: LOOK.colors.note, text: notePart }));
+    styled.draw(dc, { x, y: y + (height - lineHeight) / 2, width, height: lineHeight });
+}
+
+// An entry's title and mark, in its colour, in the box, and its note after
+// the title; a disabled one's reason under them, in smaller type, the title
+// and mark in the top part.
 function drawEntry(host, dc, row, { x, y, width, height: rowHeight, k, color, markColor, reasonColor }) {
     const markRoom = (LOOK.mark.right + LOOK.mark.width) * k;
     const labelHeight = row.disabled ? (LOOK.rowHeights.entry - LOOK.reason.lift) * k : rowHeight;
-    line(host, dc, row.title, {
-        x: x + markRoom, y, width: width - 2 * markRoom, height: labelHeight,
-        size: LOOK.entry.size * k, minSize: LOOK.entry.minSize * k, weight: LOOK.entry.weight, color,
-    });
+    const labelBox = { x: x + markRoom, y, width: width - 2 * markRoom, height: labelHeight };
+    if (row.note) drawNotedLabel(host, dc, row, { ...labelBox, k, color });
+    else line(host, dc, row.title, { ...labelBox, size: LOOK.entry.size * k, minSize: LOOK.entry.minSize * k, weight: LOOK.entry.weight, color });
     const mark = markGlyphOf(row);
     if (mark) {
         line(host, dc, mark, {

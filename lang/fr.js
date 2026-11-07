@@ -290,8 +290,8 @@ export default {
         randomTable: "Lancer une table au hasard",
         // The native High Scores item, in the main menu only: other menus keep nativeMenuLabels.
         tableScores: "Scores de la table",
-        // The native Rate Table item, in the main menu only, when the selected table has a Rating (0 to 5, in half stars).
-        rateTableWithRating: (rating) => `Noter la table (actuel : ${String(rating).replace(".", ",")} / 5)`,
+        // After the native Rate Table item, in the main menu only, when the selected table has a Rating (0 to 5, in half stars).
+        currentRating: (rating) => `(actuel : ${String(rating).replace(".", ",")} / 5)`,
         filterPickerBack: "Retour",
         activeFilter: (name) => `Filtre actif : ${name}`,
         // The Drawn main menu's "Change Filter" entry, and its footer's label before the Active Filter.

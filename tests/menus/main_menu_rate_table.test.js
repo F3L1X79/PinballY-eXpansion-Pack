@@ -50,7 +50,7 @@ test("Rate Table names the selected table's current Rating in the main menu", as
     assert.equal(rateTableItemOn(null).title, "Rate Table");
 
     // PinballY's rating dialog saves the new Rating on the table.
-    fake.getGameInfo(MARS).rating = 3;
+    fake.getGameInfo(MARS).update({ rating: 3 });
     assert.equal(rateTableItemOn(MARS).title, "Rate Table (current: 3 / 5)");
 
     // Only the main menu: the entry still runs PinballY's own command.

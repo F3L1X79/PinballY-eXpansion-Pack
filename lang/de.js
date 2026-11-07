@@ -288,7 +288,7 @@ export default {
         // The Random Game's main menu entry, worded as welcomeScreen.randomTable.
         randomTable: "Zufälligen Tisch starten",
         tableScores: "Tisch-Highscores",
-        rateTableWithRating: (rating) => `Tisch bewerten (aktuell: ${String(rating).replace(".", ",")} / 5)`,
+        currentRating: (rating) => `(aktuell: ${String(rating).replace(".", ",")} / 5)`,
         filterPickerBack: "Zurück",
         activeFilter: (name) => `Aktiver Filter: ${name}`,
         // The Drawn main menu's "Change Filter" entry, and its footer's label before the Active Filter.
