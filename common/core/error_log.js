@@ -22,7 +22,8 @@ const sessionStates = new Map();
 let sharedHost = null;
 
 const twoDigits = number => String(number).padStart(2, "0");
-const timestampOf = date => `${date.getFullYear()}-${twoDigits(date.getMonth() + 1)}-${twoDigits(date.getDate())} `
+// "2026-10-27 08:30:00", local time: the Error Log's and the pack's other logs' date.
+export const timestampOf = date => `${date.getFullYear()}-${twoDigits(date.getMonth() + 1)}-${twoDigits(date.getDate())} `
     + `${twoDigits(date.getHours())}:${twoDigits(date.getMinutes())}:${twoDigits(date.getSeconds())}`;
 
 // The error's stack without its "<Name>: <message>" header, which the

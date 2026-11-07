@@ -8,7 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { readLastGame, playScoreOf } from "../../common/high_scores/last_game_reader.js";
+import { readLastGame, readNvramAnswer, lastGameOf, playScoreOf } from "../../common/high_scores/last_game_reader.js";
 
 const answer = name => readFileSync(new URL(`../../docs/research/scores-below-board/${name}.json`, import.meta.url), "utf8");
 const lastGame = name => readLastGame(answer(name));
@@ -64,6 +64,14 @@ test("with a player count, a finished game's final scores win over the scores (#
     const before = readLastGame(answerOf([0, 0, 0, 0], [800000, 0, 0, 0], true));
     assert.deepEqual(playScoreOf(before, readLastGame(answerOf([0, 0, 0, 0], [950000, 0, 0, 0], true))), { score: 950000 });
     assert.ok(playScoreOf(before, readLastGame(answerOf([0, 0, 0, 0], [800000, 0, 0, 0], true))).none, "final scores unchanged: no game");
+});
+
+test("the raw answer: the file format and the game state", () => {
+    const wpc = readNvramAnswer(answer("wpc_taf_l7_finished"));
+    assert.equal(wpc.fileFormat, 0.8);
+    assert.deepEqual(lastGameOf(wpc.gameState), lastGame("wpc_taf_l7_finished"));
+    assert.deepEqual(readNvramAnswer("{\"_fileformat\": 0.8}"), { fileFormat: 0.8, gameState: null });
+    assert.throws(() => readNvramAnswer("{ \"game_state\": "), /not readable/);
 });
 
 test("no last-game scores before or after the game give none", () => {

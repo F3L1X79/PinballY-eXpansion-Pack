@@ -20,7 +20,8 @@ These are kept:
 - the Profiles (`profiles`);
 - the files you put in `tools`, `vpxtool.exe` included;
 - your own sounds and Default Score images;
-- the Error Log, `errors.log`.
+- the Error Log, `errors.log`;
+- the Play Score anomaly log, `play_scores_anomalies.log`.
 
 ## When an update fails
 

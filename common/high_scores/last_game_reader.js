@@ -6,7 +6,7 @@
 // ============================================================
 
 // A { value } field's value, or null when it is absent or outside the NVRAM.
-const valueOf = field => (field !== null && typeof field === "object" && field.value !== undefined && field.value !== null ? field.value : null);
+export const valueOf = field => (field !== null && typeof field === "object" && field.value !== undefined && field.value !== null ? field.value : null);
 
 // The slots' numbers, or null unless every slot has a numeric value.
 function slotsOf(list) {
@@ -15,10 +15,12 @@ function slotsOf(list) {
     return values.every(value => typeof value === "number" && Number.isFinite(value)) ? values : null;
 }
 
-// { scores, finalScores, playerCount, gameOver } (null where absent or
-// outside the NVRAM), or null when the .nv keeps no last-game scores.
-// Throws on an answer that is not vpxtool's JSON.
-export function readLastGame(output) {
+const isRecord = value => value !== null && typeof value === "object" && !Array.isArray(value);
+
+// The answer as vpxtool gives it: { fileFormat (_fileformat, or undefined),
+// gameState (game_state, or null) }. Throws on an answer that is not
+// vpxtool's JSON.
+export function readNvramAnswer(output) {
     const start = output.indexOf("{");
     if (start === -1) throw new Error(`no JSON in vpxtool's answer ("${output.trim().slice(0, 80)}")`);
     let data;
@@ -27,8 +29,21 @@ export function readLastGame(output) {
     } catch (error) {
         throw new Error(`vpxtool's answer is not readable as JSON (${error.message})`);
     }
-    const gameState = data !== null && typeof data === "object" ? data.game_state : null;
-    if (gameState === null || typeof gameState !== "object") return null;
+    if (!isRecord(data)) return { fileFormat: undefined, gameState: null };
+    return { fileFormat: data._fileformat, gameState: isRecord(data.game_state) ? data.game_state : null };
+}
+
+// { scores, finalScores, playerCount, gameOver } (null where absent or
+// outside the NVRAM), or null when the .nv keeps no last-game scores.
+// Throws on an answer that is not vpxtool's JSON. The tests' entry point:
+// the High Scores Add-on keeps the raw answer for the anomaly log.
+export function readLastGame(output) {
+    return lastGameOf(readNvramAnswer(output).gameState);
+}
+
+// readLastGame() from readNvramAnswer()'s game state.
+export function lastGameOf(gameState) {
+    if (gameState === null) return null;
     const scores = slotsOf(gameState.scores);
     if (scores === null) return null;
     const playerCount = valueOf(gameState.player_count);
@@ -44,12 +59,15 @@ export function readLastGame(output) {
 const sameSlots = (a, b) => a !== null && b !== null && a.length === b.length && a.every((value, index) => value === b[index]);
 const allZero = slots => slots.every(value => value === 0);
 
+const UNFINISHED = Object.freeze({ none: "the game was left unfinished", unfinished: true });
+
 // The Play Score from the last games read before and after the Play:
-// { score } (the best slot, whatever the player count), or { none: why }.
+// { score } (the best slot, whatever the player count), or { none: why },
+// with unfinished: true when the .nv tells the game was left unfinished.
 export function playScoreOf(before, after) {
     if (after === null || before === null) return { none: "no last-game scores in the .nv" };
     if (after.playerCount !== null) {
-        if (after.gameOver === false) return { none: "the game was left unfinished" };
+        if (after.gameOver === false) return UNFINISHED;
         // A finished game's final scores, when the map keeps them.
         const useFinal = after.gameOver === true && after.finalScores !== null;
         const slots = useFinal ? after.finalScores : after.scores;
@@ -61,6 +79,6 @@ export function playScoreOf(before, after) {
     if (final === null) return { none: "no player count nor final scores to tell a finished game" };
     if (sameSlots(before.finalScores, final)) return { none: "the final scores did not change, no game was played" };
     if (allZero(final)) return { none: "every score is 0" };
-    if (!allZero(after.scores) && !sameSlots(after.scores, final)) return { none: "the game was left unfinished" };
+    if (!allZero(after.scores) && !sameSlots(after.scores, final)) return UNFINISHED;
     return { score: Math.max(...final) };
 }

@@ -17,7 +17,7 @@ param([int]$ParentPid, [string]$ReadyFile, [string]$LogFile, [string]$ZipUrl, [s
 $ErrorActionPreference = 'Stop'
 
 # The player's data, copied from the old folder into the new one.
-$KeptFiles = @('.env.local', 'quiet_wheel_pending.json', 'pack_update.json', 'script_reader.json', 'errors.log', 'errors.old.log')
+$KeptFiles = @('.env.local', 'quiet_wheel_pending.json', 'pack_update.json', 'script_reader.json', 'errors.log', 'errors.old.log', 'play_scores_anomalies.log', 'play_scores_anomalies.old.log')
 $KeptFolders = @('profiles', 'assets\sounds\local', 'assets\images\default_scores\local')
 # tools\ is kept but for these, which the release ships.
 $ShippedTools = @('restart_pinbally.ps1', 'pack_update.ps1', 'script_reader_install.ps1')

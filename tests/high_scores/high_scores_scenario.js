@@ -81,14 +81,17 @@ export const withGameFile = table => ({ ...table, gameFile: `C:\\vPinball\\Visua
 export const VPX_TABLES = TABLES.map(withGameFile);
 // What vpxtool's "nvram show" prints of a .nv's game_state (the fake .nv
 // holds this text, which the fake vpxtool prints back): a WPC map by
-// default, with player_count and game_over.
-export function lastGame(scores, { playerCount = 1, gameOver = true, finalScores } = {}) {
+// default, with player_count and game_over; null for a value outside the NVRAM.
+export function lastGame(scores, { playerCount = 1, gameOver = true, finalScores, fileFormat = 0.8 } = {}) {
     const field = value => (value === null ? { warning: "Failed to resolve: Value is stored outside the NVRAM" } : { value });
     const slots = list => list.map((value, index) => ({ label: `Player ${index + 1}`, ...field(value) }));
     const gameState = { player_count: field(playerCount), game_over: field(gameOver), scores: slots(scores) };
     if (finalScores) gameState.final_scores = slots(finalScores);
-    return JSON.stringify({ _fileformat: 0.8, game_state: gameState }, null, 2);
+    return JSON.stringify({ _fileformat: fileFormat, game_state: gameState }, null, 2);
 }
+// The Play Score anomaly log, and its rotated older file.
+export const ANOMALY_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\play_scores_anomalies.log";
+export const OLD_ANOMALY_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\play_scores_anomalies.old.log";
 
 // Longer than a toast's whole life (rise, hold, fade).
 const ONE_TOAST_MS = 6000;
@@ -255,6 +258,11 @@ export async function startHighScores({
         // The boards handed to PinballY, in order: { configId, lines }.
         handedBoards: () => fake.highScoreSets().filter(set => set.lines !== null),
         log: () => fake.logLines().filter(line => line.startsWith("[HighScores]")),
+        // The anomaly log's lines without their date and time; undefined without the file.
+        anomalies: () => {
+            const text = fake.readFile(ANOMALY_LOG);
+            return text === undefined ? undefined : text.split("\r\n").filter(Boolean).map(line => line.replace(/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d /, ""));
+        },
         saved: () => {
             const text = fake.readFile(HIGH_SCORES_FILE);
             return text === undefined ? undefined : JSON.parse(text);

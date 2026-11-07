@@ -373,6 +373,10 @@ _Avoid_: record (the Table Record is only the best one), hi-score, score (the sc
 The best score of a Play, read from the table's memory after it, credited to the Profile active when it started even when another player made it. Known only on tables with a ROM whose memory gives it, and never for a game left unfinished, when the table tells it.
 _Avoid_: last game score, NVRAM score, High Score (a Play Score won no place on the table's board)
 
+**Play Score Anomaly Log**:
+The pack's own file, kept through every Pack Update, where a Play whose memory reads oddly for the Play Score rules is written down, never an ordinary one, for the owner to send with a report. Shown as "journal des anomalies des scores de partie" in French.
+_Avoid_: Error Log (an anomaly is no error of the pack)
+
 **Default Score**:
 A score that belongs to no Profile: already on a table's high score board when the pack first read it, or a High Score whose Profile was removed. Shown as "score par défaut" in French.
 _Avoid_: original score (confused with original tables), anonymous score, factory score (not all of them come from the factory)

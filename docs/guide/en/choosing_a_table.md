@@ -59,6 +59,8 @@ Three buttons under the board, one per view, show the view on show in gold; unde
 
 With [vpxtool](install.md#vpxtool) installed, **Household scores** and **Your 5 best scores** count every Play on a ROM table whose memory keeps the last game's score, even one far below the table's Default Scores: the pack reads the score the game ended with from the ROM's `.nv` file, the best of a multiplayer game, and keeps it as a Play Score, shown like a High Score. A game that also entered the table's board shows only once. A game left unfinished, when the table tells it, and a launch without a game give no Play Score. Play Scores count from the update that brought them on; earlier games cannot be recovered. This program makes use of content from the [Pinball Memory Maps](https://github.com/tomlogic/pinball-memory-maps) project.
 
+The rules that read a Play Score were checked on a few kinds of tables only, so the pack notes what looks wrong (a game always seen as unfinished, a score that should have entered the board, a ROM vpxtool cannot read…) in `Scripts\ExpansionPack\play_scores_anomalies.log`, one line per oddity, the ordinary games never. Send it (and `play_scores_anomalies.old.log`, its older part, if there is one) with a report about a missing or wrong Play Score.
+
 To read the boards of about 300 more ROMs, update PINemHi (see [Install](install.md#pinemhi-368)).
 
 ## Random Game and filters

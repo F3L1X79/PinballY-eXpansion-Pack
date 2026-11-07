@@ -52,6 +52,10 @@ tools/*
 # The ROM .nv copied at each launch, for its Play Score
 play_scores/
 
+# The Play Score anomaly log: the Play Score rules' oddities, kept across launches
+play_scores_anomalies.log
+play_scores_anomalies.old.log
+
 # Personal sounds, not published (see .env.example)
 assets/sounds/local/
 

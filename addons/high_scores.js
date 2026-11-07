@@ -1,9 +1,9 @@
 // ============================================================
-// High Scores: credits each score that entered a table's board during a Play
-// to the Profile active when it started, whatever initials were typed, and
-// submits a High Score Toast for the best place won. With vpxtool, keeps the
-// Play Score read from the ROM's .nv (copied to play_scores\ at launch), toasting a
-// House Record or Personal Best when no place was won. Adds "High Scores" and "My High Scores" to the main menu.
+// High Scores: credits each score that entered a table's board during a Play to the
+// Profile active when it started, whatever initials were typed, and toasts the best place
+// won. With vpxtool, keeps the Play Score read from the ROM's .nv (copied to play_scores\
+// at launch), toasting a House Record or Personal Best when no place was won; the rules'
+// oddities go to play_scores_anomalies.log. Adds "High Scores" and "My High Scores" to the main menu.
 // - The board is read at "prelaunch" and again a little after "postlaunch".
 // - Without a ROM, the board comes from VPX's User folder, never read while VPX runs.
 // - Replaces PinballY's own "High Scores": removes its entry, cancels HighScores.
@@ -30,7 +30,8 @@ import { displayNameOf } from "../common/profiles/profile_name.js";
 import lang from "../common/core/i18n.js";
 import { getVpxtoolRunner } from "../common/vpxtool/vpxtool_runner.js";
 import { getNvramWatch, nvramFolderOf } from "../common/vpxtool/nvram_watch.js";
-import { readLastGame, playScoreOf } from "../common/high_scores/last_game_reader.js";
+import { readNvramAnswer, lastGameOf, playScoreOf } from "../common/high_scores/last_game_reader.js";
+import { createPlayScoreAnomalyLog, valueAnomaliesOf, ANOMALY } from "../common/high_scores/play_score_anomaly_log.js";
 
 // PinballY's own read after the game returns the board cached at launch
 // (seen on the cabinet): the Add-on reads again a little later, fresh.
@@ -40,6 +41,9 @@ const READ_TIMEOUT_MS = 10000;
 const BOARD_ENTRY = "highScoreBoard";
 // The pack's folder for the .nv copied at launch, one per ROM.
 const PLAY_SCORE_COPY_FOLDER = "play_scores";
+// Unfinished Plays in a row on a ROM that make an anomaly: the sign of a
+// game_over that never turns true.
+const UNFINISHED_PLAYS_IN_A_ROW = 3;
 
 export default function init() {
     const host = createPinballYHost();
@@ -54,6 +58,7 @@ export default function init() {
     // The Play the Profile store announced for the launched table, if any.
     let announcedPlay = null;
     const vpxtool = getVpxtoolRunner();
+    const anomalies = createPlayScoreAnomalyLog(host, SCRIPT_NAME);
     // The last launch, kept past "postlaunch": the NVRAM watch tells it
     // within "postlaunch", before or after this Add-on's own handler.
     let watchedLaunch = null;
@@ -456,15 +461,17 @@ export default function init() {
         return null;
     }
 
-    // The last game vpxtool reads in the .nv: readLastGame()'s answer, or
-    // undefined when vpxtool gave none (logged, as an error unless it has
-    // no map for the ROM).
-    function readLastGameIn(configId, path) {
+    // vpxtool's answer for the .nv (readNvramAnswer()'s), or undefined when
+    // it gave none (logged, as an error unless it has no map for the ROM;
+    // no map and an unreadable answer go to the anomaly log, with the
+    // answer read before, if any).
+    function readAnswerIn(configId, rom, path, answerBefore) {
         return new Promise((resolve) => {
             const giveUp = (why) => {
                 logError(SCRIPT_NAME, `ERROR "${configId}": ${path} not read by vpxtool (${why}); no Play Score.`, host);
                 resolve(undefined);
             };
+            const anomaly = check => anomalies.write({ configId, rom, check, before: answerBefore });
             vpxtool.submit({
                 scriptName: SCRIPT_NAME,
                 args: ["nvram", "show", path],
@@ -473,12 +480,14 @@ export default function init() {
                     // cabinet's 142 .nv): an unsupported table, not an error.
                     if (exitCode !== 0) {
                         log(`"${configId}": vpxtool reads no last game in ${path} (exit code ${exitCode}, no map for this ROM); no Play Score.`);
+                        anomaly(ANOMALY.NO_MAP);
                         resolve(undefined);
                         return;
                     }
                     try {
-                        resolve(readLastGame(output));
+                        resolve(readNvramAnswer(output));
                     } catch (error) {
+                        anomaly(ANOMALY.UNREADABLE_ANSWER);
                         giveUp(messageOf(error));
                     }
                 },
@@ -501,7 +510,8 @@ export default function init() {
     // game changed only the table's own .nv; why not logged otherwise,
     // silently for a launch shorter than a Play. placeWon: the High Score
     // Toast stands for the Play, so its Play Score announces nothing.
-    async function settlePlayScore(bracket, play, placeWon) {
+    // boardAfter: the board places read after the game, or null.
+    async function settlePlayScore(bracket, play, placeWon, boardAfter) {
         const copy = bracket.nvCopy;
         if (copy === null || play === null) return;
         const changed = bracket.nvChanged;
@@ -517,14 +527,24 @@ export default function init() {
             return;
         }
         // One after the other: a vpxtool that fails on the copy is not run again.
-        const before = await readLastGameIn(bracket.configId, copy.copyPath);
+        const before = await readAnswerIn(bracket.configId, copy.rom, copy.copyPath, null);
         if (before === undefined) return;
-        const after = await readLastGameIn(bracket.configId, copy.nvPath);
+        const after = await readAnswerIn(bracket.configId, copy.rom, copy.nvPath, before);
         if (after === undefined) return;
-        const result = playScoreOf(before, after);
+        const anomaly = (check, detail) => anomalies.write({ configId: bracket.configId, rom: copy.rom, check, detail, before, after });
+        for (const { check, detail } of valueAnomaliesOf(before, after)) anomaly(check, detail);
+        const result = playScoreOf(lastGameOf(before.gameState), lastGameOf(after.gameState));
         if (result.none) {
             noPlayScore(result.none);
+            if (!result.unfinished) return;
+            const inARow = highScores.countUnfinishedPlay(copy.rom);
+            if (inARow === UNFINISHED_PLAYS_IN_A_ROW) anomaly(ANOMALY.UNFINISHED_IN_A_ROW, `${inARow} Plays in a row`);
             return;
+        }
+        highScores.clearUnfinishedPlays(copy.rom);
+        const lowestPlace = boardAfter === null || boardAfter.length === 0 ? null : Math.min(...boardAfter.map(place => Number(place.score)));
+        if (!placeWon && lowestPlace !== null && result.score > lowestPlace) {
+            anomaly(ANOMALY.SHOULD_HAVE_ENTERED_BOARD, `Play Score ${result.score}, lowest place ${lowestPlace}`);
         }
         const record = highScores.recordPlayScore(bracket.configId, play, result.score);
         if (record !== null && !placeWon) announceRecord(bracket.configId, record, result.score);
@@ -535,18 +555,18 @@ export default function init() {
     }));
 
     // The board read after the game, settled against the last known one:
-    // resolves to whether the Play won a place.
+    // resolves to { placeWon, places } (the board read, or null).
     async function settleAfterGame(bracket, play) {
         await bracket.launchRead;
         await wait(AFTER_READ_DELAY_MS);
         const places = await readPlaces(bracket.configId, { forget: true });
-        if (places !== null) return settleAndAnnounce(bracket.configId, places, play);
+        if (places !== null) return { placeWon: settleAndAnnounce(bracket.configId, places, play), places };
         try {
             const after = takeSnapshot(bracket.configId, bracket.snapshot);
             const boards = romlessBoards(bracket.configId, bracket.snapshot, after);
-            if (boards === null) return false;
+            if (boards === null) return { placeWon: false, places: null };
             if (boards.before !== null) highScores.recordBoardBeforePlay(bracket.configId, boards.before);
-            return settleAndAnnounce(bracket.configId, boards.after, play);
+            return { placeWon: settleAndAnnounce(bracket.configId, boards.after, play), places: boards.after };
         } finally {
             // The launch made PinballY forget the board: handed again, the
             // last known one when nothing was read.
@@ -572,9 +592,9 @@ export default function init() {
         const release = highScores.holdBoardForPlay(bracket.configId);
         // At most one toast per Play: a board settle that failed (logged)
         // may have won a place, so the Play Score then announces nothing.
-        const settlePlayScoreSafely = placeWon => safeHandler(SCRIPT_NAME, settlePlayScore)(bracket, play, placeWon);
+        const settlePlayScoreSafely = (placeWon, places) => safeHandler(SCRIPT_NAME, settlePlayScore)(bracket, play, placeWon, places);
         safeHandler(SCRIPT_NAME, settleAfterGame)(bracket, play)
-            .then(settlePlayScoreSafely, () => settlePlayScoreSafely(true))
+            .then(({ placeWon, places }) => settlePlayScoreSafely(placeWon, places), () => settlePlayScoreSafely(true, null))
             .then(release, release);
     }));
 }

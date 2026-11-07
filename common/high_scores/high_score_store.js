@@ -3,7 +3,7 @@
 // to cabinet.json. Per table: the last known board with each place's owner,
 // and the learned board source of a table without ROM. Every High Score
 // ever won, and every Play Score. Per Profile: the dates its Achievements and Lost Records count
-// from. Settles each Play against the board read after it.
+// from. Per ROM: its unfinished Plays in a row. Settles each Play against the board read after it.
 // - Saved through the Profile store, so no Profile Reset touches it.
 // - A ROM reset (too many new places, a place gone unbeaten) gives Default Scores.
 // - A board read outside a Play waits until the Play on that table is settled.
@@ -283,6 +283,25 @@ export function createHighScoreStore(host, profileStore) {
             if (tookLead) return { kind: "houseRecord", takenFrom: leaderBefore };
             const personalBest = earlierScores.length > 0 && earlierScores.every(earlier => score > Number(earlier.score));
             return personalBest ? { kind: "personalBest" } : null;
+        },
+        // One more Play on the ROM refused as left unfinished; returns how
+        // many in a row, counted across restarts. The key is written only
+        // then, so a file without such a Play keeps its first shape.
+        countUnfinishedPlay(rom) {
+            if (!isRecord(data.unfinishedInARow)) data.unfinishedInARow = {};
+            const romKey = rom.toLowerCase();
+            const count = (Number(data.unfinishedInARow[romKey]) || 0) + 1;
+            data.unfinishedInARow[romKey] = count;
+            save();
+            return count;
+        },
+        // A Play Score on the ROM starts its count of unfinished Plays again.
+        clearUnfinishedPlays(rom) {
+            const romKey = rom.toLowerCase();
+            if (!isRecord(data.unfinishedInARow) || !(romKey in data.unfinishedInARow)) return;
+            delete data.unfinishedInARow[romKey];
+            if (Object.keys(data.unfinishedInARow).length === 0) delete data.unfinishedInARow;
+            save();
         },
         // What the named Profile's High Score Achievements count, from the
         // High Scores it won since its last Profile Reset: the tables with

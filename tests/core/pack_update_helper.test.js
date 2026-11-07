@@ -55,7 +55,7 @@ test("waits for PinballY after the ready file, then copies each keep-list entry 
     assert.ok(ready < wait && wait < keep && keep < tools && tools < renameOld);
     for (const entry of [
         "'.env.local'", "'quiet_wheel_pending.json'", "'pack_update.json'", "'script_reader.json'", "'errors.log'", "'errors.old.log'",
-        "'profiles'", "'assets\\sounds\\local'", "'assets\\images\\default_scores\\local'",
+        "'play_scores_anomalies.log'", "'play_scores_anomalies.old.log'", "'profiles'", "'assets\\sounds\\local'", "'assets\\images\\default_scores\\local'",
     ]) {
         assert.ok(HELPER.includes(entry), `keeps ${entry}`);
     }
