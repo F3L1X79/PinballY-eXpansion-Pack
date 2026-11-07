@@ -230,7 +230,6 @@
           <a class="chip tr-share" href="#themes"><b></b>Thèmes</a>
           <a class="chip tr-play" href="#feld"><b></b>Feld</a>
           <a class="chip tr-play" href="#screen-animations"><b></b>Animations</a>
-          <a class="chip tr-play" href="#scores-below-board"><b></b>Scores hors tableau</a>
         </div>
 
         <div class="ax row">Faible</div>
@@ -278,31 +277,6 @@
     </div>
 
     <ol class="queue">
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="scores-below-board" data-track="play" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Les scores qui n'entrent pas au tableau</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">gros</span></div>
-          </div>
-          <p>Les Play Scores : lire le score de chaque Play dans la NVRAM des tables avec ROM, pour remplir le Personal Board et le Household Board même sous des Default Scores élevés, avec les toasts Personal Best et House Record.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">research</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/481">#481</a> : d'abord la vérification sur la borne (<a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/482">#482</a>), puis #483 à #488 · Flow Matt : <code>/implement</code>. Les trois vues du High Score Board existent (spec #478). Research : <code>docs/research/scores-below-board.md</code></div>
-          <details>
-            <summary>Décisions du grill (07/11/2026)</summary>
-            <ul>
-              <li>Play Score : le meilleur slot de <code>game_state.scores</code>, lu par <code>vpxtool nvram show</code> (dans la file vpxtool de Table ROMs) sur le <code>.nv</code> qui a changé pendant la Play, crédité au Profile actif même à plusieurs. Sans vpxtool ou sans l'Add-on High Scores : rien, aucun réglage nouveau.</li>
-              <li>Rien d'enregistré : <code>game_over</code> faux (sur SAM, le score partiel est accepté), scores identiques à ceux du <code>prelaunch</code>, aucun ou plusieurs <code>.nv</code> changés. Pas de rattrapage des Plays d'avant la mise à jour. Tables sans ROM : High Scores seulement.</li>
-              <li>Personal Board et Household Board : High Scores et Play Scores, une Play comptée une fois, affichés pareil. Table Record, Lost Record, My High Scores et Achievements inchangés ; une House Record perdue n'est pas annoncée.</li>
-              <li>Toasts, variantes du High Score Toast, un par Play, le plus fort l'emporte (Table Record &gt; place au tableau &gt; House Record &gt; Personal Best) : Personal Best (« Record perso », bat un score précédent du Profile, Guest compris, jamais le premier) et House Record (« Record de la maison », prend la 1<sup>re</sup> place du Household Board à un autre Profile).</li>
-              <li>Spec : un ticket humain bloquant en tête (vpxtool sur les <code>.nv</code> de la borne, vérifications 2 à 5 de la research). Guide en/fr des High Scores : Play Scores, toasts, vpxtool requis, pas de rattrapage, attribution « This program makes use of content from the Pinball Memory Maps project » avec lien.</li>
-            </ul>
-            <p class="ctx">Reportée du grill des trois tableaux de scores du 07/11/2026. Aujourd'hui un Personal Board reste vide sur une table aux Default Scores élevés tant que le Profile ne les bat pas.</p>
-          </details>
-        </div>
-      </li>
 
       <li draggable="true" tabindex="0" class="item tr-play" id="feld" data-track="play" data-rank="platinum">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
@@ -686,9 +660,9 @@
             <summary>Checklist</summary>
             <ul>
               <li>Une partie finie, une partie quittée et un lancement sans partie sur Star Gazer : la réponse de <code>vpxtool nvram show</code> après chacune, à ranger dans <code>docs/research/scores-below-board/</code>.</li>
-              <li>Le journal des anomalies (<a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/488">#488</a>, contrôle « Final scores only ») les relève sans y penser.</li>
+              <li>Chercher <code>stargzr</code> et <code>seawitch</code> dans <code>play_scores_anomalies.log</code> : le contrôle <code>finalScoresOnly</code> y écrit l'état avant → après de chaque partie qui ne donne rien.</li>
             </ul>
-            <p class="ctx">Décidé le 07/11/2026 au bilan de #484 : pas de Play Score sans exemple réel. En fin de file à la demande de Félix.</p>
+            <p class="ctx">Décidé le 07/11/2026 au bilan de #484 : pas de Play Score sans exemple réel. En fin de file à la demande de Félix. Le journal des anomalies des scores de partie existe depuis #488 (une ligne par ROM et par session).</p>
           </details>
         </div>
       </li>
