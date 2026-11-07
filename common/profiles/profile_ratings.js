@@ -7,6 +7,8 @@
 // - The columns are the truth for the active Profile: the pack never hooks the rating dialog.
 // - update() only ever carries rating / isFavorite, and only for a table that differs.
 // - A table no longer in the game list keeps its entry in every file.
+// - A record naming another Profile or a change under way means mixed columns: startup rewrites them.
+// - An unreadable record is never a first run: the copy would overwrite every Profile's values.
 // ============================================================
 
 import { sameName } from "./profile_name_rules.js";
@@ -22,8 +24,8 @@ const isRecord = value => value !== null && typeof value === "object" && !Array.
 // PinballY's -1 means no Rating.
 const NO_RATING = -1;
 const ratingOf = game => (typeof game.rating === "number" && game.rating >= 0 ? game.rating : null);
-// A hand edit may leave anything in the file: only 0 to 5 reaches PinballY.
-const isRating = value => typeof value === "number" && value >= 0 && value <= 5;
+// A hand edit may leave anything in the file: only 0 to 5 in half steps reaches PinballY.
+const isRating = value => typeof value === "number" && value >= 0 && value <= 5 && Number.isInteger(value * 2);
 
 export function createProfileRatings(host, { profileStore }) {
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
@@ -81,9 +83,8 @@ export function createProfileRatings(host, { profileStore }) {
     });
 
     // Marked "under way" first: a crash halfway leaves a record that startup repairs.
-    function moveColumnsTo(profileName, tables) {
-        saveRecord(columnsProfile, { from: columnsProfile, to: profileName });
-        columnsProfile = null;
+    function moveColumnsTo(profileName, tables, fromName) {
+        saveRecord(fromName, { from: fromName, to: profileName });
         putOnColumns(readValues(profileName), tables);
         saveRecord(profileName);
         columnsProfile = profileName;
@@ -93,19 +94,24 @@ export function createProfileRatings(host, { profileStore }) {
     function onSwitch(profile) {
         const tables = host.getAllTables();
         const leftName = columnsProfile;
+        // Cleared first: after a failure below, the columns no longer hold one known
+        // Profile's values, and the next switch must not save them into anyone's file.
+        columnsProfile = null;
         // A Profile renamed away while PinballY runs has no file left to keep its values in.
         if (leftName !== null && profileStore.listProfileNames().some(name => sameName(name, leftName))) {
             keepColumnsIn(leftName, tables);
         }
-        moveColumnsTo(profile.name, tables);
+        moveColumnsTo(profile.name, tables, leftName);
     }
 
     function start() {
         profileStore.onSwitch(onSwitch);
         const activeName = profileStore.getActiveProfile().name;
         const tables = host.getAllTables();
+        // Asked first: reading an unreadable record sets it aside.
+        const wasSaved = profileStore.hasCabinetFile(RECORD_FILE);
         const record = profileStore.readCabinetFile(RECORD_FILE, RECORD_VERSION);
-        if (!record) {
+        if (!record && !wasSaved) {
             // The record last: a crash before it only runs the copy again.
             const profileNames = profileStore.listProfileNames();
             for (const profileName of profileNames) keepColumnsIn(profileName, tables);
@@ -114,12 +120,20 @@ export function createProfileRatings(host, { profileStore }) {
             log(`First run: the cabinet's Ratings and Favorite Tables were given to every Profile (${profileNames.length}).`);
             return;
         }
-        if (typeof record.columnsProfile === "string" && sameName(record.columnsProfile, activeName)) {
+        // An unreadable record (set aside and logged by the store) is never a first run:
+        // the copy would overwrite every Profile's own values.
+        const columnsName = record ? record.columnsProfile : activeName;
+        const isUnderWay = record !== null && record.change !== undefined;
+        if (typeof columnsName === "string" && sameName(columnsName, activeName) && !isUnderWay) {
             keepColumnsIn(activeName, tables);
+            if (!record) saveRecord(activeName);
             columnsProfile = activeName;
             return;
         }
-        log(`PinballY's columns hold the values of "${record.columnsProfile}", not of the active Profile "${activeName}"; left as they are.`);
+        // Two Profiles mixed, or the columns' Profile renamed away: none of it is kept.
+        log(`PinballY's columns are not trusted (they named "${columnsName}"${isUnderWay ? ", a change under way" : ""});`
+            + ` the active Profile "${activeName}"'s values are written to them.`);
+        moveColumnsTo(activeName, tables, typeof columnsName === "string" ? columnsName : null);
     }
 
     return { start };

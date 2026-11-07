@@ -604,6 +604,10 @@ export function createProfileStore(host) {
         // for a newer file to be set aside like the store's own.
         readCabinetFile: (baseName, codeVersion) => loadJson(profilesFolder, baseName, `${baseName}.json`, codeVersion),
         saveCabinetFile: (baseName, data) => saveJson(profilesFolder, baseName, data),
+        // Whether that file or its backup is there, readable or not: asked before
+        // readCabinetFile, it tells a file never saved from one set aside as unreadable.
+        hasCabinetFile: (baseName) => files.fileExists(`${profilesFolder}\\${baseName}.json`)
+            || files.fileExists(`${profilesFolder}\\${baseName}.bak.json`),
         // Another module's file of the named Profile, "<baseName>.json" in its
         // folder, under the same rules; never touched by a Profile Reset.
         readProfileFile: (profileName, baseName, codeVersion) =>
