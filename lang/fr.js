@@ -788,8 +788,8 @@ export default {
             notSupported: "Les meilleurs scores de cette table ne sont pas pris en charge",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Lancez une partie pour faire apparaître les meilleurs scores de cette table",
-            views: { table: "De la ROM", household: "De la maison", personal: "Mes 5 meilleurs" },
-            viewTitles: { table: "Scores de la ROM", household: "Scores de la maison", personal: "Mes 5 meilleurs scores" },
+            views: { table: "Scores de la ROM", household: "Scores de la maison", personal: "Vos 5 meilleurs scores" },
+            viewTitles: { table: "Scores de la ROM", household: "Scores de la maison", personal: "Vos 5 meilleurs scores" },
             viewHelp: {
                 table: "Le tableau que la table garde dans sa propre mémoire, comme une vraie machine : ses scores d'usine et les initiales tapées en fin de partie.",
                 household: "Le meilleur score de chaque joueur de la maison sur cette table, même s'il est depuis sorti des scores de la ROM.",

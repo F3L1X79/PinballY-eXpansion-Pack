@@ -6,7 +6,7 @@
 
 import { STEAMBALL_COLORS as COLORS, STEAMBALL_FONTS as FONTS, RANK_COLORS } from "../drawing/steamball_palette.js";
 import {
-    text, oneLine, fillGradient, drawAvatar, drawAvatarFrame, avatarFrameSide, AVATAR_FRAME_MARGIN, exitTooltipRectOf,
+    text, oneLine, measureWidth, fillGradient, drawAvatar, drawAvatarFrame, avatarFrameSide, AVATAR_FRAME_MARGIN, exitTooltipRectOf,
     drawExitTooltip as drawExitTooltipOn, drawButtonHintsFooter, EXIT_AND_HINTS_METRICS as EXIT_AND_HINTS,
 } from "../drawing/steamball_drawing.js";
 import { ACHIEVEMENT_RANK } from "../achievements/achievements.js";
@@ -53,8 +53,8 @@ const LOOK = Object.freeze({
     sideInset: DRAWN_MENU_FACE_INSET + DRAWN_MENU_LIST_INSET, topInset: DRAWN_MENU_FACE_INSET + 16, bottomInset: DRAWN_MENU_FACE_INSET + 4,
     // The title holds the table's title, then, a little apart, the view's
     // title and two lines on what it shows.
-    titleH: 124, titleLineH: 46, titleSize: 34, minTitleSize: 22, viewTitleGap: 12, viewTitleH: 26, viewTitleSize: 18,
-    helpH: 40, helpSize: 14, noteH: 24, noteSize: 15, titleGap: 4,
+    titleH: 136, titleLineH: 46, titleSize: 34, minTitleSize: 22, viewTitleGap: 12, viewTitleH: 26, viewTitleSize: 18,
+    helpGap: 12, helpH: 40, helpSize: 14, noteH: 24, noteSize: 15, titleGap: 4,
     messageH: 200, messageSize: 26,
     // The podium's steps, the 1st's first: the crown's room, the Avatar,
     // the block under it; the steps stand on the same floor. The crown
@@ -73,11 +73,11 @@ const LOOK = Object.freeze({
     exitButton: EXIT_AND_HINTS.exitButton / CANVAS_ZOOM, exitTooltipRoom: 100, tooltipMargin: EXIT_AND_HINTS.tooltipMargin / CANVAS_ZOOM,
     // The Exit Button's room from the panel's face, in its top right corner.
     exitCorner: 14,
-    // The two view buttons side by side under the board, then the Button
-    // Hints' footer, shorter than the other drawn screens' so a 5-place
-    // board still fits a landscape window.
-    viewButtonsGap: 12, viewButtonH: 44, viewButtonGap: 14, viewButtonSize: 17, minViewButtonSize: 12,
-    footerGap: 8, footerH: 58,
+    // The view buttons side by side under the board, room above and below
+    // them, then the Button Hints' footer, shorter than the other drawn
+    // screens' so a 5-place board still fits a landscape window.
+    viewButtonsGap: 24, viewButtonH: 44, viewButtonGap: 14, viewButtonSize: 17, minViewButtonSize: 10,
+    footerGap: 18, footerH: 58,
 });
 // One button per view, under the board.
 export const VIEW_BUTTONS = 3;
@@ -166,17 +166,28 @@ export function layoutHighScoreBoard(referenceWidth, placeCount, sizedPlaceCount
     return { zoom, origin, panel, title, note, message, steps, crowns, rows, rowsInView, rowPitch, exitButton, exitTooltip, viewButtons, buttonHints };
 }
 
+// The largest size, down to the smallest allowed, at which every label
+// fits a view button w board pixels wide, in canvas pixels: the buttons
+// show their names at one size.
+export function viewButtonLabelSize(host, labels, w) {
+    const room = (w - 2 * LOOK.rowPad) * CANVAS_ZOOM;
+    const fitsAt = size => labels.every(label => measureWidth(host, label, { size, weight: 600, font: FONTS.display }) <= room);
+    let size = LOOK.viewButtonSize * CANVAS_ZOOM;
+    while (size > LOOK.minViewButtonSize * CANVAS_ZOOM && !fitsAt(size)) size--;
+    return size;
+}
+
 // A view's button, w by h board pixels, on its canvas: a tile with the
-// view's name centred; the view on show's (isCurrent) with a gold edge
-// and its name in gold.
-export function drawViewButton(host, dc, label, isCurrent, w, h) {
+// view's name centred at labelSize (viewButtonLabelSize()); the view on
+// show's (isCurrent) with a gold edge and its name in gold.
+export function drawViewButton(host, dc, label, labelSize, isCurrent, w, h) {
     const [cw, ch] = [w * CANVAS_ZOOM, h * CANVAS_ZOOM];
     fillGradient(dc, 0, 0, cw, ch, COLORS.rowUnlocked, COLORS.tile);
     dc.frameRect(0, 0, cw, ch, 1, COLORS.border);
     if (isCurrent) dc.fillRect(0, ch - LOOK.edge * CANVAS_ZOOM, cw, LOOK.edge * CANVAS_ZOOM, COLORS.gold);
     oneLine(host, dc, label, {
         x: LOOK.rowPad * CANVAS_ZOOM, y: 0, width: cw - 2 * LOOK.rowPad * CANVAS_ZOOM, height: ch,
-        size: LOOK.viewButtonSize * CANVAS_ZOOM, minSize: LOOK.minViewButtonSize * CANVAS_ZOOM, weight: 600, font: FONTS.display, align: "center",
+        size: labelSize, weight: 600, font: FONTS.display, align: "center",
         color: isCurrent ? COLORS.gold : COLORS.title,
     });
 }
@@ -237,7 +248,7 @@ export function drawTitle(host, dc, title, viewTitle, help, w, sideRoom) {
     oneLine(host, dc, viewTitle, {
         x: 0, y: viewTitleY, width: w, height: LOOK.viewTitleH, size: LOOK.viewTitleSize, weight: 700, color: COLORS.title, font: FONTS.display, align: "center",
     });
-    text(host, dc, help, { x: 0, y: viewTitleY + LOOK.viewTitleH, width: w, height: LOOK.helpH, size: LOOK.helpSize, weight: 400, color: COLORS.description, align: "center" });
+    text(host, dc, help, { x: 0, y: viewTitleY + LOOK.viewTitleH + LOOK.helpGap, width: w, height: LOOK.helpH, size: LOOK.helpSize, weight: 400, color: COLORS.description, align: "center" });
 }
 
 // A discreet line under the title, over a board shown: "Reading...", or

@@ -20,7 +20,7 @@ test("with Guest active, the Personal Board is Guest's", async () => {
         fake.advanceTime(1000);
         await settle();
         showView(fake, lang, "personal");
-        assert.equal(viewName(fake), "My 5 best scores");
+        assert.equal(viewName(fake), "Your 5 best scores");
     };
     setBoard(MEDIEVAL, FACTORY);
     await openPersonal();

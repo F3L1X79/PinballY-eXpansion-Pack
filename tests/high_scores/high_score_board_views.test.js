@@ -33,7 +33,7 @@ test("three buttons turn the High Score Board's views, the first selected on ope
     assert.equal(viewName(fake), "ROM scores");
     assert.equal(viewHelp(fake), TEXT.viewHelp.table, "what the view shows, under its title");
     assert.equal(podium(fake, lang).middle.initials, "SLL");
-    assert.deepEqual(viewButtons(fake), ["From the ROM", "From the household", "My best 5"]);
+    assert.deepEqual(viewButtons(fake), ["ROM scores", "Household scores", "Your 5 best scores"]);
     assert.equal(currentViewButton(fake), TEXT.views.table);
     assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { flippers: "browse", select: true, exit: "back" }));
     assert.deepEqual(marked(fake, lang), { view: TEXT.views.table }, "opens on the leftmost button");
@@ -71,7 +71,7 @@ test("three buttons turn the High Score Board's views, the first selected on ope
 
     press(fake, "Next");
     press(fake, "Launch");
-    assert.equal(viewName(fake), "My 5 best scores", "Launch turns the view too");
+    assert.equal(viewName(fake), "Your 5 best scores", "Launch turns the view too");
     assert.equal(panelHeight(fake), tableHeight);
 
     press(fake, "Prev");

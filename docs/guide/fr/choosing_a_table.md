@@ -52,9 +52,9 @@ Quand vous entrez au tableau des meilleurs scores d'une table, la place est à v
 
 Trois boutons sous le tableau, un par vue, montrent en doré la vue affichée ; sous le titre de la table, le titre de la vue dit en une ou deux lignes ce qu'elle montre, et chaque vue garde la même taille. Le tableau s'ouvre sur son premier bouton ; les flippers passent d'un bouton au suivant, puis au bouton Retour ; Select (ou Launch) ouvre la vue du bouton choisi, ou ferme le tableau sur le bouton Retour ; Exit le ferme depuis chaque vue :
 
-- **De la ROM** (*Scores de la ROM*) : le tableau de la table, comme ci-dessus, où commence chaque ouverture ;
-- **De la maison** (*Scores de la maison*) : chaque Profil de la maison (sans Invité, enfants compris) une fois, avec son meilleur score sur cette table, même un score depuis sorti du tableau de la table, et la date de cette partie ; quand un Profil repart de zéro, seuls ses meilleurs scores gagnés depuis comptent ;
-- **Mes 5 meilleurs** (*Mes 5 meilleurs scores*) : les cinq meilleurs scores du Profil qui joue en ce moment sur cette table (Invité compris), même ceux sortis du tableau de la table et chacun de ceux d'une partie à plusieurs, avec la date de chaque partie ; quand le Profil repart de zéro, seuls ceux gagnés depuis.
+- **Scores de la ROM** : le tableau de la table, comme ci-dessus, où commence chaque ouverture ;
+- **Scores de la maison** : chaque Profil de la maison (sans Invité, enfants compris) une fois, avec son meilleur score sur cette table, même un score depuis sorti du tableau de la table, et la date de cette partie ; quand un Profil repart de zéro, seuls ses meilleurs scores gagnés depuis comptent ;
+- **Vos 5 meilleurs scores** : les cinq meilleurs scores du Profil qui joue en ce moment sur cette table (Invité compris), même ceux sortis du tableau de la table et chacun de ceux d'une partie à plusieurs, avec la date de chaque partie ; quand le Profil repart de zéro, seuls ceux gagnés depuis.
 
 Pour lire les tableaux d'environ 300 ROM de plus, mettez PINemHi à jour (voir [Installation](install.md#pinemhi-368)).
 

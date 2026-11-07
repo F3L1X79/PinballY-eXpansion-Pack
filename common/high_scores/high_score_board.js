@@ -25,7 +25,7 @@ import { readDefaultScoreImages, pickDefaultScoreImages } from "./default_score_
 import {
     HIGH_SCORE_BOARD_Z_INDEX as Z_INDEX, HIGH_SCORE_BOARD_CROWN_Z_INDEX, HIGH_SCORE_BOARD_LOADER_Z_INDEX, CROWN_IMAGES, CROWN_CANVAS, REFERENCE_HEIGHT, PODIUM_PLACES, AVATAR_FRAME_WIDTH, CANVAS_ZOOM,
     layoutHighScoreBoard, placedRect, drawBackdrop, drawPanel, drawGlass, drawCrown, drawTitle, drawNote, drawMessage, drawStep, drawRow, drawExitTooltip, drawButtonHints,
-    drawViewButton,
+    drawViewButton, viewButtonLabelSize,
 } from "./high_score_board_painter.js";
 
 const TRANSPARENT = 0x00000000;
@@ -242,8 +242,10 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         const { exitLook } = opened;
         const hints = buttonHintGroupsOf({ flippers: FLIPPER_HINT.BROWSE, select: true, exitLook });
         finePiece(Z_INDEX.buttonHints, geometry.buttonHints, dc => drawButtonHints(host, dc, hints, geometry.buttonHints.w, geometry.buttonHints.h));
+        const labels = VIEWS.map(name => TEXT.views[name]);
+        const labelSize = viewButtonLabelSize(host, labels, geometry.viewButtons[0].w);
         geometry.viewButtons.forEach((rect, index) => {
-            finePiece(Z_INDEX.viewButtons, rect, dc => drawViewButton(host, dc, TEXT.views[VIEWS[index]], index === opened.view, rect.w, rect.h));
+            finePiece(Z_INDEX.viewButtons, rect, dc => drawViewButton(host, dc, labels[index], labelSize, index === opened.view, rect.w, rect.h));
         });
         // At its default size: the board's Exit Button, CANVAS_ZOOM times.
         finePiece(Z_INDEX.exitButton, geometry.exitButton, dc => drawExitButton(dc, exitLook));

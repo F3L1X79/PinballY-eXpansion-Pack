@@ -37,7 +37,7 @@ test("the Personal Board shows the active Profile's five best High Scores on the
     fake.advanceTime(1000);
     await settle();
     showView(fake, lang, "personal");
-    assert.equal(viewName(fake), "My 5 best scores");
+    assert.equal(viewName(fake), "Your 5 best scores");
     assert.equal(currentViewButton(fake), VIEWS.personal);
     assert.equal(message(fake), null);
     const alice = (rank, score, date) => ({ rank, name: "Alice", avatar: avatarOf("Alice"), score, date });

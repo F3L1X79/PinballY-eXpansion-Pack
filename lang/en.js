@@ -697,8 +697,8 @@ export default {
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Play a game to bring up this table's high scores",
             // The views' buttons, then each view's title and what it shows, under the table's title.
-            views: { table: "From the ROM", household: "From the household", personal: "My best 5" },
-            viewTitles: { table: "ROM scores", household: "Household scores", personal: "My 5 best scores" },
+            views: { table: "ROM scores", household: "Household scores", personal: "Your 5 best scores" },
+            viewTitles: { table: "ROM scores", household: "Household scores", personal: "Your 5 best scores" },
             viewHelp: {
                 table: "The board the table keeps in its own memory, as on a real machine: its factory scores and the initials typed after a game.",
                 household: "Each household player's best score on this table, even one since pushed off the ROM scores.",

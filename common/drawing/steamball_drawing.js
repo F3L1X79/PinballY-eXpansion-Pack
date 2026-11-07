@@ -23,6 +23,13 @@ export function addStyledText(styled, str) {
     for (const run of Array.isArray(str) ? str : [str]) styled.add(run);
 }
 
+// The width of str on one line, in whole pixels.
+export function measureWidth(host, str, { size, weight, font = FONTS.body }) {
+    const styled = host.createStyledText({ textAlign: "left", textStyle: { font, size, weight, color: COLORS.title } });
+    styled.add(str);
+    return Math.ceil(styled.measure(UNBOUNDED).width);
+}
+
 export function text(host, dc, str, { x, y, width, height, size, weight = 400, color = COLORS.title, font = FONTS.body, align = "left" }) {
     const styled = host.createStyledText({ textAlign: align, textStyle: { font, size, weight, color } });
     addStyledText(styled, str);

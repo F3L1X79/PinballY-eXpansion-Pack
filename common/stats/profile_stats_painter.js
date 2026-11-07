@@ -11,7 +11,7 @@ import { metalOf, tierMetalOf, tierOf, mix, MAX_MASTERY_LEVEL } from "../mastery
 import {
     text, oneLine, fillGradient, fillRounded, glow, drawAvatar, drawAvatarFrame, avatarFrameSide, avatarFrameInset, drawExitButton, exitTooltipRectOf, drawExitTooltip,
     drawButtonHintsBand, buttonHintsFooterRectOf, EXIT_AND_HINTS_METRICS as EXIT_AND_HINTS, drawBackdrop as drawPanelBackdrop, drawWheelLogo,
-    UNBOUNDED,
+    measureWidth,
 } from "../drawing/steamball_drawing.js";
 import { drawMasterySquare, masterySquareSize } from "../mastery/mastery_square.js";
 
@@ -80,11 +80,6 @@ const LOOK = Object.freeze({
 
 // ---------- Layout ----------
 
-function measureWidth(host, str, { size, weight, font = FONTS.body }) {
-    const styled = host.createStyledText({ textAlign: "left", textStyle: { font, size, weight, color: COLORS.title } });
-    styled.add(str);
-    return Math.ceil(styled.measure(UNBOUNDED).width);
-}
 
 const pillWidth = (host, str, maxW = Infinity) => Math.min(maxW, measureWidth(host, str, { size: LOOK.pill.size, weight: LOOK.pill.weight }) + 2 * LOOK.pill.padX);
 

@@ -44,7 +44,7 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 
 ## Installation
 
-Nécessite **Windows** et **PinballY 1.1.0 Beta 10** ou plus récent (plus la fonctionnalité facultative *Lecteur Windows Media* pour les sons, déjà présente sur Windows 10 et 11). Pas besoin de git.
+Nécessite **Windows** et **PinballY 1.1.0 Beta 10** (plus la fonctionnalité facultative *Lecteur Windows Media* pour les sons, déjà présente sur Windows 10 et 11). Pas besoin de git.
 
 1. **Téléchargez `ExpansionPack.zip`** depuis la dernière version publiée : https://github.com/F3L1X79/PinballY-Expansion-Pack/releases/latest (et non « Source code (zip) », dont le dossier n'est pas trouvé par le pack).
 2. **Extrayez-le dans `PinballY\Scripts`** : vous devez obtenir `PinballY\Scripts\ExpansionPack\main.js`, et non `ExpansionPack\ExpansionPack\main.js`.
@@ -74,4 +74,4 @@ Pour PINemHi 3.6.8, `.env.local` et l'installation avec git : voir la [page d'in
 - **[react-confetti](https://github.com/alampros/react-confetti)**, d'Aaron Lampros (MIT), et **[canvas-confetti](https://github.com/catdad/canvas-confetti)**, de Kiril Vatev (ISC) : la pluie de confettis reprend leurs tailles, vitesses, courbe d'animation et couleurs.
 - **Sons** de [Freesound](https://freesound.org) (CC0) : auteurs listés dans [assets/sounds/CREDITS.md](assets/sounds/CREDITS.md).
 - **[vpxtool](https://github.com/francisdb/vpxtool)**, de Francis De Brabandere (Apache-2.0) : remplit la ROM de chaque table. Téléchargé par la borne depuis les versions de son auteur, une fois que le propriétaire l'accepte.
-- **PINemHi**, de Dna Disturber : fourni avec PinballY avec la permission de son auteur. Non fourni avec le pack.
+- **[PINemHi](https://www.pinemhi.com/)** , de Dna Disturber : fourni avec PinballY avec la permission de son auteur. Non fourni avec le pack.

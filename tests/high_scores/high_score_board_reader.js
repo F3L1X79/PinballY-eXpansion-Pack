@@ -8,7 +8,7 @@
 
 import { HIGH_SCORE_BOARD_Z_INDEX, HIGH_SCORE_BOARD_CROWN_Z_INDEX } from "../../common/high_scores/high_score_board_painter.js";
 import { shownFrame, isFrameImage } from "../avatar_frames/avatar_frame_reader.js";
-import { buttonHintsOn, exitButtonTooltipOn } from "../support/button_hints_reader.js";
+import { buttonHintsOn, exitButtonTooltipOn, textsInsideLayer } from "../support/button_hints_reader.js";
 import { shownLayers } from "../support/shown_layers.js";
 import * as selectionMarker from "../support/selection_marker_reader.js";
 import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
@@ -205,6 +205,14 @@ const viewButtonLayers = fake => shownLayers(fake, HIGH_SCORE_BOARD_Z_INDEX.view
 
 // The view buttons' names, left to right.
 export const viewButtons = fake => viewButtonLayers(fake).map(layer => layer.texts()[0]);
+
+// The view buttons' labels as drawn: { sizes (each one's font size), inside
+// (whether every label stays within its button) }.
+export function viewButtonLabels(fake) {
+    const layers = viewButtonLayers(fake);
+    const strokes = layers.map(layer => layer.strokes().find(stroke => "text" in stroke));
+    return { sizes: strokes.map(stroke => stroke.size), inside: layers.every(layer => textsInsideLayer(layer)) };
+}
 
 // The name on the view buttons drawn as the view on show's: gold, over a gold edge.
 export function currentViewButton(fake) {

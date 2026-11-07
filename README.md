@@ -44,7 +44,7 @@ An unofficial extension of [PinballY](http://mjrnet.org/pinscape/PinballY.php) t
 
 ## Install
 
-Requires **Windows** and **PinballY 1.1.0 Beta 10** or later (plus the *Windows Media Player* optional feature for the sounds, already there on Windows 10 and 11). No git needed.
+Requires **Windows** and **PinballY 1.1.0 Beta 10** (plus the *Windows Media Player* optional feature for the sounds, already there on Windows 10 and 11). No git needed.
 
 1. **Download `ExpansionPack.zip`** from the latest release: https://github.com/F3L1X79/PinballY-Expansion-Pack/releases/latest (not "Source code (zip)", whose folder isn't found by the pack).
 2. **Extract it into `PinballY\Scripts`**: you should get `PinballY\Scripts\ExpansionPack\main.js`, not `ExpansionPack\ExpansionPack\main.js`.
