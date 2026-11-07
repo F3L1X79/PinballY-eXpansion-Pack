@@ -84,6 +84,8 @@ export function createHighScoreStore(host, profileStore) {
     const countedHighScoresOn = configId => countedOn(data.highScores, configId);
     // A file without the list has no Play Score.
     const countedPlayScoresOn = configId => countedOn(Array.isArray(data.playScores) ? data.playScores : [], configId);
+    // What the Household and Personal Boards rank: High Scores and Play Scores together.
+    const countedScoresOn = configId => [...countedHighScoresOn(configId), ...countedPlayScoresOn(configId)];
     const profileExists = name => profileStore.listProfileNames().some(candidate => profileKeyOf(candidate) === profileKeyOf(name));
     // Called with the Profile's name after a Play credited it High Scores.
     const creditedListeners = [];
@@ -311,17 +313,17 @@ export function createHighScoreStore(host, profileStore) {
             return known.map(({ rank, initials, score, owner }) => ({ rank, initials, score, owner: profileNamed(owner, profiles) }));
         },
         // The Household Board of the table: for each Household Profile
-        // (Guest left out, Child Profiles in), its best High Score there
-        // won since its last Profile Reset, best first, the older first on
-        // equal scores: { rank, score, date, owner }, the owner the Profile
-        // store's Profile. A removed Profile's High Scores are skipped,
+        // (Guest left out, Child Profiles in), its best High Score or Play
+        // Score there since its last Profile Reset, best first, the older
+        // first on equal scores: { rank, score, date, owner }, the owner the
+        // Profile store's Profile. A removed Profile's scores are skipped,
         // nothing rewritten: a Profile re-created under its name gets them back.
         householdBoardOf(configId) {
             const bestByProfile = new Map();
-            for (const highScore of countedHighScoresOn(configId)) {
-                const profileKey = profileKeyOf(highScore.profile);
+            for (const score of countedScoresOn(configId)) {
+                const profileKey = profileKeyOf(score.profile);
                 const best = bestByProfile.get(profileKey);
-                if (!best || ranksBefore(highScore, best)) bestByProfile.set(profileKey, highScore);
+                if (!best || ranksBefore(score, best)) bestByProfile.set(profileKey, score);
             }
             return rankedPlaces(profileStore.listProfiles()
                 .filter(profile => !profile.isGuest && bestByProfile.has(profileKeyOf(profile.name)))
@@ -337,7 +339,7 @@ export function createHighScoreStore(host, profileStore) {
             if (!owner) return [];
             const profileKey = profileKeyOf(profileName);
             // rankedPlaces() takes a Play Score as it takes a High Score.
-            return rankedPlaces([...countedHighScoresOn(configId), ...countedPlayScoresOn(configId)]
+            return rankedPlaces(countedScoresOn(configId)
                 .filter(score => profileKeyOf(score.profile) === profileKey)
                 .map(score => ({ highScore: score, owner }))).slice(0, PERSONAL_BOARD_PLACES);
         },

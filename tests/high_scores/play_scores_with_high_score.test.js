@@ -1,8 +1,8 @@
 // ============================================================
 // Play Scores, through main.js on the fake PinballY globals with vpxtool
 // installed: a Play that also enters the table's board shows once on the
-// Personal Board, and Play Scores leave the Table Board, the Household
-// Board, My High Scores, Table Records and Achievements as they were.
+// Personal and Household Boards, and Play Scores leave the Table Board,
+// My High Scores, Table Records and Achievements as they were.
 // ============================================================
 
 import { test } from "node:test";
@@ -11,7 +11,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, board, FACTORY, MEDIEVAL, VPX_TABLES, lastGame, highScoreIds } from "./high_scores_scenario.js";
 import { getHighScoreStore } from "../../common/high_scores/high_score_store.js";
 
-test("a Play that enters the board shows once; Play Scores count nowhere else", async () => {
+test("a Play that enters the board shows once; Play Scores count nowhere but the Personal and Household Boards", async () => {
     const { fake, setBoard, play, personalBoard, notified, showEveryToast } = await startHighScores({
         addOns: ["highScores", "achievementsEngine"], profiles: { Alice: {} }, active: "Alice", tables: VPX_TABLES,
         vpxtool: true, nvFiles: { mm_109c: lastGame([2500000, 0, 0, 0]) },
@@ -20,7 +20,6 @@ test("a Play that enters the board shows once; Play Scores count nowhere else", 
 
     await play(MEDIEVAL, { after: FACTORY, nvAfter: { mm_109c: lastGame([3125000, 0, 0, 0]) } });
     const highScores = getHighScoreStore();
-    assert.deepEqual(highScores.householdBoardOf(MEDIEVAL), [], "the Household Board keeps to High Scores");
     assert.deepEqual(highScores.heldBy("Alice"), { highScores: 0, tableRecords: 0 });
     assert.deepEqual(highScores.placesHeldBy("Alice"), []);
     assert.deepEqual(highScores.achievementCountsOf("Alice"), { highScoreTables: 0, tableRecordTables: 0, tookTableRecord: false, tookGrownUpTableRecord: false });
@@ -33,6 +32,6 @@ test("a Play that enters the board shows once; Play Scores count nowhere else", 
         nvAfter: { mm_109c: lastGame([45000000, 0, 0, 0]) },
     });
     assert.deepEqual((await personalBoard(MEDIEVAL, "Alice")).map(place => place.score), [45000000, 3125000]);
-    assert.deepEqual(highScores.householdBoardOf(MEDIEVAL).map(place => place.score), [45000000]);
+    assert.deepEqual(highScores.householdBoardOf(MEDIEVAL).map(place => place.score), [45000000], "once on the Household Board too");
     assertNoErrorLogged(fake);
 });

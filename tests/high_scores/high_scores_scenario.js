@@ -217,6 +217,11 @@ export async function startHighScores({
             const { getHighScoreStore } = await import("../../common/high_scores/high_score_store.js");
             return getHighScoreStore().personalBoardOf(configId, name).map(({ rank, score, date }) => ({ rank, score, date }));
         },
+        // The table's Household Board as the High Score Board gets it: [name, score].
+        householdBoard: async (configId) => {
+            const { getHighScoreStore } = await import("../../common/high_scores/high_score_store.js");
+            return getHighScoreStore().householdBoardOf(configId).map(({ owner, score }) => [owner.name, score]);
+        },
         // The User folder's text files from now on ({ name: text }).
         setUserFiles: (texts) => {
             for (const [name, text] of Object.entries(texts)) fake.addFile(userFileOf(name), text);
