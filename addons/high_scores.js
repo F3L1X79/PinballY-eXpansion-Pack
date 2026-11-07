@@ -449,7 +449,8 @@ export default function init() {
     }
 
     // The last game vpxtool reads in the .nv: readLastGame()'s answer, or
-    // undefined when vpxtool gave none (logged as an error).
+    // undefined when vpxtool gave none (logged, as an error unless it has
+    // no map for the ROM).
     function readLastGameIn(configId, path) {
         return new Promise((resolve) => {
             const giveUp = (why) => {
@@ -460,8 +461,11 @@ export default function init() {
                 scriptName: SCRIPT_NAME,
                 args: ["nvram", "show", path],
                 apply: ({ exitCode, output }) => {
+                    // vpxtool's answer for a ROM it has no map of (31 of the
+                    // cabinet's 142 .nv): an unsupported table, not an error.
                     if (exitCode !== 0) {
-                        giveUp(`exit code ${exitCode}`);
+                        log(`"${configId}": vpxtool reads no last game in ${path} (exit code ${exitCode}, no map for this ROM); no Play Score.`);
+                        resolve(undefined);
                         return;
                     }
                     try {

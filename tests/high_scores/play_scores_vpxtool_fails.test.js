@@ -1,7 +1,7 @@
 // ============================================================
 // Play Scores, through main.js on the fake PinballY globals: vpxtool
-// fails, then never answers, then answers garbage. Each is logged as an
-// error with the table, and every Play keeps the High Score it won.
+// has no map for the ROM (logged, no error), then never answers, then
+// answers garbage (errors with the table). Every Play keeps its High Score.
 // ============================================================
 
 import { test } from "node:test";
@@ -11,8 +11,8 @@ import { errorLines } from "../support/error_log.js";
 import { startHighScores, board, FACTORY, MEDIEVAL, VPX_TABLES, VPXTOOL, PLAY_SCORE_COPY_FOLDER, lastGame } from "./high_scores_scenario.js";
 import { VPXTOOL_RUN_TIMEOUT_MS } from "../../common/vpxtool/vpxtool_runner.js";
 
-test("a vpxtool failure, timeout or garbage is logged, and the High Scores are credited", async () => {
-    const { fake, setBoard, play, personalBoard } = await startHighScores({
+test("a ROM without map is logged, a timeout or garbage is an error, and the High Scores are credited", async () => {
+    const { fake, setBoard, play, personalBoard, log } = await startHighScores({
         profiles: { Alice: {} }, active: "Alice", tables: VPX_TABLES,
         vpxtool: true, nvFiles: { mm_109c: lastGame([2500000, 0, 0, 0]) },
     });
@@ -34,8 +34,8 @@ test("a vpxtool failure, timeout or garbage is logged, and the High Scores are c
 
     assert.deepEqual((await personalBoard(MEDIEVAL, "Alice")).map(place => place.score), [48000000, 47000000, 45000000]);
     const copy = `${PLAY_SCORE_COPY_FOLDER}\\mm_109c.nv`;
+    assert.ok(log().includes(`[HighScores] "${MEDIEVAL}": vpxtool reads no last game in ${copy} (exit code 1, no map for this ROM); no Play Score.`));
     assert.deepEqual(errorLines(fake), [
-        `[HighScores] ERROR "${MEDIEVAL}": ${copy} not read by vpxtool (exit code 1); no Play Score.`,
         `[HighScores] ERROR "${MEDIEVAL}": ${copy} not read by vpxtool (no answer from vpxtool within 60 s); no Play Score.`,
         `[HighScores] ERROR "${MEDIEVAL}": ${copy} not read by vpxtool (no JSON in vpxtool's answer ("thread 'main' panicked")); no Play Score.`,
     ]);
