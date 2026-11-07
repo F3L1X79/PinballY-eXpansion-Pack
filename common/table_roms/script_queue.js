@@ -1,17 +1,15 @@
 // ============================================================
-// Script reading queue of the Table ROMs Add-on: runs tools\vpxtool.exe
-// hidden, first for its --version, then on each VPX table whose script needs
-// reading, one at a time, polling for the answer so PinballY never waits.
+// Script reading queue of the Table ROMs Add-on: submits to the shared
+// vpxtool runner first vpxtool's --version, then each VPX table whose
+// script needs reading, and records the ROM each answer names.
 // - A failure is logged, not recorded: the table is read again next startup.
-// - No run starts from "prelaunch" until back on the wheel, nor while a Script Reader install holds it.
 // ============================================================
 
-import { safeHandler, logHandlerError } from "../core/safe_handler.js";
 import { logError } from "../core/error_log.js";
+import { createVpxtoolRunner, VPXTOOL_RUN_TIMEOUT_MS } from "../vpxtool/vpxtool_runner.js";
 import { SCRIPT_NAME } from "./table_rom_record.js";
 
-export const SCRIPT_READ_TIMEOUT_MS = 60 * 1000;
-const POLL_MS = 500;
+export const SCRIPT_READ_TIMEOUT_MS = VPXTOOL_RUN_TIMEOUT_MS;
 // Letters, digits and underscores only: anything else is not a ROM name.
 const ROM_NAME = /^[A-Za-z0-9_]+$/;
 
@@ -25,12 +23,11 @@ export function readRomOutput(output) {
     return ROM_NAME.test(lastLine) ? { rom: lastLine } : { unreadable: lastLine };
 }
 
-// isHeld: true while no run may start (a Script Reader install swapping
-// vpxtool); version: what hears the --version run's answer
-// (common/table_roms/script_reader_state.js).
-export function createScriptQueue(host, record, { isHeld = () => false, version = null } = {}) {
-    const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
-    const vpxtoolPath = `${host.getProjectFolder()}\\tools\\vpxtool.exe`;
+// version: what hears the --version run's answer
+// (common/table_roms/script_reader_state.js); runner: the shared vpxtool
+// runner (common/vpxtool/vpxtool_runner.js); its own one by default, for a
+// queue made alone on a host.
+export function createScriptQueue(host, record, { version = null, runner = createVpxtoolRunner(host) } = {}) {
     // vpxtool reads the script from the .vbs beside the .vpx when there is one.
     const fileStateOf = vpxPath => ({
         vpx: host.files.getFileInfo(vpxPath),
@@ -63,105 +60,26 @@ export function createScriptQueue(host, record, { isHeld = () => false, version 
         record.applyScriptRead(table.configId, table.state, answer.rom);
     }
 
-    // Each run of the queue: vpxtool's arguments, what its answer does, and
-    // what a run with no answer in time does.
     const tableRun = table => ({
-        args: ["romname", table.path], apply: result => applyAnswer(table, result), fail: reason => logFailure(table, reason),
+        scriptName: SCRIPT_NAME, args: ["romname", table.path], apply: result => applyAnswer(table, result), fail: reason => logFailure(table, reason),
     });
     const versionRuns = version
-        ? [{ args: ["--version"], apply: version.applyVersionAnswer, fail: version.versionUnreadable }]
+        ? [{ scriptName: SCRIPT_NAME, args: ["--version"], apply: version.applyVersionAnswer, fail: version.versionUnreadable }]
         : [];
-
-    // True from a table's launch until PinballY is back on the wheel.
-    let gameUnderWay = false;
-    // The tables left when the next one waits for the game to end or the hold to lift.
-    let waitingTables = null;
-    // The run in progress: { startMs }, its time limit counted from startMs.
-    let currentRun = null;
     let started = false;
-
-    function readNext(queue) {
-        currentRun = null;
-        if (gameUnderWay || isHeld()) {
-            waitingTables = queue;
-            return;
-        }
-        const job = queue.shift();
-        if (!job) return;
-        // A run that cannot even start would fail for every table: the
-        // queue stops, to start over at the next startup.
-        const run = host.runHiddenProgram(vpxtoolPath, job.args);
-        const thisRun = { startMs: host.now().getTime() };
-        currentRun = thisRun;
-
-        // Fires every POLL_MS until vpxtool answers or the time is up, which
-        // never comes during a game. A vpxtool that never answers is left
-        // running: the next table starts.
-        const poll = safeHandler(SCRIPT_NAME, () => {
-            // One table's trouble never stops the others.
-            try {
-                const result = run.result();
-                if (result === null && (gameUnderWay || host.now().getTime() - thisRun.startMs < SCRIPT_READ_TIMEOUT_MS)) {
-                    host.setTimeout(poll, POLL_MS);
-                    return;
-                }
-                if (result === null) job.fail(`no answer from vpxtool within ${SCRIPT_READ_TIMEOUT_MS / 1000} s`);
-                else job.apply(result);
-            } catch (error) {
-                logHandlerError(SCRIPT_NAME, error);
-            }
-            readNext(queue);
-        });
-        host.setTimeout(poll, POLL_MS);
-    }
-
-    function resume() {
-        const queue = waitingTables;
-        waitingTables = null;
-        if (queue) readNext(queue);
-    }
-
-    function endGame() {
-        if (!gameUnderWay) return;
-        gameUnderWay = false;
-        // The game slowed the run in progress: it gets its full time again.
-        if (currentRun) currentRun.startMs = host.now().getTime();
-        resume();
-    }
-
-    host.on("prelaunch", safeHandler(SCRIPT_NAME, () => {
-        gameUnderWay = true;
-        // A tick later, a launch another script cancelled shows no runMode:
-        // PinballY stayed on the wheel and fires no other launch event.
-        host.setTimeout(safeHandler(SCRIPT_NAME, () => {
-            if (host.getFullUIMode().runMode === undefined) endGame();
-        }), 0);
-    }));
-    // Pauses again should PinballY report the launch only after that tick.
-    host.on("gamestarted", safeHandler(SCRIPT_NAME, () => { gameUnderWay = true; }));
-    // A failed launch fires "launcherror" instead of the game's events.
-    for (const eventName of ["postlaunch", "launcherror"]) host.on(eventName, safeHandler(SCRIPT_NAME, endGame));
-    // Fires on every return to the wheel, also after a menu opened during a game.
-    host.on("wheelmode", safeHandler(SCRIPT_NAME, () => {
-        if (host.getFullUIMode().runMode === undefined) endGame();
-    }));
 
     return {
         // True when vpxtool is in the tools folder; logs the error otherwise.
         findVpxtool: () => {
-            if (host.files.fileExists(vpxtoolPath)) return true;
-            logError(SCRIPT_NAME, `ERROR vpxtool not found at ${vpxtoolPath}; the table scripts are not read.`, host);
+            if (runner.hasVpxtool()) return true;
+            logError(SCRIPT_NAME, `ERROR vpxtool not found at ${runner.vpxtoolPath}; the table scripts are not read.`, host);
             return false;
         },
         // Once per start of PinballY: a second call does nothing.
         start: () => {
             if (started) return;
             started = true;
-            readNext([...versionRuns, ...tablesToRead().map(tableRun)]);
+            for (const job of [...versionRuns, ...tablesToRead().map(tableRun)]) runner.submit(job);
         },
-        // Goes on with the tables left once the hold has lifted.
-        resume,
-        // True while a vpxtool run waits for its answer.
-        isBusy: () => currentRun !== null,
     };
 }
