@@ -246,6 +246,7 @@
           <a class="chip tr-share" href="#stats-api"><b></b>API des stats</a>
           <a class="chip tr-share" href="#theme-editor"><b></b>Éditeur de palette</a>
           <a class="chip tr-share" href="#discord-table-image"><b></b>Image de table Discord</a>
+          <a class="chip tr-profiles" href="#stats-drawn-ahead"><b></b>Stats dessinées d'avance</a>
         </div>
       </div>
       <div class="legend">
@@ -665,6 +666,28 @@
               <li>Question ouverte : si le pack doit exiger cette version, relever le minimum et empêcher la Pack Update sur un PinballY trop ancien ? Il faudrait un champ dans chaque release et un lecteur livré avant le premier relèvement.</li>
             </ul>
             <p class="ctx">Décidé le 03/11/2026 au grill de « Se préparer à la prochaine version de PinballY » : rien n'exige ce blocage aujourd'hui. En fin de file à la demande de Félix, car l'entrée dort jusqu'à la prochaine version.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-profiles" id="stats-drawn-ahead" data-track="profiles" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Household Stats et Profile Stats dessinées d'avance</h3>
+            <div class="tags"><span class="tag track">Profiles</span><span class="tag">gros</span><span class="tag">perf</span></div>
+          </div>
+          <p>Dessiner d'avance les calques des Household Stats et des Profile Stats du Profile actif, et les garder entre deux ouvertures, comme l'Achievement List : l'ouverture passerait d'environ 500 ms à environ 100 à 150 ms, sans Loader.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="here">tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : rouvrir #461 puis #462 → <code>/implement</code>. Sur le dessin d'avance partagé et les placed layers (livrés)</div>
+          <details>
+            <summary>Mesures et question ouverte</summary>
+            <ul>
+              <li>Mesuré branché le 07/11/2026 : Household Stats ouvertes en 503 à 536 ms (dessin 355 à 366 ms), Profile Stats en 570 ms (dessin 332 ms). Les chiffres des tickets avaient été pris en mode basse performance.</li>
+              <li>La liste de ce qui oblige à redessiner (écriture du Profile actif, partie, nouveau jour, High Scores, taille de la fenêtre…) est le risque : une valeur périmée à l'écran.</li>
+            </ul>
+            <p class="ctx">#461 et #462 fermés le 07/11/2026 par Félix : une demi-seconde d'ouverture reste acceptable. En fin de file à sa demande.</p>
           </details>
         </div>
       </li>

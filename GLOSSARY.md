@@ -96,6 +96,10 @@ _Avoid_: popup (a popup shows information without waiting), alert, message box
 The star rating a Profile gives a table; each Profile has its own. Shown as "note" in French.
 _Avoid_: score, stars
 
+**Household Rating**:
+The average of the Ratings that the Household's Profiles have given a table, the active Profile's included. A table rated by fewer than two of them has none. Shown as "note de la maison" in French.
+_Avoid_: average rating, community rating, Rating (alone: a Rating is one Profile's)
+
 **Rating Prompt**:
 The Dialog that offers to open PinballY's own rating dialog, once a table the active Profile has not yet rated has been played long enough.
 _Avoid_: rating popup
