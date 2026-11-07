@@ -32,6 +32,7 @@ Elle est **désactivée par défaut**, comme l'horloge du backglass : activez-la
 
 - Une horloge, l'arc doré de la roue et une ligne d'état enrichie.
 - Le badge du Profil actif et son niveau, la carte du Défi de la semaine et la barre de maîtrise.
+- Sous la barre de maîtrise, en haut à droite, cinq étoiles : la note du Profil actif pour la table sélectionnée, demi-étoiles comprises. Elles prennent la place de la barre quand la maîtrise des tables est désactivée, et n'apparaissent pas sur une table que vous n'avez pas notée ni quand **Notes par Profil** est désactivé.
 
 ## Icônes d'état
 

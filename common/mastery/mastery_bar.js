@@ -28,6 +28,8 @@ export const MASTERY_BAR_Z_INDEX = Object.freeze({
 // On the Challenge Card's 1920 px reference, with its width and right
 // edge; the canvas leaves room for the widest halo.
 const CANVAS = Object.freeze({ width: 400, height: 96 });
+// What sits under the bar starts this far below its top, in reference px.
+export const MASTERY_BAR_HEIGHT = CANVAS.height;
 const PANEL = Object.freeze({ x: 10, y: 14, width: 360, height: 64, border: 1 });
 const HEAD = Object.freeze({ y: 24, size: 13, weight: 600 });
 const BAR = Object.freeze({ x: 24, y: 48, width: 262, height: 10 });

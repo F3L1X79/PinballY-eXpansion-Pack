@@ -355,6 +355,10 @@ _Avoid_: level (a Mastery Level belongs to one table), stage, rank (an Achieveme
 The small panel at the top right of the wheel screen that keeps in view the active Profile's Table Mastery of the selected table.
 _Avoid_: level bar, progress bar (alone), mastery widget, Mastery Card
 
+**Rating Plate**:
+The small plate of five stars under the Mastery Bar (or in its place) that shows the active Profile's own Rating of the selected table; absent on a table it has not rated.
+_Avoid_: rating bar, star widget
+
 **Mastery Toast**:
 A toast with its own colour and no trophy, that announces the Mastery Level the active Profile has just reached on a table.
 _Avoid_: level-up popup, mastery achievement (Table Mastery has no Achievement)

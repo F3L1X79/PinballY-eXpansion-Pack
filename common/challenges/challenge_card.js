@@ -74,6 +74,13 @@ export function challengeCardCanvasHeight(host, challenge) {
     return CANVAS.height + titleExtraHeight(host, challenge);
 }
 
+// How far below the window's top the badge and the Challenge Card end, in
+// reference px, as they show now; challenges is null with the Challenges off.
+export function challengeCardBottom(host, challenges, { underBadge }) {
+    const view = challenges && challenges.getActiveView();
+    return (underBadge ? BADGE_HEIGHT : 0) + (view ? challengeCardCanvasHeight(host, view.challenge) : 0);
+}
+
 // Fading one-pixel frames around the card, widening outwards.
 function drawGlow(dc, cardHeight) {
     const accentRgb = COLORS.accent & 0xFFFFFF;

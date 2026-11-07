@@ -77,6 +77,9 @@ import * as launchEventsTrace from "./addons/launch_events_trace.js";
 //   using the main menu module: that module's "menuopen" listener must
 //   see the main menu as Menu Cleanup left it, so that the filter groups
 //   it removes stay out of the Filter Picker.
+// - profileRatings comes after challenges and tableMastery: its Rating
+//   Plate asks where their Challenge Card and Mastery Bar end, once they
+//   have followed the same event.
 // - profilePicker must come before the Welcome Screen, which offers
 //   "Change Player" only when the picker registered itself at init.
 // - drawnMenus must come last, so its "menuopen" listener draws the final
@@ -88,7 +91,7 @@ import * as launchEventsTrace from "./addons/launch_events_trace.js";
 const SCRIPTS = [
     // Interface: translations, then the launch events trace (debugging,
     // LOG_LAUNCH_EVENTS), status line, menu cleanup, menus, filters,
-    // Profile picker, Profile Ratings, clock, Status Icons, Wheel Arc, launch overlay.
+    // Profile picker, clock, Status Icons, Wheel Arc, launch overlay.
     { key: "uiTranslation", module: uiTranslation },
     { key: "launchEventsTrace", module: launchEventsTrace },
     { key: "statusLineInfo", module: statusLineInfo },
@@ -100,7 +103,6 @@ const SCRIPTS = [
     { key: "tablesToDiscover", module: tablesToDiscover },
     { key: "hiddenTables", module: hiddenTables },
     { key: "profilePicker", module: profilePicker },
-    { key: "profileRatings", module: profileRatings },
     { key: "clock", module: clock },
     { key: "statusIcons", module: statusIcons },
     { key: "wheelArc", module: wheelArc },
@@ -108,7 +110,7 @@ const SCRIPTS = [
 
     // Game session: windows, Backglass Clock, Discord Rich Presence, sound,
     // stats, Table ROMs, High Scores, achievements, Challenges, Table
-    // Mastery, rating.
+    // Mastery, Profile Ratings, rating.
     { key: "forceBackglass", module: forceBackglass },
     { key: "backglassClock", module: backglassClock },
     { key: "discordRichPresence", module: discordRichPresence },
@@ -119,6 +121,7 @@ const SCRIPTS = [
     { key: "achievements", module: achievementsEngine },
     { key: "challenges", module: challenges },
     { key: "tableMastery", module: tableMastery },
+    { key: "profileRatings", module: profileRatings },
     { key: "ratingPrompt", module: ratingPrompt },
 
     // Welcome Screen, under the startup prompt's former key, which owners'
