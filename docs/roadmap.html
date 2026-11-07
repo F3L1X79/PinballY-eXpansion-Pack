@@ -314,7 +314,7 @@
             <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span></div>
           </div>
           <p>La famille Ratings : des Achievements pour 1, 5, 10 et 25 tables notées par le Profile.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="here">tickets</span><i>›</i><span>implement</span></div>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
           <div class="links">Spec #474, tickets #475 à #477 (#477 sur la borne) · Flow Matt : <code>/implement</code>. Lit les Ratings par Profile, livrées (spec #460)</div>
           <details>
             <summary>Décisions du grill (07/11/2026)</summary>
@@ -351,6 +351,28 @@
               <li>Les trois vues toujours là, chacune avec son message quand elle est vide, y compris sur une table non prise en charge.</li>
             </ul>
             <p class="ctx">Idée de Félix du 07/11/2026.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="scores-below-board" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Les scores qui n'entrent pas au tableau</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">gros</span></div>
+          </div>
+          <p>Lire le score de la dernière partie dans la NVRAM des tables avec ROM, pour remplir le Personal Board même sous des Default Scores élevés.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après les trois vues du High Score Board</div>
+          <details>
+            <summary>Questions ouvertes (2)</summary>
+            <ul>
+              <li>Combien de ROMs de la borne gardent les scores de la dernière partie dans les cartes de <code>pinmame-nvram-maps</code> ? À établir en <code>/research</code>.</li>
+              <li>Pour les tables sans ROM, rien de connu : elles restent aux seuls High Scores.</li>
+            </ul>
+            <p class="ctx">Reportée du grill des trois tableaux de scores du 07/11/2026. Aujourd'hui un Personal Board reste vide sur une table aux Default Scores élevés tant que le Profile ne les bat pas.</p>
           </details>
         </div>
       </li>
@@ -394,27 +416,6 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-play" id="scores-below-board" data-track="play" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Les scores qui n'entrent pas au tableau</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">gros</span></div>
-          </div>
-          <p>Lire le score de la dernière partie dans la NVRAM des tables avec ROM, pour remplir le Personal Board même sous des Default Scores élevés.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après les trois vues du High Score Board</div>
-          <details>
-            <summary>Questions ouvertes (2)</summary>
-            <ul>
-              <li>Combien de ROMs de la borne gardent les scores de la dernière partie dans les cartes de <code>pinmame-nvram-maps</code> ? À établir en <code>/research</code>.</li>
-              <li>Pour les tables sans ROM, rien de connu : elles restent aux seuls High Scores.</li>
-            </ul>
-            <p class="ctx">Reportée du grill des trois tableaux de scores du 07/11/2026. Aujourd'hui un Personal Board reste vide sur une table aux Default Scores élevés tant que le Profile ne les bat pas.</p>
-          </details>
-        </div>
-      </li>
       <li draggable="true" tabindex="0" class="item tr-share" id="discord-table-image" data-track="share" data-rank="gold">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>

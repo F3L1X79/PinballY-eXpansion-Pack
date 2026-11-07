@@ -20,11 +20,10 @@ export function createHouseholdRatings(host, { profileStore }) {
     // Saved Ratings of each Household Profile but Guest, by listed name; null until the first query.
     let savedRatings = null;
     let activeName = profileStore.getActiveProfile().name;
+    const householdNames = () => profileStore.listProfileNames().filter(name => !isGuestName(name));
 
     function ratingsByProfile() {
-        if (savedRatings === null) {
-            savedRatings = new Map(profileStore.listProfileNames().filter(name => !isGuestName(name)).map(name => [name, null]));
-        }
+        if (savedRatings === null) savedRatings = new Map(householdNames().map(name => [name, null]));
         for (const [name, ratings] of savedRatings) {
             if (ratings === null) savedRatings.set(name, readRatingsOf(profileStore, name));
         }
@@ -38,11 +37,9 @@ export function createHouseholdRatings(host, { profileStore }) {
         const leftName = activeName;
         activeName = profile.name;
         if (savedRatings === null) return;
-        const listed = profileStore.listProfileNames().filter(name => !isGuestName(name));
-        savedRatings = new Map(listed.map(name => {
-            const known = [...savedRatings].find(([savedName]) => savedName === name);
-            return [name, known && !sameName(name, leftName) ? known[1] : null];
-        }));
+        // Keyed by the listed folder names, as the store gives them.
+        const known = savedRatings;
+        savedRatings = new Map(householdNames().map(name => [name, sameName(name, leftName) ? null : known.get(name) ?? null]));
     });
 
     // { average, count } of the game's Ratings, or null under two.

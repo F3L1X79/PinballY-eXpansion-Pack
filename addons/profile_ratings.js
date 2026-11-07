@@ -10,7 +10,7 @@
 
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
-import { createProfileRatings, ratingOf } from "../common/profiles/profile_ratings.js";
+import { createProfileRatings, ratingOf, RATE_GAME_POPUP } from "../common/profiles/profile_ratings.js";
 import { createRatingPlate } from "../common/profiles/rating_plate.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
 import { getChallenges } from "../common/challenges/challenge.js";
@@ -20,8 +20,6 @@ import { safeHandler } from "../common/core/safe_handler.js";
 import config from "../common/core/config.js";
 
 const SCRIPT_NAME = "ProfileRatings";
-// PinballY's own rating dialog, opened by Rate Table and by the Rating Prompt.
-const RATE_GAME_POPUP = "rate game";
 
 export default function init() {
     const host = createPinballYHost();

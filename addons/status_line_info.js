@@ -14,13 +14,11 @@ import { getProfileStore } from "../common/profiles/profile_store.js";
 import { displayNameOf } from "../common/profiles/profile_name.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { createHouseholdRatings } from "../common/profiles/household_ratings.js";
-import { ratingOf } from "../common/profiles/profile_ratings.js";
+import { ratingOf, RATE_GAME_POPUP } from "../common/profiles/profile_ratings.js";
 
 const SCRIPT_NAME = "StatusLineInfo";
 const SECONDS_PER_MINUTE = 60;
 const MINUTES_PER_HOUR = 60;
-// PinballY's own rating dialog, opened by Rate Table and by the Rating Prompt.
-const RATE_GAME_POPUP = "rate game";
 
 export default function init() {
     const LOWER_STATUS_LINE_TEXT = lang.tableInfoStatusLines;
