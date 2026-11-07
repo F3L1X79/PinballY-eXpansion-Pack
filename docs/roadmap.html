@@ -232,6 +232,7 @@
           <a class="chip tr-share" href="#themes"><b></b>Thèmes</a>
           <a class="chip tr-play" href="#feld"><b></b>Feld</a>
           <a class="chip tr-play" href="#screen-animations"><b></b>Animations</a>
+          <a class="chip tr-play" href="#scores-below-board"><b></b>Scores hors tableau</a>
         </div>
 
         <div class="ax row">Faible</div>
@@ -336,18 +337,20 @@
             <h3>Trois tableaux de scores : la table, la maison, mes 5 meilleurs</h3>
             <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
           </div>
-          <p>À côté du High Score Board de la table, un tableau de la maison (les meilleurs High Scores des Profiles, sans les Default Scores) et un « Personal 5 » du Profile actif, tous deux lus dans le High Score store, qui garde les High Scores sortis du tableau.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <p>Le High Score Board de la table sélectionnée prend trois vues, que Select fait tourner : le Table Board (« Le tableau », celui d'aujourd'hui), le Household Board (« La maison ») et le Personal Board (« Mes 5 meilleurs »), ces deux derniers lus dans le High Score store, qui garde les High Scores sortis du tableau.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="here">spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
           <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Lit le High Score store (spec #195)</div>
           <details>
-            <summary>Questions ouvertes (4)</summary>
+            <summary>Décisions du grill (07/11/2026)</summary>
             <ul>
-              <li>Les scores sous les Default Scores : jamais lus (hors périmètre de #195). Pour les tables avec ROM, une recherche sur les cartes de <code>pinmame-nvram-maps</code> : combien de ROMs de la borne gardent les scores de la dernière partie ? Pour les tables sans ROM, rien de connu.</li>
-              <li>Faire d'abord les deux tableaux avec ce qui est déjà gardé, et les scores plus bas ensuite ?</li>
-              <li>Où les ouvrir : trois pages du High Score Board, ou trois entrées du menu ?</li>
-              <li>Le tableau de la maison : un score par Profile, ou les 5 meilleurs quel que soit le Profile ? Guest compte-t-il ?</li>
+              <li>Seulement les High Scores déjà gardés : les scores sous les Default Scores restent inconnus, la piste nvram est une entrée à part.</li>
+              <li>Un seul écran, la table sélectionnée : Select passe à la vue suivante (table → maison → moi), Exit referme, les flippers font défiler. Toujours ouvert sur le Table Board ; les indications de boutons nomment la vue suivante.</li>
+              <li>Household Board : une place par Profile de la Household (sans Guest), son meilleur High Score sur la table depuis son dernier Profile Reset, même sorti du tableau.</li>
+              <li>Personal Board : les 5 meilleurs High Scores du Profile actif (Guest compris) sur la table, depuis son dernier Profile Reset.</li>
+              <li>Même dessin que le Table Board (podium, couronnes, lignes), avec la date de la partie ; à score égal, le plus ancien devant ; pas de marque « sorti du tableau ».</li>
+              <li>Les trois vues toujours là, chacune avec son message quand elle est vide, y compris sur une table non prise en charge.</li>
             </ul>
-            <p class="ctx">Idée de Félix du 07/11/2026. Aujourd'hui un Personal 5 reste vide sur une table aux Default Scores élevés tant que le Profile ne les bat pas.</p>
+            <p class="ctx">Idée de Félix du 07/11/2026.</p>
           </details>
         </div>
       </li>
@@ -391,6 +394,27 @@
         </div>
       </li>
 
+      <li draggable="true" tabindex="0" class="item tr-play" id="scores-below-board" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Les scores qui n'entrent pas au tableau</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">gros</span></div>
+          </div>
+          <p>Lire le score de la dernière partie dans la NVRAM des tables avec ROM, pour remplir le Personal Board même sous des Default Scores élevés.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après les trois vues du High Score Board</div>
+          <details>
+            <summary>Questions ouvertes (2)</summary>
+            <ul>
+              <li>Combien de ROMs de la borne gardent les scores de la dernière partie dans les cartes de <code>pinmame-nvram-maps</code> ? À établir en <code>/research</code>.</li>
+              <li>Pour les tables sans ROM, rien de connu : elles restent aux seuls High Scores.</li>
+            </ul>
+            <p class="ctx">Reportée du grill des trois tableaux de scores du 07/11/2026. Aujourd'hui un Personal Board reste vide sur une table aux Default Scores élevés tant que le Profile ne les bat pas.</p>
+          </details>
+        </div>
+      </li>
       <li draggable="true" tabindex="0" class="item tr-share" id="discord-table-image" data-track="share" data-rank="gold">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>

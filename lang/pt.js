@@ -264,6 +264,11 @@ export default {
         playCount: (position, count) => `Mesa ${position}/[Filter.Count] - iniciada ${count} vezes.`,
         playTime: (position, hours, minutes) => `Mesa ${position}/[Filter.Count] - jogada por ${formatPlayTime(hours, minutes)}.`,
         year: (position) => `Mesa ${position}/[Filter.Count] - lançada em [Game.Year].`,
+        // A Household Rating has two Ratings or more.
+        householdRating: (position, rating, count) =>
+            `Mesa ${position}/[Filter.Count] - avaliação da casa: ${String(rating).replace(".", ",")} de 5 (${count} avaliações).`,
+        yourRating: (position, rating) => `Mesa ${position}/[Filter.Count] - sua avaliação: ${String(rating).replace(".", ",")} de 5.`,
+        noRating: (position) => `Mesa ${position}/[Filter.Count] - nenhuma avaliação para esta mesa.`,
     },
 
     // Upper status line messages, after the player's own from PinballY's options.

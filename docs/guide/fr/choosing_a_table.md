@@ -25,6 +25,7 @@ Chaque minute passée sur une table fait monter votre maîtrise de celle-ci, sur
 
 - La barre de maîtrise, en haut à droite de l'écran de la roue, montre où vous en êtes sur la table sélectionnée, et un encart annonce le niveau atteint.
 - Dessous, cinq étoiles donnent votre propre note de la table sélectionnée, et changent dès que vous la notez. Une table que vous n'avez pas notée n'en a pas : un zéro s'affiche en cinq étoiles vides.
+- La ligne d'état du bas donne l'avis de toute la maison sur la table sélectionnée : sa note de la maison, la moyenne de vos notes arrondie à la demi-étoile, avec le nombre d'entre vous qui l'ont notée (voir [Profils](profiles.md#notes-et-tables-favorites)).
 - Quand dix de vos tables atteignent le niveau suivant, la maîtrise de votre collection passe un palier. Les tables masquées et non configurées ne comptent pas.
 - Le niveau 10 sur une table et chaque nouveau palier font pleuvoir des confettis.
 - Chaque palier débloque aussi un cadre pour votre Avatar, de la Sylve enchantée à la Légende céleste : choisissez celui que vous portez dans **Mon profil**, sous **Cadre**.

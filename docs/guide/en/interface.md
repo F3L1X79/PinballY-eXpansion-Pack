@@ -33,6 +33,7 @@ It is **off by default**, like the Backglass Clock: turn it on with `ADD_ON_MENU
 - A clock, a gold arc under the wheel (the Wheel Arc) and a richer status line.
 - The active Profile's badge with its Player Level, the week's Challenge Card and the Mastery Bar.
 - Under the Mastery Bar, in the top right corner, five stars: the active Profile's Rating of the selected table, half stars included. They take the bar's place when Table Mastery is off, and are absent on a table you have not rated or when **Ratings per Profile** is off.
+- The lower status line ends with the selected table's Household Rating ("Table 3/120 - household rating: 3.5 out of 5 (4 ratings)."), or your own Rating when fewer than two of you rated it ("your rating: 4 out of 5."), otherwise "no rating for this table." It follows a rating at once, and is absent when **Ratings per Profile** is off (see [Ratings and Favorite Tables](profiles.md#ratings-and-favorite-tables)).
 
 ## Status Icons
 

@@ -152,6 +152,10 @@ export default {
         playCount: (position, count) => `Table ${position}/[Filter.Count] - launched ${count} times.`,
         playTime: (position, hours, minutes) => `Table ${position}/[Filter.Count] - played for ${formatPlayTime(hours, minutes)}.`,
         year: (position) => `Table ${position}/[Filter.Count] - released in [Game.Year].`,
+        // A Household Rating has two Ratings or more.
+        householdRating: (position, rating, count) => `Table ${position}/[Filter.Count] - household rating: ${rating} out of 5 (${count} ratings).`,
+        yourRating: (position, rating) => `Table ${position}/[Filter.Count] - your rating: ${rating} out of 5.`,
+        noRating: (position) => `Table ${position}/[Filter.Count] - no rating for this table.`,
     },
 
     // Upper status line messages, after the player's own from PinballY's options.

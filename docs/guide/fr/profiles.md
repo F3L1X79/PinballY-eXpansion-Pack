@@ -24,6 +24,7 @@ Chaque Profil a ses propres notes en étoiles et ses propres favoris. Tant que v
 - Faire repartir un Profil de zéro garde ses notes et ses favoris.
 - La première fois que le pack tourne avec cette fonction, les notes et les favoris déjà présents sur la borne sont donnés à tous les Profils, Invité compris : personne ne perd un favori, et chacun fait ensuite son propre tri.
 - Une note que vous donnez est gardée même si PinballY se ferme ou plante avant que vous changiez de Profil.
+- La ligne d'état du bas montre la note de la maison de chaque table : la moyenne des notes que lui ont données tous les Profils sauf Invité, Profils enfants et le vôtre compris, arrondie à la demi-étoile. Il faut au moins deux notes pour en avoir une ; avec moins, la ligne donne votre propre note, ou dit que la table n'en a pas.
 - Pour revenir à une seule série de notes et de favoris pour tout le monde, désactivez **Notes par Profil** dans les réglages de l'eXpansion Pack (voir [Réglages](settings.md)).
 
 ## Créer un Profil

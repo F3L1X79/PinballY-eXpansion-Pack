@@ -24,6 +24,7 @@ Each Profile has its own star ratings and its own favourites. While your Profile
 - A Profile Reset keeps the Profile's ratings and favourites.
 - The first time the pack runs with this, the ratings and favourites already on the cabinet are given to every Profile, Guest included: nobody loses a favourite, and each of you then sorts your own.
 - A rating you give is kept even if PinballY closes or crashes before you change Profile.
+- The lower status line shows each table's Household Rating: the average of the ratings every Profile but Guest gave it, Child Profiles and yours included, rounded to the half star. A table needs two ratings or more to have one; with fewer, the line gives your own rating, or says the table has none.
 - To go back to one set of ratings and favourites for everyone, turn off **Ratings per Profile** in eXpansion Pack Settings (see [Settings](settings.md)).
 
 ## Create a Profile

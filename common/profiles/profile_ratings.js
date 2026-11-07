@@ -25,20 +25,28 @@ const isRecord = value => value !== null && typeof value === "object" && !Array.
 const NO_RATING = -1;
 export const ratingOf = game => (typeof game.rating === "number" && game.rating >= 0 ? game.rating : null);
 // A hand edit may leave anything in the file: only 0 to 5 in half steps reaches PinballY.
-const isRating = value => typeof value === "number" && value >= 0 && value <= 5 && Number.isInteger(value * 2);
+export const isRating = value => typeof value === "number" && value >= 0 && value <= 5 && Number.isInteger(value * 2);
+
+// A Profile with no file has no Rating and no Favorite Table.
+function readValuesOf(profileStore, profileName) {
+    const saved = profileStore.readProfileFile(profileName, RATINGS_FILE, RATINGS_VERSION) || {};
+    return {
+        version: RATINGS_VERSION,
+        ratings: isRecord(saved.ratings) ? { ...saved.ratings } : {},
+        favorites: Array.isArray(saved.favorites) ? saved.favorites.filter(id => typeof id === "string") : [],
+    };
+}
+
+// The named Profile's saved Ratings by config ID, through the store; only
+// those of 0 to 5 in half steps. An inactive Profile's are its true values.
+export function readRatingsOf(profileStore, profileName) {
+    const { ratings } = readValuesOf(profileStore, profileName);
+    return Object.fromEntries(Object.entries(ratings).filter(([, rating]) => isRating(rating)));
+}
 
 export function createProfileRatings(host, { profileStore }) {
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
-
-    // A Profile with no file has no Rating and no Favorite Table.
-    function readValues(profileName) {
-        const saved = profileStore.readProfileFile(profileName, RATINGS_FILE, RATINGS_VERSION) || {};
-        return {
-            version: RATINGS_VERSION,
-            ratings: isRecord(saved.ratings) ? { ...saved.ratings } : {},
-            favorites: Array.isArray(saved.favorites) ? saved.favorites.filter(id => typeof id === "string") : [],
-        };
-    }
+    const readValues = profileName => readValuesOf(profileStore, profileName);
 
     // The values with every table of the game list as the columns hold it.
     function withColumns(values, tables) {

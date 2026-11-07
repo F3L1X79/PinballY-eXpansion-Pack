@@ -386,8 +386,19 @@ A toast with its own colour and no trophy, that announces the best place a Play 
 _Avoid_: high score popup, record toast
 
 **High Score Board**:
-The drawn screen that shows the selected table's high score board with each place's owner. Not a table's own board, which it shows. Shown as "Meilleurs scores" in French.
+The drawn screen of the selected table's scores, in three views: the Table Board, the Household Board and the Personal Board. It always opens on the Table Board. Shown as "Meilleurs scores" in French.
 _Avoid_: high scores popup, leaderboard
+
+**Table Board**:
+The view of the High Score Board that shows the table's own high score board with each place's owner. Not the table's own board, which it shows. Shown as "Le tableau" in French.
+
+**Household Board**:
+The view of the High Score Board that ranks the Household's Profiles by their best High Score on the table since their last Profile Reset, one place each. Shown as "La maison" in French.
+_Avoid_: leaderboard, family board
+
+**Personal Board**:
+The view of the High Score Board that shows the active Profile's five best High Scores on the table since its last Profile Reset, those pushed off the table's board included. Shown as "Mes 5 meilleurs" in French.
+_Avoid_: Personal 5, My High Scores (the wheel selection of tables where it still holds one)
 
 ### Achievements
 
