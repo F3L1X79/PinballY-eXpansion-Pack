@@ -11,6 +11,7 @@
 
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { safeHandler, logHandlerError } from "../common/core/safe_handler.js";
+import { logError } from "../common/core/error_log.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getProfileRewards } from "../common/avatar_frames/profile_rewards.js";
 import { readBoard } from "../common/high_scores/board_reader.js";
@@ -413,31 +414,46 @@ export default function init() {
     }));
 
     // The ROM's .nv copied before VPinMAME writes it, under the ROM's name
-    // (vpxtool picks the map from it), replacing an earlier launch's copy:
-    // { rom, nvPath, copyPath }, or null without vpxtool, ROM or .nv.
+    // (vpxtool picks the map from it), replacing the copy of an earlier
+    // launch, even one PinballY never brought back: { rom, nvPath, copyPath },
+    // { none: why, onlyIfNvChanged } when there is nothing to read (why null
+    // once logged), or null without vpxtool.
     function copyNv(game) {
-        if (!game.rom || !vpxtool.hasVpxtool()) return null;
+        if (!vpxtool.hasVpxtool()) return null;
+        // Every table without ROM lands here too: the reason is logged only
+        // when the game changed a .nv, a sign the table does run a ROM.
+        if (!game.rom) return { none: "the table's ROM was unknown at launch", onlyIfNvChanged: true };
         const folder = nvramFolderOf(host, game);
-        const nvPath = folder === null ? null : `${folder}\\${game.rom}.nv`;
-        if (nvPath === null || !host.files.fileExists(nvPath)) return null;
+        if (folder === null) return { none: "no NVRAM folder is known" };
+        const nvPath = `${folder}\\${game.rom}.nv`;
+        if (!host.files.fileExists(nvPath)) return { none: `${nvPath} did not exist at launch` };
         const copyFolder = `${host.getProjectFolder()}\\${PLAY_SCORE_COPY_FOLDER}`;
         const copyPath = `${copyFolder}\\${game.rom}.nv`;
         try {
             host.files.createFolder(copyFolder);
             host.files.copyFile(nvPath, copyPath);
         } catch (error) {
-            log(`"${game.configId}": ${nvPath} could not be copied (${messageOf(error)}); no Play Score.`);
-            return null;
+            logError(SCRIPT_NAME, `ERROR "${game.configId}": ${nvPath} could not be copied (${messageOf(error)}); no Play Score.`, host, error);
+            return { none: null };
         }
         return { rom: game.rom, nvPath, copyPath };
     }
 
+    // Why the .nv files the game changed give no Play Score, or null when
+    // the game changed the table's .nv alone.
+    function whyChangedNvGiveNone(rom, changed) {
+        if (changed.length === 0) return `${rom}.nv did not change during the game`;
+        if (changed.length > 1) return `${changed.length} .nv files changed during the game (${changed.join(", ")})`;
+        if (changed[0].toLowerCase() !== rom.toLowerCase()) return `${changed[0]}.nv changed during the game, not the table's ${rom}.nv`;
+        return null;
+    }
+
     // The last game vpxtool reads in the .nv: readLastGame()'s answer, or
-    // undefined when vpxtool gave none (logged).
+    // undefined when vpxtool gave none (logged as an error).
     function readLastGameIn(configId, path) {
         return new Promise((resolve) => {
             const giveUp = (why) => {
-                log(`"${configId}": ${path} not read by vpxtool (${why}); no Play Score.`);
+                logError(SCRIPT_NAME, `ERROR "${configId}": ${path} not read by vpxtool (${why}); no Play Score.`, host);
                 resolve(undefined);
             };
             vpxtool.submit({
@@ -460,16 +476,30 @@ export default function init() {
     }
 
     // After the board read settled the Play: its Play Score, when the
-    // game changed only the table's own .nv.
+    // game changed only the table's own .nv; why not logged otherwise,
+    // silently for a launch shorter than a Play.
     async function settlePlayScore(bracket, play) {
         const copy = bracket.nvCopy;
         if (copy === null || play === null) return;
         const changed = bracket.nvChanged;
-        if (changed.length !== 1 || changed[0].toLowerCase() !== copy.rom.toLowerCase()) return;
-        const [before, after] = await Promise.all([readLastGameIn(bracket.configId, copy.copyPath), readLastGameIn(bracket.configId, copy.nvPath)]);
-        if (before === undefined || after === undefined) return;
+        const noPlayScore = why => log(`"${bracket.configId}": no Play Score for ${play.profileName}: ${why}.`);
+        if (copy.none !== undefined) {
+            const told = copy.none !== null && (!copy.onlyIfNvChanged || changed.length > 0);
+            if (told) noPlayScore(copy.none);
+            return;
+        }
+        const why = whyChangedNvGiveNone(copy.rom, changed);
+        if (why !== null) {
+            noPlayScore(why);
+            return;
+        }
+        // One after the other: a vpxtool that fails on the copy is not run again.
+        const before = await readLastGameIn(bracket.configId, copy.copyPath);
+        if (before === undefined) return;
+        const after = await readLastGameIn(bracket.configId, copy.nvPath);
+        if (after === undefined) return;
         const result = playScoreOf(before, after);
-        if (result.none) log(`"${bracket.configId}": no Play Score for ${play.profileName}: ${result.none}.`);
+        if (result.none) noPlayScore(result.none);
         else highScores.recordPlayScore(bracket.configId, play, result.score);
     }
 
