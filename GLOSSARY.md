@@ -408,7 +408,7 @@ The screen that shows every Achievement in one scrolling list: the Unlocked ones
 _Avoid_: My Achievements, trophy room
 
 **Achievement Family**:
-A kind of Achievement, absent as a whole when the Add-on it depends on is turned off: Collection, Play Time, Period Tables, Sessions, Random Game, Manufacturers, Decades, Categories, Challenges, High Scores, Surprises, Young Players. Young Players exists only for Child Profiles, in place of the Achievements a child never gets.
+A kind of Achievement, absent as a whole when the Add-on it depends on is turned off: Collection, Play Time, Period Tables, Sessions, Random Game, Manufacturers, Decades, Categories, Challenges, High Scores, Surprises, Ratings, Young Players. Young Players exists only for Child Profiles, in place of the Achievements a child never gets.
 _Avoid_: group (a group is the set of tables a completion Achievement covers, such as one manufacturer's tables), category (a PinballY table category)
 
 **Notified**:
