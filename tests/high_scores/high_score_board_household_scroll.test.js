@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, board, MEDIEVAL } from "./high_scores_scenario.js";
-import { openBoard, press, showView, marked, rows, viewPlaces } from "./high_score_board_reader.js";
+import { openBoard, press, showView, marked, rows, viewPlaces, panelHeight } from "./high_score_board_reader.js";
 
 const PLAYERS = ["Ann", "Ben", "Cat", "Dan", "Eve", "Fay"];
 
@@ -42,7 +42,9 @@ test("the flippers scroll a long Household Board; each view starts at its top", 
     assert.notEqual(firstRowInView(), "4", "the Table Board scrolls");
     assert.equal(rows(fake, lang).at(-1).rank, "7");
 
+    const tableHeight = panelHeight(fake);
     showView(fake, lang, "household");
+    assert.equal(panelHeight(fake), tableHeight, "the shorter Household Board keeps the Table Board's size");
     assert.deepEqual(viewPlaces(fake, lang).slice(0, 4).map(place => [place.rank, place.name]), [["1", "Fay"], ["2", "Eve"], ["3", "Dan"], ["4", "Cat"]],
         "the Household Board starts at its top");
     walkToRow("6");

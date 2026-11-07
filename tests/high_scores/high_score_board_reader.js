@@ -11,6 +11,7 @@ import { shownFrame, isFrameImage } from "../avatar_frames/avatar_frame_reader.j
 import { buttonHintsOn, exitButtonTooltipOn } from "../support/button_hints_reader.js";
 import { shownLayers } from "../support/shown_layers.js";
 import * as selectionMarker from "../support/selection_marker_reader.js";
+import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 import assert from "node:assert/strict";
 
 // Past the fade in.
@@ -199,6 +200,16 @@ const viewButtonLayers = fake => shownLayers(fake, HIGH_SCORE_BOARD_Z_INDEX.view
 
 // The view buttons' names, left to right.
 export const viewButtons = fake => viewButtonLayers(fake).map(layer => layer.texts()[0]);
+
+// The name on the view buttons drawn as the view on show's: gold, over a gold edge.
+export function currentViewButton(fake) {
+    const current = viewButtonLayers(fake).filter(layer => layer.strokes().some(stroke => "text" in stroke && stroke.color === STEAMBALL_COLORS.gold));
+    assert.ok(current.length <= 1, "one view on show at most");
+    return current.length > 0 ? current[0].texts()[0] : null;
+}
+
+// The panel's height on the window, in window heights.
+export const panelHeight = fake => shownLayers(fake, HIGH_SCORE_BOARD_Z_INDEX.panel)[0].scale().ySpan;
 
 // What the Selection Marker surrounds: "exitButton", { view: the button's
 // name }, or { row: the row's rank }.

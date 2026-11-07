@@ -66,9 +66,12 @@ Pour PINemHi 3.6.8, `.env.local` et l'installation avec git : voir la [page d'in
 
 ## Licence et crédits
 
-MIT. Voir [LICENSE](LICENSE).
+**PinballY eXpansion Pack, de Félix Chrétien** ([F3L1X79](https://github.com/F3L1X79)), sous GNU GPL v3 ou ultérieure. Voir [LICENSE](LICENSE) et [NOTICE](NOTICE). Vous pouvez l'utiliser, le modifier et le partager ; un fork ou toute reprise de son code reste sous GPL et garde ce crédit, avec un lien vers ce dépôt.
 
 - **[PinballY](http://mjrnet.org/pinscape/PinballY.php)**, de Michael J Roberts (GPL v3 ou ultérieure) : le frontend sur lequel tourne tout le pack, grâce à son API JavaScript. Sans lui, rien de ce projet fou ne serait possible.
 - **[vpin-studio](https://github.com/syd711/vpin-studio)**, de Matthias Faust / syd711 (MIT) : les règles de lecture des High Scores sont reprises de ses analyseurs de scores.
+- **[fireworks-js](https://github.com/crashmax-dev/fireworks-js)**, de Vitalij Ryndin / crashmax-dev (MIT) : le mouvement des fusées du feu d'artifice en est adapté.
+- **[react-confetti](https://github.com/alampros/react-confetti)**, d'Aaron Lampros (MIT), et **[canvas-confetti](https://github.com/catdad/canvas-confetti)**, de Kiril Vatev (ISC) : la pluie de confettis reprend leurs tailles, vitesses, courbe d'animation et couleurs.
+- **Sons** de [Freesound](https://freesound.org) (CC0) : auteurs listés dans [assets/sounds/CREDITS.md](assets/sounds/CREDITS.md).
 - **[vpxtool](https://github.com/francisdb/vpxtool)**, de Francis De Brabandere (Apache-2.0) : remplit la ROM de chaque table. Téléchargé par la borne depuis les versions de son auteur, une fois que le propriétaire l'accepte.
 - **PINemHi**, de Dna Disturber : fourni avec PinballY avec la permission de son auteur. Non fourni avec le pack.

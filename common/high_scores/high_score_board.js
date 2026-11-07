@@ -1,9 +1,9 @@
 // ============================================================
 // High Score Board: the drawn screen opened from the main menu or the
-// HighScores button, on the selected table's views (Table, Household and
-// Personal Boards; podium with crowns, then rows) from the High Score
-// store; two buttons under it turn to the other views. Opens on the Table Board's
-// last known board while it is read fresh. Opens directly, not through the wheel dialog module.
+// HighScores button, on the selected table's views (Table, Household and Personal
+// Boards; podium with crowns, then rows) from the High Score store, each the size of
+// the longest; one button per view under it, the first selected on opening. Opens on
+// the Table Board's last known board while it is read fresh, directly, not through the wheel dialog module.
 // - Buttons and attract mode go through the Drawn Screen controls; the flippers walk the Exit Button, the rows when they overflow, then the view buttons.
 // - The read's Loader, notes and messages are the Table Board's only.
 // - Crowns are drawn ahead once: PinballY reads an image file again on every draw.
@@ -32,11 +32,10 @@ const TRANSPARENT = 0x00000000;
 // The views, by their names' keys in lang.highScores.board.views.
 const VIEWS = Object.freeze(["table", "household", "personal"]);
 const isTableBoard = opened => VIEWS[opened.view] === "table";
-// The view buttons' views, in VIEWS' order: every view but the one on show.
-const otherViews = view => VIEWS.map((_, index) => index).filter(index => index !== view);
 
 // The choices the flippers walk, as { kind, index }: the Exit Button, each
-// row when they do not all fit (so the flippers bring each into view), then the view buttons.
+// row when they do not all fit (so the flippers bring each into view), then
+// the view buttons, one per view in VIEWS' order.
 function choicesOf(geometry) {
     const rows = geometry.rows.length > geometry.rowsInView ? geometry.rows.map((_, index) => ({ kind: "row", index })) : [];
     return [{ kind: "exitButton", index: 0 }, ...rows, ...geometry.viewButtons.map((_, index) => ({ kind: "view", index }))];
@@ -208,7 +207,9 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         const { drawn } = opened;
         for (const layer of opened.content) drawn.remove(layer);
         const screen = screenOf(opened);
-        const geometry = layoutHighScoreBoard(drawn.referenceWidth, screen.places.length);
+        // Sized for the longest view, so that turning the view never changes the board's size.
+        const longest = Math.max(...VIEWS.map((_, view) => screenOf({ ...opened, view }).places.length));
+        const geometry = layoutHighScoreBoard(drawn.referenceWidth, screen.places.length, longest);
         const content = [];
         const piece = (zIndex, rect, draw) => drawn.drawPiece(zIndex, placedRect(geometry, rect), draw, content, rect);
         // Drawn finer, on a canvas CANVAS_ZOOM times the rect.
@@ -240,9 +241,8 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         const { exitLook } = opened;
         const hints = buttonHintGroupsOf({ flippers: FLIPPER_HINT.BROWSE, select: true, exitLook });
         finePiece(Z_INDEX.buttonHints, geometry.buttonHints, dc => drawButtonHints(host, dc, hints, geometry.buttonHints.w, geometry.buttonHints.h));
-        const viewButtons = otherViews(opened.view);
         geometry.viewButtons.forEach((rect, index) => {
-            finePiece(Z_INDEX.viewButtons, rect, dc => drawViewButton(host, dc, TEXT.views[VIEWS[viewButtons[index]]], rect.w, rect.h));
+            finePiece(Z_INDEX.viewButtons, rect, dc => drawViewButton(host, dc, TEXT.views[VIEWS[index]], index === opened.view, rect.w, rect.h));
         });
         // At its default size: the board's Exit Button, CANVAS_ZOOM times.
         finePiece(Z_INDEX.exitButton, geometry.exitButton, dc => drawExitButton(dc, exitLook));
@@ -252,11 +252,11 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         opened.geometry = geometry;
         opened.rowLayers = rowLayers;
         opened.crownLayers = crownLayers;
-        opened.viewButtons = viewButtons;
         opened.choices = choicesOf(geometry);
-        // The same choice stays selected, a view button across the turn; the Exit Button when it is gone.
-        const kept = previous ? opened.choices.findIndex(choice => choice.kind === previous.kind && choice.index === previous.index) : 0;
-        opened.selected = Math.max(0, kept);
+        // The first view's button on opening; then the same choice, a view
+        // button across the turn; the Exit Button when it is gone (a row).
+        const keep = previous || { kind: "view", index: 0 };
+        opened.selected = Math.max(0, opened.choices.findIndex(choice => choice.kind === keep.kind && choice.index === keep.index));
         opened.firstRow = Math.min(opened.firstRow, lastFirstRow(opened));
         showContent(opened);
     }
@@ -295,7 +295,7 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
             drawn, onBack, exitLook: exitButtonLookOf(onBack !== null), game,
             view: 0, tableStatus: game ? "reading" : "read", defaultImages: readDefaultScoreImages(host, logImageLine),
             opacity: 0, content: [], geometry: null, rowLayers: [], crownLayers: [], firstRow: 0,
-            exitTooltip: null, viewButtons: [], choices: [], selected: 0,
+            exitTooltip: null, choices: [], selected: 0,
             marker: createSelectionMarker(host, { zIndex: Z_INDEX.marker, referenceWidth: drawn.referenceWidth, referenceHeight: REFERENCE_HEIGHT }),
             controlled: controls.open({ onMove: move, onChoose: choose, onExit: back, close: remove }),
         };
@@ -331,12 +331,13 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
     }
 
     // Select and Launch: the Exit Button goes back, a view button turns to
-    // its view, drawn in place and scrolled to its top; a row does nothing.
+    // its view, drawn in place and scrolled to its top; a row or the view
+    // on show's button does nothing.
     function choose() {
         const { kind, index } = selectedChoice(shown);
         if (kind === "exitButton") return back();
-        if (kind !== "view") return undefined;
-        shown.view = shown.viewButtons[index];
+        if (kind !== "view" || index === shown.view) return undefined;
+        shown.view = index;
         shown.firstRow = 0;
         drawContent(shown);
         showLoaderIfReading(shown);

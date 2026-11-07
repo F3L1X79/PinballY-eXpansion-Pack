@@ -39,6 +39,12 @@ test("the flippers walk a long board's rows, scrolling them under the fixed podi
     assert.ok(shownAtOnce >= 1 && shownAtOnce < ROW_INITIALS.length, `${shownAtOnce} rows in view in a landscape window`);
     assert.deepEqual(rowsInView(), ROW_INITIALS.slice(0, shownAtOnce));
     assert.deepEqual(podiumInitials(), ["BRE", "SLL", "LFS"]);
+    const nextTimes = (count) => {
+        for (let step = 0; step < count; step++) press(fake, "Next");
+    };
+    // From the Table Board's button, past the two others to the Exit Button.
+    nextTimes(3);
+    assert.equal(marked(fake, lang), "exitButton");
 
     ROW_INITIALS.forEach((initials, index) => {
         assert.ok(press(fake, "Next").defaultPrevented);
@@ -52,14 +58,11 @@ test("the flippers walk a long board's rows, scrolling them under the fixed podi
     assert.equal(viewName(fake), VIEWS.table);
 
     press(fake, "Next");
-    assert.deepEqual(marked(fake, lang), { view: VIEWS.household }, "the view buttons come after the last row");
+    assert.deepEqual(marked(fake, lang), { view: VIEWS.table }, "the view buttons come after the last row");
     assert.deepEqual(rowsInView(), ROW_INITIALS.slice(-shownAtOnce));
-    press(fake, "Next");
-    press(fake, "Next");
+    nextTimes(3);
     assert.equal(marked(fake, lang), "exitButton");
-    press(fake, "Prev");
-    press(fake, "Prev");
-    press(fake, "Prev");
+    for (let step = 0; step < 4; step++) press(fake, "Prev");
     assert.deepEqual(marked(fake, lang), { row: "10" }, "Prev from the view buttons comes back to the last row");
     for (let index = ROW_INITIALS.length - 2; index >= 0; index--) {
         press(fake, "Prev");
@@ -71,16 +74,16 @@ test("the flippers walk a long board's rows, scrolling them under the fixed podi
     setBoard(MEDIEVAL, FACTORY);
     await openRead();
     assert.deepEqual(rowsInView(), ["ZAP", "RCF"]);
-    press(fake, "Next");
-    assert.deepEqual(marked(fake, lang), { view: VIEWS.household }, "rows that all fit are left out");
+    nextTimes(4);
+    assert.deepEqual(marked(fake, lang), { view: VIEWS.table }, "rows that all fit are left out");
     press(fake, "Exit");
 
     fake.setLayoutSize({ width: 1080, height: 1920 });
     setBoard(MEDIEVAL, TEN_PLACES);
     await openRead();
     assert.deepEqual(rowsInView(), ROW_INITIALS, "a portrait window shows every place");
-    press(fake, "Next");
-    assert.deepEqual(marked(fake, lang), { view: VIEWS.household });
+    nextTimes(4);
+    assert.deepEqual(marked(fake, lang), { view: VIEWS.table });
     press(fake, "Exit");
     assertNoErrorLogged(fake);
 });

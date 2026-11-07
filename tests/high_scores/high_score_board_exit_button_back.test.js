@@ -1,7 +1,7 @@
 // ============================================================
 // The High Score Board's Exit Button opened from the main menu, through
 // main.js on the fake PinballY globals: the back arrow, its tooltip saying
-// Back, the Selection Marker on it; the footer names the flippers
+// Back once the Selection Marker is on it; the footer names the flippers
 // (Browse), Select (Choose) and Exit (Back); Exit reopens the main menu
 // on the board's entry.
 // ============================================================
@@ -22,8 +22,9 @@ test("from the main menu: the back arrow's Back, and Exit back to the main menu 
 
     openBoard(fake, lang);
     await settle();
-    assert.equal(exitButtonTooltip(fake), lang.buttonHints.back);
+    press(fake, "Prev");
     assert.equal(marked(fake, lang), "exitButton");
+    assert.equal(exitButtonTooltip(fake), lang.buttonHints.back);
     assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { exit: "back" }));
 
     assert.ok(press(fake, "Exit").defaultPrevented, "Exit never reaches the wheel");

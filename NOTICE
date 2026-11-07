@@ -1,0 +1,100 @@
+PinballY eXpansion Pack
+Copyright (C) 2026 Félix Chrétien (https://github.com/F3L1X79)
+https://github.com/F3L1X79/PinballY-Expansion-Pack
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program (the LICENSE file). If not, see <https://www.gnu.org/licenses/>.
+
+
+Additional term (GNU GPL version 3, section 7, paragraph b)
+-----------------------------------------------------------
+
+Any copy, modified version or work based on this program, in whole or in part,
+must preserve the author attribution "PinballY eXpansion Pack by Félix
+Chrétien", with a link to https://github.com/F3L1X79/PinballY-Expansion-Pack,
+in this NOTICE file and in its README or credits. A modified version must also
+be marked as changed from the original.
+
+
+Third-party code
+----------------
+
+Parts of this program are adapted from the following works, under the MIT
+License reproduced below.
+
+- vpin-studio (https://github.com/syd711/vpin-studio)
+  Copyright (c) 2022 syd711
+  High Score reading rules: common/high_scores/board_reader.js and
+  common/high_scores/romless_board_reader.js.
+
+- fireworks-js (https://github.com/crashmax-dev/fireworks-js)
+  Copyright (c) 2021-2023 Vitalij Ryndin
+  Rocket motion: common/celebrations/fireworks.js.
+
+- react-confetti (https://github.com/alampros/react-confetti)
+  Copyright (c) 2016 Aaron Lampros
+  Confetti sizes, speeds, release and easing:
+  common/celebrations/confetti_shower.js.
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+The confetti colours (common/celebrations/confetti_shower.js) follow
+canvas-confetti (https://github.com/catdad/canvas-confetti), under the ISC
+License:
+
+ISC License
+
+Copyright (c) 2020, Kiril Vatev
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+The default sounds come from Freesound under CC0 1.0; their authors are
+listed in assets/sounds/CREDITS.md.
+
+
+PinballY
+--------
+
+The pack runs on PinballY, Copyright 2018 Michael J Roberts, GPL v3 or later
+(http://mjrnet.org/pinscape/PinballY.php). PinballY is not included in the
+pack. The English keys of the menu translations in lang/ are PinballY's own
+menu texts, translated by the pack. The copy of its help in
+docs/pinbally/Help/ (in the repository only, not in the downloaded zip)
+belongs to Michael J Roberts, under PinballY's license.

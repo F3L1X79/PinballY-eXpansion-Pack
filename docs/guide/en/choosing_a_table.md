@@ -50,7 +50,7 @@ When you enter a table's high score board, the place is yours: the pack reads th
 - the board is read again from the table each time you open it, so it always shows what the table holds now;
 - on a board too long for the screen, the flippers also stop on each place below the podium, scrolling it into view.
 
-Two buttons under the board name its other views; the view on show is named under the table's title. The flippers move from the Exit Button to the first button, then the second; Select (or Launch) opens the view of the button chosen, or closes the board on the Exit Button; Exit closes it from any view:
+Three buttons under the board, one per view, show the view on show in gold; its name is also under the table's title, and every view keeps the same size. The board opens with its first button chosen; the flippers move from one button to the next, then to the Exit Button; Select (or Launch) opens the view of the button chosen, or closes the board on the Exit Button; Exit closes it from any view:
 
 - **The table**: the table's own board, as above, where every opening starts;
 - **The household**: each Profile of the household (Guest left out, children in) once, with its best High Score on this table, a score since pushed off the table's board included, and the date of that game; after a Profile Reset, only the High Scores won since count;

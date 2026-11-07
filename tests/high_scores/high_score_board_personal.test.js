@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, board, FACTORY, MEDIEVAL, avatarOf, avatarFiles } from "./high_scores_scenario.js";
-import { openBoard, press, showView, viewName, viewPlaces, viewButtons, message } from "./high_score_board_reader.js";
+import { openBoard, press, showView, viewName, viewPlaces, currentViewButton, message } from "./high_score_board_reader.js";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -38,7 +38,7 @@ test("the Personal Board shows the active Profile's five best High Scores on the
     await settle();
     showView(fake, lang, "personal");
     assert.equal(viewName(fake), "My best 5");
-    assert.deepEqual(viewButtons(fake), [VIEWS.table, VIEWS.household]);
+    assert.equal(currentViewButton(fake), VIEWS.personal);
     assert.equal(message(fake), null);
     const alice = (rank, score, date) => ({ rank, name: "Alice", avatar: avatarOf("Alice"), score, date });
     assert.deepEqual(viewPlaces(fake, lang), [

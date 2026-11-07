@@ -36,20 +36,20 @@ test("the High Score Board counts a held Select, Launch or Exit once, moves its 
         assert.ok(hold(fake, button).defaultPrevented, `a held ${button} never reaches the wheel`);
         assert.ok(isBoardOpen(fake), `a held ${button} leaves the board open`);
     }
-    assert.equal(marked(fake, lang), "exitButton");
+    const VIEWS = lang.highScores.board.views;
+    assert.deepEqual(marked(fake, lang), { view: VIEWS.table });
     assert.ok(hold(fake, "Next").defaultPrevented);
     hold(fake, "Next");
-    assert.deepEqual(marked(fake, lang), { row: "5" }, "a held flipper keeps moving the marker");
+    assert.deepEqual(marked(fake, lang), { view: VIEWS.personal }, "a held flipper keeps moving the marker");
     hold(fake, "Prev");
-    assert.deepEqual(marked(fake, lang), { row: "4" });
+    assert.deepEqual(marked(fake, lang), { view: VIEWS.household });
     assert.equal(firstRowInView(), "ZAP");
 
-    for (let guard = 0; guard < 20 && !marked(fake, lang).view; guard++) press(fake, "Next");
-    // The marker stays on the first button, which names the Table Board once on the Household Board.
-    for (const [button, view] of [["Select", "household"], ["Launch", "table"]]) {
+    for (const [button, flipper, view] of [["Select", null, "household"], ["Launch", "Prev", "table"]]) {
+        if (flipper) press(fake, flipper);
         assert.ok(press(fake, button).defaultPrevented);
         assert.ok(isBoardOpen(fake), `${button} turns the view, the board stays`);
-        assert.equal(viewName(fake), lang.highScores.board.views[view], `${button} on a view button turns to its view`);
+        assert.equal(viewName(fake), VIEWS[view], `${button} on a view button turns to its view`);
     }
     assert.ok(press(fake, "Exit").defaultPrevented);
     assert.equal(boardLayerCount(fake), 0, "Exit closes the board");

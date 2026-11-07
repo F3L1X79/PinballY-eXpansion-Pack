@@ -1,7 +1,7 @@
 // ============================================================
 // The High Score Board's Exit Button opened by the dedicated HighScores
 // button, through main.js on the fake PinballY globals: the cross, its
-// tooltip saying Close, the Selection Marker on it; the footer names the
+// tooltip saying Close once the Selection Marker is on it; the footer names the
 // flippers (Browse), Select (Choose) and Exit (Close); Exit leaves the bare wheel.
 // ============================================================
 
@@ -21,8 +21,9 @@ test("from the HighScores button: the cross's Close, and Exit back to the bare w
     fake.runCommand(globalThis.command.HighScores);
     fake.advanceTime(BOARD_OPEN_MS);
     await settle();
-    assert.equal(exitButtonTooltip(fake), lang.buttonHints.close);
+    press(fake, "Prev");
     assert.equal(marked(fake, lang), "exitButton");
+    assert.equal(exitButtonTooltip(fake), lang.buttonHints.close);
     assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { exit: "close" }));
 
     assert.ok(press(fake, "Exit").defaultPrevented, "Exit never reaches the wheel");

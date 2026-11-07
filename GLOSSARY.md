@@ -386,8 +386,16 @@ A Table Record a Profile held that another Profile beat with a Play, until the W
 _Avoid_: rivalry (the feature, not the record), stolen record, notification
 
 **High Score Toast**:
-A toast with its own colour and no trophy, that announces the best place a Play won on a table's high score board, or the Table Record. Shown as "Meilleur score" in French.
+A toast with its own colour and no trophy, that announces the best place a Play won on a table's high score board, or the Table Record; for a Play that won no place, a House Record or a Personal Best instead. One per Play at most. Shown as "Meilleur score" in French.
 _Avoid_: high score popup, record toast
+
+**Personal Best**:
+A Play Score that beats every earlier score of the Profile on the table, Guest included; the first score on a table is none. Shown as "Record perso" in French.
+_Avoid_: personal record, new best
+
+**House Record**:
+A Play Score that takes the first place of the table's Household Board from another Profile. Shown as "Record de la maison" in French.
+_Avoid_: household record, family record, Table Record (the best score on the table's own board)
 
 **High Score Board**:
 The drawn screen of the selected table's scores, in three views: the Table Board, the Household Board and the Personal Board. It always opens on the Table Board. Shown as "Meilleurs scores" in French.

@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, board, FACTORY, MEDIEVAL, avatarFiles } from "./high_scores_scenario.js";
-import { openBoard, press, showView, viewName, viewPlaces, viewButtons, message, BOARD_OPEN_MS } from "./high_score_board_reader.js";
+import { openBoard, press, showView, viewName, viewPlaces, currentViewButton, message, BOARD_OPEN_MS } from "./high_score_board_reader.js";
 
 test("the Personal Board speaks French", async () => {
     const { fake, setBoard, play } = await startHighScores({ profiles: { Alice: {} }, active: "Alice", files: avatarFiles("Alice"), language: "fr" });
@@ -20,7 +20,7 @@ test("the Personal Board speaks French", async () => {
         fake.advanceTime(1000);
         await settle();
         showView(fake, lang, "personal");
-        assert.deepEqual(viewButtons(fake), ["Le tableau", "La maison"]);
+        assert.equal(currentViewButton(fake), "Mes 5 meilleurs");
         assert.equal(viewName(fake), "Mes 5 meilleurs");
     };
     setBoard(MEDIEVAL, FACTORY);

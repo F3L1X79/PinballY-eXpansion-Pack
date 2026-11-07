@@ -50,7 +50,7 @@ Quand vous entrez au tableau des meilleurs scores d'une table, la place est à v
 - le tableau est relu sur la table à chaque ouverture, il montre donc toujours ce qu'elle contient ;
 - sur un tableau trop long pour l'écran, les flippers s'arrêtent aussi sur chaque place sous le podium, en la faisant défiler à l'écran.
 
-Deux boutons sous le tableau nomment ses autres vues ; la vue affichée est nommée sous le titre de la table. Les flippers passent du bouton Retour au premier bouton, puis au second ; Select (ou Launch) ouvre la vue du bouton choisi, ou ferme le tableau sur le bouton Retour ; Exit le ferme depuis chaque vue :
+Trois boutons sous le tableau, un par vue, montrent en doré la vue affichée ; son nom figure aussi sous le titre de la table, et chaque vue garde la même taille. Le tableau s'ouvre sur son premier bouton ; les flippers passent d'un bouton au suivant, puis au bouton Retour ; Select (ou Launch) ouvre la vue du bouton choisi, ou ferme le tableau sur le bouton Retour ; Exit le ferme depuis chaque vue :
 
 - **Le tableau** : le tableau de la table, comme ci-dessus, où commence chaque ouverture ;
 - **La maison** : chaque Profil de la maison (sans Invité, enfants compris) une fois, avec son meilleur score sur cette table, même un score depuis sorti du tableau de la table, et la date de cette partie ; quand un Profil repart de zéro, seuls ses meilleurs scores gagnés depuis comptent ;

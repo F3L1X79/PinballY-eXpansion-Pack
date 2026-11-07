@@ -66,9 +66,12 @@ For PINemHi 3.6.8, `.env.local` and installing with git: see the [install page](
 
 ## License and credits
 
-MIT. See [LICENSE](LICENSE).
+**PinballY eXpansion Pack by Félix Chrétien** ([F3L1X79](https://github.com/F3L1X79)), under the GNU GPL v3 or later. See [LICENSE](LICENSE) and [NOTICE](NOTICE). You are free to use, modify and share it; a fork or any reuse of its code must stay under the GPL and keep this credit, with a link to this repository.
 
 - **[PinballY](http://mjrnet.org/pinscape/PinballY.php)** by Michael J Roberts (GPL v3 or later): the frontend the whole pack runs on, through its JavaScript API. Without it, none of this crazy project would be possible.
 - **[vpin-studio](https://github.com/syd711/vpin-studio)** by Matthias Faust / syd711 (MIT): the High Score reading rules are ported from its score parsers.
+- **[fireworks-js](https://github.com/crashmax-dev/fireworks-js)** by Vitalij Ryndin / crashmax-dev (MIT): the rocket motion of the fireworks is adapted from it.
+- **[react-confetti](https://github.com/alampros/react-confetti)** by Aaron Lampros (MIT) and **[canvas-confetti](https://github.com/catdad/canvas-confetti)** by Kiril Vatev (ISC): the Confetti Shower follows their sizes, speeds, easing and colours.
+- **Sounds** from [Freesound](https://freesound.org) (CC0): authors listed in [assets/sounds/CREDITS.md](assets/sounds/CREDITS.md).
 - **[vpxtool](https://github.com/francisdb/vpxtool)** by Francis De Brabandere (Apache-2.0): fills in each table's ROM. Downloaded by the cabinet from its author's releases, once the owner agrees.
 - **[PINemHi](https://www.pinemhi.com/)** by Dna Disturber: supplied with PinballY by permission of its author. Not included in the pack.

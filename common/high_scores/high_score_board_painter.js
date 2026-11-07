@@ -78,8 +78,8 @@ const LOOK = Object.freeze({
     viewButtonsGap: 12, viewButtonH: 44, viewButtonGap: 14, viewButtonSize: 17, minViewButtonSize: 12,
     footerGap: 8, footerH: 58,
 });
-// The buttons to the other views, under the board.
-export const VIEW_BUTTONS = 2;
+// One button per view, under the board.
+export const VIEW_BUTTONS = 3;
 
 // How wide an Avatar Frame is drawn at most, for its image's size.
 export const AVATAR_FRAME_WIDTH = avatarFrameSide(Math.max(...LOOK.avatar, LOOK.rowAvatar));
@@ -108,20 +108,24 @@ const MIN_PANEL_H = Math.max(
 // buttons left to right and the Button Hints' footer.
 // zoom: board to reference pixels; rowsInView: how many rows show at
 // once (all of them when they fit), the others scrolling rowPitch apart.
-export function layoutHighScoreBoard(referenceWidth, placeCount) {
+// sizedPlaceCount: the places the panel is sized for, the longest view's,
+// so that every view shows at the same size.
+export function layoutHighScoreBoard(referenceWidth, placeCount, sizedPlaceCount = placeCount) {
     const w = DRAWN_MENU_PANEL_WIDTH;
     const rowCount = Math.max(0, placeCount - PODIUM_PLACES);
+    const sizedRowCount = Math.max(0, sizedPlaceCount - PODIUM_PLACES);
     const panelOf = bodyH => Math.max(MIN_PANEL_H,
         LOOK.topInset + LOOK.titleH + LOOK.noteH + LOOK.titleGap + bodyH + LOOK.viewButtonsGap + LOOK.viewButtonH + LOOK.footerGap + LOOK.footerH + LOOK.bottomInset);
-    const panelH = rowsShown => panelOf(placeCount === 0 ? LOOK.messageH : PODIUM_H + rowsHeight(rowsShown));
+    const panelH = rowsShown => panelOf(sizedPlaceCount === 0 ? LOOK.messageH : PODIUM_H + rowsHeight(rowsShown));
     const maxH = FIT.heightShare * REFERENCE_HEIGHT;
     // Small enough for the podium and two rows, a 5-place board whole,
     // whatever the board holds: the "Reading..." message keeps the zoom of
     // the board that replaces it.
     const zoom = Math.min(FIT.maxZoom, FIT.widthShare * referenceWidth / w, maxH / panelOf(PODIUM_H + rowsHeight(2)));
-    let rowsInView = rowCount;
-    while (rowsInView > 1 && panelH(rowsInView) * zoom > maxH) rowsInView--;
-    const h = panelH(rowsInView);
+    let sizedRowsInView = sizedRowCount;
+    while (sizedRowsInView > 1 && panelH(sizedRowsInView) * zoom > maxH) sizedRowsInView--;
+    const h = panelH(sizedRowsInView);
+    const rowsInView = Math.min(rowCount, sizedRowsInView);
     const panel = { x: 0, y: 0, w, h };
     // Not rounded, so the 1st place stands on the window's middle.
     const origin = { x: (referenceWidth - w * zoom) / 2, y: (REFERENCE_HEIGHT - h * zoom) / 2 };
@@ -159,15 +163,18 @@ export function layoutHighScoreBoard(referenceWidth, placeCount) {
     return { zoom, origin, panel, title, note, message, steps, crowns, rows, rowsInView, rowPitch, exitButton, exitTooltip, viewButtons, buttonHints };
 }
 
-// A button to another view, w by h board pixels, on its canvas: a tile
-// with the view's name centred.
-export function drawViewButton(host, dc, label, w, h) {
+// A view's button, w by h board pixels, on its canvas: a tile with the
+// view's name centred; the view on show's (isCurrent) with a gold edge
+// and its name in gold.
+export function drawViewButton(host, dc, label, isCurrent, w, h) {
     const [cw, ch] = [w * CANVAS_ZOOM, h * CANVAS_ZOOM];
     fillGradient(dc, 0, 0, cw, ch, COLORS.rowUnlocked, COLORS.tile);
     dc.frameRect(0, 0, cw, ch, 1, COLORS.border);
+    if (isCurrent) dc.fillRect(0, ch - LOOK.edge * CANVAS_ZOOM, cw, LOOK.edge * CANVAS_ZOOM, COLORS.gold);
     oneLine(host, dc, label, {
         x: LOOK.rowPad * CANVAS_ZOOM, y: 0, width: cw - 2 * LOOK.rowPad * CANVAS_ZOOM, height: ch,
         size: LOOK.viewButtonSize * CANVAS_ZOOM, minSize: LOOK.minViewButtonSize * CANVAS_ZOOM, weight: 600, font: FONTS.display, align: "center",
+        color: isCurrent ? COLORS.gold : COLORS.title,
     });
 }
 
