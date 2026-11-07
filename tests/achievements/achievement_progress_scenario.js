@@ -60,11 +60,7 @@ export async function startScenario({ now, tables, files = {}, folders = [] }) {
         await showEveryToast();
     }
 
-    // How the list shows each of these Achievements, by title, in the given
-    // order: { title, progress, unlocked }, progress being the short text
-    // of its Achievement Progress or null. A title given again is the next
-    // row showing it, such as a second Secret Achievement's "???". Opened
-    // from the main menu and closed again with Exit.
+    // Every row of the list, opened from the main menu and closed again with Exit.
     function readAllRows() {
         fake.openMenu("main", [{ title: "Play", cmd: globalThis.command.PlayGame }]);
         fake.selectMenuItem(TEXT.menuEntry);
@@ -74,6 +70,10 @@ export async function startScenario({ now, tables, files = {}, folders = [] }) {
         return rows;
     }
 
+    // How the list shows each of these Achievements, by title, in the given
+    // order: { title, progress, unlocked }, progress being the short text
+    // of its Achievement Progress or null. A title given again is the next
+    // row showing it, such as a second Secret Achievement's "???".
     function readShown(titles) {
         const rows = readAllRows();
         const taken = new Set();
@@ -85,7 +85,7 @@ export async function startScenario({ now, tables, files = {}, folders = [] }) {
         });
     }
 
-    // The titles of every row of the list, opened and closed as above.
+    // The titles of every row of the list.
     const listedTitles = () => readAllRows().map(row => row.title);
 
     const unlockedRow = title => ({ title, progress: null, unlocked: true });

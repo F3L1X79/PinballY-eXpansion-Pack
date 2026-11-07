@@ -1,8 +1,8 @@
 ﻿// ============================================================
-// Builds one achievement per table category (PinballY's game.categories):
-// unlocked once the active Profile has played every table it can see in that
-// category at least once, for a category of at least two such tables. Sorted by category. asNonChild builds them as a Profile that is not
-// a child would see them (for the Player Level's scaling).
+// Builds one achievement per table category (PinballY's game.categories) of at
+// least two tables the active Profile can see, unlocked once it has played
+// them all at least once. Sorted by category. asNonChild builds them as a
+// Profile that is not a child would see them (for the Player Level's scaling).
 // Called by achievements_engine.js at each check; no side effects.
 // ============================================================
 
