@@ -30,20 +30,20 @@ test("a read ending while the Household Board is on show leaves it drawn; the Ta
     assert.equal(readLoader(fake).shown, true);
 
     showView(fake, lang, "household");
-    assert.equal(viewName(fake), "The household");
+    assert.equal(viewName(fake), "Household scores");
     assert.equal(note(fake), null, "no note on the Household Board");
     assert.equal(readLoader(fake).shown, false, "nor the Loader");
 
     fake.advanceTime(5000);
     await settle();
     fake.advanceTime(BOARD_OPEN_MS);
-    assert.equal(viewName(fake), "The household", "the read leaves the Household Board drawn");
+    assert.equal(viewName(fake), "Household scores", "the read leaves the Household Board drawn");
     assert.equal(note(fake), null);
 
     showView(fake, lang, "personal");
     assert.equal(note(fake), null, "nor on the Personal Board");
     showView(fake, lang, "table");
-    assert.equal(viewName(fake), "The table");
+    assert.equal(viewName(fake), "ROM scores");
     assert.equal(podium(fake, lang).middle.initials, "XYZ", "the fresh board");
     assert.equal(note(fake), null);
     assert.equal(readLoader(fake).shown, false);

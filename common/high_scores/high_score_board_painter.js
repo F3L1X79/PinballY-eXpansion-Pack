@@ -51,9 +51,10 @@ const LOOK = Object.freeze({
     // title's line; at the bottom, to the footer, which takes most of the room the
     // Drawn Menu leaves there, so a 5-place board still fits a landscape window.
     sideInset: DRAWN_MENU_FACE_INSET + DRAWN_MENU_LIST_INSET, topInset: DRAWN_MENU_FACE_INSET + 16, bottomInset: DRAWN_MENU_FACE_INSET + 4,
-    // The title holds the table's title, then the view's name under it;
-    // tight, so a 5-place board still fits a landscape window.
-    titleH: 68, titleLineH: 46, titleSize: 34, minTitleSize: 22, viewNameSize: 16, noteH: 24, noteSize: 15, titleGap: 4,
+    // The title holds the table's title, then, a little apart, the view's
+    // title and two lines on what it shows.
+    titleH: 124, titleLineH: 46, titleSize: 34, minTitleSize: 22, viewTitleGap: 12, viewTitleH: 26, viewTitleSize: 18,
+    helpH: 40, helpSize: 14, noteH: 24, noteSize: 15, titleGap: 4,
     messageH: 200, messageSize: 26,
     // The podium's steps, the 1st's first: the crown's room, the Avatar,
     // the block under it; the steps stand on the same floor. The crown
@@ -132,14 +133,14 @@ export function layoutHighScoreBoard(referenceWidth, placeCount, sizedPlaceCount
     const x = LOOK.sideInset;
     const contentW = w - 2 * LOOK.sideInset;
     const exitRoom = LOOK.exitTooltipRoom + LOOK.exitButton;
-    const title = { x: x + exitRoom, y: LOOK.topInset, w: contentW - 2 * exitRoom, h: LOOK.titleH };
+    // The content's width: only the table's title, on the Exit Button's line, keeps off it.
+    const title = { x, y: LOOK.topInset, w: contentW, h: LOOK.titleH, sideRoom: exitRoom };
     const exitButton = {
         x: w - DRAWN_MENU_FACE_INSET - LOOK.exitCorner - LOOK.exitButton, y: DRAWN_MENU_FACE_INSET + LOOK.exitCorner, w: LOOK.exitButton, h: LOOK.exitButton,
     };
     const exitTooltip = exitTooltipRectOf(exitButton, { room: LOOK.exitTooltipRoom, margin: LOOK.tooltipMargin });
     const note = { x, y: title.y + title.h, w: contentW, h: LOOK.noteH };
     const bodyY = note.y + note.h + LOOK.titleGap;
-    const message = { x, y: bodyY, w: contentW, h: LOOK.messageH };
     const stepW = Math.floor((contentW - (PODIUM_PLACES - 1) * LOOK.stepGap) / PODIUM_PLACES);
     // The 1st centred on the panel, so it stands in the middle whatever the rounding.
     const middleX = (w - stepW) / 2;
@@ -157,6 +158,8 @@ export function layoutHighScoreBoard(referenceWidth, placeCount, sizedPlaceCount
     const buttonHints = { x, y: h - LOOK.bottomInset - LOOK.footerH, w: contentW, h: LOOK.footerH };
     const viewButtonW = (contentW - (VIEW_BUTTONS - 1) * LOOK.viewButtonGap) / VIEW_BUTTONS;
     const viewButtonsY = buttonHints.y - LOOK.footerGap - LOOK.viewButtonH;
+    // All the room between the title and the view buttons, the message centred in it.
+    const message = { x, y: bodyY, w: contentW, h: viewButtonsY - LOOK.viewButtonsGap - bodyY };
     const viewButtons = Array.from({ length: VIEW_BUTTONS }, (_, index) => ({
         x: x + index * (viewButtonW + LOOK.viewButtonGap), y: viewButtonsY, w: viewButtonW, h: LOOK.viewButtonH,
     }));
@@ -224,12 +227,17 @@ export const drawPanel = (dc, projectFolder, w, h) => drawSlices(dc, projectFold
 // Over the texts, as on the Drawn Menu.
 export const drawGlass = (dc, projectFolder, w, h) => drawSlices(dc, projectFolder, DRAWN_MENU_IMAGES.glass, w, h, false);
 
-// The table's title, then the name of the view on show under it.
-export function drawTitle(host, dc, title, viewName, w) {
-    oneLine(host, dc, title, { x: 0, y: 0, width: w, height: LOOK.titleLineH, size: LOOK.titleSize, minSize: LOOK.minTitleSize, weight: 700, color: COLORS.gold, font: FONTS.display, align: "center" });
-    oneLine(host, dc, viewName, {
-        x: 0, y: LOOK.titleLineH, width: w, height: LOOK.titleH - LOOK.titleLineH, size: LOOK.viewNameSize, weight: 600, color: COLORS.description, font: FONTS.display, align: "center",
+// The table's title, sideRoom off both sides (the Exit Button's room),
+// then, a little apart, the view on show's title and what it shows.
+export function drawTitle(host, dc, title, viewTitle, help, w, sideRoom) {
+    oneLine(host, dc, title, {
+        x: sideRoom, y: 0, width: w - 2 * sideRoom, height: LOOK.titleLineH, size: LOOK.titleSize, minSize: LOOK.minTitleSize, weight: 700, color: COLORS.gold, font: FONTS.display, align: "center",
     });
+    const viewTitleY = LOOK.titleLineH + LOOK.viewTitleGap;
+    oneLine(host, dc, viewTitle, {
+        x: 0, y: viewTitleY, width: w, height: LOOK.viewTitleH, size: LOOK.viewTitleSize, weight: 700, color: COLORS.title, font: FONTS.display, align: "center",
+    });
+    text(host, dc, help, { x: 0, y: viewTitleY + LOOK.viewTitleH, width: w, height: LOOK.helpH, size: LOOK.helpSize, weight: 400, color: COLORS.description, align: "center" });
 }
 
 // A discreet line under the title, over a board shown: "Reading...", or

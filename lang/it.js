@@ -781,7 +781,13 @@ export default {
             notSupported: "I punteggi di questo tavolo non sono supportati",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Gioca una partita per vedere i punteggi di questo tavolo",
-            views: { table: "Il tavolo", household: "La casa", personal: "I miei 5 migliori" },
+            views: { table: "Dalla ROM", household: "Della casa", personal: "I miei 5 migliori" },
+            viewTitles: { table: "Punteggi della ROM", household: "Punteggi della casa", personal: "I miei 5 migliori punteggi" },
+            viewHelp: {
+                table: "La classifica che il tavolo conserva nella propria memoria, come una vera macchina: i punteggi di fabbrica e le iniziali inserite dopo una partita.",
+                household: "Il miglior punteggio di ogni giocatore della casa su questo tavolo, anche se nel frattempo è uscito dai punteggi della ROM.",
+                personal: "I tuoi cinque migliori punteggi su questo tavolo, compresi quelli che punteggi migliori hanno fatto uscire dalla ROM.",
+            },
             noHouseholdScore: "Nessuno di casa ha ancora un punteggio su questo tavolo",
             noPersonalScore: "Entra nei punteggi di questo tavolo per vedere qui i tuoi migliori",
             date: (day, month, year) => `${day}/${month}/${year}`,

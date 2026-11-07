@@ -21,7 +21,7 @@ test("the Personal Board speaks French", async () => {
         await settle();
         showView(fake, lang, "personal");
         assert.equal(currentViewButton(fake), "Mes 5 meilleurs");
-        assert.equal(viewName(fake), "Mes 5 meilleurs");
+        assert.equal(viewName(fake), "Mes 5 meilleurs scores");
     };
     setBoard(MEDIEVAL, FACTORY);
     await openPersonal();

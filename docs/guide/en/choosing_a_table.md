@@ -50,11 +50,11 @@ When you enter a table's high score board, the place is yours: the pack reads th
 - the board is read again from the table each time you open it, so it always shows what the table holds now;
 - on a board too long for the screen, the flippers also stop on each place below the podium, scrolling it into view.
 
-Three buttons under the board, one per view, show the view on show in gold; its name is also under the table's title, and every view keeps the same size. The board opens with its first button chosen; the flippers move from one button to the next, then to the Exit Button; Select (or Launch) opens the view of the button chosen, or closes the board on the Exit Button; Exit closes it from any view:
+Three buttons under the board, one per view, show the view on show in gold; under the table's title, the view's own title says in a line or two what it shows, and every view keeps the same size. The board opens with its first button chosen; the flippers move from one button to the next, then to the Exit Button; Select (or Launch) opens the view of the button chosen, or closes the board on the Exit Button; Exit closes it from any view:
 
-- **The table**: the table's own board, as above, where every opening starts;
-- **The household**: each Profile of the household (Guest left out, children in) once, with its best High Score on this table, a score since pushed off the table's board included, and the date of that game; after a Profile Reset, only the High Scores won since count;
-- **My best 5**: the five best High Scores of the Profile playing now on this table (Guest's too), those pushed off the table's board and each one of a multiplayer game included, with the date of each game; after a Profile Reset, only those won since.
+- **From the ROM** (*ROM scores*): the table's own board, as above, where every opening starts;
+- **From the household** (*Household scores*): each Profile of the household (Guest left out, children in) once, with its best High Score on this table, a score since pushed off the table's board included, and the date of that game; after a Profile Reset, only the High Scores won since count;
+- **My best 5** (*My 5 best scores*): the five best High Scores of the Profile playing now on this table (Guest's too), those pushed off the table's board and each one of a multiplayer game included, with the date of each game; after a Profile Reset, only those won since.
 
 To read the boards of about 300 more ROMs, update PINemHi (see [Install](install.md#pinemhi-368)).
 

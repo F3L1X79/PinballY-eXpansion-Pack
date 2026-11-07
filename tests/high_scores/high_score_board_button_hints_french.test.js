@@ -28,7 +28,7 @@ test("the board's Exit Button and footer speak French", async () => {
     await settle();
     fake.advanceTime(1000);
     await settle();
-    assert.deepEqual(viewButtons(fake), ["Le tableau", "La maison", "Mes 5 meilleurs"]);
+    assert.deepEqual(viewButtons(fake), ["De la ROM", "De la maison", "Mes 5 meilleurs"]);
     // Past the two other buttons: before them, Prev would reach the long board's last row.
     for (let step = 0; step < 3; step++) press(fake, "Next");
     assert.equal(exitButtonTooltip(fake), "Retour");

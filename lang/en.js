@@ -696,8 +696,14 @@ export default {
             notSupported: "This table's high scores are not supported",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Play a game to bring up this table's high scores",
-            // The views' names, under the table's title and in the Select hint.
-            views: { table: "The table", household: "The household", personal: "My best 5" },
+            // The views' buttons, then each view's title and what it shows, under the table's title.
+            views: { table: "From the ROM", household: "From the household", personal: "My best 5" },
+            viewTitles: { table: "ROM scores", household: "Household scores", personal: "My 5 best scores" },
+            viewHelp: {
+                table: "The board the table keeps in its own memory, as on a real machine: its factory scores and the initials typed after a game.",
+                household: "Each household player's best score on this table, even one since pushed off the ROM scores.",
+                personal: "Your five best scores on this table, including those that better scores pushed off the ROM.",
+            },
             noHouseholdScore: "No one in the household has a high score on this table yet",
             noPersonalScore: "Get onto this table's board to see your best scores here",
             // A place's date of the Play, day and month on two digits.

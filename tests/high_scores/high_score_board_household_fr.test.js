@@ -23,12 +23,12 @@ test("the Household Board speaks French", async () => {
     };
     setBoard(MEDIEVAL, FACTORY);
     await open();
-    assert.equal(viewName(fake), "Le tableau");
-    assert.deepEqual(viewButtons(fake), ["Le tableau", "La maison", "Mes 5 meilleurs"]);
+    assert.equal(viewName(fake), "Scores de la ROM");
+    assert.deepEqual(viewButtons(fake), ["De la ROM", "De la maison", "Mes 5 meilleurs"]);
     showView(fake, lang, "household");
-    assert.equal(viewName(fake), "La maison");
+    assert.equal(viewName(fake), "Scores de la maison");
     assert.equal(message(fake), "Aucun joueur de la maison n'a encore de meilleur score sur cette table");
-    assert.equal(currentViewButton(fake), "La maison");
+    assert.equal(currentViewButton(fake), "De la maison");
     press(fake, "Exit");
 
     await play(MEDIEVAL, { after: board(["SLL", "52000000"], ["ALI", "45000000"], ["BRE", "40000000"], ["LFS", "30000000"], ["ZAP", "20000000"]) });

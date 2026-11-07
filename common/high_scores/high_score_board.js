@@ -216,7 +216,8 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         const finePiece = (zIndex, rect, draw) => drawn.drawPiece(zIndex, placedRect(geometry, rect), draw, content, { w: rect.w * CANVAS_ZOOM, h: rect.h * CANVAS_ZOOM });
         const { panel } = geometry;
         piece(Z_INDEX.panel, panel, dc => drawPanel(dc, projectFolder, panel.w, panel.h));
-        piece(Z_INDEX.title, geometry.title, dc => drawTitle(host, dc, screen.title, TEXT.views[VIEWS[opened.view]], geometry.title.w));
+        const view = VIEWS[opened.view];
+        piece(Z_INDEX.title, geometry.title, dc => drawTitle(host, dc, screen.title, TEXT.viewTitles[view], TEXT.viewHelp[view], geometry.title.w, geometry.title.sideRoom));
         if (screen.note !== null) piece(Z_INDEX.note, geometry.note, dc => drawNote(host, dc, screen.note, geometry.note.w, geometry.note.h));
         if (screen.message !== null) {
             piece(Z_INDEX.message, geometry.message, dc => drawMessage(host, dc, screen.message, geometry.message.w, geometry.message.h));

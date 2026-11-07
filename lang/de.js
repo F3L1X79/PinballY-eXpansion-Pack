@@ -782,7 +782,13 @@ export default {
             notSupported: "Die Highscores dieses Tisches werden nicht unterstützt",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Spielen Sie eine Partie, um die Highscores dieses Tisches anzuzeigen",
-            views: { table: "Der Tisch", household: "Die Familie", personal: "Meine besten 5" },
+            views: { table: "Aus dem ROM", household: "Aus der Familie", personal: "Meine besten 5" },
+            viewTitles: { table: "Highscores des ROM", household: "Highscores der Familie", personal: "Meine 5 besten Highscores" },
+            viewHelp: {
+                table: "Die Liste, die der Tisch in seinem eigenen Speicher hält, wie ein echter Automat: seine Werksscores und die nach einer Partie eingegebenen Initialen.",
+                household: "Der beste Highscore jedes Spielers der Familie auf diesem Tisch, auch wenn er inzwischen aus dem ROM verdrängt wurde.",
+                personal: "Ihre fünf besten Highscores auf diesem Tisch, auch die, die bessere Scores aus dem ROM verdrängt haben.",
+            },
             noHouseholdScore: "Noch hat niemand aus der Familie einen Highscore auf diesem Tisch",
             noPersonalScore: "Schaffen Sie es auf die Highscores dieses Tisches, um hier Ihre besten Scores zu sehen",
             date: (day, month, year) => `${day}.${month}.${year}`,

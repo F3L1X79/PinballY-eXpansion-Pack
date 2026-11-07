@@ -37,7 +37,7 @@ test("the Personal Board shows the active Profile's five best High Scores on the
     fake.advanceTime(1000);
     await settle();
     showView(fake, lang, "personal");
-    assert.equal(viewName(fake), "My best 5");
+    assert.equal(viewName(fake), "My 5 best scores");
     assert.equal(currentViewButton(fake), VIEWS.personal);
     assert.equal(message(fake), null);
     const alice = (rank, score, date) => ({ rank, name: "Alice", avatar: avatarOf("Alice"), score, date });
@@ -50,7 +50,7 @@ test("the Personal Board shows the active Profile's five best High Scores on the
     ]);
 
     showView(fake, lang, "table");
-    assert.equal(viewName(fake), "The table", "its button turns back to the Table Board");
+    assert.equal(viewName(fake), "ROM scores", "its button turns back to the Table Board");
     press(fake, "Exit");
     assertNoErrorLogged(fake);
 });

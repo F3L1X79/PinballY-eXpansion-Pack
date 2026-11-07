@@ -783,7 +783,13 @@ export default {
             notSupported: "Las puntuaciones de esta mesa no son compatibles",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Juega una partida para ver las puntuaciones de esta mesa",
-            views: { table: "La mesa", household: "La casa", personal: "Mis 5 mejores" },
+            views: { table: "De la ROM", household: "De la casa", personal: "Mis 5 mejores" },
+            viewTitles: { table: "Puntuaciones de la ROM", household: "Puntuaciones de la casa", personal: "Mis 5 mejores puntuaciones" },
+            viewHelp: {
+                table: "La tabla que la mesa guarda en su propia memoria, como una máquina real: sus puntuaciones de fábrica y las iniciales escritas tras una partida.",
+                household: "La mejor puntuación de cada jugador de la casa en esta mesa, aunque ya haya salido de las puntuaciones de la ROM.",
+                personal: "Tus cinco mejores puntuaciones en esta mesa, incluidas las que otras mejores han sacado de la ROM.",
+            },
             noHouseholdScore: "Nadie de la casa tiene aún una puntuación en esta mesa",
             noPersonalScore: "Entra en las puntuaciones de esta mesa para ver aquí tus mejores",
             date: (day, month, year) => `${day}/${month}/${year}`,

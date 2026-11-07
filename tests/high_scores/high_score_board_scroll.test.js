@@ -55,7 +55,7 @@ test("the flippers walk a long board's rows, scrolling them under the fixed podi
     });
     assert.ok(press(fake, "Select").defaultPrevented);
     assert.ok(isBoardOpen(fake), "Select on a row does nothing");
-    assert.equal(viewName(fake), VIEWS.table);
+    assert.equal(viewName(fake), lang.highScores.board.viewTitles.table);
 
     press(fake, "Next");
     assert.deepEqual(marked(fake, lang), { view: VIEWS.table }, "the view buttons come after the last row");

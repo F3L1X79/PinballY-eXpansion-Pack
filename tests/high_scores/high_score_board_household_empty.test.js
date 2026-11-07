@@ -25,13 +25,13 @@ test("an unsupported table keeps its three views, the Household and Personal Boa
     assert.equal(message(fake), "This table's high scores are not supported");
 
     showView(fake, lang, "household");
-    assert.equal(viewName(fake), "The household");
+    assert.equal(viewName(fake), "Household scores");
     assert.equal(message(fake), "No one in the household has a high score on this table yet");
     assert.equal(note(fake), null);
     assert.deepEqual(podium(fake, lang), { left: null, middle: null, right: null });
 
     showView(fake, lang, "personal");
-    assert.equal(viewName(fake), "My best 5");
+    assert.equal(viewName(fake), "My 5 best scores");
     assert.equal(message(fake), "Get onto this table's board to see your best scores here");
 
     showView(fake, lang, "table");

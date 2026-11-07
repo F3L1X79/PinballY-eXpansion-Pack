@@ -49,7 +49,7 @@ test("the High Score Board counts a held Select, Launch or Exit once, moves its 
         if (flipper) press(fake, flipper);
         assert.ok(press(fake, button).defaultPrevented);
         assert.ok(isBoardOpen(fake), `${button} turns the view, the board stays`);
-        assert.equal(viewName(fake), VIEWS[view], `${button} on a view button turns to its view`);
+        assert.equal(viewName(fake), lang.highScores.board.viewTitles[view], `${button} on a view button turns to its view`);
     }
     assert.ok(press(fake, "Exit").defaultPrevented);
     assert.equal(boardLayerCount(fake), 0, "Exit closes the board");

@@ -14,6 +14,7 @@ import { expectedButtonHints } from "../support/button_hints_reader.js";
 import { startHighScores, FACTORY, MEDIEVAL } from "./high_scores_scenario.js";
 import {
     openBoard, press, isBoardOpen, boardLayerCount, title, viewName, buttonHints, podium, message, viewButtons, currentViewButton, marked, exitButtonTooltip, panelHeight,
+    viewHelp, messageOffset,
 } from "./high_score_board_reader.js";
 
 test("three buttons turn the High Score Board's views, the first selected on opening, every view the size of the longest", async () => {
@@ -29,9 +30,10 @@ test("three buttons turn the High Score Board's views, the first selected on ope
     fake.advanceTime(1000);
     await settle();
     assert.equal(title(fake), "Medieval Madness");
-    assert.equal(viewName(fake), "The table");
+    assert.equal(viewName(fake), "ROM scores");
+    assert.equal(viewHelp(fake), TEXT.viewHelp.table, "what the view shows, under its title");
     assert.equal(podium(fake, lang).middle.initials, "SLL");
-    assert.deepEqual(viewButtons(fake), ALL);
+    assert.deepEqual(viewButtons(fake), ["From the ROM", "From the household", "My best 5"]);
     assert.equal(currentViewButton(fake), TEXT.views.table);
     assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { flippers: "browse", select: true, exit: "back" }));
     assert.deepEqual(marked(fake, lang), { view: TEXT.views.table }, "opens on the leftmost button");
@@ -39,7 +41,7 @@ test("three buttons turn the High Score Board's views, the first selected on ope
     const tableHeight = panelHeight(fake);
 
     assert.ok(press(fake, "Select").defaultPrevented);
-    assert.equal(viewName(fake), "The table", "Select on the view on show's button does nothing");
+    assert.equal(viewName(fake), "ROM scores", "Select on the view on show's button does nothing");
 
     press(fake, "Next");
     assert.deepEqual(marked(fake, lang), { view: TEXT.views.household });
@@ -58,8 +60,10 @@ test("three buttons turn the High Score Board's views, the first selected on ope
     assert.ok(press(fake, "Select").defaultPrevented);
     assert.ok(isBoardOpen(fake), "Select keeps the board open");
     assert.equal(title(fake), "Medieval Madness");
-    assert.equal(viewName(fake), "The household");
+    assert.equal(viewName(fake), "Household scores");
+    assert.equal(viewHelp(fake), TEXT.viewHelp.household);
     assert.equal(message(fake), TEXT.noHouseholdScore, "no Profile has a High Score here");
+    assert.ok(messageOffset(fake) < 0.03, `the message stands midway between the title and the buttons (${messageOffset(fake)})`);
     assert.deepEqual(viewButtons(fake), ALL, "the buttons stay in place");
     assert.equal(currentViewButton(fake), TEXT.views.household);
     assert.deepEqual(marked(fake, lang), { view: TEXT.views.household }, "the marker stays on the button");
@@ -67,13 +71,13 @@ test("three buttons turn the High Score Board's views, the first selected on ope
 
     press(fake, "Next");
     press(fake, "Launch");
-    assert.equal(viewName(fake), "My best 5", "Launch turns the view too");
+    assert.equal(viewName(fake), "My 5 best scores", "Launch turns the view too");
     assert.equal(panelHeight(fake), tableHeight);
 
     press(fake, "Prev");
     press(fake, "Prev");
     press(fake, "Select");
-    assert.equal(viewName(fake), "The table");
+    assert.equal(viewName(fake), "ROM scores");
     assert.equal(podium(fake, lang).middle.initials, "SLL");
 
     press(fake, "Next");
@@ -85,7 +89,7 @@ test("three buttons turn the High Score Board's views, the first selected on ope
 
     openBoard(fake, lang);
     await settle();
-    assert.equal(viewName(fake), "The table", "every opening starts on the Table Board");
+    assert.equal(viewName(fake), "ROM scores", "every opening starts on the Table Board");
     assert.deepEqual(marked(fake, lang), { view: TEXT.views.table });
     press(fake, "Prev");
     assert.ok(press(fake, "Select").defaultPrevented);

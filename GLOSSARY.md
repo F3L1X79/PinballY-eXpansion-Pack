@@ -402,14 +402,14 @@ The drawn screen of the selected table's scores, in three views: the Table Board
 _Avoid_: high scores popup, leaderboard
 
 **Table Board**:
-The view of the High Score Board that shows the table's own high score board with each place's owner. Not the table's own board, which it shows. Shown as "Le tableau" in French.
+The view of the High Score Board that shows the table's own high score board with each place's owner. Not the table’s own board, which it shows. Shown as "Scores de la ROM" in French, its button "De la ROM".
 
 **Household Board**:
-The view of the High Score Board that ranks the Household's Profiles by their best High Score or Play Score on the table since their last Profile Reset, one place each. Shown as "La maison" in French.
+The view of the High Score Board that ranks the Household's Profiles by their best High Score or Play Score on the table since their last Profile Reset, one place each. Shown as "Scores de la maison" in French, its button "De la maison".
 _Avoid_: leaderboard, family board
 
 **Personal Board**:
-The view of the High Score Board that shows the active Profile's five best scores on the table since its last Profile Reset: its High Scores, those pushed off the table's board included, and its Play Scores, a Play counted once. Shown as "Mes 5 meilleurs" in French.
+The view of the High Score Board that shows the active Profile's five best scores on the table since its last Profile Reset: its High Scores, those pushed off the table's board included, and its Play Scores, a Play counted once. Shown as "Mes 5 meilleurs scores" in French, its button "Mes 5 meilleurs".
 _Avoid_: Personal 5, My High Scores (the wheel selection of tables where it still holds one)
 
 ### Achievements

@@ -51,11 +51,16 @@ const firstText = (fake, zIndex) => {
 
 export const title = fake => firstText(fake, HIGH_SCORE_BOARD_Z_INDEX.title);
 
-// The name of the view on show ("The table"), under the table's title.
-export function viewName(fake) {
+const titleText = (fake, index) => {
     const [layer] = shownLayers(fake, HIGH_SCORE_BOARD_Z_INDEX.title);
-    return layer ? layer.texts()[1] || null : null;
-}
+    return layer ? layer.texts()[index] || null : null;
+};
+
+// The title of the view on show ("ROM scores"), under the table's title.
+export const viewName = fake => titleText(fake, 1);
+
+// What the view on show shows, under its title.
+export const viewHelp = fake => titleText(fake, 2);
 
 // The message shown in place of the board ("No score yet"), or null.
 export const message = fake => firstText(fake, HIGH_SCORE_BOARD_Z_INDEX.message);
@@ -206,6 +211,20 @@ export function currentViewButton(fake) {
     const current = viewButtonLayers(fake).filter(layer => layer.strokes().some(stroke => "text" in stroke && stroke.color === STEAMBALL_COLORS.gold));
     assert.ok(current.length <= 1, "one view on show at most");
     return current.length > 0 ? current[0].texts()[0] : null;
+}
+
+// How far the message's text stands from midway between the title's
+// bottom and the view buttons' top, in panel heights.
+export function messageOffset(fake) {
+    const span = layer => layer.scale().ySpan;
+    const [box] = shownLayers(fake, HIGH_SCORE_BOARD_Z_INDEX.message);
+    const [titleLayer] = shownLayers(fake, HIGH_SCORE_BOARD_Z_INDEX.title);
+    const [button] = viewButtonLayers(fake);
+    const { rect } = box.strokes().find(stroke => "text" in stroke);
+    // Positions grow upwards; the canvas's y downwards.
+    const textY = box.position().y + span(box) / 2 - (rect.y + rect.height / 2) / box.canvasSize().height * span(box);
+    const midway = (titleLayer.position().y - span(titleLayer) / 2 + button.position().y + span(button) / 2) / 2;
+    return Math.abs(textY - midway) / panelHeight(fake);
 }
 
 // The panel's height on the window, in window heights.
