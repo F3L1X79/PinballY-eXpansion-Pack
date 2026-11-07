@@ -1,9 +1,9 @@
 ﻿// ============================================================
-// Checks the active Profile's Achievements and hands the new ones to the
-// Achievement Toast module, followed by one Level Toast when they raise the
-// Player Level. Runs at startup, after "gamestarted" / "gameover", on a
-// Profile switch, a completed World Tour and a Play that credited High Scores.
-// Also adds Achievement List and Profile Stats to the main menu and starts the World Tour and Surprises trackers.
+// Checks the active Profile's Achievements on each event that can unlock one
+// (startup, a game, a Profile switch, the rating dialog closing...) and hands
+// the new ones to the Achievement Toast module, then one Level Toast when the
+// Player Level rises. Also adds Achievement List and Profile Stats to the
+// main menu, and starts the World Tour and Surprises trackers.
 // - An Achievement becomes Notified when its toast starts, not when it unlocks.
 // - The level at startup, at a switch or after a Profile Reset is a baseline, never announced.
 // - A Child Profile's level scales its points by the set a non-child Profile would have.
@@ -28,6 +28,7 @@ import { createWorldTour } from "../common/achievements/world_tour.js";
 import { buildSurprisesAchievements } from "../achievements/surprises.js";
 import { createSurprises } from "../common/achievements/surprises.js";
 import { buildRatingsAchievements } from "../achievements/ratings.js";
+import { RATE_GAME_POPUP } from "../common/profiles/profile_ratings.js";
 import { buildYoungPlayersAchievements } from "../achievements/young_players.js";
 import { getAchievementToasts, TOAST_KIND } from "../common/achievements/achievement_toast.js";
 import { getPlayerLevel, playerLevelOf } from "../common/levels/player_level.js";
@@ -327,6 +328,15 @@ export default function init() {
     // the store's answer, shows before the Achievements it brought.
     const highScores = getEnabledHighScores();
     if (highScores) highScores.onCredited(safeHandler(SCRIPT_NAME, () => setTimeout(safeCheckForNewAchievements, 0)));
+    // Fires when PinballY's rating dialog closes (Rate Table or the Rating
+    // Prompt): PinballY raises no event when a Rating changes, and its
+    // column already holds the new one (ADR 0024), so no tick is waited:
+    // no other handler of this event records anything the check reads.
+    if (config.addOns.profileRatings !== false) {
+        mainWindow.on("popupclose", safeHandler(SCRIPT_NAME, ev => {
+            if (ev.id === RATE_GAME_POPUP) checkForNewAchievements();
+        }));
+    }
 
     // Startup check, one tick after the inits, so a Welcome Screen submitted
     // at startup is already waiting whatever the order in main.js, and its

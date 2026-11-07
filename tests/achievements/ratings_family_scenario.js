@@ -80,6 +80,11 @@ export async function startRatingsScenario({ ratings = {}, active = "guest", add
 
     // The player gives the table that Rating in PinballY's dialog (-1: none).
     const rate = (game, rating) => fake.getGameInfo(game.configId).update({ rating });
+    // The player's rating dialog closes (popupId: another popup instead).
+    async function closePopup(popupId = "rate game") {
+        fake.fire("popupclose", { id: popupId });
+        await settle();
+    }
 
     async function play(game = MEDIEVAL) {
         fake.gameStarted(game);
@@ -108,5 +113,5 @@ export async function startRatingsScenario({ ratings = {}, active = "guest", add
     // The family's toasts among these texts, in order.
     const familyToasts = texts => texts.filter(text => titles.includes(text));
 
-    return { fake, store, TEXT, LIST_TEXT, titles, familyToasts, getAllAchievements, newToastTexts, rate, play, listRows, switchTo };
+    return { fake, store, TEXT, LIST_TEXT, titles, familyToasts, getAllAchievements, newToastTexts, rate, closePopup, play, listRows, switchTo, lang };
 }
