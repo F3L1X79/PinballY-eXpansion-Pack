@@ -417,6 +417,13 @@ export default {
             100: "Eu adoooooro o acaso",
         },
         randomGamesDescription: (count) => `Jogar ${count} mesas aleatórias.`,
+        ratingsTitles: {
+            1: "Primeiro veredito",
+            5: "Crítico de sofá",
+            10: "Grande Inquisidor",
+            25: "Oráculo do tabuleiro",
+        },
+        ratingsDescription: (count) => (count === 1 ? "Avaliar uma mesa." : `Avaliar ${count} mesas.`),
         challengesCompletedTitles: {
             1: "Primeiro desafio",
             5: "Amante de desafios",
@@ -494,6 +501,9 @@ export default {
                 short: (current, target) => `${current}/${target}`,
             },
             challenges: {
+                short: (current, target) => `${current}/${target}`,
+            },
+            ratedTables: {
                 short: (current, target) => `${current}/${target}`,
             },
         },
@@ -823,7 +833,7 @@ export default {
             profileRatings: {
                 name: "Avaliações por perfil",
                 whenOn: "Cada perfil guarda as suas próprias avaliações e favoritos.",
-                whenOff: "Todos partilham as mesmas avaliações e favoritos.",
+                whenOff: "Todos partilham as mesmas avaliações e favoritos; sem conquistas de avaliações.",
             },
             startupChoicePrompt: {
                 name: "Boas-vindas",

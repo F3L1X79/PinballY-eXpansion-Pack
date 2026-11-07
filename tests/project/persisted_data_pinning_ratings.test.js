@@ -1,7 +1,8 @@
 // ============================================================
 // Pinning test for Profile Ratings: the file names and keys of each Profile's
-// ratings.json and of the cabinet's profile_ratings.json.
-// - These strings are players' saved Ratings: this test must keep passing unchanged.
+// ratings.json and of the cabinet's profile_ratings.json, and the Ratings
+// family's Achievement IDs.
+// - These strings are players' saved Ratings and progress: this test must keep passing unchanged.
 // ============================================================
 
 import { test } from "node:test";
@@ -9,6 +10,7 @@ import assert from "node:assert/strict";
 import { createFakePinballYHost } from "../support/fake_pinbally_host.js";
 import { createProfileStore } from "../../common/profiles/profile_store.js";
 import { createProfileRatings } from "../../common/profiles/profile_ratings.js";
+import { buildRatingsAchievements } from "../../achievements/ratings.js";
 
 const PROFILES_FOLDER = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 const TABLES = [
@@ -31,4 +33,13 @@ test("the Ratings files keep their names and keys", () => {
         favorites: ["Medieval Madness (Williams 1997)"],
     });
     assert.deepEqual(JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\profile_ratings.json`)), { version: 1, columnsProfile: "Alice" });
+});
+
+test("the Ratings Achievement IDs stay byte-identical", () => {
+    assert.deepEqual(buildRatingsAchievements().map(achievement => achievement.id), [
+        "ratings:1",
+        "ratings:5",
+        "ratings:10",
+        "ratings:25",
+    ]);
 });

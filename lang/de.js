@@ -417,6 +417,13 @@ export default {
             100: "Ich liiiiebe den Zufall",
         },
         randomGamesDescription: (count) => `${count} zufällige Tische spielen.`,
+        ratingsTitles: {
+            1: "Erstes Urteil",
+            5: "Sofakritiker",
+            10: "Großinquisitor",
+            25: "Orakel des Spielfelds",
+        },
+        ratingsDescription: (count) => (count === 1 ? "Einen Tisch bewerten." : `${count} Tische bewerten.`),
         challengesCompletedTitles: {
             1: "Erste Herausforderung",
             5: "Herausforderer",
@@ -494,6 +501,9 @@ export default {
                 short: (current, target) => `${current}/${target}`,
             },
             challenges: {
+                short: (current, target) => `${current}/${target}`,
+            },
+            ratedTables: {
                 short: (current, target) => `${current}/${target}`,
             },
         },
@@ -823,7 +833,7 @@ export default {
             profileRatings: {
                 name: "Bewertungen pro Profil",
                 whenOn: "Jedes Profil behält seine eigenen Bewertungen und Favoriten.",
-                whenOff: "Alle teilen dieselben Bewertungen und Favoriten.",
+                whenOff: "Alle teilen dieselben Bewertungen und Favoriten; keine Bewertungs-Erfolge.",
             },
             startupChoicePrompt: {
                 name: "Willkommensseite",

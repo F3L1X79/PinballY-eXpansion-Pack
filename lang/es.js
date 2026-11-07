@@ -418,6 +418,13 @@ export default {
             100: "Me encaaaanta el azar",
         },
         randomGamesDescription: (count) => `Jugar ${count} mesas al azar.`,
+        ratingsTitles: {
+            1: "Primer veredicto",
+            5: "Crítico de sofá",
+            10: "Gran Inquisidor",
+            25: "Oráculo del tablero",
+        },
+        ratingsDescription: (count) => (count === 1 ? "Valorar una mesa." : `Valorar ${count} mesas.`),
         challengesCompletedTitles: {
             1: "Primer desafío",
             5: "Aficionado a los desafíos",
@@ -495,6 +502,9 @@ export default {
                 short: (current, target) => `${current}/${target}`,
             },
             challenges: {
+                short: (current, target) => `${current}/${target}`,
+            },
+            ratedTables: {
                 short: (current, target) => `${current}/${target}`,
             },
         },
@@ -824,7 +834,7 @@ export default {
             profileRatings: {
                 name: "Valoraciones por perfil",
                 whenOn: "Cada perfil guarda sus propias valoraciones y sus favoritos.",
-                whenOff: "Todos comparten las mismas valoraciones y favoritos.",
+                whenOff: "Todos comparten las mismas valoraciones y favoritos; sin logros de valoraciones.",
             },
             startupChoicePrompt: {
                 name: "Bienvenida",

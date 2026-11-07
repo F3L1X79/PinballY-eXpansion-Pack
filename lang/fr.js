@@ -420,6 +420,13 @@ export default {
             100: "Poker face",
         },
         randomGamesDescription: (count) => `Jouer ${count} tables au hasard.`,
+        ratingsTitles: {
+            1: "Premier verdict",
+            5: "Critique de canapé",
+            10: "Grand Inquisiteur",
+            25: "Oracle des plateaux",
+        },
+        ratingsDescription: (count) => (count === 1 ? "Noter une table." : `Noter ${count} tables.`),
         challengesCompletedTitles: {
             1: "Premier défi",
             5: "Amateur de défis",
@@ -497,6 +504,9 @@ export default {
                 short: (current, target) => `${current}/${target}`,
             },
             challenges: {
+                short: (current, target) => `${current}/${target}`,
+            },
+            ratedTables: {
                 short: (current, target) => `${current}/${target}`,
             },
         },
@@ -828,7 +838,7 @@ export default {
             profileRatings: {
                 name: "Notes par Profil",
                 whenOn: "Chaque Profil garde ses propres notes et ses tables favorites.",
-                whenOff: "Tout le monde partage les mêmes notes et tables favorites.",
+                whenOff: "Tout le monde partage les mêmes notes et tables favorites ; plus de Succès de notes.",
             },
             startupChoicePrompt: {
                 name: "Écran d'accueil",

@@ -20,7 +20,7 @@ Everything stays in one folder, with no change to PinballY itself.
 - "Update vpxtool (v0.37.1 → v0.38.0)" while yours is older than the version the pack names;
 - "Update vpxtool", greyed with "vpxtool v0.38.0 is up to date" under it, while yours is that version or newer.
 
-Under "Players and progress", **Ratings per Profile** gives each Profile its own star Ratings and Favorite Tables, kept in a `ratings.json` file of its folder. The first time it runs, every Profile, Guest included, is given the Ratings and Favorite Tables already on the cabinet. Turned off, everyone shares PinballY's Ratings and Favorite Tables again (`ADD_ON_PROFILE_RATINGS=false`).
+Under "Players and progress", **Ratings per Profile** gives each Profile its own star Ratings and Favorite Tables, kept in a `ratings.json` file of its folder. The first time it runs, every Profile, Guest included, is given the Ratings and Favorite Tables already on the cabinet. Turned off, everyone shares PinballY's Ratings and Favorite Tables again, and the Ratings Achievements are gone (`ADD_ON_PROFILE_RATINGS=false`).
 
 Until the pack has read your vpxtool's version once (about ten seconds into the first start that finds it), or while that version cannot be read, there is no vpxtool line.
 

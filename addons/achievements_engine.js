@@ -7,7 +7,7 @@
 // - An Achievement becomes Notified when its toast starts, not when it unlocks.
 // - The level at startup, at a switch or after a Profile Reset is a baseline, never announced.
 // - A Child Profile's level scales its points by the set a non-child Profile would have.
-// - The Challenges / High Scores families exist only while their Add-on is on.
+// - The Challenges / High Scores / Ratings families exist only while their Add-on is on.
 // ============================================================
 
 import { evaluateAchievements, markNotified, ACHIEVEMENT_RANK } from "../common/achievements/achievements.js";
@@ -27,6 +27,7 @@ import { buildWorldTourAchievements } from "../achievements/world_tour.js";
 import { createWorldTour } from "../common/achievements/world_tour.js";
 import { buildSurprisesAchievements } from "../achievements/surprises.js";
 import { createSurprises } from "../common/achievements/surprises.js";
+import { buildRatingsAchievements } from "../achievements/ratings.js";
 import { buildYoungPlayersAchievements } from "../achievements/young_players.js";
 import { getAchievementToasts, TOAST_KIND } from "../common/achievements/achievement_toast.js";
 import { getPlayerLevel, playerLevelOf } from "../common/levels/player_level.js";
@@ -90,6 +91,7 @@ export function getAllAchievements({ asNonChild = false, profileName } = {}) {
         ...(challenges ? buildChallengeAchievements(challenges) : []),
         ...(highScores ? buildHighScoreAchievements(highScores, seenBy) : []),
         ...buildSurprisesAchievements(seenBy),
+        ...buildRatingsAchievements(),
         ...buildYoungPlayersAchievements({ ...seenBy, highScores }),
     ];
 }

@@ -1,9 +1,9 @@
 // ============================================================
-// Profile Ratings: each Profile's Ratings and Favorite Tables, in its own
-// ratings.json through the Profile store; PinballY's rating / isFavorite columns
-// hold the active Profile's (docs/adr/0024), and the cabinet's profile_ratings.json
-// names whose. start() runs once, at startup; on each Profile change (onSwitch)
-// the columns go back into the Profile left, and the next one's values onto them.
+// Profile Ratings: each Profile's Ratings and Favorite Tables in its ratings.json;
+// PinballY's rating / isFavorite columns hold the active Profile's (docs/adr/0024),
+// the cabinet's profile_ratings.json names whose. start() runs once, at startup; each
+// Profile change puts the columns back into the Profile left, the next one's onto them.
+// One shared instance (getProfileRatings) also counts the active Profile's rated tables.
 // - The columns are the truth for the active Profile: the pack never hooks the rating dialog.
 // - update() only ever carries rating / isFavorite, and only for a table that differs.
 // - A table no longer in the game list keeps its entry in every file.
@@ -12,6 +12,8 @@
 // ============================================================
 
 import { sameName } from "./profile_name_rules.js";
+import { getProfileStore } from "./profile_store.js";
+import { createPinballYHost } from "../core/pinbally_host.js";
 
 const SCRIPT_NAME = "ProfileRatings";
 const RATINGS_FILE = "ratings";
@@ -47,23 +49,23 @@ export function readRatingsOf(profileStore, profileName) {
     return Object.fromEntries(Object.entries(ratings).filter(([, rating]) => isRating(rating)));
 }
 
+// The values with every table of the game list as the columns hold it.
+function withColumns(values, tables) {
+    const ratings = { ...values.ratings };
+    const favorites = new Set(values.favorites);
+    for (const game of tables) {
+        const rating = ratingOf(game);
+        if (rating === null) delete ratings[game.configId];
+        else ratings[game.configId] = rating;
+        if (game.isFavorite === true) favorites.add(game.configId);
+        else favorites.delete(game.configId);
+    }
+    return { ...values, ratings, favorites: [...favorites] };
+}
+
 export function createProfileRatings(host, { profileStore }) {
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
     const readValues = profileName => readValuesOf(profileStore, profileName);
-
-    // The values with every table of the game list as the columns hold it.
-    function withColumns(values, tables) {
-        const ratings = { ...values.ratings };
-        const favorites = new Set(values.favorites);
-        for (const game of tables) {
-            const rating = ratingOf(game);
-            if (rating === null) delete ratings[game.configId];
-            else ratings[game.configId] = rating;
-            if (game.isFavorite === true) favorites.add(game.configId);
-            else favorites.delete(game.configId);
-        }
-        return { ...values, ratings, favorites: [...favorites] };
-    }
 
     // Written only when something changed: this runs at every startup.
     function keepColumnsIn(profileName, tables) {
@@ -147,5 +149,26 @@ export function createProfileRatings(host, { profileStore }) {
         moveColumnsTo(activeName, tables, typeof columnsName === "string" ? columnsName : null);
     }
 
-    return { start };
+    // How many tables the active Profile has rated, gone and Adult Tables
+    // included. The columns count only once they hold its values: a
+    // listener of the same switch running before onSwitch reads its file,
+    // which is what onSwitch puts on them.
+    function countRatedTables() {
+        const activeName = profileStore.getActiveProfile().name;
+        const saved = readValues(activeName);
+        const isOnColumns = columnsProfile !== null && sameName(columnsProfile, activeName);
+        const { ratings } = isOnColumns ? withColumns(saved, host.getAllTables()) : saved;
+        return Object.values(ratings).filter(isRating).length;
+    }
+
+    return { start, countRatedTables };
+}
+
+let sharedProfileRatings = null;
+
+// One instance for the Profile Ratings Add-on and the Ratings family, so
+// the count knows whose values the columns hold.
+export function getProfileRatings() {
+    if (!sharedProfileRatings) sharedProfileRatings = createProfileRatings(createPinballYHost(), { profileStore: getProfileStore() });
+    return sharedProfileRatings;
 }

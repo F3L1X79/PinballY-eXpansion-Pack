@@ -416,6 +416,13 @@ export default {
             100: "Adoooooro il caso",
         },
         randomGamesDescription: (count) => `Giocare ${count} tavoli a caso.`,
+        ratingsTitles: {
+            1: "Primo verdetto",
+            5: "Critico da divano",
+            10: "Grande Inquisitore",
+            25: "Oracolo del piano",
+        },
+        ratingsDescription: (count) => (count === 1 ? "Valutare un tavolo." : `Valutare ${count} tavoli.`),
         challengesCompletedTitles: {
             1: "Prima sfida",
             5: "Amante delle sfide",
@@ -493,6 +500,9 @@ export default {
                 short: (current, target) => `${current}/${target}`,
             },
             challenges: {
+                short: (current, target) => `${current}/${target}`,
+            },
+            ratedTables: {
                 short: (current, target) => `${current}/${target}`,
             },
         },
@@ -822,7 +832,7 @@ export default {
             profileRatings: {
                 name: "Valutazioni per profilo",
                 whenOn: "Ogni profilo tiene le proprie valutazioni e i propri preferiti.",
-                whenOff: "Tutti condividono le stesse valutazioni e gli stessi preferiti.",
+                whenOff: "Tutti condividono le stesse valutazioni e gli stessi preferiti; niente obiettivi di valutazione.",
             },
             startupChoicePrompt: {
                 name: "Benvenuto",

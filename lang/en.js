@@ -309,6 +309,13 @@ export default {
             100: "Poker face",
         },
         randomGamesDescription: (count) => `Play ${count} Random Games.`,
+        ratingsTitles: {
+            1: "First Verdict",
+            5: "Armchair Critic",
+            10: "Grand Inquisitor",
+            25: "Oracle of the Playfield",
+        },
+        ratingsDescription: (count) => (count === 1 ? "Rate a table." : `Rate ${count} tables.`),
         challengesCompletedTitles: {
             1: "First Challenge",
             5: "Challenge Taker",
@@ -387,6 +394,9 @@ export default {
                 short: (current, target) => `${current}/${target}`,
             },
             challenges: {
+                short: (current, target) => `${current}/${target}`,
+            },
+            ratedTables: {
                 short: (current, target) => `${current}/${target}`,
             },
         },
@@ -751,7 +761,7 @@ export default {
             profileRatings: {
                 name: "Ratings per Profile",
                 whenOn: "Each Profile keeps its own Ratings and Favorite Tables.",
-                whenOff: "Everyone shares the same Ratings and Favorite Tables.",
+                whenOff: "Everyone shares the same Ratings and Favorite Tables; no Ratings Achievements.",
             },
             startupChoicePrompt: {
                 name: "Welcome Screen",

@@ -8,8 +8,8 @@
 // - The caller marks an Achievement Notified when its toast starts.
 // ============================================================
 
-// The kind of an Achievement; the Challenges and High Scores ones exist
-// only while their Add-on is enabled, Surprises whenever the Achievements do,
+// The kind of an Achievement; the Challenges, High Scores and Ratings ones
+// exist only while their Add-on is enabled, Surprises whenever the Achievements do,
 // Young Players only for a Child Profile.
 export const ACHIEVEMENT_FAMILY = Object.freeze({
     COLLECTION: "collection",
@@ -23,6 +23,7 @@ export const ACHIEVEMENT_FAMILY = Object.freeze({
     CHALLENGES: "challenges",
     HIGH_SCORES: "highScores",
     SURPRISES: "surprises",
+    RATINGS: "ratings",
     YOUNG_PLAYERS: "youngPlayers",
 });
 
@@ -39,6 +40,7 @@ export const PROGRESS_UNIT = Object.freeze({
     RANDOM_GAMES: "randomGames",
     MANUFACTURERS: "manufacturers",
     CHALLENGES: "challenges",
+    RATED_TABLES: "ratedTables",
 });
 
 // Every Achievement's Achievement Rank, from the easiest.

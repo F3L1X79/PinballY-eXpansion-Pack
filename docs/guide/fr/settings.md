@@ -20,7 +20,7 @@ Tout tient dans un seul dossier, sans modifier PinballY.
 - « Mettre à jour vpxtool (v0.37.1 → v0.38.0) » tant que le vôtre est plus ancien que la version que nomme le pack ;
 - « Mettre à jour vpxtool », grisée avec « vpxtool v0.38.0 est à jour » en dessous, quand le vôtre est à cette version ou plus récent.
 
-Sous « Joueurs et progression », **Notes par Profil** donne à chaque Profil ses propres notes et ses tables favorites, gardées dans un fichier `ratings.json` de son dossier. La première fois, chaque Profil, Invité compris, reçoit les notes et les favoris déjà présents sur la borne. Désactivé, tout le monde partage de nouveau les notes et les favoris de PinballY (`ADD_ON_PROFILE_RATINGS=false`).
+Sous « Joueurs et progression », **Notes par Profil** donne à chaque Profil ses propres notes et ses tables favorites, gardées dans un fichier `ratings.json` de son dossier. La première fois, chaque Profil, Invité compris, reçoit les notes et les favoris déjà présents sur la borne. Désactivé, tout le monde partage de nouveau les notes et les favoris de PinballY, et les Succès de notes disparaissent (`ADD_ON_PROFILE_RATINGS=false`).
 
 Tant que le pack n'a pas lu une fois la version de votre vpxtool (une dizaine de secondes après le premier démarrage qui le trouve), ou si cette version est illisible, il n'y a pas de ligne vpxtool.
 

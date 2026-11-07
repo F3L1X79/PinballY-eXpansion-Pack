@@ -10,7 +10,7 @@
 
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
-import { createProfileRatings, ratingOf, RATE_GAME_POPUP } from "../common/profiles/profile_ratings.js";
+import { getProfileRatings, ratingOf, RATE_GAME_POPUP } from "../common/profiles/profile_ratings.js";
 import { createRatingPlate } from "../common/profiles/rating_plate.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
 import { getChallenges } from "../common/challenges/challenge.js";
@@ -24,7 +24,7 @@ const SCRIPT_NAME = "ProfileRatings";
 export default function init() {
     const host = createPinballYHost();
     const store = getProfileStore();
-    createProfileRatings(host, { profileStore: store }).start();
+    getProfileRatings().start();
 
     const underBadge = config.addOns.profilePicker !== false;
     const challenges = config.addOns.challenges !== false ? getChallenges() : null;
