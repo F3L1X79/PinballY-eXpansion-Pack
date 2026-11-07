@@ -23,7 +23,7 @@ const RECORD_VERSION = 1;
 const isRecord = value => value !== null && typeof value === "object" && !Array.isArray(value);
 // PinballY's -1 means no Rating.
 const NO_RATING = -1;
-const ratingOf = game => (typeof game.rating === "number" && game.rating >= 0 ? game.rating : null);
+export const ratingOf = game => (typeof game.rating === "number" && game.rating >= 0 ? game.rating : null);
 // A hand edit may leave anything in the file: only 0 to 5 in half steps reaches PinballY.
 const isRating = value => typeof value === "number" && value >= 0 && value <= 5 && Number.isInteger(value * 2);
 

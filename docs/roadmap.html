@@ -211,6 +211,7 @@
         <div class="cell sweet">
         </div>
         <div class="cell">
+          <a class="chip tr-play" href="#three-score-boards"><b></b>Trois tableaux de scores</a>
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#household-mission"><b></b>Mission du foyer</a>
@@ -323,6 +324,30 @@
               <li>Les Ranks des quatre paliers, et le nom de la famille dans les six langues.</li>
             </ul>
             <p class="ctx">Idée de Félix du 07/11/2026. Les Ratings par Profile existent désormais (spec #460) : chaque Profile a son <code>ratings.json</code>, et les colonnes de PinballY tiennent celles du Profile actif.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="three-score-boards" data-track="play" data-rank="gold">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Trois tableaux de scores : la table, la maison, mes 5 meilleurs</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
+          </div>
+          <p>À côté du High Score Board de la table, un tableau de la maison (les meilleurs High Scores des Profiles, sans les Default Scores) et un « Personal 5 » du Profile actif, tous deux lus dans le High Score store, qui garde les High Scores sortis du tableau.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Lit le High Score store (spec #195)</div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Les scores sous les Default Scores : jamais lus (hors périmètre de #195). Pour les tables avec ROM, une recherche sur les cartes de <code>pinmame-nvram-maps</code> : combien de ROMs de la borne gardent les scores de la dernière partie ? Pour les tables sans ROM, rien de connu.</li>
+              <li>Faire d'abord les deux tableaux avec ce qui est déjà gardé, et les scores plus bas ensuite ?</li>
+              <li>Où les ouvrir : trois pages du High Score Board, ou trois entrées du menu ?</li>
+              <li>Le tableau de la maison : un score par Profile, ou les 5 meilleurs quel que soit le Profile ? Guest compte-t-il ?</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 07/11/2026. Aujourd'hui un Personal 5 reste vide sur une table aux Default Scores élevés tant que le Profile ne les bat pas.</p>
           </details>
         </div>
       </li>

@@ -177,6 +177,8 @@ export default {
         randomTable: "Launch a random table",
         // The native High Scores item, in the main menu only: other menus keep nativeMenuLabels.
         tableScores: "Table Scores",
+        // The native Rate Table item, in the main menu only, when the selected table has a Rating (0 to 5, in half stars).
+        rateTableWithRating: (rating) => `Rate Table (current: ${rating} / 5)`,
         // The Filter Picker's way back, and its main menu entry naming the Active Filter.
         filterPickerBack: "Back",
         activeFilter: (name) => `Active filter: ${name}`,

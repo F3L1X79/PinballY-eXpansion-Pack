@@ -4,7 +4,7 @@
 // sections, sends the selections and groups to the Filter Picker, and runs
 // the chosen entry's action. Listens to "menuopen" and "command".
 // - main.js's order never decides where an entry lands.
-// - PinballY's High Scores reads "Table Scores" in the main menu only; other menus keep UI Translation's title.
+// - PinballY's High Scores reads "Table Scores", and Rate Table names the Rating, in the main menu only.
 // - A [Top] filter's condition is checked on each opening; a failing one is logged and kept.
 // ============================================================
 
@@ -13,6 +13,7 @@ import { safeHandler } from "../core/safe_handler.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { createFilterPicker } from "./filter_picker.js";
 import { SEPARATOR_CMD, isSeparator } from "./menu_separator.js";
+import { ratingOf } from "../profiles/profile_ratings.js";
 
 const SCRIPT_NAME = "MainMenu";
 
@@ -105,9 +106,17 @@ export function createMainMenu(host) {
 
     // PinballY's High Scores reads "Table Scores" here only, over UI
     // Translation's title (registered first), so it never shares the High
-    // Score Board's name; the pause menu keeps "High Scores".
+    // Score Board's name; the pause menu keeps "High Scores". Rate Table
+    // names the selected table's Rating (none when PinballY holds -1), read
+    // again at each opening.
     function withMainMenuTitle(item) {
-        return item.cmd === host.getBuiltInCommand("HighScores") ? { ...item, title: lang.customMenuLabels.tableScores } : item;
+        if (item.cmd === host.getBuiltInCommand("HighScores")) return { ...item, title: lang.customMenuLabels.tableScores };
+        if (item.cmd === host.getBuiltInCommand("RateGame")) {
+            const table = host.getCurrentTable();
+            const rating = table ? ratingOf(table) : null;
+            if (rating !== null) return { ...item, title: lang.customMenuLabels.rateTableWithRating(rating) };
+        }
+        return item;
     }
 
     // Fires when any menu opens, with a fresh item list each time: hands the
