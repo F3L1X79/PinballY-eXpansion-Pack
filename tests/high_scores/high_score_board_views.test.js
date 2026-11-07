@@ -1,8 +1,8 @@
 // ============================================================
 // The High Score Board's views, through main.js on the fake PinballY
 // globals: it opens on the Table Board, Select turns to the Household
-// Board and back, the view's name shows under the table's title and the
-// Select hint names the next view; Exit closes from either view.
+// Board, the Personal Board and back, the view's name shows under the
+// table's title and the Select hint names the next view; Exit closes from any view.
 // ============================================================
 
 import { test } from "node:test";
@@ -13,7 +13,7 @@ import { expectedButtonHints } from "../support/button_hints_reader.js";
 import { startHighScores, FACTORY, MEDIEVAL } from "./high_scores_scenario.js";
 import { openBoard, press, isBoardOpen, boardLayerCount, title, viewName, buttonHints, podium } from "./high_score_board_reader.js";
 
-test("Select turns the High Score Board from the Table Board to the Household Board and back; Exit closes from either", async () => {
+test("Select turns the High Score Board through the Table, Household and Personal Boards and back; Exit closes from any", async () => {
     const { fake, setBoard } = await startHighScores({ profiles: { Alice: {} }, active: "Alice" });
     const { default: lang } = await import("../../common/core/i18n.js");
     const TEXT = lang.highScores.board;
@@ -34,6 +34,11 @@ test("Select turns the High Score Board from the Table Board to the Household Bo
     assert.equal(title(fake), "Medieval Madness");
     assert.equal(viewName(fake), "The household");
     assert.equal(podium(fake, lang).middle, null, "no Profile has a High Score here");
+    assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { flippers: null, select: TEXT.views.personal, exit: "back" }));
+
+    press(fake, "Select");
+    assert.equal(title(fake), "Medieval Madness");
+    assert.equal(viewName(fake), "My best 5");
     assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { flippers: null, select: TEXT.views.table, exit: "back" }));
 
     press(fake, "Select");
@@ -42,7 +47,7 @@ test("Select turns the High Score Board from the Table Board to the Household Bo
 
     press(fake, "Select");
     press(fake, "Exit");
-    assert.equal(boardLayerCount(fake), 0, "Exit closes from the Household Board");
+    assert.equal(boardLayerCount(fake), 0, "Exit closes from another view");
     assert.deepEqual(fake.currentMenu().items.filter(item => item.selected).map(item => item.title), ["High Scores"]);
     fake.closeMenu();
 

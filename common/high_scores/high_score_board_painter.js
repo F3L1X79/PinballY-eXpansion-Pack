@@ -14,11 +14,11 @@ import { DRAWN_MENU_IMAGES, DRAWN_MENU_IMAGES_FOLDER, DRAWN_MENU_PANEL_WIDTH, DR
 
 // Between the Household Stats and the Drawn Menus, which never show at the
 // same time, so each reader sees only its own layers. The Button Hints,
-// the Exit Button, the Selection Marker and the Exit Button's tooltip
-// stand above the glass and the Loader, crisp.
+// the Exit Button and its tooltip stand above the glass and the Loader,
+// crisp. No Selection Marker: Select turns the view, it never presses the Exit Button.
 export const HIGH_SCORE_BOARD_Z_INDEX = Object.freeze({
     backdrop: 6180, panel: 6181, title: 6182, note: 6183, message: 6184, podium: 6185, rows: 6186, glass: 6188,
-    buttonHints: 6190, exitButton: 6191, marker: 6192, tooltip: 6193,
+    buttonHints: 6190, exitButton: 6191, tooltip: 6193,
 });
 // The crowns' layers, drawn ahead and kept while the board is closed: over
 // the podium, under the glass.

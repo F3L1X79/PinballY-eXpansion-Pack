@@ -10,7 +10,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { startHighScores, board, MEDIEVAL } from "./high_scores_scenario.js";
-import { openBoard, press, rows, buttonHints, exitButtonTooltip, isMarkerOnExitButton } from "./high_score_board_reader.js";
+import { openBoard, press, rows, buttonHints, exitButtonTooltip } from "./high_score_board_reader.js";
 import { expectedButtonHints } from "../support/button_hints_reader.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 
@@ -35,7 +35,6 @@ test("Scroll shows only for a board longer than the window, and the flippers sti
     const firstInView = rows(fake, lang)[0].initials;
     press(fake, "Next");
     assert.notEqual(rows(fake, lang)[0].initials, firstInView, "Next scrolls the rows");
-    assert.ok(isMarkerOnExitButton(fake), "the Exit Button stays selected while scrolling");
     assert.equal(exitButtonTooltip(fake), lang.buttonHints.back);
     press(fake, "Exit");
 

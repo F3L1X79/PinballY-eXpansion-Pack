@@ -1,9 +1,9 @@
 // ============================================================
 // High Score Board: the drawn screen opened from the main menu or the
-// HighScores button, on the selected table's views (Table Board, Household
-// Board; podium with crowns, then rows) from the High Score store; Select
-// turns the view. Opens on the Table Board's last known board while it is
-// read fresh. Opens directly, not through the wheel dialog module.
+// HighScores button, on the selected table's views (Table, Household and
+// Personal Boards; podium with crowns, then rows) from the High Score
+// store; Select turns the view. Opens on the Table Board's last known board
+// while it is read fresh. Opens directly, not through the wheel dialog module.
 // - Its buttons and attract mode go through the Drawn Screen controls; the flippers scroll the rows.
 // - The read's Loader, notes and messages are the Table Board's only.
 // - Crowns are drawn ahead once: PinballY reads an image file again on every draw.
@@ -16,7 +16,6 @@ import { safeHandler } from "../core/safe_handler.js";
 import { openDrawnScreen } from "../stats/drawn_screen.js";
 import { createHiddenLayer, hideLayer } from "../drawing/placed_layers.js";
 import { createLoader, LOADER_PLACEMENT } from "../drawing/loader.js";
-import { createSelectionMarker } from "../drawing/selection_marker.js";
 import { drawExitButton } from "../drawing/steamball_drawing.js";
 import { exitButtonLookOf, exitButtonWordOf, buttonHintGroupsOf, FLIPPER_HINT } from "../drawing/button_hints.js";
 import { SCRIPT_NAME } from "./high_score_store.js";
@@ -28,7 +27,7 @@ import {
 
 const TRANSPARENT = 0x00000000;
 // The views Select turns through, by their names' keys in lang.highScores.board.views.
-const VIEWS = Object.freeze(["table", "household"]);
+const VIEWS = Object.freeze(["table", "household", "personal"]);
 const isTableBoard = opened => VIEWS[opened.view] === "table";
 
 // highScores: the High Score store; profileRewards: the worn Avatar
@@ -36,8 +35,9 @@ const isTableBoard = opened => VIEWS[opened.view] === "table";
 // (common/core/drawing_ahead.js); refresh(configId): reads the table's board into the store,
 // resolving to "read", "unsupported", "failed" or "notLearned" (a table
 // without a ROM whose board source is not learned yet); drawnScreenControls:
-// the shared Drawn Screen controls (common/core/drawn_screen_controls.js).
-export function createHighScoreBoard(host, { highScores, profileRewards, drawingAhead, drawnScreenControls, refresh }) {
+// the shared Drawn Screen controls (common/core/drawn_screen_controls.js);
+// activeProfileName(): whose Personal Board shows.
+export function createHighScoreBoard(host, { highScores, profileRewards, drawingAhead, drawnScreenControls, refresh, activeProfileName }) {
     const log = message => host.log(`[${SCRIPT_NAME}] ${message}`);
     const controls = drawnScreenControls.register(SCRIPT_NAME);
     const projectFolder = host.getProjectFolder();
@@ -97,9 +97,9 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         };
     }
 
-    // A place of the Household Board, from the High Score store: the date
-    // of the Play where the Table Board shows the initials.
-    function householdPlaceShown({ rank, score, date, owner }) {
+    // A place of the Household or Personal Board, from the High Score
+    // store: the date of the Play where the Table Board shows the initials.
+    function storedPlaceShown({ rank, score, date, owner }) {
         const [year, month, day] = date.slice(0, 10).split("-");
         return {
             rank,
@@ -113,11 +113,11 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         };
     }
 
-    // The Household Board: never a note, the read of the table's board is not its own.
-    function householdScreenFor(game) {
-        const known = game ? highScores.householdBoardOf(game.configId) : [];
-        const places = known.map(householdPlaceShown);
-        return { title: game ? game.title : "", places, message: places.length === 0 ? lang.highScores.board.noHouseholdScore : null, note: null };
+    // The Household or Personal Board, from the store's places (placesOf(configId))
+    // or its message when empty: never a note, the read of the table's board is not its own.
+    function storedScreenFor(game, placesOf, emptyMessage) {
+        const places = (game ? placesOf(game.configId) : []).map(storedPlaceShown);
+        return { title: game ? game.title : "", places, message: places.length === 0 ? emptyMessage : null, note: null };
     }
 
     // What the Table Board shows of the table: its title, its last known
@@ -143,9 +143,13 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         return screen;
     }
 
-    const screenOf = opened => (isTableBoard(opened)
-        ? tableScreenFor(opened.game, opened.tableStatus, opened.defaultImages)
-        : householdScreenFor(opened.game));
+    // Each view's screen, by its name in VIEWS.
+    const SCREENS = Object.freeze({
+        table: opened => tableScreenFor(opened.game, opened.tableStatus, opened.defaultImages),
+        household: opened => storedScreenFor(opened.game, highScores.householdBoardOf, lang.highScores.board.noHouseholdScore),
+        personal: opened => storedScreenFor(opened.game, configId => highScores.personalBoardOf(configId, activeProfileName()), lang.highScores.board.noPersonalScore),
+    });
+    const screenOf = opened => SCREENS[VIEWS[opened.view]](opened);
 
     // Shows every content layer at the screen's opacity, the rows out of
     // view hidden, and puts each row in its scrolled place.
@@ -158,7 +162,6 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         for (const layer of [...opened.content, ...opened.crownLayers]) {
             if (!rowLayers.includes(layer)) showAt(layer, opened.opacity);
         }
-        opened.marker.setOpacity(opened.opacity);
         rowLayers.forEach((layer, index) => {
             drawn.place(layer, placedRect(geometry, geometry.rows[index], firstRow * geometry.rowPitch));
             const inView = index >= firstRow && index < firstRow + geometry.rowsInView;
@@ -213,8 +216,6 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         // At its default size: the board's Exit Button, CANVAS_ZOOM times.
         finePiece(Z_INDEX.exitButton, geometry.exitButton, dc => drawExitButton(dc, exitLook));
         finePiece(Z_INDEX.tooltip, geometry.exitTooltip, dc => drawExitTooltip(host, dc, exitButtonWordOf(exitLook)));
-        // The panel's height follows the board: the Exit Button may have moved.
-        opened.marker.moveTo(placedRect(geometry, geometry.exitButton));
         opened.content = content;
         opened.geometry = geometry;
         opened.rowLayers = rowLayers;
@@ -248,9 +249,8 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
             backdropZIndex: Z_INDEX.backdrop,
             drawBackdrop,
         });
-        const marker = createSelectionMarker(host, { zIndex: Z_INDEX.marker, referenceWidth: drawn.referenceWidth, referenceHeight: REFERENCE_HEIGHT });
         const opened = {
-            drawn, onBack, exitLook: exitButtonLookOf(onBack !== null), marker, game,
+            drawn, onBack, exitLook: exitButtonLookOf(onBack !== null), game,
             view: 0, tableStatus: game ? "reading" : "read", defaultImages: readDefaultScoreImages(host, logImageLine),
             opacity: 0, content: [], geometry: null, rowLayers: [], crownLayers: [], firstRow: 0,
             controlled: controls.open({ onMove: scroll, onChoose: turnView, onExit: back, close: remove }),
@@ -297,7 +297,6 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
     // included, which then tell the closed listeners.
     function remove() {
         shown.drawn.close(shown.content);
-        shown.marker.remove();
         loader.hide();
         for (const crown of crowns) hideLayer(crown.layer);
         shown = null;

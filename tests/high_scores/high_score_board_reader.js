@@ -8,7 +8,6 @@
 import { HIGH_SCORE_BOARD_Z_INDEX, HIGH_SCORE_BOARD_CROWN_Z_INDEX } from "../../common/high_scores/high_score_board_painter.js";
 import { shownFrame, isFrameImage } from "../avatar_frames/avatar_frame_reader.js";
 import { buttonHintsOn, exitButtonTooltipOn } from "../support/button_hints_reader.js";
-import * as selectionMarker from "../support/selection_marker_reader.js";
 import { shownLayers } from "../support/shown_layers.js";
 
 // Past the fade in.
@@ -198,12 +197,6 @@ export const buttonHints = fake => buttonHintsOn(fake, HIGH_SCORE_BOARD_Z_INDEX.
 
 // The Exit Button's tooltip ("Back" or "Close"), null while hidden.
 export const exitButtonTooltip = fake => exitButtonTooltipOn(fake, HIGH_SCORE_BOARD_Z_INDEX.tooltip);
-
-export const isMarkerOnExitButton = fake =>
-    selectionMarker.layerUnderMarker(fake, HIGH_SCORE_BOARD_Z_INDEX.marker, shownLayers(fake, HIGH_SCORE_BOARD_Z_INDEX.exitButton)) !== undefined;
-
-// The Selection Marker's layers, shown or not: none once the board closed.
-export const markerLayerCount = fake => selectionMarker.markerLayerCount(fake, HIGH_SCORE_BOARD_Z_INDEX.marker);
 
 // Where a layer shows in a window of that size: PinballY centres it on its
 // position and scales it to ySpan of the window's height, its canvas's

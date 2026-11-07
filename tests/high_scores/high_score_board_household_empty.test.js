@@ -1,8 +1,9 @@
 // ============================================================
-// The High Score Board's Household Board with no one's High Score on it,
-// through main.js on the fake PinballY globals: on a table whose high
-// scores are not supported, the Table Board keeps its message and the
-// Household Board says no one in the household has a high score there.
+// The High Score Board's Household and Personal Boards with no High Score
+// on them, through main.js on the fake PinballY globals: on a table whose
+// high scores are not supported, the Table Board keeps its message, the
+// Household Board says no one in the household has a high score there,
+// the Personal Board asks to get onto the table's board.
 // ============================================================
 
 import { test } from "node:test";
@@ -12,7 +13,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { startHighScores, MEDIEVAL, NOT_SUPPORTED } from "./high_scores_scenario.js";
 import { openBoard, press, message, note, viewName, podium } from "./high_score_board_reader.js";
 
-test("an unsupported table's Household Board says no one in the household has a high score there", async () => {
+test("an unsupported table keeps its three views, the Household and Personal Boards with their empty messages", async () => {
     const { fake, setBoard } = await startHighScores({ profiles: { Alice: {} }, active: "Alice" });
     const { default: lang } = await import("../../common/core/i18n.js");
     setBoard(MEDIEVAL, NOT_SUPPORTED);
@@ -28,6 +29,10 @@ test("an unsupported table's Household Board says no one in the household has a 
     assert.equal(message(fake), "No one in the household has a high score on this table yet");
     assert.equal(note(fake), null);
     assert.deepEqual(podium(fake, lang), { left: null, middle: null, right: null });
+
+    press(fake, "Select");
+    assert.equal(viewName(fake), "My best 5");
+    assert.equal(message(fake), "Get onto this table's board to see your best scores here");
 
     press(fake, "Select");
     assert.equal(message(fake), "This table's high scores are not supported", "the Table Board keeps its message");

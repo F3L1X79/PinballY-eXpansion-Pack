@@ -781,8 +781,9 @@ export default {
             notSupported: "I punteggi di questo tavolo non sono supportati",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Gioca una partita per vedere i punteggi di questo tavolo",
-            views: { table: "Il tavolo", household: "La casa" },
+            views: { table: "Il tavolo", household: "La casa", personal: "I miei 5 migliori" },
             noHouseholdScore: "Nessuno di casa ha ancora un punteggio su questo tavolo",
+            noPersonalScore: "Entra nei punteggi di questo tavolo per vedere qui i tuoi migliori",
             date: (day, month, year) => `${day}/${month}/${year}`,
         },
     },

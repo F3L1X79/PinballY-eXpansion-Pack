@@ -38,13 +38,14 @@ test("the flippers scroll a long Household Board; each view starts at its top", 
     assert.equal(firstRowInView(), "5", "the Table Board scrolls");
 
     press(fake, "Select");
-    assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { flippers: "scroll", select: lang.highScores.board.views.table, exit: "back" }));
+    assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { flippers: "scroll", select: lang.highScores.board.views.personal, exit: "back" }));
     assert.deepEqual(viewPlaces(fake, lang).slice(0, 4).map(place => [place.rank, place.name]), [["1", "Fay"], ["2", "Eve"], ["3", "Dan"], ["4", "Cat"]],
         "the Household Board starts at its top");
     press(fake, "Next");
     assert.equal(firstRowInView(), "5", "the flippers scroll the Household Board");
     assert.equal(rows(fake, lang)[0].name, "Ben");
 
+    press(fake, "Select");
     press(fake, "Select");
     assert.equal(firstRowInView(), "4", "the Table Board starts at its top again");
     press(fake, "Exit");

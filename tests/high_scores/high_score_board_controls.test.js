@@ -48,6 +48,8 @@ test("the High Score Board counts a held Select, Launch or Exit once, scrolls on
         assert.ok(isBoardOpen(fake), `${button} turns the view, the board stays`);
         assert.equal(viewName(fake), lang.highScores.board.views.household, `${button} turns to the Household Board`);
         press(fake, button);
+        assert.equal(viewName(fake), lang.highScores.board.views.personal, `${button} turns to the Personal Board`);
+        press(fake, button);
         assert.equal(viewName(fake), lang.highScores.board.views.table, `${button} turns back to the Table Board`);
     }
     assert.ok(press(fake, "Exit").defaultPrevented);

@@ -788,8 +788,9 @@ export default {
             notSupported: "Les meilleurs scores de cette table ne sont pas pris en charge",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Lancez une partie pour faire apparaître les meilleurs scores de cette table",
-            views: { table: "Le tableau", household: "La maison" },
+            views: { table: "Le tableau", household: "La maison", personal: "Mes 5 meilleurs" },
             noHouseholdScore: "Aucun joueur de la maison n'a encore de meilleur score sur cette table",
+            noPersonalScore: "Entrez au tableau de cette table pour y voir vos meilleurs scores",
             date: (day, month, year) => `${day}/${month}/${year}`,
         },
     },

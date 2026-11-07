@@ -697,8 +697,9 @@ export default {
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Play a game to bring up this table's high scores",
             // The views' names, under the table's title and in the Select hint.
-            views: { table: "The table", household: "The household" },
+            views: { table: "The table", household: "The household", personal: "My best 5" },
             noHouseholdScore: "No one in the household has a high score on this table yet",
+            noPersonalScore: "Get onto this table's board to see your best scores here",
             // A place's date of the Play, day and month on two digits.
             date: (day, month, year) => `${month}/${day}/${year}`,
         },

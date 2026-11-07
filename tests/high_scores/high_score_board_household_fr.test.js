@@ -28,7 +28,7 @@ test("the Household Board speaks French", async () => {
     press(fake, "Select");
     assert.equal(viewName(fake), "La maison");
     assert.equal(message(fake), "Aucun joueur de la maison n'a encore de meilleur score sur cette table");
-    assert.deepEqual(buttonHints(fake).at(-2), { keys: ["SELECT"], label: "LE TABLEAU" });
+    assert.deepEqual(buttonHints(fake).at(-2), { keys: ["SELECT"], label: "MES 5 MEILLEURS" });
     press(fake, "Exit");
 
     await play(MEDIEVAL, { after: board(["SLL", "52000000"], ["ALI", "45000000"], ["BRE", "40000000"], ["LFS", "30000000"], ["ZAP", "20000000"]) });

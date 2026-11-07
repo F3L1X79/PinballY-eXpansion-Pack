@@ -28,6 +28,13 @@ const profileKeyOf = name => name.toLowerCase();
 const isPlaceOf = profileName => place => typeof place.owner === "string" && profileKeyOf(place.owner) === profileKeyOf(profileName);
 const isRecord = value => value !== null && typeof value === "object" && !Array.isArray(value);
 const countPlaces = count => (count === 1 ? "1 new place" : `${count} new places`);
+// On the Household and Personal Boards: the better score first, the older on equal scores.
+const ranksBefore = (a, b) => Number(a.score) > Number(b.score) || (Number(a.score) === Number(b.score) && a.date < b.date);
+const PERSONAL_BOARD_PLACES = 5;
+// entries: { highScore, owner }; the places they make, ranked: { rank, score, date, owner }.
+const rankedPlaces = entries => entries
+    .sort((a, b) => (ranksBefore(a.highScore, b.highScore) ? -1 : ranksBefore(b.highScore, a.highScore) ? 1 : 0))
+    .map(({ highScore, owner }, index) => ({ rank: index + 1, score: Number(highScore.score), date: highScore.date, owner }));
 
 // The places with their owners: a place of the known board keeps its
 // owner, any other one gets newOwner. A board never repeats a place, so
@@ -70,6 +77,9 @@ export function createHighScoreStore(host, profileStore) {
         && profiles.find(profile => profileKeyOf(profile.name) === profileKeyOf(name))) || null;
     // The date a Profile's High Scores count from: its last Profile Reset; "" without one.
     const countsFrom = profileKey => (isRecord(data.achievementsFrom) && data.achievementsFrom[profileKey]) || "";
+    // The table's High Scores, each won since its Profile's last Profile Reset.
+    const countedHighScoresOn = configId => data.highScores.filter(highScore => highScore.configId === configId
+        && typeof highScore.profile === "string" && highScore.date >= countsFrom(profileKeyOf(highScore.profile)));
     const profileExists = name => profileStore.listProfileNames().some(candidate => profileKeyOf(candidate) === profileKeyOf(name));
     // Called with the Profile's name after a Play credited it High Scores.
     const creditedListeners = [];
@@ -286,20 +296,27 @@ export function createHighScoreStore(host, profileStore) {
         // store's Profile. A removed Profile's High Scores are skipped,
         // nothing rewritten: a Profile re-created under its name gets them back.
         householdBoardOf(configId) {
-            const ranksBefore = (a, b) => Number(a.score) > Number(b.score) || (Number(a.score) === Number(b.score) && a.date < b.date);
             const bestByProfile = new Map();
-            for (const highScore of data.highScores) {
-                if (highScore.configId !== configId || typeof highScore.profile !== "string") continue;
+            for (const highScore of countedHighScoresOn(configId)) {
                 const profileKey = profileKeyOf(highScore.profile);
-                if (highScore.date < countsFrom(profileKey)) continue;
                 const best = bestByProfile.get(profileKey);
                 if (!best || ranksBefore(highScore, best)) bestByProfile.set(profileKey, highScore);
             }
-            return profileStore.listProfiles()
+            return rankedPlaces(profileStore.listProfiles()
                 .filter(profile => !profile.isGuest && bestByProfile.has(profileKeyOf(profile.name)))
-                .map(owner => ({ owner, best: bestByProfile.get(profileKeyOf(owner.name)) }))
-                .sort((a, b) => (ranksBefore(a.best, b.best) ? -1 : ranksBefore(b.best, a.best) ? 1 : 0))
-                .map(({ owner, best }, index) => ({ rank: index + 1, score: Number(best.score), date: best.date, owner }));
+                .map(owner => ({ highScore: bestByProfile.get(profileKeyOf(owner.name)), owner })));
+        },
+        // The Personal Board of the table: the named Profile's (Guest
+        // included) PERSONAL_BOARD_PLACES best High Scores there since its
+        // last Profile Reset, each place of a multiplayer game included,
+        // ranked and shaped as householdBoardOf()'s. None for a removed Profile.
+        personalBoardOf(configId, profileName) {
+            const owner = profileNamed(profileName);
+            if (!owner) return [];
+            const profileKey = profileKeyOf(profileName);
+            return rankedPlaces(countedHighScoresOn(configId)
+                .filter(highScore => profileKeyOf(highScore.profile) === profileKey)
+                .map(highScore => ({ highScore, owner }))).slice(0, PERSONAL_BOARD_PLACES);
         },
         // The named Profile's Lost Records on the given visible tables (by
         // config ID), most recent first, one per table: { configId, taker },

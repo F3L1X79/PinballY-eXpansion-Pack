@@ -41,6 +41,8 @@ test("a read ending while the Household Board is on show leaves it drawn; the Ta
     assert.equal(note(fake), null);
 
     press(fake, "Select");
+    assert.equal(note(fake), null, "nor on the Personal Board");
+    press(fake, "Select");
     assert.equal(viewName(fake), "The table");
     assert.equal(podium(fake, lang).middle.initials, "XYZ", "the fresh board");
     assert.equal(note(fake), null);

@@ -49,6 +49,7 @@ export default function init() {
 
     const board = createHighScoreBoard(host, {
         highScores, profileRewards: getProfileRewards(), drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls(), refresh: refreshBoard,
+        activeProfileName: () => profileStore.getActiveProfile().name,
     });
     const mainMenu = getMainMenu();
     mainMenu.add({

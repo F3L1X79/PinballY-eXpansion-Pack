@@ -782,8 +782,9 @@ export default {
             notSupported: "As pontuações desta mesa não são suportadas",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
             notLearned: "Jogue uma partida para ver as pontuações desta mesa",
-            views: { table: "A mesa", household: "A casa" },
+            views: { table: "A mesa", household: "A casa", personal: "Minhas 5 melhores" },
             noHouseholdScore: "Ninguém da casa tem ainda uma pontuação nesta mesa",
+            noPersonalScore: "Entre nas pontuações desta mesa para ver aqui as suas melhores",
             date: (day, month, year) => `${day}/${month}/${year}`,
         },
     },
