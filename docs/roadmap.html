@@ -240,7 +240,6 @@
           <a class="chip tr-share" href="#pinbally-release-day"><b></b>Nouvelle version de PinballY</a>
         </div>
         <div class="cell">
-          <a class="chip tr-profiles" href="#household-rating"><b></b>Note moyenne de la maison</a>
           <a class="chip tr-share" href="#crt-filter"><b></b>Faux CRT</a>
           <a class="chip tr-play" href="#neon-confirmations"><b></b>Confirmations néon</a>
         </div>
@@ -281,30 +280,6 @@
 
     <ol class="queue">
 
-      <li draggable="true" tabindex="0" class="item tr-profiles" id="household-rating" data-track="profiles" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Note moyenne de la maison par table</h3>
-            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span></div>
-          </div>
-          <p>Une fois les Ratings propres à chaque Profile, la Household Rating de la table choisie sur la status line du bas, et la note du Profile actif en petites étoiles sous la Mastery Bar.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Spec #468, tickets #469 à #471 (#469 sur la borne) · Flow Matt : <code>/implement</code>. Les Ratings par Profile sont livrées (spec #460)</div>
-          <details>
-            <summary>Décisions du grill (7/11/2026)</summary>
-            <ul>
-              <li>Pas de nouvelle sélection de la roue : il y en a assez.</li>
-              <li>Comptent les Profiles de la Household (pas Guest, les Child Profiles oui), le Profile actif compris ; au moins deux notes, sinon rien n'est affiché.</li>
-              <li>Les notes recopiées au premier démarrage de #460 comptent : la moyenne part de l'ancienne note commune.</li>
-              <li>Petite plaque d'étoiles sous la Mastery Bar, ou à sa place sans Table Mastery, absente pour une table pas notée ; le tout suit l'Add-on Profile Ratings, sans nouveau réglage.</li>
-              <li>À vérifier sur la borne d'abord : si PinballY saute un message vide de la status line. Sinon, une ligne grisée du menu principal, après « Noter la table ».</li>
-            </ul>
-          </details>
-        </div>
-      </li>
-
       <li draggable="true" tabindex="0" class="item tr-play" id="rated-tables-achievements" data-track="play" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -338,8 +313,8 @@
             <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
           </div>
           <p>Le High Score Board de la table sélectionnée prend trois vues, que Select fait tourner : le Table Board (« Le tableau », celui d'aujourd'hui), le Household Board (« La maison ») et le Personal Board (« Mes 5 meilleurs »), ces deux derniers lus dans le High Score store, qui garde les High Scores sortis du tableau.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="here">tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Spec #478. Lit le High Score store (spec #195)</div>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Spec #478, tickets #479 et #480. Lit le High Score store (spec #195)</div>
           <details>
             <summary>Décisions du grill (07/11/2026)</summary>
             <ul>
