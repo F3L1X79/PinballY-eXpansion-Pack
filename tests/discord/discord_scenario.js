@@ -84,12 +84,14 @@ export const everythingSent = discord => discord.frames().map(frame => JSON.stri
 // Every toast card drawn so far, one per card, as "HEADER | title | description".
 export const toastCardsDrawn = fake => toastDrawings(fake).filter(drawing => drawing.texts.length > 0).map(drawing => drawing.texts.join(" | "));
 
-// A game of the table, from its start to the wheel, elapsedMs long.
+// A game of the table, from its start to the wheel, elapsedMs long; the
+// launch events carry the game list's own entry, as PinballY's do.
 export async function playGame(fake, table, elapsedMs = 5 * 60 * 1000) {
-    fake.playGame(table);
-    fake.gameStarted(table);
+    const game = fake.getGameInfo(table.configId);
+    fake.playGame(game);
+    fake.gameStarted(game);
     fake.advanceTime(elapsedMs);
-    fake.gameOver(table);
+    fake.gameOver(game);
     await settle();
     fake.advanceTime(POLL_MS);
 }

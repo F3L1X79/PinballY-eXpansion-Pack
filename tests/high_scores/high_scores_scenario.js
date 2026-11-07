@@ -70,6 +70,26 @@ export const romTables = count => Array.from({ length: count }, (_, index) => ({
     id: index + 1, configId: `Table ${index + 1} (Williams 1990)`, title: `Table ${index + 1}`,
     manufacturer: "Williams", year: 1990, isHidden: false, rom: `rom_${index + 1}`,
 }));
+// Play Scores: vpxtool in the pack's tools folder, VPinMAME's NVRAM folder
+// (from the registry), and ROM tables whose .vpx exists.
+export const VPXTOOL = "C:\\PinballY\\Scripts\\ExpansionPack\\tools\\vpxtool.exe";
+export const NVRAM_FOLDER = "C:\\vPinball\\VisualPinball\\VPinMAME\\nvram";
+const NVRAM_REGISTRY_KEY = "HKCU\\Software\\Freeware\\Visual PinMame\\globals\\nvram_directory";
+export const PLAY_SCORE_COPY_FOLDER = "C:\\PinballY\\Scripts\\ExpansionPack\\play_scores";
+export const nvFileOf = rom => `${NVRAM_FOLDER}\\${rom}.nv`;
+export const withGameFile = table => ({ ...table, gameFile: `C:\\vPinball\\VisualPinball\\Tables\\${table.configId}.vpx` });
+export const VPX_TABLES = TABLES.map(withGameFile);
+// What vpxtool's "nvram show" prints of a .nv's game_state (the fake .nv
+// holds this text, which the fake vpxtool prints back): a WPC map by
+// default, with player_count and game_over.
+export function lastGame(scores, { playerCount = 1, gameOver = true, finalScores } = {}) {
+    const field = value => (value === null ? { warning: "Failed to resolve: Value is stored outside the NVRAM" } : { value });
+    const slots = list => list.map((value, index) => ({ label: `Player ${index + 1}`, ...field(value) }));
+    const gameState = { player_count: field(playerCount), game_over: field(gameOver), scores: slots(scores) };
+    if (finalScores) gameState.final_scores = slots(finalScores);
+    return JSON.stringify({ _fileformat: 0.8, game_state: gameState }, null, 2);
+}
+
 // Longer than a toast's whole life (rise, hold, fade).
 const ONE_TOAST_MS = 6000;
 
@@ -105,11 +125,24 @@ export const highScoreIds = ids => ids.filter(id => id.startsWith("highScoreTabl
 // addOns: the Add-ons on; profiles: { name: { isChild, ...more of its
 // profile.json } }, Guest's under "guest"; active: the Profile in
 // cabinet.json; files: { path: content } seeded before startup; language:
-// the interface language.
+// the interface language; vpxtool: installed, answering "nvram show" with
+// the .nv's text; nvFiles: { rom: lastGame(...) } in the NVRAM folder, which
+// exists once either is given.
 export async function startHighScores({
-    addOns = ["highScores"], profiles = {}, active = "guest", tables = TABLES, files = {}, language = "en",
+    addOns = ["highScores"], profiles = {}, active = "guest", tables = TABLES, files = {}, language = "en", vpxtool = false, nvFiles = {},
 } = {}) {
     const fake = createFakePinballYHost({ now: NOW, tables });
+    if (vpxtool || Object.keys(nvFiles).length > 0) {
+        fake.setRegistryValue(NVRAM_REGISTRY_KEY, NVRAM_FOLDER);
+        fake.addFolder(NVRAM_FOLDER);
+        for (const table of tables) if (table.gameFile) fake.addFile(table.gameFile, "vpx");
+    }
+    for (const [rom, text] of Object.entries(nvFiles)) fake.addFile(nvFileOf(rom), text, { modified: new Date(2026, 0, 1) });
+    if (vpxtool) {
+        fake.addProgram(VPXTOOL, args => (args[0] === "nvram" && args[1] === "show"
+            ? { output: fake.readFile(args[2]) ?? "" }
+            : { exitCode: 2, output: "" }));
+    }
     for (const [name, { isChild = false, ...data } = {}] of Object.entries(profiles)) {
         fake.addFile(`${PROFILES_FOLDER}\\${name}\\profile.json`, JSON.stringify({ version: 1, plays: {}, notified: [], ...(isChild ? { isChild } : {}), ...data }));
     }
@@ -178,6 +211,12 @@ export async function startHighScores({
         // The sections VPX's VPReg.stg holds from now on ({ section: { value: text } }).
         setVpreg: (sections) => fake.addFile(VPREG_PATH, writeCompoundFile(sections)),
         switchTo: (name) => getProfileStore().switchTo(name),
+        // The named Profile's Personal Board on the table as the High Score
+        // Board gets it: { rank, score, date }.
+        personalBoard: async (configId, name) => {
+            const { getHighScoreStore } = await import("../../common/high_scores/high_score_store.js");
+            return getHighScoreStore().personalBoardOf(configId, name).map(({ rank, score, date }) => ({ rank, score, date }));
+        },
         // The User folder's text files from now on ({ name: text }).
         setUserFiles: (texts) => {
             for (const [name, text] of Object.entries(texts)) fake.addFile(userFileOf(name), text);
@@ -186,9 +225,10 @@ export async function startHighScores({
         // after (raw lines) as the game ends, read as afterRead says
         // (setBoard's options), and VPX saves the VPReg.stg sections
         // afterVpreg and the User folder's text files afterUserFiles
-        // ({ name: text }); backOnWheel() runs right after "postlaunch",
+        // ({ name: text }), and VPinMAME the .nv files nvAfter ({ rom:
+        // lastGame(...) }); backOnWheel() runs right after "postlaunch",
         // before the reads after the game.
-        play: async (configId, { after, afterRead, afterVpreg, afterUserFiles = {}, durationMs = GAME_MS, backOnWheel = () => {} } = {}) => {
+        play: async (configId, { after, afterRead, afterVpreg, afterUserFiles = {}, nvAfter = {}, durationMs = GAME_MS, backOnWheel = () => {} } = {}) => {
             const game = fake.getGameInfo(configId);
             fake.playGame(game);
             await settle();
@@ -199,6 +239,7 @@ export async function startHighScores({
             if (after) fake.setNvramBoard(configId, after, afterRead);
             if (afterVpreg) fake.addFile(VPREG_PATH, writeCompoundFile(afterVpreg));
             for (const [name, text] of Object.entries(afterUserFiles)) fake.addFile(userFileOf(name), text);
+            for (const [rom, text] of Object.entries(nvAfter)) fake.addFile(nvFileOf(rom), text);
             fake.gameOver(game);
             backOnWheel();
             await finishReads();

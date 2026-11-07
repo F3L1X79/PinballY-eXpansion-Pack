@@ -22,10 +22,12 @@ test("off by default, the Backglass Clock creates no window", async () => {
 
     await import("../../main.js");
     await settle();
-    fake.playGame(TABLE);
-    fake.gameStarted(TABLE);
+    // The game list's own entry, as PinballY's launch events carry.
+    const game = fake.getGameInfo(TABLE.configId);
+    fake.playGame(game);
+    fake.gameStarted(game);
     fake.advanceTime(60 * 1000);
-    fake.gameOver(TABLE);
+    fake.gameOver(game);
     await settle();
 
     assert.deepEqual(fake.mediaWindows(), []);

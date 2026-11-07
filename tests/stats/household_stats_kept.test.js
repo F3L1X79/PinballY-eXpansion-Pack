@@ -85,10 +85,12 @@ test("reopened after a write to one Profile's files, only that Profile is read a
 // Read again ahead, during the toasts (household_stats_read_ahead.test.js):
 // the values show it.
 test("after a game, every Profile is read again", () => {
-    fake.playGame(MEDIEVAL);
-    fake.gameStarted(MEDIEVAL);
+    // The game list's own entry, as PinballY's launch events carry.
+    const game = fake.getGameInfo(MEDIEVAL.configId);
+    fake.playGame(game);
+    fake.gameStarted(game);
     fake.advanceTime(GAME_MS);
-    fake.gameOver(MEDIEVAL);
+    fake.gameOver(game);
     fake.advanceTime(ALL_TOASTS_MS);
 
     assert.deepEqual(reopen().gamesPlayed, ["2", "5", "0"]);

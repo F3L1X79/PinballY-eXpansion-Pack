@@ -2,7 +2,7 @@
 // High Score store: the High Scores Add-on's memory in high_scores.json, next
 // to cabinet.json. Per table: the last known board with each place's owner,
 // and the learned board source of a table without ROM. Every High Score
-// ever won. Per Profile: the dates its Achievements and Lost Records count
+// ever won, and every Play Score. Per Profile: the dates its Achievements and Lost Records count
 // from. Settles each Play against the board read after it.
 // - Saved through the Profile store, so no Profile Reset touches it.
 // - A ROM reset (too many new places, a place gone unbeaten) gives Default Scores.
@@ -77,9 +77,13 @@ export function createHighScoreStore(host, profileStore) {
         && profiles.find(profile => profileKeyOf(profile.name) === profileKeyOf(name))) || null;
     // The date a Profile's High Scores count from: its last Profile Reset; "" without one.
     const countsFrom = profileKey => (isRecord(data.achievementsFrom) && data.achievementsFrom[profileKey]) || "";
-    // The table's High Scores, each won since its Profile's last Profile Reset.
-    const countedHighScoresOn = configId => data.highScores.filter(highScore => highScore.configId === configId
-        && typeof highScore.profile === "string" && highScore.date >= countsFrom(profileKeyOf(highScore.profile)));
+    // The scores of the list ({ profile, configId, score, date }) made on
+    // the table since their Profile's last Profile Reset.
+    const countedOn = (list, configId) => list.filter(entry => isRecord(entry) && entry.configId === configId
+        && typeof entry.profile === "string" && entry.date >= countsFrom(profileKeyOf(entry.profile)));
+    const countedHighScoresOn = configId => countedOn(data.highScores, configId);
+    // A file without the list has no Play Score.
+    const countedPlayScoresOn = configId => countedOn(Array.isArray(data.playScores) ? data.playScores : [], configId);
     const profileExists = name => profileStore.listProfileNames().some(candidate => profileKeyOf(candidate) === profileKeyOf(name));
     // Called with the Profile's name after a Play credited it High Scores.
     const creditedListeners = [];
@@ -226,6 +230,23 @@ export function createHighScoreStore(host, profileStore) {
             const bestPlace = added.reduce((best, place) => (best === null || place.rank < best.rank ? place : best), null);
             return bestPlace === null ? null : { ...bestPlace, takenFromProfile };
         },
+        // The score read from the table's memory after a Play (play as for
+        // settlePlay), kept as a Play Score unless a High Score of that
+        // Play has the same score. The list is written only then, so a file
+        // without Play Scores keeps its first shape.
+        recordPlayScore(configId, play, score) {
+            const date = toLocalIsoString(play.start);
+            const isOfPlay = highScore => highScore.configId === configId && highScore.date === date
+                && typeof highScore.profile === "string" && profileKeyOf(highScore.profile) === profileKeyOf(play.profileName);
+            if (data.highScores.some(highScore => isOfPlay(highScore) && Number(highScore.score) === score)) {
+                log(`"${configId}": Play Score ${score} for ${play.profileName} is the Play's High Score; not kept twice.`);
+                return;
+            }
+            if (!Array.isArray(data.playScores)) data.playScores = [];
+            data.playScores.push({ profile: play.profileName, configId, score, date });
+            save();
+            log(`"${configId}": Play Score for ${play.profileName}: ${score}.`);
+        },
         // What the named Profile's High Score Achievements count, from the
         // High Scores it won since its last Profile Reset: the tables with
         // one, the tables with a Table Record, whether it took a Table
@@ -307,16 +328,18 @@ export function createHighScoreStore(host, profileStore) {
                 .map(owner => ({ highScore: bestByProfile.get(profileKeyOf(owner.name)), owner })));
         },
         // The Personal Board of the table: the named Profile's (Guest
-        // included) PERSONAL_BOARD_PLACES best High Scores there since its
-        // last Profile Reset, each place of a multiplayer game included,
-        // ranked and shaped as householdBoardOf()'s. None for a removed Profile.
+        // included) PERSONAL_BOARD_PLACES best High Scores and Play Scores
+        // there since its last Profile Reset, each place of a multiplayer
+        // game included, ranked and shaped as householdBoardOf()'s. None
+        // for a removed Profile.
         personalBoardOf(configId, profileName) {
             const owner = profileNamed(profileName);
             if (!owner) return [];
             const profileKey = profileKeyOf(profileName);
-            return rankedPlaces(countedHighScoresOn(configId)
-                .filter(highScore => profileKeyOf(highScore.profile) === profileKey)
-                .map(highScore => ({ highScore, owner }))).slice(0, PERSONAL_BOARD_PLACES);
+            // rankedPlaces() takes a Play Score as it takes a High Score.
+            return rankedPlaces([...countedHighScoresOn(configId), ...countedPlayScoresOn(configId)]
+                .filter(score => profileKeyOf(score.profile) === profileKey)
+                .map(score => ({ highScore: score, owner }))).slice(0, PERSONAL_BOARD_PLACES);
         },
         // The named Profile's Lost Records on the given visible tables (by
         // config ID), most recent first, one per table: { configId, taker },

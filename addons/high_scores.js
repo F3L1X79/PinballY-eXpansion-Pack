@@ -1,9 +1,9 @@
 // ============================================================
 // High Scores: credits each score that entered a table's board during a Play
 // to the Profile active when it started, whatever initials were typed, and
-// submits a High Score Toast for the best place won. Adds "High Scores"
-// (opens the High Score Board) and "My High Scores" to the main menu.
-// Writes high_scores.json next to cabinet.json. Rules in common/high_scores/.
+// submits a High Score Toast for the best place won. With vpxtool, keeps the
+// Play Score read from the ROM's .nv, copied to play_scores\ at launch.
+// Adds "High Scores" and "My High Scores" to the main menu. Rules in common/high_scores/.
 // - The board is read at "prelaunch" and again a little after "postlaunch".
 // - Without a ROM, the board comes from VPX's User folder, never read while VPX runs.
 // - Replaces PinballY's own "High Scores": removes its entry, cancels HighScores.
@@ -27,6 +27,9 @@ import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js"
 import { getWheelDialogs } from "../common/core/wheel_dialog.js";
 import { displayNameOf } from "../common/profiles/profile_name.js";
 import lang from "../common/core/i18n.js";
+import { getVpxtoolRunner } from "../common/vpxtool/vpxtool_runner.js";
+import { getNvramWatch, nvramFolderOf } from "../common/vpxtool/nvram_watch.js";
+import { readLastGame, playScoreOf } from "../common/high_scores/last_game_reader.js";
 
 // PinballY's own read after the game returns the board cached at launch
 // (seen on the cabinet): the Add-on reads again a little later, fresh.
@@ -34,6 +37,8 @@ const AFTER_READ_DELAY_MS = 2000;
 // PinballY kills PINemHi after 7.5 s; a read may also wait behind another one.
 const READ_TIMEOUT_MS = 10000;
 const BOARD_ENTRY = "highScoreBoard";
+// The pack's folder for the .nv copied at launch, one per ROM.
+const PLAY_SCORE_COPY_FOLDER = "play_scores";
 
 export default function init() {
     const host = createPinballYHost();
@@ -42,10 +47,20 @@ export default function init() {
     const toasts = getAchievementToasts();
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
     // From "prelaunch" to "postlaunch": { configId, launchRead (a promise),
-    // snapshot (the User folder at launch) }.
+    // snapshot (the User folder at launch), nvCopy, nvChanged (the ROMs
+    // whose .nv the game changed, once the NVRAM watch told) }.
     let launched = null;
     // The Play the Profile store announced for the launched table, if any.
     let announcedPlay = null;
+    const vpxtool = getVpxtoolRunner();
+    // The last launch, kept past "postlaunch": the NVRAM watch tells it
+    // within "postlaunch", before or after this Add-on's own handler.
+    let watchedLaunch = null;
+    getNvramWatch().watch(SCRIPT_NAME, {
+        onGameEnded: ({ configId, changed }) => {
+            if (watchedLaunch && watchedLaunch.configId === configId) watchedLaunch.nvChanged = changed;
+        },
+    });
 
     const board = createHighScoreBoard(host, {
         highScores, profileRewards: getProfileRewards(), drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls(), refresh: refreshBoard,
@@ -393,8 +408,70 @@ export default function init() {
             if (places !== null) highScores.recordBoard(configId, places);
         }));
         // Read at once, before VPX starts and holds the file.
-        launched = { configId, launchRead, snapshot: takeSnapshot(configId) };
+        launched = { configId, launchRead, snapshot: takeSnapshot(configId), nvCopy: copyNv(ev.game), nvChanged: [] };
+        watchedLaunch = launched;
     }));
+
+    // The ROM's .nv copied before VPinMAME writes it, under the ROM's name
+    // (vpxtool picks the map from it), replacing an earlier launch's copy:
+    // { rom, nvPath, copyPath }, or null without vpxtool, ROM or .nv.
+    function copyNv(game) {
+        if (!game.rom || !vpxtool.hasVpxtool()) return null;
+        const folder = nvramFolderOf(host, game);
+        const nvPath = folder === null ? null : `${folder}\\${game.rom}.nv`;
+        if (nvPath === null || !host.files.fileExists(nvPath)) return null;
+        const copyFolder = `${host.getProjectFolder()}\\${PLAY_SCORE_COPY_FOLDER}`;
+        const copyPath = `${copyFolder}\\${game.rom}.nv`;
+        try {
+            host.files.createFolder(copyFolder);
+            host.files.copyFile(nvPath, copyPath);
+        } catch (error) {
+            log(`"${game.configId}": ${nvPath} could not be copied (${messageOf(error)}); no Play Score.`);
+            return null;
+        }
+        return { rom: game.rom, nvPath, copyPath };
+    }
+
+    // The last game vpxtool reads in the .nv: readLastGame()'s answer, or
+    // undefined when vpxtool gave none (logged).
+    function readLastGameIn(configId, path) {
+        return new Promise((resolve) => {
+            const giveUp = (why) => {
+                log(`"${configId}": ${path} not read by vpxtool (${why}); no Play Score.`);
+                resolve(undefined);
+            };
+            vpxtool.submit({
+                scriptName: SCRIPT_NAME,
+                args: ["nvram", "show", path],
+                apply: ({ exitCode, output }) => {
+                    if (exitCode !== 0) {
+                        giveUp(`exit code ${exitCode}`);
+                        return;
+                    }
+                    try {
+                        resolve(readLastGame(output));
+                    } catch (error) {
+                        giveUp(messageOf(error));
+                    }
+                },
+                fail: giveUp,
+            });
+        });
+    }
+
+    // After the board read settled the Play: its Play Score, when the
+    // game changed only the table's own .nv.
+    async function settlePlayScore(bracket, play) {
+        const copy = bracket.nvCopy;
+        if (copy === null || play === null) return;
+        const changed = bracket.nvChanged;
+        if (changed.length !== 1 || changed[0].toLowerCase() !== copy.rom.toLowerCase()) return;
+        const [before, after] = await Promise.all([readLastGameIn(bracket.configId, copy.copyPath), readLastGameIn(bracket.configId, copy.nvPath)]);
+        if (before === undefined || after === undefined) return;
+        const result = playScoreOf(before, after);
+        if (result.none) log(`"${bracket.configId}": no Play Score for ${play.profileName}: ${result.none}.`);
+        else highScores.recordPlayScore(bracket.configId, play, result.score);
+    }
 
     profileStore.onPlay(safeHandler(SCRIPT_NAME, (play) => {
         if (launched && play.configId === launched.configId) announcedPlay = play;
@@ -435,7 +512,11 @@ export default function init() {
         launched = null;
         announcedPlay = null;
         if (!bracket) return;
+        // The board stays held until the Play Score is settled too.
         const release = highScores.holdBoardForPlay(bracket.configId);
-        safeHandler(SCRIPT_NAME, settleAfterGame)(bracket, play).then(release, release);
+        const settlePlayScoreSafely = () => safeHandler(SCRIPT_NAME, settlePlayScore)(bracket, play);
+        safeHandler(SCRIPT_NAME, settleAfterGame)(bracket, play)
+            .then(settlePlayScoreSafely, settlePlayScoreSafely)
+            .then(release, release);
     }));
 }
