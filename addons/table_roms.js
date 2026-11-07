@@ -6,6 +6,7 @@
 // vpxtool missing or older brings the Script Reader Prompt; its version is read again first.
 // - Never overwrites a ROM typed by hand.
 // - The confirmation is written in "postlaunch" so later Add-ons see it.
+// - Temporary for #482: nvram_probe.js, only when the pack has a nvram_probe folder.
 // ============================================================
 
 import { createPinballYHost } from "../common/core/pinbally_host.js";
@@ -14,6 +15,7 @@ import { getProfileStore } from "../common/profiles/profile_store.js";
 import { createTableRomRecord, SCRIPT_NAME } from "../common/table_roms/table_rom_record.js";
 import { createScriptQueue } from "../common/table_roms/script_queue.js";
 import { createNvConfirmation } from "../common/table_roms/nv_confirmation.js";
+import { startNvramProbe } from "../common/table_roms/nvram_probe.js";
 import { getScriptReaderInstaller } from "../common/table_roms/script_reader_install.js";
 import { startScriptReaderPrompt } from "../common/table_roms/script_reader_prompt.js";
 import { getScriptReaderState } from "../common/table_roms/script_reader_state.js";
@@ -41,4 +43,5 @@ export default function init() {
     startScriptReaderPrompt();
     if (!vpxtoolFound) return;
     host.setTimeout(safeHandler(SCRIPT_NAME, queue.start), STARTUP_DELAY_MS);
+    startNvramProbe(host, `${host.getProjectFolder()}\\tools\\vpxtool.exe`);
 }

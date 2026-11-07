@@ -12,21 +12,23 @@ import { SCRIPT_NAME } from "./table_rom_record.js";
 const NVRAM_DIRECTORY_KEY = "Software\\Freeware\\Visual PinMame\\globals\\nvram_directory";
 const NV_FILE = /^(.+)\.nv$/i;
 
+// The table's NVRAM folder: its system's NVRAM path, else VPinMAME's
+// nvram_directory in the registry; null when neither is set.
+export function nvramFolderOf(host, game) {
+    const systemPath = game.system && game.system.nvramPath;
+    if (typeof systemPath === "string" && systemPath.trim() !== "") return systemPath.trim();
+    for (const root of ["HKCU", "HKLM"]) {
+        const folder = host.readRegistryValue(`${root}\\${NVRAM_DIRECTORY_KEY}`);
+        if (folder !== null && folder.trim() !== "") return folder.trim();
+    }
+    return null;
+}
+
 export function createNvConfirmation(host, record) {
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
     let folderMissingLogged = false;
     // At launch: { configId, folder, dates (ms by .nv file name) }.
     let launched = null;
-
-    function nvramFolderOf(game) {
-        const systemPath = game.system && game.system.nvramPath;
-        if (typeof systemPath === "string" && systemPath.trim() !== "") return systemPath.trim();
-        for (const root of ["HKCU", "HKLM"]) {
-            const folder = host.readRegistryValue(`${root}\\${NVRAM_DIRECTORY_KEY}`);
-            if (folder !== null && folder.trim() !== "") return folder.trim();
-        }
-        return null;
-    }
 
     // The modified date of each .nv file; null when the folder doesn't exist.
     function nvDatesIn(folder) {
@@ -44,7 +46,7 @@ export function createNvConfirmation(host, record) {
         if (!game) return;
         const gameFile = game.resolveGameFile();
         if (!gameFile.exists || !/\.vpx$/i.test(gameFile.path)) return;
-        const folder = nvramFolderOf(game);
+        const folder = nvramFolderOf(host, game);
         const dates = folder === null ? null : nvDatesIn(folder);
         if (dates === null) {
             if (!folderMissingLogged) {

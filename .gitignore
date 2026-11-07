@@ -49,6 +49,9 @@ tools/*
 !tools/pack_update.ps1
 !tools/script_reader_install.ps1
 
+# The temporary NVRAM probe's answers, on the cabinet only (#482)
+nvram_probe/
+
 # Personal sounds, not published (see .env.example)
 assets/sounds/local/
 
