@@ -11,6 +11,7 @@ An unofficial extension of [PinballY](http://mjrnet.org/pinscape/PinballY.php) t
 ## Profiles
 
 - Each of you picks your own Profile and Avatar with Change Player, and the Welcome Screen greets you by name, so you know whose games will count. Only games of a minute or more count, and Guest is always there for visitors.
+- Each Profile has its own star ratings and Favorite Tables, which PinballY's own rating dialog and favourites show while it plays.
 - **"My Profile"** sums up your pinball life; **"Household Stats"** sets everyone side by side, the best of each line in gold.
 - An Admin Profile keeps the setup entries for you, and a Child Profile leaves the Adult Tables off the wheel.
 

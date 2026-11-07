@@ -11,6 +11,7 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 ## Profils
 
 - Avec « Changer de joueur », chacun prend son Profil et son Avatar, et l'écran d'accueil vous salue par votre nom : vous savez pour qui les parties vont compter. Seules les parties d'au moins une minute comptent, et le Profil Invité reste toujours là pour les visiteurs.
+- Chaque Profil a ses propres notes en étoiles et ses tables favorites, que la notation et les favoris de PinballY montrent tant qu'il joue.
 - **"Mon profil"** résume votre vie de flippeur ; **"Stats de la maison"** montre tout le monde côte à côte, le meilleur de chaque ligne en doré.
 - Un Profil admin garde les entrées de configuration pour vous, et un Profil enfant retire les tables pour adultes de la roue.
 

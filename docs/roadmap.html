@@ -221,7 +221,6 @@
           <a class="chip tr-play" href="#rated-tables-achievements"><b></b>Achievements des tables notées</a>
         </div>
         <div class="cell">
-          <a class="chip tr-profiles" href="#ratings"><b></b>Notes et favoris par Profile</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
@@ -280,29 +279,6 @@
 
     <ol class="queue">
 
-      <li draggable="true" tabindex="0" class="item tr-profiles" id="ratings" data-track="profiles" data-rank="platinum">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Notes et favoris par Profile</h3>
-            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span></div>
-          </div>
-          <p>Chaque Profile a ses propres Ratings et Favorite Tables (aujourd'hui communs dans PinballY). Ceux du Profile actif sont recopiés dans les colonnes natives au démarrage et à chaque changement de Profile : étoiles, dialogue de notation, filtre des favoris et filtres par note marchent sans être réécrits.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Spec #460, tickets #463 à #466 ; reste <a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/466">#466</a>, la mesure sur la borne · Flow Matt : <code>/implement</code>. ADR : <code>docs/adr/0024-the-active-profile-s-ratings-and-favorites-live-in-pinbally-s-own-columns.md</code>. Avant la <a href="#household-rating">note moyenne de la maison (n° <span data-ref="household-rating"></span>)</a></div>
-          <details>
-            <summary>Décisions du grill (7/11/2026)</summary>
-            <ul>
-              <li>Les tables masquées restent pour toute la borne (spec #263) : les Adult Tables suffisent pour les enfants, une note basse pour une table qu'on n'aime pas.</li>
-              <li>Tant qu'un Profile est actif, les colonnes de PinballY font foi pour lui : relues en le quittant et au démarrage. Un changement de Profile coupé par un plantage est réécrit depuis le fichier du Profile actif.</li>
-              <li>Premier démarrage : les notes et favoris actuels sont copiés dans chaque Profile, Guest compris. Un nouveau Profile commence vide ; un Profile Reset les garde.</li>
-              <li>À mesurer sur la borne : le temps d'un changement de Profile, une écriture <code>update()</code> par table qui diffère.</li>
-            </ul>
-          </details>
-        </div>
-      </li>
-
       <li draggable="true" tabindex="0" class="item tr-profiles" id="household-rating" data-track="profiles" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -313,7 +289,7 @@
           </div>
           <p>Une fois les Ratings propres à chaque Profile, la Household Rating de la table choisie sur la status line du bas, et la note du Profile actif en petites étoiles sous la Mastery Bar.</p>
           <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Spec #468, tickets #469 à #471 (#469 sur la borne) · Flow Matt : <code>/implement</code>. Après les <a href="#ratings">notes et favoris par Profile (n° <span data-ref="ratings"></span>)</a></div>
+          <div class="links">Spec #468, tickets #469 à #471 (#469 sur la borne) · Flow Matt : <code>/implement</code>. Les Ratings par Profile sont livrées (spec #460)</div>
           <details>
             <summary>Décisions du grill (7/11/2026)</summary>
             <ul>
@@ -337,7 +313,7 @@
           </div>
           <p>Une famille d'Achievements pour les tables notées par le Profile : 1, 3, 5 et 10 Ratings données.</p>
           <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après les <a href="#ratings">notes et favoris par Profile (n° <span data-ref="ratings"></span>)</a>, dont elle lit les Ratings</div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Lit les Ratings par Profile, livrées (spec #460)</div>
           <details>
             <summary>Questions ouvertes (4)</summary>
             <ul>
@@ -346,7 +322,7 @@
               <li>Guest et les Child Profiles ont-ils la famille ?</li>
               <li>Les Ranks des quatre paliers, et le nom de la famille dans les six langues.</li>
             </ul>
-            <p class="ctx">Idée de Félix du 07/11/2026, grillée une fois les Ratings par Profile livrées : on saura alors ce que le joueur voit et ce qu'une note compte.</p>
+            <p class="ctx">Idée de Félix du 07/11/2026. Les Ratings par Profile existent désormais (spec #460) : chaque Profile a son <code>ratings.json</code>, et les colonnes de PinballY tiennent celles du Profile actif.</p>
           </details>
         </div>
       </li>

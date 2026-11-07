@@ -65,7 +65,6 @@ export function createProfileRatings(host, { profileStore }) {
     // each one writes PinballY's database and refreshes the wheel.
     function putOnColumns(values, tables) {
         const favorites = new Set(values.favorites);
-        let updateCount = 0;
         for (const game of tables) {
             const saved = values.ratings[game.configId];
             const rating = isRating(saved) ? saved : NO_RATING;
@@ -73,16 +72,9 @@ export function createProfileRatings(host, { profileStore }) {
             const changes = {};
             if ((ratingOf(game) ?? NO_RATING) !== rating) changes.rating = rating;
             if ((game.isFavorite === true) !== isFavorite) changes.isFavorite = isFavorite;
-            if (Object.keys(changes).length > 0) {
-                game.update(changes);
-                updateCount++;
-            }
+            if (Object.keys(changes).length > 0) game.update(changes);
         }
-        return updateCount;
     }
-
-    // TEMP #466: timings for the cabinet measurement; remove once noted on the ticket.
-    const nowMs = () => host.now().getTime();
 
     // The Profile whose values PinballY's columns hold; null until start() knows.
     let columnsProfile = null;
@@ -93,17 +85,13 @@ export function createProfileRatings(host, { profileStore }) {
     // Marked "under way" first: a crash halfway leaves a record that startup repairs.
     function moveColumnsTo(profileName, tables, fromName) {
         saveRecord(fromName, { from: fromName, to: profileName });
-        const updateStartMs = nowMs();
-        const updateCount = putOnColumns(readValues(profileName), tables);
-        const updateMs = nowMs() - updateStartMs;
+        putOnColumns(readValues(profileName), tables);
         saveRecord(profileName);
         columnsProfile = profileName;
-        return { updateCount, updateMs };
     }
 
     // Fires on each Profile change, the next Profile already active.
     function onSwitch(profile) {
-        const startMs = nowMs();
         const tables = host.getAllTables();
         const leftName = columnsProfile;
         // Cleared first: after a failure below, the columns no longer hold one known
@@ -113,24 +101,13 @@ export function createProfileRatings(host, { profileStore }) {
         if (leftName !== null && profileStore.listProfileNames().some(name => sameName(name, leftName))) {
             keepColumnsIn(leftName, tables);
         }
-        const readBackMs = nowMs() - startMs;
-        const { updateCount, updateMs } = moveColumnsTo(profile.name, tables, leftName);
-        log(`TEMP #466: Change Player from "${leftName}" to "${profile.name}": ${updateCount} of ${tables.length} tables updated`
-            + ` in ${updateMs} ms; read back in ${readBackMs} ms; ${nowMs() - startMs} ms in all.`);
+        moveColumnsTo(profile.name, tables, leftName);
     }
 
-    // TEMP #466: the startup case and its duration, for the cabinet measurement.
     function start() {
-        const startMs = nowMs();
-        const tables = host.getAllTables();
-        const startCase = startColumns(tables);
-        log(`TEMP #466: startup (${startCase}) over ${tables.length} tables in ${nowMs() - startMs} ms.`);
-    }
-
-    // The startup case it went through.
-    function startColumns(tables) {
         profileStore.onSwitch(onSwitch);
         const activeName = profileStore.getActiveProfile().name;
+        const tables = host.getAllTables();
         // Asked first: reading an unreadable record sets it aside.
         const wasSaved = profileStore.hasCabinetFile(RECORD_FILE);
         const record = profileStore.readCabinetFile(RECORD_FILE, RECORD_VERSION);
@@ -141,7 +118,7 @@ export function createProfileRatings(host, { profileStore }) {
             saveRecord(activeName);
             columnsProfile = activeName;
             log(`First run: the cabinet's Ratings and Favorite Tables were given to every Profile (${profileNames.length}).`);
-            return "first run";
+            return;
         }
         // An unreadable record (set aside and logged by the store) is never a first run:
         // the copy would overwrite every Profile's own values.
@@ -151,13 +128,12 @@ export function createProfileRatings(host, { profileStore }) {
             keepColumnsIn(activeName, tables);
             if (!record) saveRecord(activeName);
             columnsProfile = activeName;
-            return "columns read back";
+            return;
         }
         // Two Profiles mixed, or the columns' Profile renamed away: none of it is kept.
         log(`PinballY's columns are not trusted (they named "${columnsName}"${isUnderWay ? ", a change under way" : ""});`
             + ` the active Profile "${activeName}"'s values are written to them.`);
-        const { updateCount } = moveColumnsTo(activeName, tables, typeof columnsName === "string" ? columnsName : null);
-        return `columns repaired, ${updateCount} tables updated`;
+        moveColumnsTo(activeName, tables, typeof columnsName === "string" ? columnsName : null);
     }
 
     return { start };
