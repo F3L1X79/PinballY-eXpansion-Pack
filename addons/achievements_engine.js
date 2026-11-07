@@ -28,7 +28,7 @@ import { createWorldTour } from "../common/achievements/world_tour.js";
 import { buildSurprisesAchievements } from "../achievements/surprises.js";
 import { createSurprises } from "../common/achievements/surprises.js";
 import { buildRatingsAchievements } from "../achievements/ratings.js";
-import { RATE_GAME_POPUP } from "../common/profiles/profile_ratings.js";
+import { onRatingDialogClosed } from "../common/profiles/profile_ratings.js";
 import { buildYoungPlayersAchievements } from "../achievements/young_players.js";
 import { getAchievementToasts, TOAST_KIND } from "../common/achievements/achievement_toast.js";
 import { getPlayerLevel, playerLevelOf } from "../common/levels/player_level.js";
@@ -328,15 +328,9 @@ export default function init() {
     // the store's answer, shows before the Achievements it brought.
     const highScores = getEnabledHighScores();
     if (highScores) highScores.onCredited(safeHandler(SCRIPT_NAME, () => setTimeout(safeCheckForNewAchievements, 0)));
-    // Fires when PinballY's rating dialog closes (Rate Table or the Rating
-    // Prompt): PinballY raises no event when a Rating changes, and its
-    // column already holds the new one (ADR 0024), so no tick is waited:
-    // no other handler of this event records anything the check reads.
-    if (config.addOns.profileRatings !== false) {
-        mainWindow.on("popupclose", safeHandler(SCRIPT_NAME, ev => {
-            if (ev.id === RATE_GAME_POPUP) checkForNewAchievements();
-        }));
-    }
+    // No tick waited: the column already holds the new Rating (ADR 0024),
+    // and no other handler of this event records anything the check reads.
+    onRatingDialogClosed(createPinballYHost(), safeHandler(SCRIPT_NAME, () => checkForNewAchievements()));
 
     // Startup check, one tick after the inits, so a Welcome Screen submitted
     // at startup is already waiting whatever the order in main.js, and its

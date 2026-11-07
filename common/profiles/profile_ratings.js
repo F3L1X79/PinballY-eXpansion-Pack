@@ -3,7 +3,7 @@
 // PinballY's rating / isFavorite columns hold the active Profile's (docs/adr/0024),
 // the cabinet's profile_ratings.json names whose. start() runs once, at startup; each
 // Profile change puts the columns back into the Profile left, the next one's onto them.
-// One shared instance (getProfileRatings) also counts the active Profile's rated tables.
+// One shared instance counts the active Profile's rated tables; onRatingDialogClosed() is the cue.
 // - The columns are the truth for the active Profile: the pack never hooks the rating dialog.
 // - update() only ever carries rating / isFavorite, and only for a table that differs.
 // - A table no longer in the game list keeps its entry in every file.
@@ -14,6 +14,7 @@
 import { sameName } from "./profile_name_rules.js";
 import { getProfileStore } from "./profile_store.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
+import config from "../core/config.js";
 
 const SCRIPT_NAME = "ProfileRatings";
 const RATINGS_FILE = "ratings";
@@ -23,9 +24,18 @@ const RATINGS_VERSION = 1;
 const RECORD_VERSION = 1;
 
 const isRecord = value => value !== null && typeof value === "object" && !Array.isArray(value);
-// PinballY's own rating dialog, opened by Rate Table and by the Rating Prompt:
-// it raises no event when a Rating changes, its closing is the cue.
-export const RATE_GAME_POPUP = "rate game";
+// PinballY's own rating dialog, opened by Rate Table and by the Rating Prompt.
+const RATE_GAME_POPUP = "rate game";
+
+// Runs handler (wrapped by the caller) each time the rating dialog closes,
+// while Ratings per Profile is on: PinballY raises no event when a Rating
+// changes, so this closing is the cue.
+export function onRatingDialogClosed(host, handler) {
+    if (config.addOns.profileRatings === false) return;
+    host.on("popupclose", ev => {
+        if (ev.id === RATE_GAME_POPUP) handler();
+    });
+}
 // PinballY's -1 means no Rating.
 const NO_RATING = -1;
 export const ratingOf = game => (typeof game.rating === "number" && game.rating >= 0 ? game.rating : null);

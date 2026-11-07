@@ -14,7 +14,7 @@ import { getProfileStore } from "../common/profiles/profile_store.js";
 import { displayNameOf } from "../common/profiles/profile_name.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { createHouseholdRatings } from "../common/profiles/household_ratings.js";
-import { ratingOf, RATE_GAME_POPUP } from "../common/profiles/profile_ratings.js";
+import { ratingOf, onRatingDialogClosed } from "../common/profiles/profile_ratings.js";
 
 const SCRIPT_NAME = "StatusLineInfo";
 const SECONDS_PER_MINUTE = 60;
@@ -160,13 +160,8 @@ export default function init() {
         refreshUpperStatusLine();
         rebuildLowerStatusLineNextTick();
     }));
-    // PinballY raises no event when a Rating changes: its dialog closing is
-    // the cue. Next tick, in case the column takes the new value only after.
-    if (householdRatings) {
-        mainWindow.on("popupclose", safeHandler(SCRIPT_NAME, ev => {
-            if (ev.id === RATE_GAME_POPUP) rebuildLowerStatusLineNextTick();
-        }));
-    }
+    // Next tick, in case the column takes the new value only after.
+    onRatingDialogClosed(createPinballYHost(), safeHandler(SCRIPT_NAME, rebuildLowerStatusLineNextTick));
 
     refreshUpperStatusLine();
     // Next tick with the Household Rating: the Profile Ratings Add-on starts

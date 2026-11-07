@@ -10,7 +10,7 @@
 
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
-import { getProfileRatings, ratingOf, RATE_GAME_POPUP } from "../common/profiles/profile_ratings.js";
+import { getProfileRatings, ratingOf, onRatingDialogClosed } from "../common/profiles/profile_ratings.js";
 import { createRatingPlate } from "../common/profiles/rating_plate.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
 import { getChallenges } from "../common/challenges/challenge.js";
@@ -43,10 +43,7 @@ export default function init() {
 
     // Fires on every wheel move, the player's and attract mode's alike.
     host.onGameListEvent("gameselect", safeHandler(SCRIPT_NAME, ev => showTable(ev.game)));
-    // PinballY raises no event when a Rating changes: its dialog closing is the cue.
-    host.on("popupclose", safeHandler(SCRIPT_NAME, ev => {
-        if (ev.id === RATE_GAME_POPUP) showCurrent();
-    }));
+    onRatingDialogClosed(host, safeHandler(SCRIPT_NAME, showCurrent));
     host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
         gameRunning = true;
         plate.hide();
