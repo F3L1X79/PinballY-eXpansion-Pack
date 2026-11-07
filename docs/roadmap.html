@@ -236,6 +236,7 @@
         <div class="ax row">Faible</div>
         <div class="cell">
           <a class="chip tr-share" href="#pinbally-release-day"><b></b>Nouvelle version de PinballY</a>
+          <a class="chip tr-play" href="#play-scores-final-only"><b></b>Play Scores Stern M-200</a>
         </div>
         <div class="cell">
           <a class="chip tr-share" href="#crt-filter"><b></b>Faux CRT</a>
@@ -666,6 +667,28 @@
               <li>La liste de ce qui oblige à redessiner (écriture du Profile actif, partie, nouveau jour, High Scores, taille de la fenêtre…) est le risque : une valeur périmée à l'écran.</li>
             </ul>
             <p class="ctx">#461 et #462 fermés le 07/11/2026 par Félix : une demi-seconde d'ouverture reste acceptable. En fin de file à sa demande.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="play-scores-final-only" data-track="play" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Play Scores des Stern M-200 (Star Gazer, Sea Witch)</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span></div>
+          </div>
+          <p>Ces ROM gardent leurs <code>scores</code> hors de la NVRAM mais leurs <code>final_scores</code> dedans : aujourd'hui elles ne donnent aucun Play Score. Leur appliquer la règle Bally sur les <code>final_scores</code> (changés, pas tous à 0) une fois qu'une vraie partie finie montre ce que vpxtool en lit.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : relever une sortie réelle sur la borne → <code>/implement</code> (règle dans <code>common/high_scores/last_game_reader.js</code>). Suite de la spec #481</div>
+          <details>
+            <summary>Checklist</summary>
+            <ul>
+              <li>Une partie finie, une partie quittée et un lancement sans partie sur Star Gazer : la réponse de <code>vpxtool nvram show</code> après chacune, à ranger dans <code>docs/research/scores-below-board/</code>.</li>
+              <li>Piste pour les relever sans y penser : un journal des Play Scores refusés de façon inattendue (voir le bilan de #484).</li>
+            </ul>
+            <p class="ctx">Décidé le 07/11/2026 au bilan de #484 : pas de Play Score sans exemple réel. En fin de file à la demande de Félix.</p>
           </details>
         </div>
       </li>
