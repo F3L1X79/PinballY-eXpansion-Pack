@@ -1,0 +1,186 @@
+{
+  "_fileformat": 0.8,
+  "adjustments": {
+    "Game Adjustments": {
+      "19": {
+        "value": 0,
+        "label": "HSTD Award"
+      }
+    },
+    "High score functions": {
+      "01": {
+        "value": "OFF",
+        "label": "Replay Level 1"
+      },
+      "02": {
+        "value": "OFF",
+        "label": "Replay Level 2"
+      },
+      "03": {
+        "value": "OFF",
+        "label": "Replay Level 3"
+      },
+      "04": {
+        "value": 167120,
+        "label": "High score to date"
+      }
+    }
+  },
+  "audits": {
+    "Bookkeeping functions": {
+      "05": {
+        "value": 4,
+        "label": "Current Credits"
+      },
+      "06": {
+        "value": 12,
+        "label": "Total Plays (Paid and Free Games)"
+      },
+      "07": {
+        "value": 9,
+        "label": "Total Replays (Free Games)"
+      },
+      "08": {
+        "value": 0,
+        "label": "Game Percentage"
+      },
+      "09": {
+        "value": 3,
+        "label": "HSTD Achieved"
+      },
+      "10": {
+        "value": 0,
+        "label": "Coin Chute #1"
+      },
+      "11": {
+        "value": 0,
+        "label": "Coin Chute #2"
+      },
+      "12": {
+        "value": 7,
+        "label": "Coin Chute #3"
+      },
+      "13": {
+        "value": 0,
+        "label": "Specials Awarded"
+      },
+      "14": {
+        "value": 0,
+        "label": "Minutes of Game Play"
+      },
+      "15": {
+        "value": 0,
+        "label": "Service Credits"
+      }
+    }
+  },
+  "dip_switches": {
+    "1-5": {
+      "value": "1 credit/coin",
+      "label": "Coin Chute #1 (hinge side) Credits/Coin"
+    },
+    "17-20": {
+      "value": "8 credits/coin",
+      "label": "Coin Chute #2 (center) Credits/Coin"
+    },
+    "25-26": {
+      "value": 10,
+      "label": "Maximum Credits"
+    },
+    "27": {
+      "value": "off",
+      "label": "Credits Displayed"
+    },
+    "28": {
+      "value": "off",
+      "label": "Match Feature"
+    },
+    "31-32": {
+      "value": 3,
+      "label": "Balls per Game"
+    },
+    "9-13": {
+      "value": "1 credit/coin",
+      "label": "Coin Chute #3 (right side) Credits/Coin"
+    }
+  },
+  "game_state": {
+    "ball_count": {
+      "value": 3,
+      "label": "Ball Count"
+    },
+    "credits": {
+      "value": 4,
+      "label": "Credits"
+    },
+    "current_ball": {
+      "label": "Current Ball",
+      "warning": "Failed to resolve: Value is stored outside the NVRAM"
+    },
+    "current_player": {
+      "label": "Current Player",
+      "warning": "Failed to resolve: Value is stored outside the NVRAM"
+    },
+    "final_scores": [
+      {
+        "value": 1501,
+        "label": "Final Score P1"
+      },
+      {
+        "value": 0,
+        "label": "Final Score P2"
+      },
+      {
+        "value": 1500,
+        "label": "Final Score P3"
+      },
+      {
+        "value": 0,
+        "label": "Final Score P4"
+      }
+    ],
+    "game_over": {
+      "value": false,
+      "label": "Game Over"
+    },
+    "max_credits": {
+      "value": 10,
+      "label": "Max Credits"
+    },
+    "player_count": {
+      "label": "Players",
+      "warning": "Failed to resolve: Value is stored outside the NVRAM"
+    },
+    "scores": [
+      {
+        "value": 6090,
+        "label": "Player 1"
+      },
+      {
+        "value": 0,
+        "label": "Player 2"
+      },
+      {
+        "value": 0,
+        "label": "Player 3"
+      },
+      {
+        "value": 0,
+        "label": "Player 4"
+      }
+    ],
+    "tilted": {
+      "value": false,
+      "label": "Tilted"
+    }
+  },
+  "high_scores": [
+    {
+      "label": "High Score",
+      "score": {
+        "value": 167120
+      },
+      "short_label": "HS"
+    }
+  ]
+}

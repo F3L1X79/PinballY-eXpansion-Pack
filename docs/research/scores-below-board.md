@@ -95,6 +95,32 @@ Score slots per map: 4 (396 maps), 6 (23), 2 (4), none (13: 8 Capcom, 2 Alvin G,
 4. A 2-player game on a table without `player_count`: what the unused slots hold.
 5. Launch and exit without starting a game: the scores are unchanged from the previous Play.
 
+## Cabinet results (2026-11-07, #482)
+
+Read on the cabinet by the temporary NVRAM probe (`common/table_roms/nvram_probe.js`) with the released vpxtool the pack installs. Each play's real end-of-game score was noted by the owner. One real `vpxtool nvram show` answer per case is in `scores-below-board/` (the "after the game" read, UTF-8 without BOM): `wpc_taf_l7_*`, `sam_trn_174h_*`, `bally_m_mpac_*`, and `stern_m200_stargzr_sweep.json`.
+
+- **Output shape** (Fact): JSON, `_fileformat` 0.8. `game_state.scores` and `final_scores` are arrays of `{ label, value }`. Single fields are `{ value }`. A field outside the NVRAM has no `value` but a warning. Audits are keyed by number with a `label` (`audits."B.3 STANDARD AUDS."."01"` = "GAMES STARTED" on WPC; `audits."Bookkeeping functions"."06"` = "Total Plays (Paid and Free Games)" on Bally).
+- **Sweep**: 142 `.nv` in the NVRAM folder; **107 give values in `game_state.scores`** (many all 0: ROMs never played). Without values: 31 have no map in vpxtool (exit code 1), among them the cabinet's `ij4_210` (SAM), `pmv112`, `tomjerry`, `afm_113b_me`; `bsv103` has no `game_state`; `bk_l4` keeps its scores in RAM; `seawitch` and `stargzr` (Stern M-200) have `scores` outside the NVRAM but `final_scores` in it.
+
+| Platform, ROM | Case | Real score | Read after the game | Spec rule today |
+|---|---|---|---|---|
+| WPC `taf_l7` | 1 player, game over | 530,050 | `scores` [530050, 0, 0, 0], `game_over` true | right |
+| WPC `taf_l7` | quit after ball 1 | 165,020 | [165020…], `game_over` false | right (nothing) |
+| WPC `taf_l7` | launch, no game | – | unchanged scores, `game_over` turns **true** | right (equal to before) |
+| SAM `trn_174h` | 1 player, game over | 1,381,500 | [1381500…], `player_count` 1, no `game_over` | right |
+| SAM `trn_174h` | quit after ball 1 | 116,490 | [116490…] | **wrong**: kept as a Play Score (known SAM limit) |
+| Bally 6800 `m_mpac` | 1 player, game over | 159,560 | `scores` **[0, 0, 0, 0]**, `final_scores` [159560, 0, 0, 0], `game_over` false | **wrong**: refused |
+| Bally 6800 `m_mpac` | quit after ball 1 | 6,090 | `scores` [6090…], `final_scores` [1501, 0, 1500, 0] (garbage), `game_over` false | right (nothing), by luck |
+| Bally 6800 `m_mpac` | 2 players, game over | 159,090 / 162,090 | `scores` = `final_scores` = [159090, 162090, 0, 0], `game_over` false | **wrong**: refused |
+| Bally 6800 `m_mpac` | launch, no game | – | `scores` and `final_scores` all 0 | right (all 0) |
+
+- **`game_over` on Bally 6800 is always false** (8 reads: finished, quit, no game). It reads a lamp, and the lamp's state when emulation stops says nothing.
+- **Bally 6800, finished game**: the score is in `final_scores`. `scores` is all 0 (1 player) or equal to `final_scores` (2 players). After a quit, `scores` holds the real score and `final_scores` garbage. One sample per case.
+- **Unused slots** read 0 (2-player Bally game). `player_count` is sometimes garbage on other ROMs (`lca`: 153), as are `current_ball` values (20, 40, 70).
+- **Audit counters**: on WPC, "GAMES STARTED" (01) rises on a finished or quit game, "TOTAL PLAYS" (02) on a finished game only, neither without a game. On Bally, "Total Plays" (06) rises by the number of players on a finished or quit game. On SAM no audit value changed. A launch without a game changes no audit anywhere.
+- **An earlier, unexplained read**: a 1-player TAF game once gave `player_count` 4 and three scores, `game_over` false. It did not happen again in the second session.
+- **A launch that fails before PinMAME starts** changes no `.nv`. A launch without a game can still rewrite the `.nv` (new date, same scores).
+
 ## Sources
 
 - `https://github.com/tomlogic/pinball-memory-maps/tree/eba90209c329acaaa129ad8077ef63d8d0c43958`: `README.md`, `index.json`, `schema/map.schema.json`, `platforms/*.json`, `maps/williams/wpc/afm_113.map.json`, `maps/bally/as-2518-35/smman.map.json`, `maps/stern/sam/acd_170h.map.json`.
