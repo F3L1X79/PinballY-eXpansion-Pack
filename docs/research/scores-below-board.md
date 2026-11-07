@@ -97,7 +97,7 @@ Score slots per map: 4 (396 maps), 6 (23), 2 (4), none (13: 8 Capcom, 2 Alvin G,
 
 ## Cabinet results (2026-11-07, #482)
 
-Read on the cabinet by the temporary NVRAM probe (`common/table_roms/nvram_probe.js`) with the released vpxtool the pack installs. Each play's real end-of-game score was noted by the owner. One real `vpxtool nvram show` answer per case is in `scores-below-board/` (the "after the game" read, UTF-8 without BOM): `wpc_taf_l7_*`, `sam_trn_174h_*`, `bally_m_mpac_*`, and `stern_m200_stargzr_sweep.json`.
+Read on the cabinet by a temporary NVRAM probe (commit `4e98730`, since removed) with the released vpxtool the pack installs. Each play's real end-of-game score was noted by the owner. One real `vpxtool nvram show` answer per case is in `scores-below-board/` (the "after the game" read, UTF-8 without BOM): `wpc_taf_l7_*`, `sam_trn_174h_*`, `bally_m_mpac_*`, and `stern_m200_stargzr_sweep.json`.
 
 - **Output shape** (Fact): JSON, `_fileformat` 0.8. `game_state.scores` and `final_scores` are arrays of `{ label, value }`. Single fields are `{ value }`. A field outside the NVRAM has no `value` but a warning. Audits are keyed by number with a `label` (`audits."B.3 STANDARD AUDS."."01"` = "GAMES STARTED" on WPC; `audits."Bookkeeping functions"."06"` = "Total Plays (Paid and Free Games)" on Bally).
 - **Sweep**: 142 `.nv` in the NVRAM folder; **107 give values in `game_state.scores`** (many all 0: ROMs never played). Without values: 31 have no map in vpxtool (exit code 1), among them the cabinet's `ij4_210` (SAM), `pmv112`, `tomjerry`, `afm_113b_me`; `bsv103` has no `game_state`; `bk_l4` keeps its scores in RAM; `seawitch` and `stargzr` (Stern M-200) have `scores` outside the NVRAM but `final_scores` in it.

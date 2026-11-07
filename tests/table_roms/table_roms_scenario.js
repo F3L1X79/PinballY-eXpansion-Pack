@@ -36,12 +36,10 @@ export function table(configId, { rom, gameFile = vpxFile(configId), isHidden = 
 // vpxtool's answer to "romname <table file>", by table file: a ROM name,
 // null when the script loads no ROM, or the run itself ({ output,
 // errorOutput, exitCode, durationMs }). A file it has no answer for is
-// unreadable: exit code 1. The "--version" key gives the run of its --version;
-// the "nvram" key, a function of the .nv path, the run of "nvram show".
+// unreadable: exit code 1. The "--version" key gives the run of its --version.
 export const fakeVpxtool = answers => (args) => {
     // At the Script Reader Version unless the test says otherwise.
     if (args[0] === "--version") return answers["--version"] ?? { output: "vpxtool git:v0.38.0\n" };
-    if (args[0] === "nvram") return answers.nvram ? answers.nvram(args[2]) : { exitCode: 1, output: "" };
     const answer = answers[args[1]];
     if (answer === undefined) return { exitCode: 1, output: "" };
     if (answer === null) return { output: "" };
