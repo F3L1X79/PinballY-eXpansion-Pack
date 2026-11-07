@@ -4,7 +4,8 @@
 // each line in gold. Select on a column opens that Profile's Stats
 // read-only. Exit calls the return given to open().
 // Opens directly, not through the wheel dialog module: the player asked for it.
-// - Each Profile's stats kept for the session, read again (one per step, docs/adr/0014) once they could differ.
+// - Each Profile's stats kept for the session, read ahead through the drawing ahead once they could differ.
+// - An opening reads only what is still missing, one Profile per step (docs/adr/0014).
 // - Its buttons and attract mode go through the Drawn Screen controls.
 // - Past five columns, they glide sideways to keep the marker in view.
 // - isOpen() and onClosed() let the wheel dialogs wait for it.
@@ -57,9 +58,25 @@ export function createHouseholdStats(host, {
     const kept = new Map();
     // The day and the visible tables every kept value was read under.
     let keptUnder = null;
-    const forgetAll = () => kept.clear();
+    // The reading ahead's Profile names for its current pass, null until
+    // its next pass lists them again.
+    let toReadAhead = null;
+    // Reads in the background whatever is not kept, so an opening only draws.
+    const wakeReadAhead = drawingAhead.add(readAheadStep);
+    // Its next pass lists the Profiles again.
+    function restartReadAhead() {
+        toReadAhead = null;
+        wakeReadAhead();
+    }
+    function forgetAll() {
+        kept.clear();
+        restartReadAhead();
+    }
     // Fires after any write to a Profile's files: a Play, a Notified Unlock, a frame worn, a reset, a mark.
-    profileStore.onUpdate(safeHandler(SCRIPT_NAME, profileName => { kept.delete(profileName.toLowerCase()); }));
+    profileStore.onUpdate(safeHandler(SCRIPT_NAME, profileName => {
+        kept.delete(profileName.toLowerCase());
+        restartReadAhead();
+    }));
     // The active Profile's Achievements are counted live, the others' from their Notified ones.
     profileStore.onSwitch(safeHandler(SCRIPT_NAME, forgetAll));
     // Fires on table exit: the game may change anyone's boards or the active Profile's live count.
@@ -149,6 +166,53 @@ export function createHouseholdStats(host, {
             .map(profile => ({ profile, isActive: isActive(profile) }));
     }
 
+    // Forgets every kept value read under another day or other visible
+    // tables, and a Profile no longer listed, so one re-created under its
+    // name is read afresh.
+    function forgetOutdated(profileNames) {
+        const conditions = readingConditions();
+        if (conditions !== keptUnder) forgetAll();
+        keptUnder = conditions;
+        const listed = new Set(profileNames.map(name => name.toLowerCase()));
+        for (const key of [...kept.keys()]) if (!listed.has(key)) kept.delete(key);
+    }
+
+    // One Profile's stats and worn frame, sharing one read of its
+    // profile.json, kept and returned ({ stats, framePath }).
+    function readAndKeep(profileName, timeReader) {
+        return profileStore.withCachedReads(() => {
+            const read = {
+                stats: readStats(profileName, timeReader),
+                framePath: profileRewards
+                    ? timeReader("worn Avatar Frame", () => profileRewards.wornImageOf(profileName, AVATAR_FRAME_WIDTH)) : null,
+            };
+            kept.set(profileName.toLowerCase(), read);
+            return read;
+        });
+    }
+
+    // The reading ahead's step: lists the Profiles first, by name only
+    // (listing them whole reads every profile.json), then reads one not
+    // kept per step. Nothing to read with fewer than two, the screen then
+    // not offered.
+    function readAheadStep() {
+        if (toReadAhead === null) {
+            const profileNames = householdOf(profileStore.listProfileNames());
+            if (profileNames.length < 2) return false;
+            forgetOutdated(profileNames);
+            toReadAhead = profileNames;
+            return true;
+        }
+        const profileName = toReadAhead.find(name => !kept.has(name.toLowerCase()));
+        if (profileName === undefined) {
+            toReadAhead = null;
+            return false;
+        }
+        // Untimed: only an opening's line splits its reading time by reader.
+        readAndKeep(profileName, (reader, read) => read());
+        return true;
+    }
+
     // entries: readProfiles()'s; allStats and framePaths: each one's stats
     // and worn frame image, in the same order; exitLook: the Exit Button's.
     function describeScreen(entries, allStats, framePaths, exitLook) {
@@ -217,15 +281,9 @@ export function createHouseholdStats(host, {
         const drawPiece = (zIndex, rect, draw, into) => drawn.draw(() => drawn.drawPiece(zIndex, rect(), draw, into));
 
         // Queued once the Profiles are known: one step per Profile not kept,
-        // its stats and worn frame sharing one read of its profile.json.
-        // A Profile no longer listed is forgotten, so one re-created under
-        // its name is read afresh.
+        // the reading ahead not over yet or thrown away since.
         function queueSteps(entries) {
-            const conditions = readingConditions();
-            if (conditions !== keptUnder) forgetAll();
-            keptUnder = conditions;
-            const listed = new Set(entries.map(({ profile }) => profile.name.toLowerCase()));
-            for (const key of [...kept.keys()]) if (!listed.has(key)) kept.delete(key);
+            forgetOutdated(entries.map(({ profile }) => profile.name));
             const allStats = [];
             const framePaths = [];
             entries.forEach(({ profile }, index) => {
@@ -239,15 +297,7 @@ export function createHouseholdStats(host, {
                     return;
                 }
                 profileCount++;
-                drawn.read(() => profileStore.withCachedReads(() => {
-                    const read = {
-                        stats: readStats(profile.name, timeReader),
-                        framePath: profileRewards
-                            ? timeReader("worn Avatar Frame", () => profileRewards.wornImageOf(profile.name, AVATAR_FRAME_WIDTH)) : null,
-                    };
-                    kept.set(key, read);
-                    keep(read);
-                }));
+                drawn.read(() => keep(readAndKeep(profile.name, timeReader)));
             });
             drawn.read(() => { screen = describeScreen(entries, allStats, framePaths, exitButtonLookOf(onBack !== null)); });
             drawn.draw(() => drawn.drawBackdrop((dc, size, referenceWidth) => {

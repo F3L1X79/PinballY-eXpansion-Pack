@@ -92,8 +92,12 @@ _Avoid_: overlay, popup, session
 A Drawn Menu that waits for the player's answer about one thing. The pack shows one at a time, only when the wheel is free, the most urgent first.
 _Avoid_: popup (a popup shows information without waiting), alert, message box
 
+**Rating**:
+The star rating a Profile gives a table; each Profile has its own. Shown as "note" in French.
+_Avoid_: score, stars
+
 **Rating Prompt**:
-The Dialog that offers to open PinballY's own rating dialog, once a table not yet rated has been played long enough.
+The Dialog that offers to open PinballY's own rating dialog, once a table the active Profile has not yet rated has been played long enough.
 _Avoid_: rating popup
 
 **Operator Menu**:
@@ -187,7 +191,7 @@ A Profile marked as a child's, from which Adult Tables are left out. Not parenta
 _Avoid_: kid mode, parental control, family filter
 
 **Profile Reset**:
-Starting a Profile over as if it had never played, while its name, Avatar and marks stay.
+Starting a Profile over as if it had never played, while its name, Avatar, marks, Ratings and Favorite Tables stay.
 _Avoid_: fresh start, wipe, achievement reset (the Achievements come from the plays, so the plays go too)
 
 **Avatar**:
@@ -286,7 +290,7 @@ The tables the active Profile can see on whose high score board it still holds a
 _Avoid_: my records, Mes records (a record is only the Table Record)
 
 **Favorite Tables**:
-The tables the Household has added to PinballY's favourites, offered as a wheel selection. Shown as "Tables favorites" in French.
+The tables the active Profile has added to its favourites, offered as a wheel selection; each Profile has its own. Shown as "Tables favorites" in French.
 _Avoid_: Favorites, favourites filter
 
 **Hidden Tables**:

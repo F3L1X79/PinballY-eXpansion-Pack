@@ -220,13 +220,13 @@
         <div class="cell sweet">
         </div>
         <div class="cell">
+          <a class="chip tr-profiles" href="#ratings"><b></b>Notes et favoris par Profile</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
         </div>
         <div class="cell">
-          <a class="chip tr-profiles" href="#ratings"><b></b>Notes, favoris, masquées</a>
           <a class="chip tr-profiles" href="#year-in-pinball"><b></b>Year in Pinball</a>
           <a class="chip tr-share" href="#themes"><b></b>Thèmes</a>
           <a class="chip tr-play" href="#feld"><b></b>Feld</a>
@@ -238,11 +238,11 @@
           <a class="chip tr-share" href="#pinbally-release-day"><b></b>Nouvelle version de PinballY</a>
         </div>
         <div class="cell">
+          <a class="chip tr-profiles" href="#household-rating"><b></b>Note moyenne de la maison</a>
           <a class="chip tr-share" href="#crt-filter"><b></b>Faux CRT</a>
           <a class="chip tr-play" href="#neon-confirmations"><b></b>Confirmations néon</a>
         </div>
         <div class="cell">
-          <a class="chip tr-share" href="#pinemhi-online"><b></b>Scores en ligne PINemHi</a>
           <a class="chip tr-share" href="#stats-api"><b></b>API des stats</a>
           <a class="chip tr-share" href="#theme-editor"><b></b>Éditeur de palette</a>
           <a class="chip tr-share" href="#discord-table-image"><b></b>Image de table Discord</a>
@@ -278,47 +278,48 @@
 
     <ol class="queue">
 
-      <li draggable="true" tabindex="0" class="item tr-share" id="pinemhi-online" data-track="share" data-rank="gold">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Scores en ligne PINemHi sur le High Score Board</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen-gros</span><span class="tag">UI</span></div>
-          </div>
-          <p>Un onglet « Scores en ligne » à côté des scores locaux du High Score Board : le n° 1 mondial du LeaderBoard de PINemHi, puis le meilleur score de la maison (un autre Profile, ou à défaut un Default Score), sans « ami en ligne ».</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/research</code> → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Sur le High Score Board (livré) · Research : <code>docs/research/high-scores-tools.md</code></div>
-          <details>
-            <summary>Questions ouvertes (4)</summary>
-            <ul>
-              <li>pinemhi.com expose-t-il une API, ou faudrait-il lire ses pages (fragile, et ses conditions d'utilisation) ? À établir en <code>/research</code>.</li>
-              <li>Accord de l'auteur de PINemHi : sans licence publiée, se brancher sur son service se demande, comme PinballY l'a fait pour l'embarquer.</li>
-              <li>Le LeaderBoard ne retient que le joueur 1 de la dernière partie, avec un compte pinemhi.com, et surtout les tables à ROM : combien des tables de la borne y ont un classement ?</li>
-              <li>Borne hors ligne, réponse lente : l'onglet attend-il, ou montre-t-il la dernière réponse gardée ? Un record mondial démesuré décourage-t-il les enfants ?</li>
-            </ul>
-            <p class="ctx">Idée de Félix du 29/10/2026, d'après une maquette externe. La maison a déjà ses records attribués sur le High Score Board : la seule nouveauté est le score mondial, d'où l'impact faible.</p>
-          </details>
-        </div>
-      </li>
-
       <li draggable="true" tabindex="0" class="item tr-profiles" id="ratings" data-track="profiles" data-rank="platinum">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
-            <h3>Notes, favoris et tables masquées par Profile</h3>
-            <div class="tags"><span class="tag track">Profiles</span><span class="tag">gros</span></div>
+            <h3>Notes et favoris par Profile</h3>
+            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span></div>
           </div>
-          <p>Chaque Profile a ses propres notes, favoris et tables masquées (aujourd'hui communs dans PinballY), avec ensuite une note moyenne de la maison par table.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <p>Chaque Profile a ses propres Ratings et Favorite Tables (aujourd'hui communs dans PinballY). Ceux du Profile actif sont recopiés dans les colonnes natives au démarrage et à chaque changement de Profile : étoiles, dialogue de notation, filtre des favoris et filtres par note marchent sans être réécrits.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="here">spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. ADR : <code>docs/adr/0024-the-active-profile-s-ratings-and-favorites-live-in-pinbally-s-own-columns.md</code>. Avant la <a href="#household-rating">note moyenne de la maison (n° <span data-ref="household-rating"></span>)</a></div>
           <details>
-            <summary>Questions ouvertes (2)</summary>
+            <summary>Décisions du grill (7/11/2026)</summary>
             <ul>
-              <li>Les Tables masquées par Profile remplacent-elles le flag Hidden de toute la borne, ou s'y ajoutent-elles (une table masquée pour tous, plus celles masquées par chaque Profile) ?</li>
-              <li>Quel besoin, hors enfants (les Adult Tables y suffisent) : une table qu'un Profile n'aime pas ? Une note basse suffirait-elle alors ?</li>
+              <li>Les tables masquées restent pour toute la borne (spec #263) : les Adult Tables suffisent pour les enfants, une note basse pour une table qu'on n'aime pas.</li>
+              <li>Tant qu'un Profile est actif, les colonnes de PinballY font foi pour lui : relues en le quittant et au démarrage. Un changement de Profile coupé par un plantage est réécrit depuis le fichier du Profile actif.</li>
+              <li>Premier démarrage : les notes et favoris actuels sont copiés dans chaque Profile, Guest compris. Un nouveau Profile commence vide ; un Profile Reset les garde.</li>
+              <li>À mesurer sur la borne : le temps d'un changement de Profile, une écriture <code>update()</code> par table qui diffère.</li>
             </ul>
-            <p class="ctx">Les notes, favoris et le flag Hidden natifs sont des colonnes globales de <code>GameStats.csv</code> : l'invite de notation, les filtres de favoris et les Hidden Tables devront lire les données du Profile. Les Tables masquées par Profile rouvrent le choix de la spec #263, où elles valent pour toute la borne.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-profiles" id="household-rating" data-track="profiles" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Note moyenne de la maison par table</h3>
+            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span></div>
+          </div>
+          <p>Une fois les Ratings propres à chaque Profile, une note moyenne de la maison pour chaque table.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après les <a href="#ratings">notes et favoris par Profile (n° <span data-ref="ratings"></span>)</a></div>
+          <details>
+            <summary>Questions ouvertes (3)</summary>
+            <ul>
+              <li>Où l'afficher : sur la fiche de la table, comme tri ou sélection de la roue, sur le High Score Board ?</li>
+              <li>Qui compte : Guest, les Child Profiles ?</li>
+              <li>Une table notée par un seul Profile a-t-elle une moyenne de la maison ?</li>
+            </ul>
+            <p class="ctx">Sortie du grill des notes et favoris par Profile (7/11/2026) : où l'afficher et qui compte ne changent rien à la façon de stocker les notes.</p>
           </details>
         </div>
       </li>

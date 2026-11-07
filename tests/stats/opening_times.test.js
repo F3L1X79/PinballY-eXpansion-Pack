@@ -17,8 +17,9 @@ import { isListOpen } from "../achievements/achievement_list_reader.js";
 const TIMES = "in \\d+ ms: read in \\d+ ms, drawn in \\d+ ms\\.";
 const ACTIVE_PROFILE_STATS = new RegExp(`^\\[ProfileStats\\] Opened Alice's ${TIMES}$`);
 const READ_ONLY_PROFILE_STATS = new RegExp(`^\\[ProfileStats\\] Opened Bob's, read only, ${TIMES}$`);
-// Its reading time also split by reader (household_stats_read_split.test.js).
-const HOUSEHOLD_STATS = /^\[HouseholdStats\] Opened in \d+ ms: read in \d+ ms \(2 Profiles: [^)]+\), drawn in \d+ ms\.$/;
+// Its reading time also split by reader (household_stats_read_split.test.js),
+// over the Profiles not read ahead.
+const HOUSEHOLD_STATS = /^\[HouseholdStats\] Opened in \d+ ms: read in \d+ ms \(\d+ Profiles?: [^)]+\), drawn in \d+ ms\.$/;
 const ACHIEVEMENT_LIST = new RegExp(`^\\[AchievementList\\] Opened ${TIMES}$`);
 const AVATAR_FRAME_LIST = new RegExp(`^\\[AvatarFrameList\\] Opened ${TIMES}$`);
 

@@ -9,7 +9,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { startHousehold, PROFILES, MEDIEVAL, MARS, THEATRE, TWILIGHT, played } from "./household_stats_scenario.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
-import { openHouseholdStats, columnNames, lineValues, press } from "./household_stats_reader.js";
+import { openHouseholdStats, columnNames, lineValues, press, throwAwayKeptStats } from "./household_stats_reader.js";
 
 const SLOW_READ_MS = 400;
 const BOB_PROFILE = `${PROFILES}\\Bob\\profile.json`;
@@ -34,12 +34,12 @@ const { fake, lang, profileStore } = await startHousehold({
 });
 const TEXT = lang.profileStats;
 
-// Opens them from the Profile Stats, reads what they show and the
-// opening line, then goes back to the wheel.
-function reopen() {
+// Opens them from the Profile Stats, beforeChoosing() run once those are
+// shown, reads what they show and the opening line, then goes back to the wheel.
+function reopen(beforeChoosing = () => {}) {
     const mark = fake.logLines().length;
     const readsBefore = fake.fileReads().length;
-    openHouseholdStats(fake, lang);
+    openHouseholdStats(fake, lang, { beforeChoosing });
     const shown = {
         names: columnNames(fake),
         gamesPlayed: lineValues(fake, TEXT.stats.gamesPlayed),
@@ -62,7 +62,8 @@ let first = null;
 
 test("reopened with nothing changed, no Profile is read again and the reading time is near zero", () => {
     fake.slowDownReads(BOB_PROFILE, SLOW_READ_MS);
-    first = reopen();
+    // Read on the spot rather than ahead.
+    first = reopen(() => throwAwayKeptStats(profileStore, ["Alice", "Bob", "Carol"]));
     assert.equal(first.profileCount, 3);
     assert.ok(first.readMs >= SLOW_READ_MS, `first read in ${first.readMs} ms`);
 
@@ -75,13 +76,14 @@ test("reopened with nothing changed, no Profile is read again and the reading ti
 });
 
 test("reopened after a write to one Profile's files, only that Profile is read again", () => {
-    profileStore.updateProfileData(data => { data.plays[MEDIEVAL.configId] = played(5, 3000); }, "Bob");
-
-    const shown = reopen();
+    // Right before the opening, so the reading ahead leaves it to it.
+    const shown = reopen(() => profileStore.updateProfileData(data => { data.plays[MEDIEVAL.configId] = played(5, 3000); }, "Bob"));
     assert.equal(shown.profileCount, 1);
     assert.deepEqual(shown.gamesPlayed, ["1", "5", "0"]);
 });
 
+// Read again ahead, during the toasts (household_stats_read_ahead.test.js):
+// the values show it.
 test("after a game, every Profile is read again", () => {
     fake.playGame(MEDIEVAL);
     fake.gameStarted(MEDIEVAL);
@@ -89,11 +91,10 @@ test("after a game, every Profile is read again", () => {
     fake.gameOver(MEDIEVAL);
     fake.advanceTime(ALL_TOASTS_MS);
 
-    const shown = reopen();
-    assert.equal(shown.profileCount, 3);
-    assert.deepEqual(shown.gamesPlayed, ["2", "5", "0"]);
+    assert.deepEqual(reopen().gamesPlayed, ["2", "5", "0"]);
 });
 
+// Read again ahead, while the Profile Stats open.
 test("after a board changed outside a Play, every Profile is read again", async () => {
     const { getHighScoreStore } = await import("../../common/high_scores/high_score_store.js");
     assert.deepEqual(reopen().tableRecords, ["1", "0", "0"]);
@@ -102,9 +103,7 @@ test("after a board changed outside a Play, every Profile is read again", async 
         { rank: 1, initials: "ZZZ", score: 99000000 }, { rank: 2, initials: "AAA", score: 9000000 }, { rank: 3, initials: "AAA", score: 8000000 },
     ]);
 
-    const shown = reopen();
-    assert.equal(shown.profileCount, 3);
-    assert.deepEqual(shown.tableRecords, ["0", "0", "0"]);
+    assert.deepEqual(reopen().tableRecords, ["0", "0", "0"]);
 });
 
 test("on a new day, every Profile is read again", () => {

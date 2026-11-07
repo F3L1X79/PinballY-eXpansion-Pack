@@ -9,19 +9,22 @@ import assert from "node:assert/strict";
 import { startHousehold, PROFILES } from "./household_stats_scenario.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { openProfileStats, choose, PROFILE_STATS_OPEN_MS } from "./profile_stats_reader.js";
+import { throwAwayKeptStats } from "./household_stats_reader.js";
 
 const SLOW_READ_MS = 400;
 const OPENING_LINE = /^\[HouseholdStats\] Opened in \d+ ms: read in (\d+) ms \((\d+) Profiles: (.+)\), drawn in \d+ ms\.$/;
 const SHARE = /^(.+) (\d+) ms$/;
 
 test("the opening line splits the reading time by reader over every Profile read, the slowest first", async () => {
-    const { fake, lang } = await startHousehold({
+    const { fake, lang, profileStore } = await startHousehold({
         profiles: { Alice: {}, Bob: { playLog: ["2026-09-22T20:00:00"] }, Carol: {} }, active: "Alice", frameImages: true,
         addOns: ["achievements", "challenges", "tableMastery", "highScores"],
     });
     // Bob's Play Log is what the Daily Streak reads.
     fake.slowDownReads(`${PROFILES}\\Bob\\play-log-2026.json`, SLOW_READ_MS);
     openProfileStats(fake, lang);
+    // Read on the spot rather than ahead.
+    throwAwayKeptStats(profileStore, ["Alice", "Bob", "Carol"]);
 
     const mark = fake.logLines().length;
     choose(fake, lang.profileStats.buttons.household);

@@ -27,17 +27,26 @@ export const householdStatsLayerCount = fake => fake.drawingLayers()
 export const untilHouseholdStatsFadedIn = fake => untilFadedIn(fake, HOUSEHOLD_STATS_Z_INDEX.backdrop);
 
 // Opens the Profile Stats from the main menu and picks "Household Stats",
-// which start getting ready: the clock does not run. Returns the Select press.
-export function startOpeningHouseholdStats(fake, lang) {
+// which start getting ready: the clock does not run. beforeChoosing() runs
+// once the Profile Stats are shown. Returns the Select press.
+export function startOpeningHouseholdStats(fake, lang, { beforeChoosing = () => {} } = {}) {
     openProfileStats(fake, lang);
+    beforeChoosing();
     return choose(fake, lang.profileStats.buttons.household);
 }
 
 // Opens the Profile Stats from the main menu, picks "Household Stats" and lets
-// them get ready and fade in.
-export function openHouseholdStats(fake, lang) {
-    startOpeningHouseholdStats(fake, lang);
+// them get ready and fade in; options as startOpeningHouseholdStats()'s.
+export function openHouseholdStats(fake, lang, options = {}) {
+    startOpeningHouseholdStats(fake, lang, options);
     untilHouseholdStatsFadedIn(fake);
+}
+
+// A write to each named Profile's files, changing nothing: throws their
+// kept stats away. Run as beforeChoosing, the clock does not run before
+// the opening, so the reading ahead leaves them to it.
+export function throwAwayKeptStats(profileStore, profileNames) {
+    for (const name of profileNames) profileStore.updateProfileData(() => {}, name);
 }
 
 export function title(fake) {

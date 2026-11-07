@@ -51,8 +51,9 @@ test("an Admin Profile resets another Profile from the Operator Menu, after one 
     fake.addFile(playLogFile("Bob", "play-log-2026.json"), bobLog2026);
     fake.addFile(playLogFile("Bob", "play-log-2026.bak.json"), playLogJson(600));
     // A year whose file was lost: its backup is what the Play Log reads.
+    // Added right before the reset: any read of Bob's stats (the Household
+    // Stats read them ahead) restores the year file from it.
     const bobLog2024 = playLogJson(200);
-    fake.addFile(playLogFile("Bob", "play-log-2024.bak.json"), bobLog2024);
     // A reset copy name already taken, for the copy to be numbered.
     fake.addFile(playLogFile("Bob", "play-log-2025.reset-2026-10-01_20-15-30.json"), "older copy");
     const aliceLog2026 = playLogJson(120);
@@ -129,6 +130,7 @@ test("an Admin Profile resets another Profile from the Operator Menu, after one 
     assert.equal(fake.readFile(profileFile("Bob")), bobFile, "No changes nothing");
     assert.equal(fake.readFile(`${PROFILES}\\Bob\\${COPY_NAME}`), undefined);
 
+    fake.addFile(playLogFile("Bob", "play-log-2024.bak.json"), bobLog2024);
     askToReset("Bob");
     fake.selectMenuItem(TEXT.yes);
     assert.equal(fake.readFile(`${PROFILES}\\Bob\\${COPY_NAME}`), bobFile, "the former file is kept, dated");

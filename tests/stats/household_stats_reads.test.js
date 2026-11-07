@@ -9,7 +9,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { startHousehold, PROFILES, MEDIEVAL, played } from "./household_stats_scenario.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
-import { openHouseholdStats, press } from "./household_stats_reader.js";
+import { untilHouseholdStatsFadedIn, throwAwayKeptStats, press } from "./household_stats_reader.js";
+import { openProfileStats, choose } from "./profile_stats_reader.js";
 
 const BOB_PROFILE = `${PROFILES}\\Bob\\profile.json`;
 
@@ -33,7 +34,13 @@ test("another Profile's stats read its profile.json once", () => {
 });
 
 test("opening the Household Stats reads another Profile's profile.json once, its worn frame included", () => {
-    assert.equal(readsOf(BOB_PROFILE, () => openHouseholdStats(fake, lang)), 1);
+    // Read on the spot rather than ahead.
+    openProfileStats(fake, lang);
+    throwAwayKeptStats(profileStore, ["Bob"]);
+    assert.equal(readsOf(BOB_PROFILE, () => {
+        choose(fake, lang.profileStats.buttons.household);
+        untilHouseholdStatsFadedIn(fake);
+    }), 1);
     press(fake, "Exit");
     fake.advanceTime(1000);
 });
