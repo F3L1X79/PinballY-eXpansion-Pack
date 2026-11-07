@@ -27,7 +27,7 @@ const ON = "On (on restart)";
 const categoryPages = ({ achievements = ON, clock = ON, menuCleanup = "Off" } = {}) => ({
     "Players and progress": [
         "[PLAYERS AND PROGRESS]",
-        `Profile picker: ${ON}`, `Welcome Screen: ${ON}`, `Achievements: ${achievements}`, `Session stats: ${ON}`,
+        `Profile picker: ${ON}`, `Ratings per Profile: ${ON}`, `Welcome Screen: ${ON}`, `Achievements: ${achievements}`, `Session stats: ${ON}`,
         `Challenges: ${ON}`, `Table Mastery: ${ON}`, `High Scores: ${ON}`, "---", "Back",
     ],
     "Wheel screen": ["[WHEEL SCREEN]", `Status line: ${ON}`, `Clock: ${clock}`, `Status Icons: ${ON}`, `Wheel Arc: ${ON}`, "---", "Back"],

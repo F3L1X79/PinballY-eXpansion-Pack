@@ -33,8 +33,9 @@ test("the list speaks French", async () => {
     assert.deepEqual(drawnMenuLines(fake).slice(0, 2), ["Joueurs et progression", "Écran de la roue"]);
     chooseEntry(fake, "Joueurs et progression");
     fake.advanceTime(OPEN_OVER_MS);
-    assert.deepEqual(drawnMenuLines(fake).slice(0, 4), [
-        "[JOUEURS ET PROGRESSION]", "Choix du joueur : Désactivé", "Écran d'accueil : Activé au redémarrage", "Succès : Activé au redémarrage",
+    assert.deepEqual(drawnMenuLines(fake).slice(0, 5), [
+        "[JOUEURS ET PROGRESSION]", "Choix du joueur : Désactivé", "Notes par Profil : Activé au redémarrage",
+        "Écran d'accueil : Activé au redémarrage", "Succès : Activé au redémarrage",
     ]);
     press(fake, "Exit");
     fake.advanceTime(OPEN_OVER_MS);

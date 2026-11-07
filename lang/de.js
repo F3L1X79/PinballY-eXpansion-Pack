@@ -814,6 +814,11 @@ export default {
                 whenOn: "Spieler wechseln im Hauptmenü, um zu wählen, wer spielt.",
                 whenOff: "Alle spielen als Gast; kein Avatar und kein Gruß auf der Willkommensseite.",
             },
+            profileRatings: {
+                name: "Bewertungen pro Profil",
+                whenOn: "Jedes Profil behält seine eigenen Bewertungen und Favoriten.",
+                whenOff: "Alle teilen dieselben Bewertungen und Favoriten.",
+            },
             startupChoicePrompt: {
                 name: "Willkommensseite",
                 whenOn: "Beim Start und nach Spieler wechseln: einen Tisch wählen oder den Spieler wechseln.",

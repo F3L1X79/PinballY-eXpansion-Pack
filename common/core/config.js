@@ -123,6 +123,8 @@ export const DEFAULTS = {
         playLaunchSound: true,
         ratingPrompt: true,
         profilePicker: true,
+        // Each Profile's own Ratings and Favorite Tables in PinballY's columns while it is active.
+        profileRatings: true,
         clock: true,
         // Icons beside the clock: a Pack Update waiting, the Update Check off.
         statusIcons: true,

@@ -742,6 +742,11 @@ export default {
                 whenOn: "Change Player in the main menu, to pick who is playing.",
                 whenOff: "Everyone plays as Guest; no Avatar or greeting on the Welcome Screen.",
             },
+            profileRatings: {
+                name: "Ratings per Profile",
+                whenOn: "Each Profile keeps its own Ratings and Favorite Tables.",
+                whenOff: "Everyone shares the same Ratings and Favorite Tables.",
+            },
             startupChoicePrompt: {
                 name: "Welcome Screen",
                 whenOn: "At startup and after Change Player: pick a table to play, or change player.",

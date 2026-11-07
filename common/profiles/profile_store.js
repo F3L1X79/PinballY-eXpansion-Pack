@@ -6,7 +6,7 @@
 // Listens to "gamestarted" / "gameover"; tells of a Play it could not save or log (onPlayFailed).
 // - Every write is whole: tmp, backup, rename; a broken or newer file comes back from its backup, the recovery written to the Error Log.
 // - isAdmin and isChild: by hand or setMark, which writes true or removes the key (ADR 0020); a first Profile created gets isAdmin (ADR 0023).
-// - Other cabinet-level files sit next to cabinet.json; no Profile Reset touches them.
+// - Other modules' files sit next to cabinet.json or in a Profile's folder; no Profile Reset touches them.
 // - Another Profile's profile.json is read afresh on each call, but once per withCachedReads run.
 // ============================================================
 
@@ -116,6 +116,13 @@ export function createProfileStore(host) {
     }
     // The listed folder of the named Profile, in any case; undefined when none.
     const folderNameOf = name => listProfileNames().find(folder => sameName(folder, name));
+    // The same, throwing when none; unlike findProfile, it reads no Avatar.
+    function listedFolderOf(name) {
+        const folderName = folderNameOf(name);
+        if (folderName === undefined) throw new Error(`No Profile named "${name}".`);
+        return folderName;
+    }
+    const listedFolderPathOf = name => `${profilesFolder}\\${listedFolderOf(name)}`;
 
     // The file's data, or null when it is missing, not JSON or not an object;
     // the cause of an unreadable file is logged here, its outcome by the caller.
@@ -471,8 +478,7 @@ export function createProfileStore(host) {
     // Copies imagePath as the named Profile's avatar.png, replacing it;
     // nothing records which image it was. Throws when the copy fails.
     function giveAvatar(profileName, imagePath) {
-        const folderName = folderNameOf(profileName);
-        if (folderName === undefined) throw new Error(`No Profile named "${profileName}".`);
+        const folderName = listedFolderOf(profileName);
         files.copyFile(imagePath, `${profilesFolder}\\${folderName}\\avatar.png`);
         log(`The Profile "${folderName}" was given the Avatar ${imagePath}.`);
     }
@@ -594,9 +600,15 @@ export function createProfileStore(host) {
         getCabinetData: () => cabinet,
         // Another module's cabinet-level file, "<baseName>.json" next to
         // cabinet.json: its data, or null when it was never saved. Its
-        // version is the other module's to check, not the store's.
-        readCabinetFile: (baseName) => loadJson(profilesFolder, baseName, `${baseName}.json`),
+        // version is the other module's to check, unless it gives codeVersion
+        // for a newer file to be set aside like the store's own.
+        readCabinetFile: (baseName, codeVersion) => loadJson(profilesFolder, baseName, `${baseName}.json`, codeVersion),
         saveCabinetFile: (baseName, data) => saveJson(profilesFolder, baseName, data),
+        // Another module's file of the named Profile, "<baseName>.json" in its
+        // folder, under the same rules; never touched by a Profile Reset.
+        readProfileFile: (profileName, baseName, codeVersion) =>
+            loadJson(listedFolderPathOf(profileName), baseName, `${listedFolderOf(profileName)}\\${baseName}.json`, codeVersion),
+        saveProfileFile: (profileName, baseName, data) => saveJson(listedFolderPathOf(profileName), baseName, data),
         updateCabinetData: (change) => {
             change(cabinet);
             saveCabinet();

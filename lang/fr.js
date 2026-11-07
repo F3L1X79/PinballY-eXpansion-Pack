@@ -818,6 +818,11 @@ export default {
                 whenOn: "« Changer de joueur » dans le menu principal, pour choisir qui joue.",
                 whenOff: "Tout le monde joue en Invité ; ni avatar ni salut sur l'écran d'accueil.",
             },
+            profileRatings: {
+                name: "Notes par Profil",
+                whenOn: "Chaque Profil garde ses propres notes et ses tables favorites.",
+                whenOff: "Tout le monde partage les mêmes notes et tables favorites.",
+            },
             startupChoicePrompt: {
                 name: "Écran d'accueil",
                 whenOn: "Au démarrage et après « Changer de joueur » : choisir une table à jouer, ou changer de joueur.",

@@ -814,6 +814,11 @@ export default {
                 whenOn: "Trocar de jogador no menu principal, para escolher quem joga.",
                 whenOff: "Todos jogam como Convidado; sem avatar nem saudação nas Boas-vindas.",
             },
+            profileRatings: {
+                name: "Avaliações por perfil",
+                whenOn: "Cada perfil guarda as suas próprias avaliações e favoritos.",
+                whenOff: "Todos partilham as mesmas avaliações e favoritos.",
+            },
             startupChoicePrompt: {
                 name: "Boas-vindas",
                 whenOn: "Na inicialização e após Trocar de jogador: escolha uma mesa para jogar ou troque de jogador.",

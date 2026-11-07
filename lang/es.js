@@ -815,6 +815,11 @@ export default {
                 whenOn: "Cambiar de jugador en el menú principal, para elegir quién juega.",
                 whenOff: "Todos juegan como Invitado; sin avatar ni saludo en la pantalla de bienvenida.",
             },
+            profileRatings: {
+                name: "Valoraciones por perfil",
+                whenOn: "Cada perfil guarda sus propias valoraciones y sus favoritos.",
+                whenOff: "Todos comparten las mismas valoraciones y favoritos.",
+            },
             startupChoicePrompt: {
                 name: "Bienvenida",
                 whenOn: "Al iniciar y tras Cambiar de jugador: elegir una mesa para jugar, o cambiar de jugador.",

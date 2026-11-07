@@ -9,7 +9,7 @@
 export const ADD_ON_GROUPS = Object.freeze([
     {
         group: "playersAndProgress",
-        addOns: ["profilePicker", "startupChoicePrompt", "achievements", "sessionStatsTracker", "challenges", "tableMastery", "highScores"],
+        addOns: ["profilePicker", "profileRatings", "startupChoicePrompt", "achievements", "sessionStatsTracker", "challenges", "tableMastery", "highScores"],
     },
     { group: "wheelScreen", addOns: ["statusLineInfo", "clock", "statusIcons", "wheelArc"] },
     {
