@@ -420,17 +420,17 @@
             <h3>Un mini-jeu aux boutons de flipper, avec son record par Profile</h3>
             <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
           </div>
-          <p>Une fusée monte entre des astéroïdes : le flipper gauche et le flipper droit la font passer d'un couloir à l'autre, sur cinq couloirs, de plus en plus vite. Lancée depuis le menu principal, avec un record par Profile et des Achievements pour un score atteint.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Entrée ajoutée par <code>getMainMenu().add(...)</code>. Après <a href="#feld">Feld (n° <span data-ref="feld"></span>)</a>, qui le précède</div>
+          <p>Une fusée monte entre des astéroïdes : le flipper gauche et le flipper droit la font passer d'un couloir à l'autre, sur cinq couloirs, de plus en plus vite. Deux jeux au menu principal, l'un avec tir sur Launch, l'autre sans tir pour les bornes à tirette, Exit pour quitter, chacun avec son tableau personnel et des Achievements pour un score atteint.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="here">spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Entrées ajoutées par <code>getMainMenu().add(...)</code>. Après <a href="#feld">Feld (n° <span data-ref="feld"></span>)</a>, qui le précède</div>
           <details>
-            <summary>Questions ouvertes (3)</summary>
+            <summary>Checklist</summary>
             <ul>
-              <li>L'entrée de menu : toujours visible, ou seulement à certaines conditions ?</li>
-              <li>Le jeu tourne tant qu'on joue : est-ce une exception à la règle « pas d'animation sans fin », puisqu'il s'arrête à la défaite et que le joueur le relance ?</li>
-              <li>Le record : dans les Profile Stats, et un classement de la maison entre Profiles ?</li>
+              <li>Les entrées de menu n'apparaissent que pour un Profile qui y a droit.</li>
+              <li>Exception à la règle « pas d'animation sans fin » : le jeu s'arrête à la défaite.</li>
+              <li>À la fin d'une partie, le tableau personnel des 5 meilleurs scores du Profile, un par jeu ; pas de classement de la maison ; un Profile Reset l'efface.</li>
             </ul>
-            <p class="ctx">Idée de Félix du 25/10/2026 ; la fusée remplace Flappy Bird et le dinosaure de Chrome le 01/11/2026.</p>
+            <p class="ctx">Idée de Félix du 25/10/2026 ; la fusée remplace Flappy Bird et le dinosaure de Chrome le 01/11/2026. Précisé au grill du 08/11/2026.</p>
           </details>
         </div>
       </li>
