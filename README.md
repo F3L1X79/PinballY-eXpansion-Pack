@@ -55,7 +55,7 @@ Requires **Windows** and **PinballY 1.1.0 Beta 10** (plus the *Windows Media Pla
 4. **Restart PinballY.** `PinballY.log` shows one "initialized" line per Add-on; errors are also kept in `Scripts\ExpansionPack\errors.log`.
 5. **Choose your Add-ons**, the startup screen and the language in **eXpansion Pack Settings**, in the Operator Menu, then restart PinballY in one press.
 
-Your settings and Profiles stay in `Scripts\ExpansionPack`: copy this folder to back up, and simply delete it and the import line to uninstall this pack if you don't want it anymore. When a new version is out, PinballY offers the update at startup, in one press, keeping your settings and Profiles.
+Your settings and Profiles stay in `Scripts\ExpansionPack`: copy this folder to back up, and simply delete it and the import line to uninstall this pack if you don't want it anymore. When a new version of the pack is out, PinballY offers the update at startup, in one press, keeping your settings and Profiles.
 For PINemHi 3.6.8, `.env.local` and installing with git: see the [install page](docs/guide/en/install.md) for the complete steps.
 
 ## Learn more

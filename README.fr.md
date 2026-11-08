@@ -36,7 +36,7 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 ## Interface
 
 - Les menus et messages de PinballY en français, anglais, allemand, espagnol, italien ou portugais, dessinés dans le style Steamball du pack et rangés en sections.
-- Une horloge sur la roue, une horloge du backglass pour vos parties une fois activée, un arc doré sous la roue, des lancements sans flash noir, et des sons que vous pouvez remplacer par les vôtres.
+- Une horloge de la roue, une horloge du backglass pour vos parties une fois activée, un arc doré sous la roue, des lancements sans flash noir, et des sons que vous pouvez remplacer par les vôtres.
 - **Discord Rich Presence** (<img src="docs/images/discord_symbol.svg" alt="" width="16" height="16">), une fois activé, montre à vos amis Discord la table que vous jouez et depuis combien de temps.
 - **"Réglages de l'eXpansion pack"**, dans le menu opérateur, active ou désactive chaque Add-on.
 
@@ -55,7 +55,7 @@ Nécessite **Windows** et **PinballY 1.1.0 Beta 10** (plus la fonctionnalité fa
 4. **Redémarrez PinballY.** `PinballY.log` montre une ligne « initialized » par Add-on ; les erreurs sont aussi gardées dans `Scripts\ExpansionPack\errors.log`.
 5. **Choisissez vos Add-ons**, l'écran de démarrage et la langue dans **Réglages de l'eXpansion pack**, depuis le menu opérateur, puis redémarrez PinballY d'une seule pression.
 
-Vos réglages et vos Profils restent dans `Scripts\ExpansionPack` : copiez ce dossier pour sauvegarder, supprimez-le avec la ligne d'import pour désinstaller un jour au besoin. Quand une nouvelle version sort, PinballY propose la mise à jour au démarrage, d'une seule pression, en gardant vos réglages et vos Profils.
+Vos réglages et vos Profils restent dans `Scripts\ExpansionPack` : copiez ce dossier pour sauvegarder, supprimez-le avec la ligne d'import pour désinstaller un jour au besoin. Quand une nouvelle version du pack sort, PinballY propose la mise à jour au démarrage, d'une seule pression, en gardant vos réglages et vos Profils.
 Pour PINemHi 3.6.8, `.env.local` et l'installation avec git : voir la [page d'installation](docs/guide/fr/install.md) pour les étapes complètes.
 
 ## En savoir plus
