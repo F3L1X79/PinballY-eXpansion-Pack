@@ -770,7 +770,7 @@ export default {
         takenFrom: (profile) => `${profile} abgenommen`,
         // The High Score Board.
         board: {
-            menuEntry: "Highscores",
+            menuEntry: "Highscore-Tabellen",
             record: "Rekord",
             // In place of a place's owner when it belongs to no Profile.
             defaultScore: "Standardscore",

@@ -770,7 +770,7 @@ export default {
         takenFrom: (profile) => `tirado de ${profile}`,
         // The High Score Board.
         board: {
-            menuEntry: "Melhores pontuações",
+            menuEntry: "Tabelas de melhores pontuações",
             record: "Recorde",
             // In place of a place's owner when it belongs to no Profile.
             defaultScore: "Pontuação padrão",

@@ -3,7 +3,7 @@
 // Profile active when it started, whatever initials were typed, and toasts the best place
 // won. With vpxtool, keeps the Play Score read from the ROM's .nv (copied to play_scores\
 // at launch), toasting a House Record or Personal Best when no place was won; the rules'
-// oddities go to play_scores_anomalies.log. Adds "High Scores" and "My High Scores" to the main menu.
+// oddities go to play_scores_anomalies.log. Adds "High Score Boards" and "My High Scores" to the main menu.
 // - The board is read at "prelaunch" and again a little after "postlaunch".
 // - Without a ROM, the board comes from VPX's User folder, never read while VPX runs.
 // - Replaces PinballY's own "High Scores": removes its entry, cancels HighScores.

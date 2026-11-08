@@ -30,7 +30,7 @@ test("from the main menu: the back arrow's Back, and Exit back to the main menu 
     assert.ok(press(fake, "Exit").defaultPrevented, "Exit never reaches the wheel");
     assert.ok(!isBoardOpen(fake), "Exit leaves the board");
     assert.equal(boardLayerCount(fake), 0);
-    assert.deepEqual(fake.currentMenu().items.filter(item => item.selected).map(item => item.title), ["High Scores"]);
+    assert.deepEqual(fake.currentMenu().items.filter(item => item.selected).map(item => item.title), ["High Score Boards"]);
     fake.closeMenu();
     assertNoErrorLogged(fake);
 });

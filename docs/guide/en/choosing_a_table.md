@@ -44,7 +44,7 @@ When you enter a table's high score board, the place is yours: the pack reads th
 - **My Profile** shows the High Scores and Table Records you still hold, and **Household Stats** who holds the most Table Records.
 - Tables without a ROM (community originals) count too: the pack reads their board in Visual Pinball X's `User` folder (`VPReg.stg`, or the text file some tables keep there), learns where each table keeps it during its first game, and hands it to PinballY, so the DMD and the table's info box show it as well. Their board appears once such a table has been played with the pack.
 
-**High Scores** in the main menu (or PinballY's `HighScores` button, if mapped) opens the selected table's board, drawn in the Steamball look in place of PinballY's own window:
+**High Score Boards** in the main menu (or PinballY's `HighScores` button, if mapped) opens the selected table's board, drawn in the Steamball look in place of PinballY's own window:
 
 - the three first places on a podium under a Gold, Silver and Bronze crown, the others in rows below;
 - each with its rank, score, initials and the Profile that won it (name, Avatar and Avatar Frame), or "Default score" with a portrait picked by its initials, the same on every table;

@@ -402,7 +402,7 @@ A Play Score that takes the first place of the table's Household Board from anot
 _Avoid_: household record, family record, Table Record (the best score on the table's own board)
 
 **High Score Board**:
-The drawn screen of the selected table's scores, in three views: the Table Board, the Household Board and the Personal Board. It always opens on the Table Board. Shown as "Meilleurs scores" in French.
+The drawn screen of the selected table's scores, in three views: the Table Board, the Household Board and the Personal Board. It always opens on the Table Board. Shown as "Tableaux des meilleurs scores" in French.
 _Avoid_: high scores popup, leaderboard
 
 **Table Board**:

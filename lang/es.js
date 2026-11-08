@@ -771,7 +771,7 @@ export default {
         takenFrom: (profile) => `arrebatado a ${profile}`,
         // The High Score Board.
         board: {
-            menuEntry: "Mejores puntuaciones",
+            menuEntry: "Tablas de mejores puntuaciones",
             record: "Récord",
             // In place of a place's owner when it belongs to no Profile.
             defaultScore: "Por defecto",

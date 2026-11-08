@@ -53,7 +53,7 @@ test("the High Score Board counts a held Select, Launch or Exit once, moves its 
     }
     assert.ok(press(fake, "Exit").defaultPrevented);
     assert.equal(boardLayerCount(fake), 0, "Exit closes the board");
-    assert.deepEqual(selectedEntry(), ["High Scores"], "Exit goes back to the main menu on the entry");
+    assert.deepEqual(selectedEntry(), ["High Score Boards"], "Exit goes back to the main menu on the entry");
     fake.closeMenu();
 
     // Read again, slowly: the Loader turns above the board.

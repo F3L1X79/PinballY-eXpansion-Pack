@@ -11,12 +11,13 @@ import { startHighScores, MEDIEVAL, FACTORY } from "./high_scores_scenario.js";
 import { press, isBoardOpen, boardLayerCount, title, BOARD_OPEN_MS } from "./high_score_board_reader.js";
 import { isDrawnMenuShown, drawnMenuLines, openMainMenu, openMenu, press as pressInMenu } from "../drawn_menu/drawn_menu_reader.js";
 
-test("with the Drawn Menus, one High Scores entry; the HighScores button opens the drawn board", async () => {
+test("with the Drawn Menus, one High Score Boards entry and no High Scores; the HighScores button opens the drawn board", async () => {
     const { fake, setBoard } = await startHighScores({ addOns: ["highScores", "drawnMenus"] });
     const { command } = globalThis;
 
     openMainMenu(fake);
-    assert.equal(drawnMenuLines(fake).filter(line => line === "High Scores").length, 1);
+    assert.equal(drawnMenuLines(fake).filter(line => line === "High Score Boards").length, 1);
+    assert.equal(drawnMenuLines(fake).includes("High Scores"), false);
     pressInMenu(fake, "Exit");
     assert.ok(!isDrawnMenuShown(fake));
 
@@ -27,7 +28,7 @@ test("with the Drawn Menus, one High Scores entry; the HighScores button opens t
         { title: "", cmd: -1 },
         { title: "Rate Table", cmd: command.RateGame },
     ]);
-    assert.deepEqual(drawnMenuLines(fake), ["Play", "---", "High Scores", "Rate Table"]);
+    assert.deepEqual(drawnMenuLines(fake), ["Play", "---", "High Score Boards", "Rate Table"]);
     pressInMenu(fake, "Exit");
 
     setBoard(MEDIEVAL, FACTORY, { durationMs: 100 });

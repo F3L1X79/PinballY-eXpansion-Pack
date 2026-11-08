@@ -1,5 +1,5 @@
 // ============================================================
-// The High Score Board through main.js: the "High Scores" entry heads the
+// The High Score Board through main.js: the "High Score Boards" entry heads the
 // table's section and opens the last known board, the podium (2nd, 1st, 3rd)
 // with names and Avatars or "Default score", then the rows below.
 // ============================================================
@@ -20,7 +20,7 @@ test("the entry heads the selected table's section and opens the podium with eac
     await play(MEDIEVAL, { after: board(["ALI", "60000000"], ["", "55000000"], ["SLL", "52000000"], ["BRE", "40000000"], ["LFS", "30000000"]) });
 
     const { titles, boardEntry } = mainMenuTitles(fake);
-    assert.equal(titles[boardEntry], "High Scores");
+    assert.equal(titles[boardEntry], "High Score Boards");
     assert.equal(titles[boardEntry - 1], undefined, "a separator before it");
     assert.deepEqual(titles.slice(boardEntry + 1, boardEntry + 3), ["Information", "Flyer"]);
 

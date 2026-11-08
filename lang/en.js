@@ -685,7 +685,7 @@ export default {
         takenFrom: (profile) => `taken from ${profile}`,
         // The High Score Board.
         board: {
-            menuEntry: "High Scores",
+            menuEntry: "High Score Boards",
             record: "Record",
             // In place of a place's owner when it belongs to no Profile.
             defaultScore: "Default score",

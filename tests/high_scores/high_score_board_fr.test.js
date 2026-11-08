@@ -1,6 +1,6 @@
 // ============================================================
 // The High Score Board in French, through main.js on the fake PinballY
-// globals: its entry, the only "Meilleurs scores", "Score par défaut", the scores' thousands separated
+// globals: its entry, with no "Meilleurs scores" beside it, "Score par défaut", the scores' thousands separated
 // by a no-break space, "Lecture…" while the board is read, "Pas encore
 // de score" on an empty board and the long "not supported" message whole.
 // ============================================================
@@ -18,9 +18,10 @@ test("the board speaks French", async () => {
     setBoard(MEDIEVAL, FACTORY);
     await play(MEDIEVAL, { after: FACTORY });
 
-    assert.equal(lang.highScores.board.menuEntry, "Meilleurs scores");
+    assert.equal(lang.highScores.board.menuEntry, "Tableaux des meilleurs scores");
     const { titles } = mainMenuTitles(fake);
-    assert.equal(titles.filter(title => title === "Meilleurs scores").length, 1, titles.join(" | "));
+    assert.equal(titles.filter(title => title === "Tableaux des meilleurs scores").length, 1, titles.join(" | "));
+    assert.equal(titles.includes("Meilleurs scores"), false, titles.join(" | "));
     openBoard(fake, lang);
     const { middle } = podium(fake, lang);
     assert.deepEqual([middle.name, middle.score], ["Score par défaut", "52 000 000"]);

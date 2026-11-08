@@ -84,7 +84,7 @@ test("three buttons turn the High Score Board's views, the first selected on ope
     press(fake, "Select");
     press(fake, "Exit");
     assert.equal(boardLayerCount(fake), 0, "Exit closes from another view");
-    assert.deepEqual(fake.currentMenu().items.filter(item => item.selected).map(item => item.title), ["High Scores"]);
+    assert.deepEqual(fake.currentMenu().items.filter(item => item.selected).map(item => item.title), ["High Score Boards"]);
     fake.closeMenu();
 
     openBoard(fake, lang);
@@ -94,7 +94,7 @@ test("three buttons turn the High Score Board's views, the first selected on ope
     press(fake, "Prev");
     assert.ok(press(fake, "Select").defaultPrevented);
     assert.equal(boardLayerCount(fake), 0, "Select on the Exit Button goes back");
-    assert.deepEqual(fake.currentMenu().items.filter(item => item.selected).map(item => item.title), ["High Scores"]);
+    assert.deepEqual(fake.currentMenu().items.filter(item => item.selected).map(item => item.title), ["High Score Boards"]);
     fake.closeMenu();
     assertNoErrorLogged(fake);
 });

@@ -25,6 +25,6 @@ test("an empty board says so; Exit goes back to the main menu on the entry", asy
 
     assert.ok(press(fake, "Exit").defaultPrevented);
     assert.equal(boardLayerCount(fake), 0);
-    assert.deepEqual(fake.currentMenu().items.filter(item => item.selected).map(item => item.title), ["High Scores"]);
+    assert.deepEqual(fake.currentMenu().items.filter(item => item.selected).map(item => item.title), ["High Score Boards"]);
     fake.closeMenu();
 });

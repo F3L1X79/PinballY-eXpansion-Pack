@@ -16,7 +16,8 @@ test("PinballY's own High Scores entry is gone; the HighScores button opens the 
     const HIGH_SCORES = globalThis.command.HighScores;
 
     const { titles, boardEntry } = mainMenuTitles(fake);
-    assert.equal(titles.filter(entry => entry === "High Scores").length, 1);
+    assert.equal(titles.filter(entry => entry === "High Score Boards").length, 1);
+    assert.equal(titles.includes("High Scores"), false, titles.join(" | "));
     assert.notEqual(boardEntry, -1);
 
     fake.openMainMenu();
