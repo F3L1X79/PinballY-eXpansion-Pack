@@ -4,7 +4,7 @@
 
 ## PinballY en 6 langues
 
-<img src="../../images/main_menu.png" alt="Le menu principal dessiné, en français, rangé en sections" width="400">
+<img src="../../images/main_menu.png" alt="Le menu principal dessiné, rangé en sections" width="400">
 
 Les menus et messages de PinballY enfin en français, mais aussi en allemand, espagnol, italien et portugais, en plus de l'anglais. Choisissez la langue dans **Réglages de l'eXpansion pack**, ou avec `LANGUAGE` dans `.env.local` (voir [Réglages](settings.md)).
 

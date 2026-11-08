@@ -18,6 +18,8 @@ Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. An Admin P
 
 ## Ratings and Favorite Tables
 
+<img src="../../images/rating_plate.png" alt="The active Profile's Rating of the selected table: five gold stars" width="159">
+
 Each Profile has its own star ratings and its own favourites. While your Profile is active, everything PinballY shows uses yours: the stars, the rating dialog, "Favorite Tables", the rating filters and "Add to Favorites" / "Remove from Favorites". Hidden tables stay the same for everyone.
 
 - A new Profile starts with no rating and no favourite.
@@ -40,6 +42,8 @@ Open **Change Player**: its last slot, after the last Profile, is **New profile*
 3. Choose `OK`. `OK` stays grey while the name is empty or refused. The Profile is created, and Avatar Choice opens.
 4. Avatar Choice shows 24 portraits under your new Profile's name: 8 columns of 3 rows on a wide screen, 4 columns of 6 rows on a tall one, in the same order, redrawn in place if the window changes size. Move through them with the flippers, and hold one to keep going; Select or Launch takes the portrait under the marker at once. Exit, or the Exit Button before the first portrait, asks "Keep the default Avatar?" on a small panel over the portraits: "Choose an Avatar", the current choice at first, or Exit, brings the portraits back with the marker where it was; "Keep the default Avatar" leaves without a portrait. While Avatar Choice is still opening, before the portraits show, Exit leaves at once without asking, and the new Profile keeps the default Avatar.
 5. Change Player comes back on the new Profile, in its alphabetical place, wearing its Avatar. You are still on your former Profile: press Select to pick the new one.
+
+<img src="../../images/avatar_choice.png" alt="Avatar Choice: 24 portraits in 4 columns of 6 rows under the new Profile's name, the marker on one of them" width="400">
 
 On Name Entry, Exit goes back to the "+" with nothing created. On a cabinet left idle, attract mode closes Name Entry and Change Player, with nothing created either; on Avatar Choice, even while it asks to confirm, it closes them too without asking, and the Profile already created keeps the default Avatar. Two Profiles may take the same portrait. A damaged portrait file is left out of Avatar Choice and logged; with none readable, Avatar Choice is skipped and the new Profile keeps the default Avatar. Once created, a Profile changes its Avatar from Windows only.
 

@@ -6,7 +6,7 @@
 
 Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) qui donne à chacun dans la maison un Profil, des Défis chaque semaine, des Succès et de vraies raisons de revenir sur votre pincab, sans toucher à PinballY.
 
-<img src="docs/images/welcome_screen.png" alt="L'écran d'accueil avec la table du jour et la table de la semaine" width="480">
+<img src="docs/images/welcome_screen.png" alt="L'écran d'accueil avec la table du jour, la table de la semaine et une table du défi" width="480">
 
 ## Profils
 

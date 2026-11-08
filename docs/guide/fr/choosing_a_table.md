@@ -4,7 +4,7 @@
 
 ## Écran d'accueil : table du jour, table de la semaine
 
-<img src="../../images/welcome_screen.png" alt="L'écran d'accueil avec la table du jour et la table de la semaine" width="480">
+<img src="../../images/welcome_screen.png" alt="L'écran d'accueil avec la table du jour, la table de la semaine et une table du défi" width="480">
 
 Chaque jour une table que personne à la maison n'a encore jouée, ou celle délaissée depuis le plus longtemps, chaque semaine une table au hasard. L'écran d'accueil vous les présente au démarrage, après chaque « Changer de joueur », et chaque fois que vous choisissez **Revenir à l'écran d'accueil** dans le menu principal, avec ce qu'elles représentent pour vous.
 
@@ -34,6 +34,7 @@ Chaque minute passée sur une table fait monter votre maîtrise de celle-ci, sur
 ## Meilleurs scores
 
 <img src="../../images/high_score_board.png" alt="Le tableau des meilleurs scores d'une table : le podium sous ses trois couronnes, puis les autres places, dont une gagnée par un Profil" width="400">
+<img src="../../images/household_board.png" alt="Les scores de la maison d'une table : chaque Profil une fois avec son meilleur score et sa date, les trois premiers sur le podium" width="400">
 
 Quand vous entrez au tableau des meilleurs scores d'une table, la place est à vous : le pack relit le tableau avant et après chaque partie et, pour une partie d'au moins une minute, attribue chaque nouveau score au Profil qui jouait, quelles que soient les initiales tapées, les autres joueurs d'une partie à plusieurs compris.
 

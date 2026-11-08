@@ -18,6 +18,8 @@ La progression de chaque Profil est enregistrée dans `Scripts\ExpansionPack\pro
 
 ## Notes et tables favorites
 
+<img src="../../images/rating_plate.png" alt="La note du Profil actif pour la table sélectionnée : cinq étoiles dorées" width="159">
+
 Chaque Profil a ses propres notes en étoiles et ses propres favoris. Tant que votre Profil est actif, tout ce que PinballY affiche utilise les vôtres : les étoiles, la fenêtre de notation, les « Tables favorites », les filtres par note et « Ajouter aux favoris » / « Retirer des favoris ». Les tables masquées restent les mêmes pour tout le monde.
 
 - Un nouveau Profil commence sans aucune note ni aucun favori.
@@ -40,6 +42,8 @@ Ouvrez **Changer de joueur** : sa dernière place, après le dernier Profil, est
 3. Choisissez `OK`. `OK` reste grisé tant que le nom est vide ou refusé. Le Profil est créé, et le Choix de l'Avatar s'ouvre.
 4. Le Choix de l'Avatar montre 24 portraits sous le nom du nouveau Profil : 8 colonnes sur 3 rangées sur un écran large, 4 colonnes sur 6 rangées sur un écran en hauteur, dans le même ordre, redessinés sur place si la fenêtre change de taille. Parcourez-les avec les flippers, en maintenant l'un d'eux pour continuer ; Select ou Launch prend aussitôt le portrait sous le marqueur. Exit, ou le bouton Exit avant le premier portrait, demande « Garder l'Avatar par défaut ? » dans un petit panneau sur les portraits : « Choisir un Avatar », le choix proposé d'abord, ou Exit, ramène les portraits avec le marqueur là où il était ; « Garder l'Avatar par défaut » sort sans portrait. Tant que le Choix de l'Avatar s'ouvre encore, avant que les portraits s'affichent, Exit sort aussitôt sans rien demander, et le nouveau Profil garde l'Avatar par défaut.
 5. « Changer de joueur » revient sur le nouveau Profil, à sa place dans l'ordre alphabétique, avec son Avatar. Vous êtes toujours sur votre ancien Profil : appuyez sur Select pour choisir le nouveau.
+
+<img src="../../images/avatar_choice.png" alt="Le Choix de l'Avatar : 24 portraits, 4 colonnes sur 6 rangées, sous le nom du nouveau Profil, le marqueur sur l'un d'eux" width="400">
 
 Dans la saisie du nom, Exit revient sur le « + » sans rien créer. Sur une borne laissée inactive, le mode attract ferme la saisie du nom et « Changer de joueur », sans rien créer non plus ; pendant le Choix de l'Avatar, même quand il demande de confirmer, il les ferme aussi sans rien demander, et le Profil déjà créé garde l'Avatar par défaut. Deux Profils peuvent prendre le même portrait. Un fichier de portrait abîmé est écarté du Choix de l'Avatar et journalisé ; si aucun n'est lisible, le Choix de l'Avatar est sauté et le nouveau Profil garde l'Avatar par défaut. Une fois créé, un Profil ne change d'Avatar que depuis Windows.
 

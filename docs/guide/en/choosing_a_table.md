@@ -4,7 +4,7 @@
 
 ## Welcome Screen: Table of the Day, Table of the Week
 
-<img src="../../images/welcome_screen.png" alt="The Welcome Screen with the Table of the Day and the Table of the Week" width="480">
+<img src="../../images/welcome_screen.png" alt="The Welcome Screen with the Table of the Day, the Table of the Week and a Challenge Table" width="480">
 
 Every day there is a table nobody in the house has played yet, or the one left alone the longest, and every week a random one. The Welcome Screen greets you with both at startup, again after Change Player, and whenever you pick **Back to the Welcome Screen** in the main menu, with what they mean for you.
 
@@ -34,6 +34,7 @@ Every minute you play a table builds your Table Mastery of it, through ten Maste
 ## High Scores
 
 <img src="../../images/high_score_board.png" alt="A table's High Score Board: the podium under its three crowns, then the other places, one of them won by a Profile" width="400">
+<img src="../../images/household_board.png" alt="A table's Household Board: each Profile once with its best score and the date, the first three on the podium" width="400">
 
 When you enter a table's high score board, the place is yours: the pack reads the board before and after each game and, for a game of a minute or more, credits every new score to the Profile that was playing, whatever initials were typed, the other players of a multiplayer game included.
 
