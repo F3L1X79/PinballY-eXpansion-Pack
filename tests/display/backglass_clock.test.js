@@ -2,8 +2,8 @@
 // Backglass Clock, through main.js on the fake PinballY globals: its own
 // borderless window, hidden at startup, shown at "prelaunch" (never during
 // the game: that opens the pause menu, #386), raised in front at
-// "gamestarted", again on a schedule and at each minute, the time
-// drawn on a fixed-height canvas, then hidden and lowered at "gameover".
+// "gamestarted" and every 2 s, the time drawn on a fixed-height canvas,
+// then hidden and lowered at "gameover".
 // ============================================================
 
 import { test } from "node:test";
@@ -58,7 +58,7 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
         fake.advanceTime(1000);
         if (topmostCount() > before) raisedAt.push(second);
     }
-    assert.deepEqual(raisedAt, [0, 2, 5, 10, 20, 30, 40], "at gamestarted, 2, 5, 10, 20, 40 s later, and at the minute");
+    assert.deepEqual(raisedAt, Array.from({ length: 23 }, (_, index) => index * 2), "at gamestarted, then every 2 s");
 
     const [layer] = clock.layers();
     assert.equal(clock.layers().length, 1);
@@ -94,7 +94,7 @@ test("during a game the Backglass Clock shows the time in front, raised on a sch
     clock.resize({ width: 320, height: 110 });
     fake.advanceTime(60 * 1000);
     assert.deepEqual(layer.canvasSize(), wide, "the same canvas for the same ratio at another size");
-    assert.equal(topmostCount(), beforeStart + raisedAt.length + 2, "raised at each minute");
+    assert.equal(topmostCount(), beforeStart + 1 + Math.floor((45 + 120) / 2), "still raised every 2 s");
 
     const beforeEnd = clock.calls().length;
     fake.gameOver(TABLE);

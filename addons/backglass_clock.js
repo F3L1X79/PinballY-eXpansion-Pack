@@ -7,7 +7,7 @@
 // - Never shown while a game runs: that activates PinballY, which opens the pause menu (#386).
 // - Every raise keeps the window's place and never takes VPX's focus.
 // - clientRect isn't in the visible window's units: only its ratio is read.
-// - Moved onto the backglass screen only from outside it: the owner's place sticks.
+// - Its place is the pack's own setting, saved after each game: never PinballY's restored one.
 // ============================================================
 
 import lang from "../common/core/i18n.js";
@@ -17,16 +17,18 @@ import { UNBOUNDED, fillGradient } from "../common/drawing/steamball_drawing.js"
 import { STEAMBALL_COLORS } from "../common/drawing/steamball_palette.js";
 import { drawShadowedText, measureShadowedText } from "../common/drawing/shadowed_text.js";
 import { CLOCK_COLORS, clockTextOf, createMinuteTick } from "../common/clock/minute_tick.js";
-import { TIME_TEXT, WHEEL_CLOCK } from "../common/clock/wheel_clock_layout.js";
+import { TIME_TEXT } from "../common/clock/wheel_clock_layout.js";
 
 const SCRIPT_NAME = "BackglassClock";
 
-// PinballY saves and restores the window's place and size under it.
 const CONFIG_VAR_PREFIX = "BackglassClock";
-// VPX's B2S loads after "gamestarted" and may come in front: raised again
-// on this schedule, then at each minute (as held on the cabinet, spec #369).
-const RAISE_DELAYS_MS = [2000, 5000, 10000, 20000, 40000];
-// Its size at the backglass screen's top right, until the owner places it;
+// "left,top,width,height", the pack's own record: PinballY's under the prefix
+// above was seen not to keep a place dragged during a game.
+const PLACE_SETTING = "ExpansionPack.BackglassClockPlace";
+// VPX's B2S may come in front after "gamestarted", and a click on the clock
+// sends it behind: brought back quickly, so it can be dragged.
+const RAISE_INTERVAL_MS = 2000;
+// Its size in the backglass screen's top right corner, until the owner places it;
 // Windows keeps a borderless window at least 200 px tall (pinbally-help.md, section 2.1).
 const DEFAULT_SIZE = Object.freeze({ width: 320, height: 110 });
 const LAYER_Z_INDEX = 100;
@@ -43,14 +45,7 @@ const CAP_TOP = (2210 - 1434) / (2210 + 514);
 const TIME_SIZE = Object.freeze({ start: 52, min: 8 });
 const UNDERLINE = Object.freeze({ thickness: 4, gap: 7 });
 
-const isInside = (inner, outer) => inner.left >= outer.left && inner.top >= outer.top
-    && inner.right <= outer.right && inner.bottom <= outer.bottom;
-
-// The top right corner, with the wheel Clock's corner margin scaled to the screen's height.
-function defaultPlaceOn(screenRect) {
-    const margin = Math.round(WHEEL_CLOCK.left * (screenRect.bottom - screenRect.top) / WHEEL_CLOCK.referenceHeight);
-    return { left: screenRect.right - DEFAULT_SIZE.width - margin, top: screenRect.top + margin, ...DEFAULT_SIZE };
-}
+const defaultPlaceOn = screenRect => ({ left: screenRect.right - DEFAULT_SIZE.width, top: screenRect.top, ...DEFAULT_SIZE });
 
 export default function init() {
     const host = createPinballYHost();
@@ -63,7 +58,7 @@ export default function init() {
     // Without it, the window opens with a Windows title bar.
     clockWindow.setBorderless(true);
     const layer = clockWindow.createDrawingLayer(LAYER_Z_INDEX);
-    let raiseTimers = [];
+    let raiseTimer = null;
     let shown = false;
     let launchGoingAhead = false;
 
@@ -98,21 +93,36 @@ export default function init() {
         }, canvasWidth, CANVAS_HEIGHT);
     }
 
-    const minuteTick = createMinuteTick(host, SCRIPT_NAME, () => {
-        draw();
-        clockWindow.setTopmost(true);
-    });
+    const minuteTick = createMinuteTick(host, SCRIPT_NAME, draw);
 
     function clearTimers() {
         minuteTick.stop();
-        for (const timer of raiseTimers) host.clearTimeout(timer);
-        raiseTimers = [];
+        if (raiseTimer !== null) host.clearInterval(raiseTimer);
+        raiseTimer = null;
     }
 
-    // A window outside the backglass screen was never placed by the owner:
-    // PinballY opens a new one on the playfield screen. Read before the game:
-    // Force Backglass hides the backglass on "gamestarted".
-    function placeOnBackglassScreen() {
+    function readSavedPlace() {
+        const text = host.settings.getString(PLACE_SETTING, "");
+        if (!text) return null;
+        const [left, top, width, height] = text.split(",").map(Number);
+        if ([left, top, width, height].every(Number.isInteger) && width > 0 && height > 0) return { left, top, width, height };
+        host.log(`[${SCRIPT_NAME}] Saved place "${text}" unreadable: back to the top right corner.`);
+        return null;
+    }
+
+    // Read once the owner may have dragged it: PinballY tells no script.
+    function savePlace() {
+        const { left, top, right, bottom } = clockWindow.getWindowRect();
+        host.settings.set(PLACE_SETTING, [left, top, right - left, bottom - top].join(","));
+    }
+
+    // The backglass is read before the game: Force Backglass hides it on "gamestarted".
+    function placeForGame() {
+        const place = readSavedPlace();
+        if (place) {
+            clockWindow.moveTo(place);
+            return;
+        }
         let backglassRect = null;
         let problem = "the backglass window has no frame";
         try {
@@ -124,13 +134,14 @@ export default function init() {
             host.log(`[${SCRIPT_NAME}] Backglass screen unknown (${problem}): the clock stays where it is.`);
             return;
         }
-        if (!isInside(clockWindow.getWindowRect(), backglassRect)) clockWindow.moveTo(defaultPlaceOn(backglassRect));
+        clockWindow.moveTo(defaultPlaceOn(backglassRect));
     }
 
     function hide() {
         clearTimers();
         if (!shown) return;
         shown = false;
+        savePlace();
         clockWindow.showWindow(false);
         clockWindow.setTopmost(false);
     }
@@ -149,7 +160,7 @@ export default function init() {
         // Before placing it, as a borderless window's height differs.
         clockWindow.setBorderless(true);
         // Placed before it shows, so it never flashes on the playfield first.
-        placeOnBackglassScreen();
+        placeForGame();
         minuteTick.start();
         clockWindow.showWindow(true);
         shown = true;
@@ -165,8 +176,7 @@ export default function init() {
             return;
         }
         clockWindow.setTopmost(true);
-        raiseTimers = RAISE_DELAYS_MS.map(delay =>
-            host.setTimeout(safeHandler(SCRIPT_NAME, () => clockWindow.setTopmost(true)), delay));
+        raiseTimer = host.setInterval(safeHandler(SCRIPT_NAME, () => clockWindow.setTopmost(true)), RAISE_INTERVAL_MS);
     }));
     // "gameover" also fires after Exit Game; "postlaunch" ends a launch that
     // failed or was cancelled before "gamestarted".

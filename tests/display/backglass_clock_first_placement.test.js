@@ -13,8 +13,6 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 const TABLE = { id: 1, configId: "Medieval Madness", title: "Medieval Madness", manufacturer: "Williams", year: 1997 };
 // The backglass screen, right of a 2560-wide playfield.
 const BACKGLASS_RECT = { left: 2560, top: 0, right: 4480, bottom: 1080 };
-// The wheel Clock's 30 px at 1920 px high, on this 1080 px high screen: 16.875, rounded.
-const MARGIN = 17;
 const DEFAULT_WIDTH = 320;
 const SWP_NOACTIVATE = 0x10;
 
@@ -35,9 +33,9 @@ test("at the first game the Backglass Clock moves onto the backglass screen's to
     fake.gameStarted(TABLE);
 
     const rect = clock.windowRect();
-    assert.equal(rect.left, 4143, "screen right - default width - margin");
-    assert.equal(rect.right, BACKGLASS_RECT.right - MARGIN);
-    assert.equal(rect.top, BACKGLASS_RECT.top + MARGIN);
+    assert.equal(rect.left, 4160, "screen right - default width");
+    assert.equal(rect.right, BACKGLASS_RECT.right, "flush with the right edge");
+    assert.equal(rect.top, BACKGLASS_RECT.top, "flush with the top edge");
     const width = rect.right - rect.left;
     assert.equal(width, DEFAULT_WIDTH);
     const height = rect.bottom - rect.top;
