@@ -2,6 +2,16 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.4.0 (2026-11-08)
+
+- **Ratings and Favorite Tables per Profile**: each Profile has its own star Ratings and Favorite Tables, in the rating dialog, the filters and "Add to Favorites". The first time, every Profile, Guest included, is given those already on the cabinet, so nobody loses a favourite. **Ratings per Profile** in the eXpansion Pack Settings goes back to one set for everyone.
+- **Ratings on the wheel screen**: the active Profile's Rating shows under the Mastery Bar, the lower status line gives the Household Rating of the selected table, and Rate Table in the main menu shows the Rating you already gave.
+- **Ratings Achievements**: four steps for 1, 5, 10 and 25 tables rated, announced as soon as the rating dialog closes.
+- **High Score Boards in three views**: buttons under the board turn from **ROM scores** to **Household scores** (each Profile once, with its best score and the date) and **Your 5 best scores**, scores since pushed off the table's board included.
+- **Play Scores**: with vpxtool, Household scores and Your 5 best scores also count games too low for the table's board, on ROM tables whose memory keeps the last game's score. They count from this update on. A game that wins no place can now earn a **Personal Best** or **House Record** toast. What looks wrong is noted in `play_scores_anomalies.log`, to send with a report about a missing or wrong score.
+- **Backglass Clock**: its place is now saved by the pack after each game, as PinballY could put it back where it was. It opens in the very top right corner, and a click sending it behind the backglass no longer stops you from dragging it.
+- **Small touches**: a category needs at least two tables you can see to have its Achievement, and one that drops to a single table loses it, points included; Household Stats open faster, each Profile's stats being read ahead in the background; the menu entries are now High Score Boards and Back to the Welcome Screen; the Welcome Screen's table cards are more compact.
+
 ## v1.3.0 (2026-11-06)
 
 - **Avatar Choice**: right after Name Entry, a new Profile picks its Avatar among 24 portraits with the flippers, on a wide or a tall screen. Exit asks before keeping the default Avatar, now a plain grey silhouette. A photo dropped as `avatar.jpg` in the Profile's folder wins over `avatar.png`, and `AVATAR_CHOICE_SOUND_FILE` can play a sound as the screen shows.

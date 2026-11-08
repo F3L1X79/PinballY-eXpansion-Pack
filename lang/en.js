@@ -987,6 +987,11 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.4.0": [
+            "Each Profile now keeps its own star Ratings and Favorite Tables.",
+            "High Score Boards now have three views: ROM scores, Household scores and Your 5 best scores.",
+            "With vpxtool, even a low score now counts in the last two, on tables whose ROM keeps the last game.",
+        ],
         "1.3.0": [
             "A new Profile now picks its Avatar among 24 portraits, right after its name is entered.",
             "While a table loads, the gold comet also turns on the backglass.",

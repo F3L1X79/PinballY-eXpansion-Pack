@@ -1044,6 +1044,11 @@ export default {
         packUpdateFailed: (version, logPath) => `La actualización a v${version} ha fallado: la versión anterior sigue en su sitio. Detalles en ${logPath}`,
     },
     releaseHighlights: {
+        "1.4.0": [
+            "Cada perfil guarda ahora sus propias valoraciones y sus favoritos.",
+            "Las tablas de mejores puntuaciones tienen ahora tres vistas: De la ROM, De la casa y Mis 5 mejores.",
+            "Con vpxtool, hasta una puntuación baja cuenta ahora en las dos últimas, en las mesas cuya ROM guarda la última partida.",
+        ],
         "1.3.0": [
             "Un perfil nuevo elige ahora su avatar entre 24 retratos, justo después de escribir su nombre.",
             "Mientras carga una mesa, el cometa dorado también gira en el backglass.",

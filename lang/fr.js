@@ -1048,6 +1048,11 @@ export default {
         packUpdateFailed: (version, logPath) => `La mise à jour en v${version} a échoué : la version précédente reste en place. Détails dans ${logPath}`,
     },
     releaseHighlights: {
+        "1.4.0": [
+            "Chaque profil garde maintenant ses propres notes et ses tables favorites.",
+            "Les tableaux des meilleurs scores ont maintenant trois vues : Scores de la ROM, Scores de la maison et Vos 5 meilleurs scores.",
+            "Avec vpxtool, même un petit score compte désormais dans les deux dernières, sur les tables dont la ROM garde la dernière partie.",
+        ],
         "1.3.0": [
             "Un nouveau profil choisit maintenant son avatar parmi 24 portraits, juste après avoir saisi son nom.",
             "Pendant le chargement d'une table, la comète dorée tourne aussi sur le backglass.",
