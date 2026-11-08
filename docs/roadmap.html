@@ -221,6 +221,7 @@
           <a class="chip tr-share" href="#readme-refresh"><b></b>Tour des README</a>
         </div>
         <div class="cell">
+          <a class="chip tr-play" href="#best-play-score"><b></b>Meilleure partie du lancement</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
@@ -278,6 +279,30 @@
     </div>
 
     <ol class="queue">
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="best-play-score" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Garder la meilleure partie d'un lancement, pas la dernière</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
+          </div>
+          <p>Quand on enchaîne les parties sans quitter la table, le Play Score ne voit que la dernière, car PinMAME n'écrit le <code>.nv</code> qu'à la fermeture. Un <code>GlobalPlugIn.vbs</code> relèverait la NVRAM pendant le jeu, et le pack retiendrait au retour sur la roue la meilleure partie finie du lancement. Sans relevé exploitable, la règle actuelle (la dernière partie) reste en place.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">research</span><i>›</i><span class="here">grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (sonde sur une table) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code> · <a href="research/best-play-score-capture.md">recherche</a></div>
+          <details>
+            <summary>Checklist</summary>
+            <ul>
+              <li>Sur la borne : versions de VPX et VPinMAME, et présence dans <code>core.vbs</code> de la ligne qui charge <code>GlobalPlugIn.vbs</code>.</li>
+              <li>Sonde sur une table : aucune saccade (surtout sur SAM, 131 Ko de NVRAM), instantanés lisibles par <code>vpxtool nvram show</code>.</li>
+              <li>Découpage des parties aux remises à zéro des scores, relevés du tout début du lancement écartés, partie abandonnée reconnue.</li>
+              <li>Installation dans le dossier Scripts de VPX, hors du pack : accord de Félix, et fusion avec un éventuel <code>GlobalPlugIn.vbs</code> existant.</li>
+            </ul>
+            <p class="ctx">Ajouté le 08/11/2026 à la demande de Félix, en tête de file, sans que ce soit forcément le prochain chantier traité. Le plugin VPX et la lecture de la mémoire de VPX sont écartés par la recherche.</p>
+          </details>
+        </div>
+      </li>
 
       <li draggable="true" tabindex="0" class="item tr-share" id="readme-refresh" data-track="share" data-rank="bronze">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
