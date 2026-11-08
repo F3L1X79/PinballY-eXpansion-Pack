@@ -6,7 +6,7 @@
 
 <img src="../../images/welcome_screen.png" alt="The Welcome Screen with the Table of the Day and the Table of the Week" width="480">
 
-Every day there is a table nobody in the house has played yet, or the one left alone the longest, and every week a random one. The Welcome Screen greets you with both at startup, again after Change Player, and whenever you pick **Welcome Screen** in the main menu, with what they mean for you.
+Every day there is a table nobody in the house has played yet, or the one left alone the longest, and every week a random one. The Welcome Screen greets you with both at startup, again after Change Player, and whenever you pick **Back to the Welcome Screen** in the main menu, with what they mean for you.
 
 - While your weekly Challenge has Challenge Tables, it also shows one of them, drawn at random. That Challenge Table is never one of the two tables already shown, unless one more game finishes your Challenge.
 - From there, launch one of them, stay on the table on the wheel, change player or spin a Random Game.

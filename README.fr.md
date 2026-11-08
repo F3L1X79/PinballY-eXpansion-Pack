@@ -10,8 +10,8 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 
 ## Profils
 
-- Avec « Changer de joueur », chacun prend son Profil et son Avatar, et l'écran d'accueil vous salue par votre nom : vous savez pour qui les parties vont compter. Seules les parties d'au moins une minute comptent, et le Profil Invité reste toujours là pour les visiteurs.
-- Chaque Profil a ses propres notes en étoiles et ses tables favorites, que la notation et les favoris de PinballY montrent tant qu'il joue.
+- Avec « Changer de joueur », chacun prend son Profil, et l'écran d'accueil vous salue par votre nom : vous savez pour qui les parties vont compter. Un nouveau Profil se crée depuis la borne avec les flippers, sans clavier : la saisie du nom, puis le Choix de l'Avatar parmi les portraits du pack. Seules les parties d'au moins une minute comptent, et le Profil Invité reste toujours là pour les visiteurs.
+- Chaque Profil a ses propres notes en étoiles et ses tables favorites, que la notation et les favoris de PinballY montrent tant qu'il joue. Sur l'écran de la roue, cinq étoiles montrent votre propre note de la table sélectionnée, et un rappel vous propose de noter une table une fois que vous y avez assez joué.
 - **"Mon profil"** résume votre vie de flippeur ; **"Stats de la maison"** montre tout le monde côte à côte, le meilleur de chaque ligne en doré.
 - Un Profil admin garde les entrées de configuration pour vous, et un Profil enfant retire les tables pour adultes de la roue.
 
@@ -28,7 +28,7 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 
 - L'écran d'accueil propose la table du jour et la table de la semaine : jouez-les plusieurs jours ou semaines d'affilée pour faire une série sur la table du jour ou de la semaine.
 - Chaque minute passée sur une table fait monter votre maîtrise de celle-ci, de Novice à Mage du flipper.
-- Les meilleurs scores sont attribués au Profil qui jouait, quelles que soient les initiales, et présentés sur un podium : le tableau de la table, les meilleurs de la maison, et vos cinq meilleurs.
+- Les meilleurs scores sont attribués au Profil qui jouait, quelles que soient les initiales, et présentés sur un podium : le tableau de la table, les meilleurs de la maison, et vos cinq meilleurs. Avec [vpxtool](docs/guide/fr/install.md#vpxtool), sur les tables à ROM dont la mémoire garde le dernier score, une partie qui n'entre pas au tableau de la table compte quand même sur ces deux derniers comme score de partie, et un record perso ou un record de la maison est annoncé.
 - À court d'idées ? Une table au hasard tourne sur une roue de la fortune.
 
 → [Choisir une table](docs/guide/fr/choosing_a_table.md)
@@ -36,7 +36,7 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 ## Interface
 
 - Les menus et messages de PinballY en français, anglais, allemand, espagnol, italien ou portugais, dessinés dans le style Steamball du pack et rangés en sections.
-- Une horloge, un arc doré sous la roue, des lancements sans flash noir, et des sons que vous pouvez remplacer par les vôtres.
+- Une horloge sur la roue, une horloge du backglass pour vos parties une fois activée, un arc doré sous la roue, des lancements sans flash noir, et des sons que vous pouvez remplacer par les vôtres.
 - **Discord Rich Presence** (<img src="docs/images/discord_symbol.svg" alt="" width="16" height="16">), une fois activé, montre à vos amis Discord la table que vous jouez et depuis combien de temps.
 - **"Réglages de l'eXpansion pack"**, dans le menu opérateur, active ou désactive chaque Add-on.
 
@@ -55,7 +55,7 @@ Nécessite **Windows** et **PinballY 1.1.0 Beta 10** (plus la fonctionnalité fa
 4. **Redémarrez PinballY.** `PinballY.log` montre une ligne « initialized » par Add-on ; les erreurs sont aussi gardées dans `Scripts\ExpansionPack\errors.log`.
 5. **Choisissez vos Add-ons**, l'écran de démarrage et la langue dans **Réglages de l'eXpansion pack**, depuis le menu opérateur, puis redémarrez PinballY d'une seule pression.
 
-Tout ce que le pack conserve (réglages et Profils) reste dans `Scripts\ExpansionPack` : copiez ce dossier pour sauvegarder, supprimez-le avec la ligne d'import pour désinstaller un jour au besoin.
+Vos réglages et vos Profils restent dans `Scripts\ExpansionPack` : copiez ce dossier pour sauvegarder, supprimez-le avec la ligne d'import pour désinstaller un jour au besoin. Quand une nouvelle version sort, PinballY propose la mise à jour au démarrage, d'une seule pression, en gardant vos réglages et vos Profils.
 Pour PINemHi 3.6.8, `.env.local` et l'installation avec git : voir la [page d'installation](docs/guide/fr/install.md) pour les étapes complètes.
 
 ## En savoir plus

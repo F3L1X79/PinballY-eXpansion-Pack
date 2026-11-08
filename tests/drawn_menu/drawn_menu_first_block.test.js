@@ -1,7 +1,7 @@
 // ============================================================
 // The Drawn main menu with the Profile picker and the Welcome Screen on,
 // for an Admin Profile, through main.js on the fake PinballY globals: Play,
-// Set Up Table, Change Player and Welcome Screen open it, then "My Profile",
+// Set Up Table, Change Player and Back to the Welcome Screen open it, then "My Profile",
 // "My Achievements", and PinballY's High Scores as "Table Scores".
 // ============================================================
 
@@ -31,7 +31,7 @@ test("an Admin Profile's Drawn main menu opens on its starting points, then its 
     openMainMenu(fake);
     const lines = drawnMenuLines(fake);
 
-    assert.deepEqual(lines.slice(0, lines.indexOf("---")), ["Play", "Set Up Table", "Change Player", "Welcome Screen"]);
+    assert.deepEqual(lines.slice(0, lines.indexOf("---")), ["Play", "Set Up Table", "Change Player", "Back to the Welcome Screen"]);
     assert.deepEqual(sectionHolding(lines, "My Profile"), ["My Profile", "My Achievements"]);
     assert.ok(lines.includes("Table Scores"), lines.join(" | "));
     assert.equal(lines.includes("High Scores"), false, lines.join(" | "));

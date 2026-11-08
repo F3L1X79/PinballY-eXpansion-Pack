@@ -1,5 +1,5 @@
 // ============================================================
-// Welcome Screen Add-on off: the main menu has no "Welcome Screen" entry.
+// Welcome Screen Add-on off: the main menu has no entry for the screen.
 // ============================================================
 
 import { test } from "node:test";

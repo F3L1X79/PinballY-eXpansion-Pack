@@ -219,7 +219,7 @@ export default {
         stayOn: (tableTitle) => `Bei ${tableTitle} bleiben`,
         stayOnWheel: "Auf dem Wheel bleiben",
         randomTable: "Zufälligen Tisch starten",
-        menuEntry: "Willkommensseite",
+        menuEntry: "Zurück zur Willkommensseite",
         // The active Profile's Daily Streak under the greeting, from 2 days
         // on, its count shown in a square before the text.
         cabinetStreak: {

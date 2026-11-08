@@ -1,5 +1,5 @@
 // ============================================================
-// Welcome Screen from the main menu: "Welcome Screen" closes the menu and
+// Welcome Screen from the main menu: its entry closes the menu and
 // brings the screen back once the wheel is free, without the startup veil
 // or Loader, the cursor on the cross; Exit leaves the bare wheel. Toasts
 // wait for it, and a second pick while it waits or shows adds nothing.

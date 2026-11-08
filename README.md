@@ -10,8 +10,8 @@ An unofficial extension of [PinballY](http://mjrnet.org/pinscape/PinballY.php) t
 
 ## Profiles
 
-- Each of you picks your own Profile and Avatar with Change Player, and the Welcome Screen greets you by name, so you know whose games will count. Only games of a minute or more count, and Guest is always there for visitors.
-- Each Profile has its own star ratings and Favorite Tables, which PinballY's own rating dialog and favourites show while it plays.
+- Each of you picks your own Profile with Change Player, and the Welcome Screen greets you by name, so you know whose games will count. A new Profile is created from the cabinet with the flippers, no keyboard needed: Name Entry, then Avatar Choice among the pack's portraits. Only games of a minute or more count, and Guest is always there for visitors.
+- Each Profile has its own star ratings and Favorite Tables, which PinballY's own rating dialog and favourites show while it plays. On the wheel screen, five stars show your own rating of the selected table, and a reminder offers to rate a table once you have played it long enough.
 - **"My Profile"** sums up your pinball life; **"Household Stats"** sets everyone side by side, the best of each line in gold.
 - An Admin Profile keeps the setup entries for you, and a Child Profile leaves the Adult Tables off the wheel.
 
@@ -28,7 +28,7 @@ An unofficial extension of [PinballY](http://mjrnet.org/pinscape/PinballY.php) t
 
 - The Welcome Screen offers the Table of the Day and the Table of the Week: play them several days or weeks in a row to build a Table of the Day or Table of the Week Streak.
 - Every minute on a table builds your Mastery Level of it, from Rookie to Pinball Wizard.
-- High Scores are credited to the Profile that played, whatever the initials, and shown on a podium: the table's board, the household's best, and your own best five.
+- High Scores are credited to the Profile that played, whatever the initials, and shown on a podium: the table's board, the household's best, and your own best five. With [vpxtool](docs/guide/en/install.md#vpxtool), on ROM tables whose memory keeps the last score, a game that misses the table's own board still counts on those last two as a Play Score, and a Personal Best or House Record is announced.
 - Short of ideas? A Random Game spins on a wheel of fortune.
 
 → [Choosing a table](docs/guide/en/choosing_a_table.md)
@@ -36,7 +36,7 @@ An unofficial extension of [PinballY](http://mjrnet.org/pinscape/PinballY.php) t
 ## Interface
 
 - PinballY's menus and messages in English, French, German, Spanish, Italian or Portuguese, drawn in the pack's Steamball look and sorted into sections.
-- A clock, a gold arc under the wheel, launches without a black flash, and sounds you can replace with your own.
+- A wheel clock, a Backglass Clock for your games once you turn it on, a gold arc under the wheel, launches without a black flash, and sounds you can replace with your own.
 - **Discord Rich Presence** (<img src="docs/images/discord_symbol.svg" alt="" width="16" height="16">), once you turn it on, shows your Discord friends the table you are playing and for how long.
 - **"eXpansion Pack Settings"**, in the Operator Menu, turns each Add-on on or off.
 
@@ -55,7 +55,7 @@ Requires **Windows** and **PinballY 1.1.0 Beta 10** (plus the *Windows Media Pla
 4. **Restart PinballY.** `PinballY.log` shows one "initialized" line per Add-on; errors are also kept in `Scripts\ExpansionPack\errors.log`.
 5. **Choose your Add-ons**, the startup screen and the language in **eXpansion Pack Settings**, in the Operator Menu, then restart PinballY in one press.
 
-Everything the pack keeps (settings and Profiles) stays in `Scripts\ExpansionPack`: copy this folder to back up, and simply delete it and the import line to uninstall this pack if you don't want it anymore.
+Your settings and Profiles stay in `Scripts\ExpansionPack`: copy this folder to back up, and simply delete it and the import line to uninstall this pack if you don't want it anymore. When a new version is out, PinballY offers the update at startup, in one press, keeping your settings and Profiles.
 For PINemHi 3.6.8, `.env.local` and installing with git: see the [install page](docs/guide/en/install.md) for the complete steps.
 
 ## Learn more
