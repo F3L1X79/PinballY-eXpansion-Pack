@@ -38,7 +38,7 @@ const LOOK = Object.freeze({
     rowH: 120, rowSize: 26, minRowSize: 18, rowTextInset: 12, rowIcon: 76,
     // A Period Table card, from its top: period, name, Mastery card (the
     // Mastery Bar's, scaled by cardK), then the grey line, if any.
-    cardTop: 30, nameY: 78, masteryY: 134, lineGap: 18, lineH: 34, cardBottom: 34,
+    cardTop: 18, nameY: 54, masteryY: 96, lineGap: 10, lineH: 34, cardBottom: 16,
     periodSize: 21, nameSize: 22, minNameSize: 18, lineSize: 18, minLineSize: 15, lineTile: 28,
     cardK: 1.25, masteryCardH: 74,
     button: Object.freeze({ w: 140, h: 52, size: 22 }),
