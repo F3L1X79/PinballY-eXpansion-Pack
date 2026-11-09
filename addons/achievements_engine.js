@@ -28,6 +28,8 @@ import { buildWorldTourAchievements } from "../achievements/world_tour.js";
 import { createWorldTour } from "../common/achievements/world_tour.js";
 import { buildSurprisesAchievements } from "../achievements/surprises.js";
 import { createSurprises } from "../common/achievements/surprises.js";
+import { buildEasterEggAchievements } from "../achievements/easter_eggs.js";
+import { getEasterEggRules } from "../common/easter_eggs/easter_egg_rules.js";
 import { buildRatingsAchievements } from "../achievements/ratings.js";
 import { onRatingDialogClosed } from "../common/profiles/profile_ratings.js";
 import { buildYoungPlayersAchievements } from "../achievements/young_players.js";
@@ -94,6 +96,7 @@ export function getAllAchievements({ asNonChild = false, profileName } = {}) {
         ...(challenges ? buildChallengeAchievements(challenges) : []),
         ...(highScores ? buildHighScoreAchievements(highScores, seenBy) : []),
         ...buildSurprisesAchievements(seenBy),
+        ...buildEasterEggAchievements(),
         ...buildRatingsAchievements(),
         ...buildYoungPlayersAchievements({ ...seenBy, highScores }),
     ];
@@ -339,6 +342,9 @@ export default function init() {
     // the store's answer, shows before the Achievements it brought.
     const highScores = getEnabledHighScores();
     if (highScores) highScores.onCredited(safeHandler(SCRIPT_NAME, () => setTimeout(safeCheckForNewAchievements, 0)));
+    // Fires once an Easter Egg has gone. A tick later: at a launch it ends on
+    // "prelaunch", when a toast would not see the game yet and would show under it.
+    getEasterEggRules().onFinished(() => setTimeout(safeCheckForNewAchievements, 0));
     // No tick waited: the column already holds the new Rating (ADR 0024),
     // and no other handler of this event records anything the check reads.
     onRatingDialogClosed(createPinballYHost(), safeHandler(SCRIPT_NAME, () => checkForNewAchievements()));

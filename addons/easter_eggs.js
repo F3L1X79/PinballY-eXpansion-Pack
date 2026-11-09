@@ -1,0 +1,32 @@
+// ============================================================
+// Easter Eggs: rare events tied to their own moments, part of the pack
+// and impossible to turn off, so it has no entry among config.addOns or the
+// eXpansion Pack Settings. The rules live in common/easter_eggs/easter_egg_rules.js.
+// - The Crow is drawn once per start, a tick after the Startup Screen has closed.
+// ============================================================
+
+import { createPinballYHost } from "../common/core/pinbally_host.js";
+import { safeHandler } from "../common/core/safe_handler.js";
+import { getQuietWheel } from "../common/core/quiet_wheel.js";
+import { getStartupScreen, onStartupScreenClosed, STARTUP_SCREEN } from "../common/core/startup_screen.js";
+import { getWindowLayout } from "../common/core/window_layout.js";
+import config from "../common/core/config.js";
+import { getEasterEggRules } from "../common/easter_eggs/easter_egg_rules.js";
+import { createCrow } from "../common/easter_eggs/crow.js";
+
+const SCRIPT_NAME = "EasterEggs";
+
+export default function init() {
+    const host = createPinballYHost();
+    const crow = createCrow(host, { rules: getEasterEggRules(), quietWheel: getQuietWheel() });
+    const tryFly = safeHandler(SCRIPT_NAME, crow.tryFly);
+
+    // A tick later: what the closing screen leads to has opened by then, and counts as busy.
+    onStartupScreenClosed(safeHandler(SCRIPT_NAME, () => host.setTimeout(tryFly, 0)));
+
+    // The bare wheel with no Profile Greeting to wait for: nothing will close.
+    if (getStartupScreen() === STARTUP_SCREEN.WHEEL && config.addOns.profilePicker === false) {
+        // A tick later, so what the other Add-ons submit at startup counts as busy.
+        host.setTimeout(safeHandler(SCRIPT_NAME, () => getWindowLayout().whenLaidOut(tryFly)), 0);
+    }
+}

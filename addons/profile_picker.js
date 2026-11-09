@@ -22,7 +22,7 @@ import { createAvatarChoice } from "../common/profiles/avatar_choice.js";
 import { getMainMenu, MAIN_MENU_POSITION } from "../common/menus/main_menu.js";
 import { addToPlayerGroup, PLAYER_GROUP_RANK } from "../common/menus/exit_menu.js";
 import { getWheelDialogs, DIALOG_PRIORITY } from "../common/core/wheel_dialog.js";
-import { getStartupScreen, notifyStartupPickerDone, STARTUP_SCREEN } from "../common/core/startup_screen.js";
+import { getStartupScreen, notifyStartupPickerDone, notifyStartupScreenClosed, STARTUP_SCREEN } from "../common/core/startup_screen.js";
 import { getStartupVeil } from "../common/drawing/startup_veil.js";
 import { getQuietWheel } from "../common/core/quiet_wheel.js";
 import { registerChangePlayer } from "../common/profiles/change_player.js";
@@ -547,7 +547,8 @@ export default function init() {
 
     // The Avatar grows and everything fades by moving, scaling and fading
     // the layers: nothing is redrawn once the greeting has started.
-    function greet(profile) {
+    // atStartup: it ends the Startup Screen, no Welcome Screen follows it.
+    function greet(profile, { atStartup = false } = {}) {
         stopGreeting();
         // The worn frames may have changed since the Profiles were last read.
         readProfiles();
@@ -564,6 +565,7 @@ export default function init() {
             const elapsed = host.now().getTime() - startMs;
             if (elapsed >= growMs + holdMs + fadeMs) {
                 stopGreeting();
+                if (atStartup) notifyStartupScreenClosed();
                 return;
             }
             const size = startSize + (grownSize - startSize) * Math.min(1, elapsed / growMs);
@@ -586,7 +588,7 @@ export default function init() {
         greetingDelayTimer = host.setTimeout(safeHandler(SCRIPT_NAME, () => {
             greetingDelayTimer = null;
             if (isWheelFree()) {
-                greet(profileStore.getActiveProfile());
+                greet(profileStore.getActiveProfile(), { atStartup });
                 return;
             }
             stopGreeting();

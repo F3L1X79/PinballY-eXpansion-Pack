@@ -57,6 +57,19 @@ export function notifyStartupPickerDone() {
     for (const listener of pickerDoneListeners) listener();
 }
 
+const screenClosedListeners = [];
+
+// listener: runs when the Startup Screen hands the wheel over to the player:
+// the startup Welcome Screen closes on Exit or Stay, or the Profile Greeting
+// that replaces it ends. Never for a reopened screen, a launch or attract mode.
+export function onStartupScreenClosed(listener) {
+    screenClosedListeners.push(listener);
+}
+
+export function notifyStartupScreenClosed() {
+    for (const listener of screenClosedListeners) listener();
+}
+
 let sharedStartupScreen = null;
 
 // Resolved on the first call, after main.js restored the active Profile.

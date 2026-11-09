@@ -17,7 +17,7 @@ import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getWheelDialogs, DIALOG_PRIORITY } from "../common/core/wheel_dialog.js";
 import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
-import { getStartupScreen, onStartupPickerDone, STARTUP_SCREEN } from "../common/core/startup_screen.js";
+import { getStartupScreen, onStartupPickerDone, notifyStartupScreenClosed, STARTUP_SCREEN } from "../common/core/startup_screen.js";
 import { getMainMenu, MAIN_MENU_POSITION } from "../common/menus/main_menu.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getProfileRewards } from "../common/avatar_frames/profile_rewards.js";
@@ -88,6 +88,8 @@ export default function init() {
     let waiting = null;
     // The wheel dialog module's close, from its turn until the screen closes.
     let closeDialog = null;
+    // True from the submission of the Startup Screen's own opening until it closes.
+    let isStartupOpening = false;
     // The screen on show: what was read for it, its layers, choices and
     // selection; null when closed.
     let shown = null;
@@ -370,12 +372,15 @@ export default function init() {
 
     // Removes the screen, takes it off the Drawn Screen controls and frees
     // the queue. atOnce: nothing follows (a table chosen, attract mode), back
-    // at its own volume before the wheel moves. Safe to call again.
-    function close({ atOnce = false } = {}) {
+    // at its own volume before the wheel moves. isFollowed: another screen
+    // opens right after it. Safe to call again.
+    function close({ atOnce = false, isFollowed = false } = {}) {
         const done = closeDialog;
         if (!done) return;
         // First: the controls' close below calls back in, which then finds nothing to do.
         closeDialog = null;
+        const wasStartupOpening = isStartupOpening;
+        isStartupOpening = false;
         windowWatch.stop();
         startupVeil.hide();
         const closing = shown;
@@ -387,6 +392,7 @@ export default function init() {
         }
         quietWheel.release(SCRIPT_NAME, { atOnce });
         done();
+        if (wasStartupOpening && !atOnce && !isFollowed) notifyStartupScreenClosed();
     }
 
     // direction: 1 for Next, -1 for Prev.
@@ -402,7 +408,7 @@ export default function init() {
     function choose() {
         const choice = shown.screen.choices[shown.selected];
         const { challengeTable } = shown.screen;
-        close({ atOnce: choice === CHOICE.RANDOM || choice === CHOICE.CHALLENGE || choice in periodTables });
+        close({ atOnce: choice === CHOICE.RANDOM || choice === CHOICE.CHALLENGE || choice in periodTables, isFollowed: choice === CHOICE.AVATAR });
         if (choice === CHOICE.RANDOM) return randomGame.launch();
         if (choice === CHOICE.AVATAR) getChangePlayer()();
         // Launched as shown, without checking again: only a new week starting
@@ -418,16 +424,17 @@ export default function init() {
         return undefined;
     }
 
-    function submit(choice) {
+    function submit(choice, { isStartup = false } = {}) {
         const submission = { isDropped: false };
         waiting = submission;
         firstChoice = choice;
+        isStartupOpening = isStartup;
         getWheelDialogs().submit({ priority: DIALOG_PRIORITY.STARTUP_PROMPT, open, isStale: () => submission.isDropped });
     }
 
     const startupScreen = getStartupScreen();
     if (startupScreen === STARTUP_SCREEN.WELCOME) {
-        submit(null);
+        submit(null, { isStartup: true });
         startupVeil.show();
     }
     // The startup Profile picker hands over on a pick or Exit, before any
@@ -435,7 +442,7 @@ export default function init() {
     // just chosen: the cursor on the cross, as after Change Player.
     if (startupScreen === STARTUP_SCREEN.PROFILE_PICKER) {
         onStartupPickerDone(safeHandler(SCRIPT_NAME, () => {
-            if (!waiting && !closeDialog) submit(CHOICE.EXIT_BUTTON);
+            if (!waiting && !closeDialog) submit(CHOICE.EXIT_BUTTON, { isStartup: true });
         }));
     }
 

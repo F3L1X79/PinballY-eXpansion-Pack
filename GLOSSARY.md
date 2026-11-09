@@ -7,8 +7,12 @@ Unofficial add-ons for the PinballY virtual pinball front end, built on its Java
 ### Add-ons
 
 **Add-on**:
-A self-contained feature that `main.js` starts at launch and that the player can turn off in the configuration.
+A self-contained feature that `main.js` starts at launch and that the player can turn off in the configuration, except the Easter Eggs, which cannot be turned off.
 _Avoid_: plugin, script (a script is just a `.js` file)
+
+**Easter Egg**:
+A rare, unannounced event of the cabinet, each tied to its own moment: at most one a day for the whole cabinet, and never twice the same for a Profile. Described nowhere for the player. Each one gives the active Profile a Secret Achievement of the Surprises family.
+_Avoid_: Surprise (Surprises is only the Achievement family), hidden event, glitch
 
 **Discord Rich Presence**:
 What the Discord account signed in on the cabinet's PC shows publicly while PinballY runs: the table being played, or that one is being chosen, and never a Profile's name. Off until the owner accepts a Dialog saying what becomes public. Discord's own name for it, kept in every language.

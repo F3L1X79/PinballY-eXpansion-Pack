@@ -58,6 +58,7 @@ import * as highScores from "./addons/high_scores.js";
 import * as welcomeScreen from "./addons/welcome_screen.js";
 import * as drawnMenus from "./addons/drawn_menus.js";
 import * as launchEventsTrace from "./addons/launch_events_trace.js";
+import * as easterEggs from "./addons/easter_eggs.js";
 
 // Scripts are initialized in this order, which is also the order their event
 // listeners are registered in, and listeners for the same event run in that
@@ -82,8 +83,10 @@ import * as launchEventsTrace from "./addons/launch_events_trace.js";
 //   have followed the same event.
 // - profilePicker must come before the Welcome Screen, which offers
 //   "Change Player" only when the picker registered itself at init.
-// - drawnMenus must come last, so its "menuopen" listener draws the final
-//   entries, after every Add-on and shared module edited them.
+// - drawnMenus must come after every Add-on and shared module that edits the
+//   entries, so its "menuopen" listener draws the final ones.
+// - easterEggs is not in config.addOns, so it always starts: it cannot be
+//   turned off.
 // The other scripts don't depend on each other's order. In particular, the
 // Welcome Screen and the rating prompt go through the wheel dialog module,
 // which shows them in a fixed priority order, and Achievements are announced
@@ -128,8 +131,10 @@ const SCRIPTS = [
     // env.local overrides still use.
     { key: "startupChoicePrompt", module: welcomeScreen },
 
-    // Drawn Menus, last of all.
+    // Drawn Menus, after everything that edits a menu.
     { key: "drawnMenus", module: drawnMenus },
+
+    { key: "easterEggs", module: easterEggs },
 ];
 
 const ENABLED_SCRIPTS = config.addOns;

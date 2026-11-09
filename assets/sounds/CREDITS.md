@@ -12,6 +12,7 @@ no attribution required; credited here with thanks). `confetti.wav` and
 | `profile_greeting.mp3` | with each Profile Greeting | [323437](https://freesound.org/people/Alivvie/sounds/323437/) | Alivvie |
 | `confetti.wav` | when a Confetti Shower starts | [764054](https://freesound.org/people/ShangusBurger/sounds/764054/) | ShangusBurger |
 | `fireworks.wav` | when the Fireworks start | [435729](https://freesound.org/people/SamuelGremaud/sounds/435729/) | SamuelGremaud |
+| `easter_eggs/raven_call.wav` | once in a long while (made louder) | [275466](https://freesound.org/people/adharca/sounds/275466/) | adharca |
 
 Your own sounds go in `local/`, which git ignores; point `.env.local` at them
 (see `.env.example`).

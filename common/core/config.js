@@ -96,6 +96,9 @@ export const DEFAULTS = {
     // true = every launch event is written to the PinballY log with a
     // millisecond timestamp (to check their order on the cabinet).
     logLaunchEvents: false,
+    // Temporary, to check them on the cabinet: the one Easter Egg ("crow")
+    // that wins at each of its moments, whatever the chance and the limits.
+    forceEasterEgg: "",
 
     // --- Add-ons ---
 

@@ -449,7 +449,11 @@ export function createAchievementToasts(host, {
         safeShowNext();
     }
 
-    return { submit };
+    // True while a card is on screen or waits its turn, for what must not
+    // start over a toast. A stale waiting one counts: asking would drop it.
+    const hasToasts = () => cards.length > 0 || waiting.length > 0;
+
+    return { submit, hasToasts };
 }
 
 let sharedAchievementToasts = null;
