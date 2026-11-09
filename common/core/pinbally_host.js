@@ -609,6 +609,9 @@ export function createPinballYHost() {
         removeBackglassDrawingLayer: (layer) => { backglassWindow.removeDrawingLayer(layer); },
         // desc: createMediaWindow's (MainWindowObject.html); see mediaWindowOf().
         createMediaWindow: (desc) => mediaWindowOf(mainWindow.createMediaWindow(desc), HWND),
+        // From 0 to 1, for a rare draw: here so that the tests' fake host never
+        // wins one in a scenario about something else.
+        random: () => Math.random(),
         // Through the Windows Media Player COM component, like the launch
         // sound; throws when it is unavailable or the file is missing
         // (Windows Media Player itself fails silently on a missing file).

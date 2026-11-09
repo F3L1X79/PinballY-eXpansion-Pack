@@ -24,7 +24,8 @@ function rulesOn(fake, { random = WINNING, forced = "", busy = {} } = {}) {
         profileStore: store,
         wheelDialogs: { isIdle: () => state.dialogsIdle, isOverlayOpen: () => state.overlayOpen },
         achievementToasts: { hasToasts: () => state.hasToasts },
-        random,
+        // null: the host's own random source.
+        ...(random ? { random } : {}),
         forced,
     });
     return { rules, store, state };
@@ -38,6 +39,13 @@ function start(options = {}) {
 test("a draw wins 1 time in 100", () => {
     assert.equal(start({ random: () => 0.0099 }).rules.tryWin(CROW), true);
     assert.equal(start({ random: () => 0.01 }).rules.tryWin(CROW), false);
+});
+
+test("by default the draw comes from the host, whose fake never wins, so that no other scenario meets an Easter Egg", () => {
+    assert.equal(start({ random: null }).rules.tryWin(CROW), false);
+    const fake = createFakePinballYHost({ now: NOVEMBER_9 });
+    fake.random = WINNING;
+    assert.equal(rulesOn(fake, { random: null }).rules.tryWin(CROW), true);
 });
 
 test("a won Easter Egg is recorded for the active Profile before it plays, and a Profile never gets it twice", () => {

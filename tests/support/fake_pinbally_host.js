@@ -1464,6 +1464,8 @@ export function createFakePinballYHost({
     const host = {
         settings,
         now: () => new RealDate(nowMs),
+        // Never wins a rare draw: a test that wants one replaces it.
+        random: () => 0.99,
         setTimeout: (callback, ms) => addTimer(callback, ms),
         clearTimeout: removeTimer,
         setInterval: (callback, ms) => addTimer(callback, ms, ms),

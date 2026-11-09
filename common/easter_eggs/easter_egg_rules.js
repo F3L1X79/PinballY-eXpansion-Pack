@@ -27,8 +27,9 @@ const DAILY_FILE = "easter_egg_day";
 const DAILY_FILE_VERSION = 1;
 
 // wheelDialogs: { isIdle(), isOverlayOpen() }; achievementToasts: { hasToasts() };
-// forced: the Easter Egg named by the force option, "" for none.
-export function createEasterEggRules(host, { profileStore, wheelDialogs, achievementToasts, forced = "", random = Math.random }) {
+// forced: the Easter Egg named by the force option, "" for none; random: the
+// draw's source, the host's by default.
+export function createEasterEggRules(host, { profileStore, wheelDialogs, achievementToasts, forced = "", random = host.random }) {
     // Won and not finished yet: their Achievement waits for the end of the effect.
     const playing = new Set();
     const finishedListeners = [];
