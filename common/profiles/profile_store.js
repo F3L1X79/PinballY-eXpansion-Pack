@@ -13,6 +13,7 @@
 import { safeHandler, logHandlerError } from "../core/safe_handler.js";
 import { logError } from "../core/error_log.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
+import { isUntrackedTable } from "../core/untracked_tables.js";
 import { markRefusal } from "./setup_entries.js";
 import { GUEST_NAME, nameRefusal, sameName, withoutTrailingHyphen } from "./profile_name_rules.js";
 
@@ -521,7 +522,7 @@ export function createProfileStore(host) {
         const now = host.now();
         const running = runningGames.get(configId);
         runningGames.delete(configId);
-        if (!running) return;
+        if (!running || isUntrackedTable(ev.game)) return;
         const seconds = Math.round((now.getTime() - running.startMs) / 1000);
         if (seconds < MIN_PLAY_SECONDS) return;
         const { profileName } = running;

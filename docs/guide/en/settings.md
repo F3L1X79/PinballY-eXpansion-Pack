@@ -50,6 +50,7 @@ ADD_ON_CLOCK=false
 |---|---|---|
 | `LANGUAGE` | `en` | Interface language: `en`, `fr`, `de`, `es`, `it` or `pt`. |
 | `ADULT_CATEGORY` | `NSFW` | PinballY category of the Adult Tables, hidden from Child Profiles. |
+| `UNTRACKED_TABLES` | empty | Tables that are not really pinball games, such as a media player launched as a table: comma-separated titles, exactly as in PinballY (`Media Player,Jukebox`). They stay on the wheel and launch, but are left out of the stats, the Achievements and the Random Game. Remove a table from the list and it comes back with its saved games. |
 | `COMMUNITY_TABLES_MANUFACTURER` | `VPX Community` | Manufacturer you gave to fictional or community tables, for the status line and the "Original Tables" filter. |
 | `LAUNCH_SOUND_FILE` | `assets\sounds\launch.mp3` | Sound played when a table launches: a path from the pack's folder (your own sounds go in `assets\sounds\local\`) or a full path; empty = no sound. |
 | `ACHIEVEMENT_SOUND_FILE` | `assets\sounds\achievement.wav` | Sound played with each Achievement toast. |

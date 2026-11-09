@@ -211,7 +211,7 @@ The short greeting, with the Avatar and the Profile's name, shown when a Profile
 _Avoid_: welcome toast, login message
 
 **Play**:
-A game of at least one minute on a table, which counts for the Profile active when it started. A shorter game is a launch by mistake and counts for nothing, except for the Rage Quit Achievement.
+A game of at least one minute on a table other than an Untracked Table, which counts for the Profile active when it started. A shorter game is a launch by mistake and counts for nothing, except for the Rage Quit Achievement.
 _Avoid_: session (the session stats count only Plays, except the Rage Quit flag), launch (a launch becomes a Play only after a minute)
 
 **Play Log**:
@@ -303,6 +303,10 @@ _Avoid_: masked tables, operator tables
 
 **Unconfigured table**:
 A table file PinballY found but that was never set up. It stays on a wheel that shows it and can be played, but it is not one a Profile can see. Shown as "table non configurée" in French.
+
+**Untracked Table**:
+A table listed in `UNTRACKED_TABLES`, not really a pinball game. It stays on the wheel and launches, but makes no Play, is not one a Profile can see, and the Random Game never draws it.
+_Avoid_: excluded table, ignored table
 
 **Period Table Streak**:
 The number of consecutive Periods in which the active Profile made a Play on the Period Table that started during its Period.

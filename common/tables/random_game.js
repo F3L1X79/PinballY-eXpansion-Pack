@@ -2,7 +2,7 @@
 // Random Game: draws a table from the current wheel selection, animates the
 // wheel to it and launches it. Shared through getRandomGame(); counts
 // "randomGames" on the Play announcement.
-// - Never the Last Played Table unless it is the only one.
+// - Never the Last Played Table unless it is the only one; never an Untracked Table, even the only one.
 // - Calls made while an animation runs are ignored.
 // ============================================================
 
@@ -10,6 +10,7 @@ import { animateWheelTo, sleep } from "./wheel_navigator.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { safeHandler } from "../core/safe_handler.js";
 import { getProfileStore } from "../profiles/profile_store.js";
+import { isUntrackedTable } from "../core/untracked_tables.js";
 import config from "../core/config.js";
 
 const SCRIPT_NAME = "RandomGame";
@@ -57,15 +58,19 @@ export function createRandomGame(host, profileStore, { animateTo, skipAnimation 
         const tables = host.getWheelTables();
         if (!Array.isArray(tables) || tables.length === 0) return;
 
+        // By index into the whole wheel, Untracked Tables included: the
+        // animation counts its moves from these indexes.
+        const drawableIndexes = tables.map((_, index) => index).filter(index => !isUntrackedTable(tables[index]));
+        if (drawableIndexes.length === 0) return;
+
         launchInProgress = true;
         try {
             const lastPlayedTable = findLastPlayedTable();
             const isLastPlayed = index =>
                 lastPlayedTable !== null && tables[index].configId === lastPlayedTable.configId;
 
-            const allIndexes = tables.map((_, index) => index);
-            const candidates = allIndexes.filter(index => !isLastPlayed(index));
-            const pool = candidates.length > 0 ? candidates : allIndexes;
+            const candidates = drawableIndexes.filter(index => !isLastPlayed(index));
+            const pool = candidates.length > 0 ? candidates : drawableIndexes;
             const drawnIndex = pool[randomIndex(pool.length)];
 
             if (skipAnimation) {
@@ -74,9 +79,10 @@ export function createRandomGame(host, profileStore, { animateTo, skipAnimation 
             }
 
             // The suspense "one table early" stop may land on neither the
-            // current table (index 0, never animated away from) nor the Last
-            // Played Table: then the wheel goes on to the drawn table.
-            const canStopEarly = drawnIndex > 0 && !isLastPlayed(drawnIndex - 1);
+            // current table (index 0, never animated away from), the Last
+            // Played Table nor an Untracked Table: then the wheel goes on to
+            // the drawn table.
+            const canStopEarly = drawnIndex > 0 && !isLastPlayed(drawnIndex - 1) && !isUntrackedTable(tables[drawnIndex - 1]);
             const landingIndex = canStopEarly && Math.random() < STOP_EARLY_PROBABILITY
                 ? drawnIndex - 1
                 : drawnIndex;

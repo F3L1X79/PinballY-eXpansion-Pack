@@ -6,10 +6,13 @@
 // tests/support/fake_pinbally_host.js. No side effects on import.
 // ============================================================
 
+import { isUntrackedTable } from "./untracked_tables.js";
+
 // Whether a table belongs to the household's visible tables. Unconfigured
 // tables never do, whatever "Hide unconfigured games" says: they show a raw
 // file name, and their config ID may change once they are set up (spec #405).
-export const isVisibleTable = game => !game.isHidden && game.isConfigured !== false;
+// Nor do Untracked Tables, which stay on the wheel all the same.
+export const isVisibleTable = game => !game.isHidden && game.isConfigured !== false && !isUntrackedTable(game);
 
 const ADODB_TEXT_TYPE = 2;
 const ADODB_READ_ALL = -1;

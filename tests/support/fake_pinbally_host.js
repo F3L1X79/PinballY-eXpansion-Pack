@@ -9,7 +9,7 @@
 // - settle() waits on a real timer for deferred work to run.
 // ============================================================
 
-import { projectFolderOf, mediaWindowOf, backglassRectOf, namedPipeOf, SWP_NOSIZE, SWP_NOMOVE } from "../../common/core/pinbally_host.js";
+import { isVisibleTable, projectFolderOf, mediaWindowOf, backglassRectOf, namedPipeOf, SWP_NOSIZE, SWP_NOMOVE } from "../../common/core/pinbally_host.js";
 import { createFakeDiscord } from "./fake_discord.js";
 
 // PinballY's HWND z-order constants (WindowObjects.html), as names a test reads.
@@ -1327,7 +1327,7 @@ export function createFakePinballYHost({
 
     // The wheel selection before the metafilters, in wheel order.
     const unfilteredWheel = () => (wheelConfigIds === null
-        ? host.getVisibleTables().map(game => game.configId)
+        ? allTables.filter(game => canBeOnWheel(game)).map(game => game.configId)
         : wheelConfigIds);
 
     // Runs the filter like PinballY: before(), then select() over the
@@ -1468,7 +1468,7 @@ export function createFakePinballYHost({
         clearTimeout: removeTimer,
         setInterval: (callback, ms) => addTimer(callback, ms, ms),
         clearInterval: removeTimer,
-        getVisibleTables: () => allTables.filter(table => canBeOnWheel(table)),
+        getVisibleTables: () => allTables.filter(isVisibleTable),
         getAllTables: () => [...allTables],
         getWheelTables: () => unfilteredWheel()
             .filter(configId => !ruledOutConfigIds.has(configId))

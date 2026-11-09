@@ -9,6 +9,7 @@
 import { applyEnvOverrides } from "./env_overrides.js";
 import { projectFolderOf } from "./pinbally_host.js";
 import { logError } from "./error_log.js";
+import { setUntrackedTables } from "./untracked_tables.js";
 
 // The sounds shipped in assets\sounds\, by setting.
 export const SHIPPED_SOUNDS = Object.freeze({
@@ -51,6 +52,9 @@ export const DEFAULTS = {
     communityTablesManufacturer: "VPX Community",
     // PinballY category of the Adult Tables, which a Child Profile never sees (exact name).
     adultCategory: "NSFW",
+    // Comma-separated titles of the tables left out of the stats and
+    // Achievements (exact names), such as a media player launched as a table.
+    untrackedTables: "",
 
     // --- Optional preferences ---
 
@@ -214,6 +218,7 @@ function loadConfig() {
     for (const problem of problems) {
         logfile.log(`${LOG_PREFIX} .env.local ${problem}; ignored.`);
     }
+    setUntrackedTables(config.untrackedTables);
     return resolveSoundFiles(config, projectFolder);
 }
 

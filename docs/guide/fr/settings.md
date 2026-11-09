@@ -50,6 +50,7 @@ ADD_ON_CLOCK=false
 |---|---|---|
 | `LANGUAGE` | `en` | Langue : `en`, `fr`, `de`, `es`, `it` ou `pt`. |
 | `ADULT_CATEGORY` | `NSFW` | Catégorie PinballY des tables pour adultes, cachées aux Profils enfant. |
+| `UNTRACKED_TABLES` | vide | Les tables qui n'en sont pas vraiment, comme un lecteur multimédia lancé comme une table : leurs titres séparés par des virgules, écrits exactement comme dans PinballY (`Media Player,Jukebox`). Elles restent sur la roue et se lancent, mais sortent des statistiques, des Succès et de la table au hasard. Retirée de la liste, une table revient avec ses parties enregistrées. |
 | `COMMUNITY_TABLES_MANUFACTURER` | `VPX Community` | Fabricant donné aux tables fictives ou communautaires, pour la ligne d'état et le filtre « Tables Originales ». |
 | `LAUNCH_SOUND_FILE` | `assets\sounds\launch.mp3` | Son joué au lancement d'une table : un chemin depuis le dossier du pack (vos sons vont dans `assets\sounds\local\`) ou un chemin complet ; vide = aucun son. |
 | `ACHIEVEMENT_SOUND_FILE` | `assets\sounds\achievement.wav` | Son joué avec chaque annonce de Succès. |

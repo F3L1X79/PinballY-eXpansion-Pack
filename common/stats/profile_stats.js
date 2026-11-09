@@ -14,6 +14,7 @@ import lang from "../core/i18n.js";
 import config from "../core/config.js";
 import { getDecadeStartYear } from "../achievements/decade.js";
 import { cleanTitle } from "../tables/table_title.js";
+import { untrackedConfigIdsOf } from "../core/untracked_tables.js";
 import { displayNameOf } from "../profiles/profile_name.js";
 import { countPlayedTablesIn, tablesVisibleTo } from "../tables/visible_tables.js";
 import { collectionMasteryOfProfile } from "../mastery/table_mastery.js";
@@ -50,9 +51,10 @@ export function createProfileStats(host, {
     const controls = drawnScreenControls.register(SCRIPT_NAME);
 
     // Over every table the Profile played, hidden or no longer listed ones
-    // included: hiding a table never erases a player's history.
-    function sumPlays(data) {
-        const plays = Object.values(data.plays);
+    // included (hiding a table never erases a player's history), Untracked
+    // Tables already left out of trackedPlays.
+    function sumPlays(trackedPlays) {
+        const plays = Object.values(trackedPlays);
         return {
             count: plays.reduce((sum, play) => sum + play.count, 0),
             seconds: plays.reduce((sum, play) => sum + play.seconds, 0),
@@ -60,11 +62,16 @@ export function createProfileStats(host, {
     }
 
     // The named Profile's data and the tables it can see, whoever looks
-    // (looking is not picking a table); a tier it reached stays.
+    // (looking is not picking a table); a tier it reached stays. trackedPlays:
+    // its saved Plays without the Untracked Tables', which stay in its file.
     function readProfileData(profileName) {
+        const data = profileStore.getProfileDataOf(profileName);
+        const untrackedConfigIds = untrackedConfigIdsOf(host.getAllTables());
         return {
-            data: profileStore.getProfileDataOf(profileName),
+            data,
             profileTables: tablesVisibleTo(host.getVisibleTables(), profileStore, profileName),
+            untrackedConfigIds,
+            trackedPlays: Object.fromEntries(Object.entries(data.plays).filter(([configId]) => !untrackedConfigIds.has(configId))),
         };
     }
 
@@ -102,7 +109,7 @@ export function createProfileStats(host, {
         return profileStore.withCachedReads(() => {
             const profileData = readProfileData(profileName);
             return {
-                plays: sumPlays(profileData.data),
+                plays: sumPlays(profileData.trackedPlays),
                 ...readCardStats(profileName, profileData, timeReader),
                 ...readProgressionStats(profileName, profileData, timeReader),
             };
@@ -212,21 +219,24 @@ export function createProfileStats(host, {
     // The community tables' manufacturer is not a real one.
     const manufacturerOf = game => (game.manufacturer && game.manufacturer !== config.communityTablesManufacturer ? game.manufacturer : null);
 
-    // The earliest Play of the oldest Play Log year with one; null when the
-    // Play Log is empty (older Plays are known only by their totals).
-    function readFirstPlay(profileName) {
+    // The earliest Play of the oldest Play Log year with one that is not an
+    // Untracked Table's; null when there is none (older Plays are known only
+    // by their totals).
+    function readFirstPlay(profileName, untrackedConfigIds) {
         for (const year of profileStore.getPlayLogYearsOf(profileName)) {
-            const [first = null] = [...profileStore.getPlayLogOf(profileName, year)].sort((a, b) => a.start.localeCompare(b.start));
+            const [first = null] = profileStore.getPlayLogOf(profileName, year)
+                .filter(play => !untrackedConfigIds.has(play.configId))
+                .sort((a, b) => a.start.localeCompare(b.start));
             if (first) return first;
         }
         return null;
     }
 
     // The table of the Profile's latest Play, by its plays' lastPlayed (local
-    // ISO strings, so they sort as text), hidden tables included; null before
-    // any Play.
-    function findLastPlay(profilePlays) {
-        return Object.entries(profilePlays)
+    // ISO strings, so they sort as text), hidden tables included, Untracked
+    // Tables already left out of trackedPlays; null before any Play.
+    function findLastPlay(trackedPlays) {
+        return Object.entries(trackedPlays)
             .filter(([, play]) => play.lastPlayed)
             .reduce((latest, [configId, play]) => (!latest || play.lastPlayed > latest.lastPlayed ? { configId, lastPlayed: play.lastPlayed } : latest), null);
     }
@@ -260,10 +270,10 @@ export function createProfileStats(host, {
         return { title: game ? game.title : configId, logoPath: logoOrMissingImage(game) };
     }
 
-    function tastesSection(profile, profileTables, profilePlays, getPlay, hallOfFame) {
+    function tastesSection(profile, { profileTables, trackedPlays, untrackedConfigIds, getPlay, hallOfFame }) {
         const favouriteGame = hallOfFame[0] || null;
-        const firstPlay = readFirstPlay(profile.name);
-        const lastPlay = findLastPlay(profilePlays);
+        const firstPlay = readFirstPlay(profile.name, untrackedConfigIds);
+        const lastPlay = findLastPlay(trackedPlays);
         return {
             title: TEXT.sections.tastes,
             rows: [[
@@ -291,9 +301,8 @@ export function createProfileStats(host, {
     // only), the Exit Button's look (hasReturn: Exit brings something back)
     // and the Button Hints, with what the sections read after it.
     function readCard(profile, isReadOnly, hasReturn) {
-        const { data, profileTables } = readProfileData(profile.name);
-        const profilePlays = data.plays;
-        const getPlay = configId => profilePlays[configId] || NO_PLAY;
+        const { data, profileTables, trackedPlays, untrackedConfigIds } = readProfileData(profile.name);
+        const getPlay = configId => trackedPlays[configId] || NO_PLAY;
         const { achievements, playerLevel, collectionMastery } = readCardStats(profile.name, { data, profileTables });
         const hallOfFame = getHallOfFame(profileTables, getPlay);
         const exitLook = exitButtonLookOf(hasReturn);
@@ -305,7 +314,7 @@ export function createProfileStats(host, {
             ...selectionButton(CHOICE.MOST_PLAYED, TEXT.buttons.mostPlayedTables, hallOfFameFilter, hallOfFame),
         ];
         return {
-            profileData: { data, profileTables, profilePlays, getPlay, hallOfFame },
+            profileData: { data, profileTables, trackedPlays, untrackedConfigIds, getPlay, hallOfFame },
             card: {
                 name: displayNameOf(profile),
                 avatarPath: profile.avatarPath,
@@ -426,10 +435,9 @@ export function createProfileStats(host, {
             profileData = card.profileData;
             screen = { ...card.card, sections: [] };
         });
-        drawn.read(() => screen.sections.push(gameSection(sumPlays(profileData.data))));
+        drawn.read(() => screen.sections.push(gameSection(sumPlays(profileData.trackedPlays))));
         drawn.read(() => screen.sections.push(progressionSection(readProgressionStats(profile.name, profileData), profile.name)));
-        drawn.read(() => screen.sections.push(
-            tastesSection(profile, profileData.profileTables, profileData.profilePlays, profileData.getPlay, profileData.hallOfFame)));
+        drawn.read(() => screen.sections.push(tastesSection(profile, profileData)));
         drawn.draw(() => drawn.drawBackdrop((dc, size, referenceWidth) => drawBackdrop(host, dc, size, referenceWidth, screen)));
         drawn.draw(queuePieces);
         // A read-only screen failing also takes away, through onFailed, the
