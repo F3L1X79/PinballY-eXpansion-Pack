@@ -1042,6 +1042,9 @@ export default {
         packUpdateFailed: (version, logPath) => `L'aggiornamento alla v${version} non è riuscito: la versione precedente resta al suo posto. Dettagli in ${logPath}`,
     },
     releaseHighlights: {
+        "1.4.1": [
+            "I tavoli elencati in UNTRACKED_TABLES, come un lettore multimediale, ora restano fuori dalle statistiche e dagli Obiettivi.",
+        ],
         "1.4.0": [
             "Ogni profilo ora conserva le proprie valutazioni e i propri preferiti.",
             "Le tabelle dei punteggi migliori ora hanno tre viste: Dalla ROM, Della casa e I miei 5 migliori.",

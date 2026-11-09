@@ -1048,6 +1048,9 @@ export default {
         packUpdateFailed: (version, logPath) => `La mise à jour en v${version} a échoué : la version précédente reste en place. Détails dans ${logPath}`,
     },
     releaseHighlights: {
+        "1.4.1": [
+            "Les tables listées dans UNTRACKED_TABLES, comme un lecteur multimédia, restent maintenant hors des statistiques et des Succès.",
+        ],
         "1.4.0": [
             "Chaque profil garde maintenant ses propres notes et ses tables favorites.",
             "Les tableaux des meilleurs scores ont maintenant trois vues : Scores de la ROM, Scores de la maison et Vos 5 meilleurs scores.",

@@ -1043,6 +1043,9 @@ export default {
         packUpdateFailed: (version, logPath) => `A atualização para v${version} falhou: a versão anterior continua no lugar. Detalhes em ${logPath}`,
     },
     releaseHighlights: {
+        "1.4.1": [
+            "As mesas listadas em UNTRACKED_TABLES, como um reprodutor multimédia, agora ficam fora das estatísticas e das Conquistas.",
+        ],
         "1.4.0": [
             "Cada perfil agora guarda as suas próprias avaliações e favoritos.",
             "As tabelas de melhores pontuações agora têm três visões: Da ROM, Da casa e Minhas 5 melhores.",

@@ -2,6 +2,10 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.4.1 (2026-11-09)
+
+- **Untracked Tables**: list in `UNTRACKED_TABLES` (in `.env.local`, comma-separated titles exactly as in PinballY) the "tables" that are not really pinball games, such as a media player launched as a table. They stay on the wheel and launch, but leave the stats and Achievements, and the Random Game never draws them. Games already saved stay in the Profile's file: a table removed from the list comes back with them.
+
 ## v1.4.0 (2026-11-08)
 
 - **Ratings and Favorite Tables per Profile**: each Profile has its own star Ratings and Favorite Tables, in the rating dialog, the filters and "Add to Favorites". The first time, every Profile, Guest included, is given those already on the cabinet, so nobody loses a favourite. **Ratings per Profile** in the eXpansion Pack Settings goes back to one set for everyone.

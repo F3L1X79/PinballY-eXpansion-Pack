@@ -1043,6 +1043,9 @@ export default {
         packUpdateFailed: (version, logPath) => `Die Aktualisierung auf v${version} ist fehlgeschlagen: Die vorherige Version bleibt erhalten. Details in ${logPath}`,
     },
     releaseHighlights: {
+        "1.4.1": [
+            "In UNTRACKED_TABLES aufgeführte Tische, etwa ein Mediaplayer, zählen jetzt nicht mehr für Statistiken und Erfolge.",
+        ],
         "1.4.0": [
             "Jedes Profil behält jetzt seine eigenen Bewertungen und Favoriten.",
             "Die Highscore-Tabellen haben jetzt drei Ansichten: Aus dem ROM, Aus der Familie und Meine besten 5.",

@@ -987,6 +987,9 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.4.1": [
+            "Tables listed in UNTRACKED_TABLES, such as a media player, now stay out of the stats and Achievements.",
+        ],
         "1.4.0": [
             "Each Profile now keeps its own star Ratings and Favorite Tables.",
             "High Score Boards now have three views: ROM scores, Household scores and Your 5 best scores.",
