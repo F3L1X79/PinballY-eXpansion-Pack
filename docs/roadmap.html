@@ -324,7 +324,7 @@
             <h3>Un mini-jeu aux boutons de flipper, avec son record par Profile</h3>
             <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">UI</span></div>
           </div>
-          <p>La fusée de l'Easter Egg, rejouable depuis le menu principal une fois trouvée : le flipper gauche et le flipper droit la font passer d'un couloir à l'autre, sur cinq couloirs, de plus en plus vite. Deux jeux, l'un avec tir sur Launch, l'autre sans tir pour les bornes à tirette, Exit pour quitter, chacun avec son tableau personnel et des Achievements pour un score atteint.</p>
+          <p>La fusée de l'Easter Egg, rejouable depuis le menu principal une fois trouvée : le flipper gauche et le flipper droit la font passer d'un couloir à l'autre, sur cinq couloirs, de plus en plus vite. Deux jeux, l'un avec tir sur Launch, l'autre sans tir pour les bornes à tirette, Exit pour quitter, chacun avec le top 5 de la maison et des Achievements pour un score atteint.</p>
           <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="here">spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
           <div class="links">Flow Matt : <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Entrées ajoutées par <code>getMainMenu().add(...)</code>. Après <a href="#feld">Feld (n° <span data-ref="feld"></span>)</a>, qui le précède</div>
           <details>
@@ -334,10 +334,12 @@
               <li>Add-on à part, désactivable dans <code>addOns</code> ; même activé, ses entrées de menu n'apparaissent que pour un Profile qui a l'Achievement de l'Easter Egg, Unauthorized Takeoff.</li>
               <li>Un Profile Reset efface l'Achievement, donc les entrées, jusqu'à ce que la fusée revienne par hasard.</li>
               <li>Exception à la règle « pas d'animation sans fin » : le jeu s'arrête à la défaite.</li>
-              <li>À la fin d'une partie, le tableau personnel des 5 meilleurs scores du Profile, un par jeu ; pas de classement de la maison ; un Profile Reset l'efface. Une partie de l'Easter Egg n'y entre pas.</li>
+              <li>Écran d'intro : en bas, les commandes avec les noms des boutons de la borne (flippers gauche et droit pour changer de couloir, plus Launch pour tirer dans le jeu avec tir). L'intro de l'Easter Egg reste sans commandes.</li>
+              <li>À la fin d'une partie, un écran de score : en haut le score qu'on vient de faire, puis le top 5 de la maison du jeu (un par jeu, pas de tableau personnel), la ligne du joueur mise en valeur s'il y entre. Un même Profile peut y tenir plusieurs places ; un Profile Reset retire ses lignes. Une partie de l'Easter Egg n'y entre pas.</li>
+              <li>Pas de « rejouer » : l'écran se ferme au premier bouton ou après 10 s, retour au menu principal. Le top 5 ne se consulte que là, en fin de partie.</li>
               <li>Guide : aucune page joueur (l'Easter Egg n'est décrit nulle part) ; une phrase vague dans le guide du propriétaire, « certaines surprises débloquent des entrées du menu ».</li>
             </ul>
-            <p class="ctx">Idée de Félix du 25/10/2026 ; la fusée remplace Flappy Bird et le dinosaure de Chrome le 01/11/2026. Précisé au grill du 08/11/2026, puis le 10/11/2026 après l'Easter Egg de la Rocket : même moteur, débloqué par l'Easter Egg, effort ramené à petit.</p>
+            <p class="ctx">Idée de Félix du 25/10/2026 ; la fusée remplace Flappy Bird et le dinosaure de Chrome le 01/11/2026. Précisé au grill du 08/11/2026, puis le 10/11/2026 après l'Easter Egg de la Rocket : même moteur, débloqué par l'Easter Egg, effort ramené à petit, le top 5 de la maison remplace le tableau personnel.</p>
           </details>
         </div>
       </li>
