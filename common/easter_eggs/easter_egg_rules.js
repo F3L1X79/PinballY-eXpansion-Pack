@@ -19,14 +19,14 @@ import config from "../core/config.js";
 const SCRIPT_NAME = "EasterEggRules";
 
 // The keys of the flags in the "surprises" part: never change them.
-export const EASTER_EGG = Object.freeze({ CROW: "crow" });
+export const EASTER_EGG = Object.freeze({ CROW: "crow", MENU_GLITCH: "menuGlitch" });
 
 const CHANCE = 1 / 100;
 // Cabinet-level file of the Profile store: the local day of the last Easter Egg.
 const DAILY_FILE = "easter_egg_day";
 const DAILY_FILE_VERSION = 1;
 
-// wheelDialogs: { isIdle(), isOverlayOpen() }; achievementToasts: { hasToasts() };
+// wheelDialogs: { isIdle(), isOverlayOpen(except) }; achievementToasts: { hasToasts() };
 // forced: the Easter Egg named by the force option, "" for none; random: the
 // draw's source, the host's by default.
 export function createEasterEggRules(host, { profileStore, wheelDialogs, achievementToasts, forced = "", random = host.random }) {
@@ -38,9 +38,9 @@ export function createEasterEggRules(host, { profileStore, wheelDialogs, achieve
     const hasHad = name => easterEggsOf(profileStore.getProfileData())[name] === true;
     const today = () => formatDateKey(host.now());
 
-    const isBusy = () => host.getFullUIMode().runMode !== undefined
+    const isBusy = over => host.getFullUIMode().runMode !== undefined
         || !wheelDialogs.isIdle()
-        || wheelDialogs.isOverlayOpen()
+        || wheelDialogs.isOverlayOpen(over)
         || achievementToasts.hasToasts();
 
     // An unreadable file is logged and set aside by the store, and reads as null.
@@ -57,9 +57,10 @@ export function createEasterEggRules(host, { profileStore, wheelDialogs, achieve
         });
     }
 
-    // canPlay: asked once the draw is won, so an Easter Egg that cannot play costs nothing.
-    function tryWin(name, { canPlay = () => true } = {}) {
-        if (isBusy()) return false;
+    // canPlay: asked once the draw is won, so an Easter Egg that cannot play costs
+    // nothing; over: the screen it plays on, which does not make the wheel busy.
+    function tryWin(name, { canPlay = () => true, over = null } = {}) {
+        if (isBusy(over)) return false;
         const isForced = name === forced;
         if (!isForced && hasHad(name)) return false;
         if (!isForced && random() >= CHANCE) return false;

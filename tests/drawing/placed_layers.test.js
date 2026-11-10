@@ -27,6 +27,20 @@ function openSet() {
     return { fake, placed };
 }
 
+test("a stretched layer fills its rect, whatever its canvas's proportions, and comes back so", () => {
+    const { placed, fake } = openSet();
+    const layer = placed.create(Z_INDEX);
+    placed.place(layer, RECT, { stretched: true });
+    placed.show(layer);
+    layer.alpha = 1;
+    assert.deepEqual(layer.scale(), { xSpan: 0.1171875, ySpan: 0.5 });
+    placed.hide(layer);
+    placed.show(layer);
+    layer.alpha = 1;
+    assert.deepEqual(layer.scale(), { xSpan: 0.1171875, ySpan: 0.5 });
+    assert.deepEqual(layersBreakingTheRule(fake), []);
+});
+
 test("a layer created hidden has alpha 0 and is a point, and hiding it again keeps it so", () => {
     const fake = createFakePinballYHost();
     const layer = createHiddenLayer(fake, Z_INDEX);

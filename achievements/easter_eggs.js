@@ -22,5 +22,15 @@ export function buildEasterEggAchievements() {
             getHint: () => TEXT.corvusExMachinaHint(),
             checkUnlocked: () => rules.hasPlayed(EASTER_EGG.CROW),
         }),
+        standaloneAchievement({
+            id: "ghostInTheMachine",
+            family: ACHIEVEMENT_FAMILY.SURPRISES,
+            rank: ACHIEVEMENT_RANK.PLATINUM,
+            isSilent: true,
+            getTitle: () => TEXT.ghostInTheMachineTitle(),
+            getDescription: () => TEXT.ghostInTheMachineDescription(),
+            getHint: () => TEXT.ghostInTheMachineHint(),
+            checkUnlocked: () => rules.hasPlayed(EASTER_EGG.MENU_GLITCH),
+        }),
     ];
 }

@@ -473,6 +473,14 @@ function requireSoundFile(filePath) {
     }
 }
 
+let randomSource = Math.random;
+
+// Only for the tests' fake host: Math is no PinballY global it could replace,
+// and every module making its own host would otherwise really draw.
+export function setRandomSource(source) {
+    randomSource = source;
+}
+
 export function createPinballYHost() {
     // Created on the first sound played: most sessions never play one.
     let mediaPlayer = null;
@@ -609,9 +617,9 @@ export function createPinballYHost() {
         removeBackglassDrawingLayer: (layer) => { backglassWindow.removeDrawingLayer(layer); },
         // desc: createMediaWindow's (MainWindowObject.html); see mediaWindowOf().
         createMediaWindow: (desc) => mediaWindowOf(mainWindow.createMediaWindow(desc), HWND),
-        // From 0 to 1, for a rare draw: here so that the tests' fake host never
-        // wins one in a scenario about something else.
-        random: () => Math.random(),
+        // From 0 to 1, for a rare draw or an effect's: here so that the tests'
+        // fake host never wins one in a scenario about something else.
+        random: () => randomSource(),
         // Through the Windows Media Player COM component, like the launch
         // sound; throws when it is unavailable or the file is missing
         // (Windows Media Player itself fails silently on a missing file).

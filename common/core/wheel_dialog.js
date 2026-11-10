@@ -176,8 +176,9 @@ export function createWheelDialogs(host, menus = createNativeMenus(host), window
         drawnClosedListeners.push(safeHandler(SCRIPT_NAME, listener));
     }
 
-    // True while a screen handed to waitFor() is open.
-    const isOverlayOpen = () => wheelOverlays.some(overlay => overlay.isOpen());
+    // True while a screen handed to waitFor() is open; except: one not to count,
+    // for what plays over that very screen.
+    const isOverlayOpen = (except = null) => wheelOverlays.some(overlay => overlay !== except && overlay.isOpen());
 
     // screen: { isOpen(), onClosed(listener) }; no dialog shows while it is
     // open, and the queue moves on once it closes.

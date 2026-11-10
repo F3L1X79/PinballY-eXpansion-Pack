@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { createFakePinballYHost } from "../support/fake_pinbally_host.js";
 import { createProfileStore } from "../../common/profiles/profile_store.js";
 import { createEasterEggRules, EASTER_EGG } from "../../common/easter_eggs/easter_egg_rules.js";
+import { createWheelDialogs } from "../../common/core/wheel_dialog.js";
 
 const NOVEMBER_9 = new Date(2026, 10, 9, 20, 0, 0);
 const PROFILES = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
@@ -16,6 +17,7 @@ const DAILY_FILE = `${PROFILES}\\easter_egg_day.json`;
 // Below 1 in 100: the draw wins.
 const WINNING = () => 0;
 const CROW = EASTER_EGG.CROW;
+const OPEN_SCREEN = () => ({ isOpen: () => true, onClosed() {} });
 
 function rulesOn(fake, { random = WINNING, forced = "", busy = {} } = {}) {
     const store = createProfileStore(fake);
@@ -46,6 +48,19 @@ test("by default the draw comes from the host, whose fake never wins, so that no
     const fake = createFakePinballYHost({ now: NOVEMBER_9 });
     fake.random = WINNING;
     assert.equal(rulesOn(fake, { random: null }).rules.tryWin(CROW), true);
+});
+
+test("the screen an Easter Egg plays over does not make the wheel busy, any other one does", () => {
+    const menus = OPEN_SCREEN();
+    function rulesWith(...otherScreens) {
+        const fake = createFakePinballYHost({ now: NOVEMBER_9 });
+        const wheelDialogs = createWheelDialogs(fake, menus);
+        for (const screen of otherScreens) wheelDialogs.waitFor(screen);
+        return createEasterEggRules(fake, { profileStore: createProfileStore(fake), wheelDialogs, achievementToasts: { hasToasts: () => false }, random: WINNING });
+    }
+    assert.equal(rulesWith().tryWin(CROW), false, "an open menu is busy for what does not play over it");
+    assert.equal(rulesWith().tryWin(CROW, { over: menus }), true);
+    assert.equal(rulesWith(OPEN_SCREEN()).tryWin(CROW, { over: menus }), false, "another screen is still open");
 });
 
 test("a won Easter Egg is recorded for the active Profile before it plays, and a Profile never gets it twice", () => {

@@ -4,7 +4,7 @@
 // the new ones to the Achievement Toast module, then one Level Toast when the
 // Player Level rises. Also adds Achievement List and Profile Stats to the
 // main menu, and starts the World Tour and Surprises trackers.
-// - An Achievement becomes Notified when its toast starts, not when it unlocks.
+// - An Achievement becomes Notified when its toast starts, not when it unlocks; a silent one, when it is found Unlocked.
 // - The level at startup, at a switch or after a Profile Reset is a baseline, never announced.
 // - The startup check's toasts are dropped if the Startup Screen picks another Profile.
 // - A Child Profile's level scales its points by the set a non-child Profile would have.
@@ -275,6 +275,10 @@ export default function init() {
         // which scales a child's points up) is never announced.
         const levelBefore = levelOnceShown(submittedIds, achievements, nonChildAchievements);
         evaluateAchievements(achievements, profileStore, (achievement) => {
+            if (achievement.isSilent) {
+                markNotified(profileStore, profileName, achievement.id);
+                return;
+            }
             if (submittedIds.has(achievement.id)) return;
             submittedIds.add(achievement.id);
             // Decided at the toast's turn. Forgotten as submitted, so the

@@ -55,7 +55,7 @@ export function createPlacedLayers(host, { referenceHeight: fixedHeight = null }
     let referenceHeight = fixedHeight;
     let referenceWidth = 0;
 
-    const newRecord = () => ({ rect: null, isShown: false, ySpan: null });
+    const newRecord = () => ({ rect: null, isShown: false, ySpan: null, isStretched: false });
 
     // A layer from elsewhere is taken as hidden, not yet placed.
     function recordOf(layer) {
@@ -65,7 +65,9 @@ export function createPlacedLayers(host, { referenceHeight: fixedHeight = null }
 
     function applyScale(layer, record) {
         record.ySpan = record.rect === null ? null : record.rect.h / referenceHeight;
-        layer.setScale(record.rect === null ? WINDOW_SPAN : { ySpan: record.ySpan });
+        if (record.rect === null) layer.setScale(WINDOW_SPAN);
+        else if (record.isStretched) layer.setScale({ xSpan: record.rect.w / referenceWidth, ySpan: record.ySpan });
+        else layer.setScale({ ySpan: record.ySpan });
     }
 
     return {
@@ -83,11 +85,13 @@ export function createPlacedLayers(host, { referenceHeight: fixedHeight = null }
         },
         // Moved at once; a hidden layer stays a point until shown, and a
         // shown one keeping its span is only moved, as a glide's frame needs.
-        place(layer, rect) {
+        // stretched: the canvas fills rect, whatever its own proportions.
+        place(layer, rect, { stretched = false } = {}) {
             const record = recordOf(layer);
             record.rect = rect;
+            record.isStretched = stretched;
             const { x, y } = placementOf(rect, referenceWidth, referenceHeight);
-            if (record.isShown && record.ySpan !== rect.h / referenceHeight) applyScale(layer, record);
+            if (record.isShown && (stretched || record.ySpan !== rect.h / referenceHeight)) applyScale(layer, record);
             layer.setPos(x, y);
         },
         hide(layer) {

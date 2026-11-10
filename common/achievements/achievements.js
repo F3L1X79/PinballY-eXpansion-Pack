@@ -5,7 +5,7 @@
 // "Unlocked" is computed live; only Notified is persisted ("notified" in profile.json).
 // - The rank is never persisted nor part of an ID.
 // - getHint() makes it a Secret Achievement.
-// - The caller marks an Achievement Notified when its toast starts.
+// - The caller marks an Achievement Notified when its toast starts, or at once for a silent one.
 // ============================================================
 
 // The kind of an Achievement; the Challenges, High Scores and Ratings ones
@@ -79,9 +79,9 @@ function groupCompletionRank(tableCount) {
 // An Achievement outside any ladder or group, such as rage quit. Its
 // structure says nothing about how hard it is, hence Gold unless stated.
 // Only such an Achievement can be secret, with getHint: a ladder's step or
-// a group completion is a goal to aim at.
-export function standaloneAchievement({ id, family, rank = ACHIEVEMENT_RANK.GOLD, getTitle, getDescription, checkUnlocked, getHint }) {
-    return { id, family, rank, getTitle, getDescription, checkUnlocked, ...(getHint ? { getHint } : {}) };
+// a group completion is a goal to aim at. isSilent: Notified with no toast.
+export function standaloneAchievement({ id, family, rank = ACHIEVEMENT_RANK.GOLD, getTitle, getDescription, checkUnlocked, getHint, isSilent = false }) {
+    return { id, family, rank, getTitle, getDescription, checkUnlocked, isSilent, ...(getHint ? { getHint } : {}) };
 }
 
 // Below this target, an Achievement Progress would only ever read "0/1".

@@ -8,7 +8,7 @@
 // - A menu with onBack (a submenu) goes back on Exit and on its MenuReturn entry.
 // - With keepNative (the pause menu), it closes on the native "menuclose", or at "postlaunch".
 // - Images are drawn ahead, hidden as points (placed_layers.js); all redrawn in place if the window's size changes while open.
-// - isOpen() and onClosed() let what waits for a free wheel wait for it.
+// - isOpen() and onClosed() let what waits for a free wheel wait for it; borrow() lends the open menu to an effect played on it.
 // ============================================================
 
 import { safeHandler } from "../core/safe_handler.js";
@@ -440,7 +440,10 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
         // PinballY tells no script of a new window size: measured on each
         // opening, the images drawn for the old size are drawn again here.
         measureAndDrawImages(covering);
-        shown = { id, model, onClose, covering, geometry: null, scroll: 0, layers: [], alpha: 0, fadeTimer: null, glideTimer: null, fadeStartMs: 0, glideLastMs: 0, glideY: 0 };
+        shown = {
+            id, model, onClose, covering, geometry: null, scroll: 0, layers: [], alpha: 0, fadeTimer: null, glideTimer: null, fadeStartMs: 0, glideLastMs: 0, glideY: 0,
+            borrowing: null,
+        };
         layOut();
         windowWatch.start(followWindow);
         if (!fadeIn) {
@@ -456,10 +459,66 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
     // Also clears what a failed drawing left.
     function takeDown() {
         const onClose = shown ? shown.onClose : null;
+        const borrowing = shown ? shown.borrowing : null;
         stopTimers();
         shown = null;
         for (const layer of allLayers) hideLayer(layer);
+        if (borrowing) borrowing.onLost();
         return onClose;
+    }
+
+    // Lends the open menu to an effect played on it, null when none is open or
+    // it is already lent. From now until giveBack() its buttons are swallowed
+    // and ignored. onLost: the menu closed meanwhile (attract mode, another
+    // menu); the effect ends, and its late calls touch nothing.
+    function borrow({ onLost }) {
+        if (!shown || shown.borrowing) return null;
+        const lent = shown;
+        const borrowing = { onLost: safeHandler(SCRIPT_NAME, onLost), isHidden: false };
+        lent.borrowing = borrowing;
+        // A layout redone under the effect would show the hidden menu again.
+        windowWatch.stop();
+        const isStillLent = () => shown === lent && lent.borrowing === borrowing;
+        const fileAndSize = record => ({ file: record.image.file, size: record.size });
+
+        // Its fade finished, the panel hidden and the backdrop kept, for an
+        // effect that draws its own copies of the panel.
+        function hideMenu() {
+            if (!isStillLent()) return;
+            stopTimers();
+            setAlpha(1);
+            for (const layer of allLayers) if (layer !== backdrop) hideLayer(layer);
+            borrowing.isHidden = true;
+        }
+
+        // Safe to call again. Measured again, the window may have changed; a
+        // menu that cannot come back closes, never hidden and swallowing every button.
+        function giveBack() {
+            if (!isStillLent()) return;
+            lent.borrowing = null;
+            try {
+                if (borrowing.isHidden) {
+                    measureAndDrawImages(lent.covering);
+                    layOut();
+                    setAlpha(1);
+                }
+                windowWatch.start(followWindow);
+            } catch (error) {
+                const onClose = takeDown();
+                logError(SCRIPT_NAME, `ERROR redrawing the "${lent.id}" menu given back, closed: ${error.stack || error.message}`, host);
+                reportClosed(onClose);
+            }
+        }
+
+        return {
+            // Read only: what the effect needs to redraw the menu on its own layers.
+            view: {
+                model: lent.model, scroll: lent.scroll, geometry: lent.geometry, windowSize, imagesFolder,
+                panel: panel.map(fileAndSize), glass: glass.map(fileAndSize), outline: fileAndSize(outline),
+            },
+            hideMenu,
+            giveBack,
+        };
     }
 
     // After the menu's own onClose: what waited for a free wheel checks
@@ -630,7 +689,7 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
         if (!shown || ev.defaultPrevented) return;
         // Swallowed first, so a failing move still never reaches the wheel.
         ev.preventDefault();
-        if (shown.panelHidden || isHeldSelectLaunchOrExit(ev)) return;
+        if (shown.borrowing || shown.panelHidden || isHeldSelectLaunchOrExit(ev)) return;
         if (ev.command === "Next") move(1);
         else if (ev.command === "Prev") move(-1);
         else if (ev.command === "NextPage") movePage(1);
@@ -684,7 +743,7 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
     // onClosed: a Drawn Menu never changes the UI mode, so no "wheelmode"
     // follows its closing. isShownNatively(id): a menu show() could not draw,
     // shown natively until its "menuclose", which its onClose waits for.
-    return { show, draw, close, isOpen: () => shown !== null, onClosed: closedListeners.onClosed, isShownNatively: nativeMenus.isShownNatively };
+    return { show, draw, close, borrow, isOpen: () => shown !== null, onClosed: closedListeners.onClosed, isShownNatively: nativeMenus.isShownNatively };
 }
 
 let sharedDrawnMenus = null;

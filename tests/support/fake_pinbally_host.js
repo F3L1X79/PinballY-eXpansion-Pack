@@ -9,7 +9,7 @@
 // - settle() waits on a real timer for deferred work to run.
 // ============================================================
 
-import { isVisibleTable, projectFolderOf, mediaWindowOf, backglassRectOf, namedPipeOf, SWP_NOSIZE, SWP_NOMOVE } from "../../common/core/pinbally_host.js";
+import { isVisibleTable, projectFolderOf, mediaWindowOf, backglassRectOf, namedPipeOf, setRandomSource, SWP_NOSIZE, SWP_NOMOVE } from "../../common/core/pinbally_host.js";
 import { createFakeDiscord } from "./fake_discord.js";
 
 // PinballY's HWND z-order constants (WindowObjects.html), as names a test reads.
@@ -1961,6 +1961,8 @@ export function createFakePinballYHost({
                 "backglassWindow", "dllImport", "HttpRequest", "HWND",
             ];
             const previous = globalNames.map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]);
+            // Read at each draw: a test may replace host.random later.
+            setRandomSource(() => host.random());
 
             class FakeDate extends RealDate {
                 constructor(...args) {
@@ -2079,6 +2081,7 @@ export function createFakePinballYHost({
 
             return function uninstallGlobals() {
                 if (installedHost === host) installedHost = null;
+                setRandomSource(Math.random);
                 for (const [name, descriptor] of previous) {
                     if (descriptor) Object.defineProperty(globalThis, name, descriptor);
                     else delete globalThis[name];

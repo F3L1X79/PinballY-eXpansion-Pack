@@ -11,6 +11,7 @@ import { safeHandler } from "../core/safe_handler.js";
 import { createPlacedLayers } from "../drawing/placed_layers.js";
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
 import { EASTER_EGG } from "./easter_egg_rules.js";
+import { createEasterEggSound } from "./easter_egg_sound.js";
 
 const SCRIPT_NAME = "Crow";
 
@@ -18,8 +19,6 @@ const IMAGE_FOLDER = "assets\\images\\easter_eggs";
 const POSE_FILES = ["crow_wing_up.png", "crow_wing_mid.png", "crow_wing_down.png"];
 const DOT_FILE = "crow_dot.png";
 const SOUND_FILE = "assets\\sounds\\easter_eggs\\raven_call.wav";
-// Loaded soon after startup: a player that has just been created plays too late.
-const SOUND_LOAD_DELAY_MS = 1000;
 
 // Over the wheel, under the Drawn Menu (6200) and the toasts (6500).
 const DOTS_Z_INDEX = 6100;
@@ -75,29 +74,12 @@ export function createCrow(host, { rules, quietWheel }) {
     const imageOf = file => `${projectFolder}\\${IMAGE_FOLDER}\\${file}`;
     const poseImages = POSE_FILES.map(imageOf);
     const dotImage = imageOf(DOT_FILE);
-    const soundFile = `${projectFolder}\\${SOUND_FILE}`;
+    const call = createEasterEggSound(host, SCRIPT_NAME, SOUND_FILE);
     const nowMs = () => host.now().getTime();
     const log = message => host.log(`[${SCRIPT_NAME}] ${message}`);
 
-    // The call's player: null until loaded, false once it could not be.
-    let sound = null;
     // The flight on screen, null otherwise.
     let running = null;
-
-    function loadSound() {
-        if (sound !== null) return;
-        try {
-            sound = host.createSoundRotation(soundFile, 1);
-        } catch (error) {
-            sound = false;
-            log(`Its call cannot be loaded, the Crow plays silently: ${error.message}`);
-        }
-    }
-
-    // A sound that cannot play is logged and never stops the flight.
-    const playCall = safeHandler(SCRIPT_NAME, () => {
-        if (sound) sound.play();
-    });
 
     function canPlay() {
         const missing = [...poseImages, dotImage].filter(path => !host.files.isImageReadable(path));
@@ -215,7 +197,7 @@ export function createCrow(host, { rules, quietWheel }) {
     function fly() {
         // First of all: the table is silent when the bird appears.
         quietWheel.hold(SCRIPT_NAME, { ceiling: 0 });
-        loadSound();
+        call.load();
         const run = {
             placed: createPlacedLayers(host), layers: [], poses: [], dots: [], shownPose: null, timer: null, startMs: 0, size: null, birdWidth: 0, birdHeight: 0,
         };
@@ -227,7 +209,7 @@ export function createCrow(host, { rules, quietWheel }) {
             end(run);
             throw error;
         }
-        playCall();
+        call.play();
         run.startMs = nowMs();
         run.timer = host.setInterval(safeHandler(SCRIPT_NAME, () => {
             try {
@@ -245,7 +227,6 @@ export function createCrow(host, { rules, quietWheel }) {
         if (running) end(running);
     });
     for (const type of ["prelaunch", "attractmodestart"]) host.on(type, interrupt);
-    host.setTimeout(safeHandler(SCRIPT_NAME, loadSound), SOUND_LOAD_DELAY_MS);
 
     return {
         // Draws the Crow, and flies it if it wins.

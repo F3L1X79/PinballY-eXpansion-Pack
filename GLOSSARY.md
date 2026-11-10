@@ -427,7 +427,7 @@ _Avoid_: Personal 5, My High Scores (the wheel selection of tables where it stil
 ### Achievements
 
 **Achievement**:
-A milestone the player reaches through play, announced once with an Achievement Toast.
+A milestone the player reaches through play, announced once with an Achievement Toast, except for the two Easter Eggs whose joke a toast would give away.
 _Avoid_: trophy, badge, success
 
 **Achievement Toast**:
@@ -447,7 +447,7 @@ A kind of Achievement, absent as a whole when the Add-on it depends on is turned
 _Avoid_: group (a group is the set of tables a completion Achievement covers, such as one manufacturer's tables), category (a PinballY table category)
 
 **Notified**:
-An Achievement whose Achievement Toast has started showing.
+An Achievement whose Achievement Toast has started showing, or, for one with no toast, that has been found Unlocked. Only Notified Achievements count for the Player Level.
 _Avoid_: acknowledged, seen, unlocked (an Achievement can be unlocked but not yet Notified)
 
 **Achievement Rank**:

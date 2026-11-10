@@ -87,7 +87,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 The default sounds come from Freesound under CC0 1.0; their authors are
 listed in assets/sounds/CREDITS.md. Among them, the raven's call
-(assets/sounds/easter_eggs/raven_call.wav) is by adharca, Freesound 275466.
+(assets/sounds/easter_eggs/raven_call.wav) is by adharca, Freesound 275466,
+and the distorted echo boom (assets/sounds/easter_eggs/distorted_echo.wav)
+by isacjonsson1996, Freesound 762819.
 
 
 PinballY
