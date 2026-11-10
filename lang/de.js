@@ -399,6 +399,9 @@ export default {
         unauthorizedTakeoffTitle: () => "Unerlaubter Start",
         unauthorizedTakeoffDescription: () => "Der Tisch, den du gestartet hast, wurde zu einer Rakete zwischen Asteroiden.",
         unauthorizedTakeoffHint: () => "Ein Tisch kann einen Flugplan verbergen.",
+        kernelPanicTitle: () => "Kernel Panic",
+        kernelPanicDescription: () => "Zurück von einem Tisch tat der Automat so, als wäre er mit einem Bluescreen abgestürzt.",
+        kernelPanicHint: () => "Manchmal tut die Maschine nur so.",
         lunchBreakTitle: () => "Mittagspause",
         lunchBreakDescription: (from, to) => `Ein Spiel zwischen ${from} und ${to} starten, von Montag bis Freitag.`,
         lunchBreakHint: () => "Das Brötchen in der einen Hand, den Flipper in der anderen...",
@@ -1057,6 +1060,15 @@ export default {
     rocket: {
         dodge: "AUSWEICHEN!",
         score: "PUNKTE",
+    },
+    fakeBlueScreen: {
+        title: "Windows",
+        errorCode: "0E : 016F : BFF9B3D4",
+        intro: "Ein Fehler ist aufgetreten. So fahren Sie fort:",
+        enter: "Drücken Sie die Eingabetaste, um zu Windows zurückzukehren, oder",
+        restart: "Drücken Sie FESTSTELL+TAB+RÜCKTASTE+ROLLEN, um den Computer neu zu starten. Dabei gehen alle nicht gespeicherten Daten in allen geöffneten Anwendungen verloren.",
+        errorLabel: "Fehler: ",
+        restarting: "Neustart läuft",
     },
     releaseHighlights: {
         "1.4.1": [

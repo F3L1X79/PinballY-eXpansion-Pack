@@ -15,6 +15,7 @@ no attribution required; credited here with thanks). `confetti.wav` and
 | `easter_eggs/raven_call.wav` | once in a long while (made louder) | [275466](https://freesound.org/people/adharca/sounds/275466/) | adharca |
 | `easter_eggs/distorted_echo.wav` | once in a long while (made louder) | [762819](https://freesound.org/people/isacjonsson1996/sounds/762819/) | isacjonsson1996 |
 | `easter_eggs/horn.wav` | once in a long while | [725098](https://freesound.org/people/gabrielf0102/sounds/725098/) | gabrielf0102 |
+| `easter_eggs/blue_screen.wav` | once in a long while (slowed down to 6 s) | [631555](https://freesound.org/people/xkeril/sounds/631555/) | xkeril |
 
 Your own sounds go in `local/`, which git ignores; point `.env.local` at them
 (see `.env.example`).

@@ -402,6 +402,9 @@ export default {
         unauthorizedTakeoffTitle: () => "Décollage non autorisé",
         unauthorizedTakeoffDescription: () => "La table que vous lanciez s'est changée en fusée au milieu des astéroïdes.",
         unauthorizedTakeoffHint: () => "Une table peut cacher un plan de vol.",
+        kernelPanicTitle: () => "Kernel Panic",
+        kernelPanicDescription: () => "Au retour d'une table, la borne a fait semblant de planter sur un écran bleu.",
+        kernelPanicHint: () => "Il arrive que la machine fasse semblant.",
         lunchBreakTitle: () => "Pause déjeuner",
         lunchBreakDescription: (from, to) => `Lancer une partie entre ${from} et ${to}, du lundi au vendredi.`,
         lunchBreakHint: () => "Un sandwich d'une main, le flipper de l'autre...",
@@ -1062,6 +1065,15 @@ export default {
     rocket: {
         dodge: "ESQUIVEZ !",
         score: "SCORE",
+    },
+    fakeBlueScreen: {
+        title: "Windows",
+        errorCode: "0E : 016F : BFF9B3D4",
+        intro: "Une erreur s'est produite. Pour continuer :",
+        enter: "Appuyez sur Entrée pour retourner à Windows, ou",
+        restart: "Appuyez sur VERR MAJ+TAB+RETOUR ARRIÈRE+ARRÊT DÉFIL pour redémarrer votre ordinateur. Si vous faites cela, vous perdrez toutes les informations non enregistrées dans les applications ouvertes.",
+        errorLabel: "Erreur : ",
+        restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
         "1.4.1": [

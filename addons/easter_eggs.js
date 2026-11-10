@@ -6,6 +6,7 @@
 // - The Crow is drawn once per start, a tick after the Startup Screen has closed.
 // - The Menu Glitch is drawn at the main menu's "menuopen", after Drawn Menus' listener.
 // - The Maneki-neko is drawn at one "gameselect" of the session.
+// - The Fake Blue Screen is drawn back from a table, after the High Scores' read.
 // ============================================================
 
 import { createPinballYHost } from "../common/core/pinbally_host.js";
@@ -22,6 +23,8 @@ import { createCrow } from "../common/easter_eggs/crow.js";
 import { createMenuGlitch } from "../common/easter_eggs/menu_glitch.js";
 import { createManekiNeko } from "../common/easter_eggs/maneki_neko.js";
 import { createRocket } from "../common/easter_eggs/rocket.js";
+import { createFakeBlueScreen } from "../common/easter_eggs/fake_blue_screen.js";
+import { getHighScoreStore } from "../common/high_scores/high_score_store.js";
 import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
 import { getWheelDialogs } from "../common/core/wheel_dialog.js";
 import lang from "../common/core/i18n.js";
@@ -60,6 +63,12 @@ export default function init() {
 
     const cat = createManekiNeko(host, { rules });
     host.onGameListEvent("gameselect", safeHandler(SCRIPT_NAME, cat.onGameSelect));
+
+    const blueScreen = createFakeBlueScreen(host, {
+        controls: getDrawnScreenControls(), rules, quietWheel: getQuietWheel(),
+        highScores: config.addOns.highScores === false ? null : getHighScoreStore(), texts: () => lang.fakeBlueScreen,
+    });
+    getWheelDialogs().waitFor(blueScreen.screen);
 
     // A tick later: what the closing screen leads to has opened by then, and counts as busy.
     onStartupScreenClosed(safeHandler(SCRIPT_NAME, () => host.setTimeout(tryFly, 0)));

@@ -398,6 +398,9 @@ export default {
         unauthorizedTakeoffTitle: () => "Decollo non autorizzato",
         unauthorizedTakeoffDescription: () => "Il tavolo che stavi lanciando è diventato un razzo tra gli asteroidi.",
         unauthorizedTakeoffHint: () => "Un tavolo può nascondere un piano di volo.",
+        kernelPanicTitle: () => "Kernel Panic",
+        kernelPanicDescription: () => "Al ritorno da un tavolo, la macchina ha finto di bloccarsi con una schermata blu.",
+        kernelPanicHint: () => "A volte la macchina finge.",
         lunchBreakTitle: () => "Pausa pranzo",
         lunchBreakDescription: (from, to) => `Avviare una partita tra le ${from} e le ${to}, dal lunedì al venerdì.`,
         lunchBreakHint: () => "Il panino in una mano, il flipper nell'altra...",
@@ -1056,6 +1059,15 @@ export default {
     rocket: {
         dodge: "SCHIVA!",
         score: "PUNTEGGIO",
+    },
+    fakeBlueScreen: {
+        title: "Windows",
+        errorCode: "0E : 016F : BFF9B3D4",
+        intro: "Si è verificato un errore. Per continuare:",
+        enter: "Premere INVIO per tornare a Windows, oppure",
+        restart: "Premere BLOC MAIUSC+TAB+BACKSPACE+BLOC SCORR per riavviare il computer. In questo caso, tutti i dati non salvati nelle applicazioni aperte andranno perduti.",
+        errorLabel: "Errore: ",
+        restarting: "Riavvio in corso",
     },
     releaseHighlights: {
         "1.4.1": [

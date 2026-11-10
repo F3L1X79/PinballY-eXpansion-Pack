@@ -114,6 +114,19 @@ export function createHighScoreStore(host, profileStore) {
     // The tables whose Play is being settled, by config ID: the board
     // reads outside a Play waiting for it.
     const heldBoards = new Map();
+    // What waits for every Play to be settled; each runs once.
+    const settledCallbacks = [];
+    // Each one, a failure logged without stopping the next.
+    function runEach(callbacks) {
+        for (const callback of callbacks) {
+            try {
+                callback();
+            } catch (error) {
+                logHandlerError(SCRIPT_NAME, error);
+            }
+        }
+    }
+    const tellPlaysSettled = () => runEach(settledCallbacks.splice(0));
 
     // Fires after any change of a Profile's data: its High Score
     // Achievements count afresh from its Profile Reset. The key is written
@@ -197,14 +210,15 @@ export function createHighScoreStore(host, profileStore) {
             heldBoards.set(configId, waiting);
             return () => {
                 if (heldBoards.get(configId) === waiting) heldBoards.delete(configId);
-                for (const record of waiting) {
-                    try {
-                        record();
-                    } catch (error) {
-                        logHandlerError(SCRIPT_NAME, error);
-                    }
-                }
+                runEach(waiting);
+                if (heldBoards.size === 0) tellPlaysSettled();
             };
+        },
+        // callback(): once no Play is being settled, at once when none is,
+        // so what follows a game waits for its High Score Toast. Runs once.
+        whenPlaysSettled(callback) {
+            settledCallbacks.push(callback);
+            if (heldBoards.size === 0) tellPlaysSettled();
         },
         // The board read after a game, compared with the last known board;
         // play: the Play the Profile store announced ({ profileName, start, ... }),

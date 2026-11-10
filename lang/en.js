@@ -291,6 +291,9 @@ export default {
         unauthorizedTakeoffTitle: () => "Unauthorized Takeoff",
         unauthorizedTakeoffDescription: () => "The table you launched turned into a rocket among the asteroids.",
         unauthorizedTakeoffHint: () => "A table may hide a flight plan.",
+        kernelPanicTitle: () => "Kernel Panic",
+        kernelPanicDescription: () => "Back from a table, the cabinet pretended to crash on a blue screen.",
+        kernelPanicHint: () => "Sometimes the machine plays pretend.",
         lunchBreakTitle: () => "Lunch Break",
         lunchBreakDescription: (from, to) => `Start a game between ${from} and ${to}, Monday to Friday.`,
         lunchBreakHint: () => "A sandwich in one hand, the flipper in the other...",
@@ -1000,6 +1003,16 @@ export default {
     rocket: {
         dodge: "DODGE!",
         score: "SCORE",
+    },
+    // The Fake Blue Screen: title and errorCode stay the same in every language.
+    fakeBlueScreen: {
+        title: "Windows",
+        errorCode: "0E : 016F : BFF9B3D4",
+        intro: "An error has occurred. To continue:",
+        enter: "Press Enter to return to Windows, or",
+        restart: "Press CAPS LOCK+TAB+BACKSPACE+SCROLL LOCK to restart your computer. If you do this, you will lose any unsaved information in all open applications.",
+        errorLabel: "Error: ",
+        restarting: "Restarting",
     },
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.

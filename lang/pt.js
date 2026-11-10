@@ -399,6 +399,9 @@ export default {
         unauthorizedTakeoffTitle: () => "Decolagem não autorizada",
         unauthorizedTakeoffDescription: () => "A mesa que você lançava virou um foguete no meio dos asteroides.",
         unauthorizedTakeoffHint: () => "Uma mesa pode esconder um plano de voo.",
+        kernelPanicTitle: () => "Kernel Panic",
+        kernelPanicDescription: () => "Na volta de uma mesa, a máquina fingiu travar com uma tela azul.",
+        kernelPanicHint: () => "Às vezes a máquina finge.",
         lunchBreakTitle: () => "Hora do almoço",
         lunchBreakDescription: (from, to) => `Iniciar uma partida entre ${from} e ${to}, de segunda a sexta.`,
         lunchBreakHint: () => "O sanduíche numa mão, o flipper na outra...",
@@ -1057,6 +1060,15 @@ export default {
     rocket: {
         dodge: "DESVIE!",
         score: "PONTOS",
+    },
+    fakeBlueScreen: {
+        title: "Windows",
+        errorCode: "0E : 016F : BFF9B3D4",
+        intro: "Ocorreu um erro. Para continuar:",
+        enter: "Pressione Enter para voltar ao Windows, ou",
+        restart: "Pressione CAPS LOCK+TAB+BACKSPACE+SCROLL LOCK para reiniciar o computador. Se fizer isso, perderá todas as informações não guardadas nas aplicações abertas.",
+        errorLabel: "Erro: ",
+        restarting: "A reiniciar",
     },
     releaseHighlights: {
         "1.4.1": [

@@ -50,5 +50,15 @@ export function buildEasterEggAchievements() {
             getHint: () => TEXT.unauthorizedTakeoffHint(),
             checkUnlocked: () => rules.hasPlayed(EASTER_EGG.ROCKET),
         }),
+        standaloneAchievement({
+            id: "kernelPanic",
+            family: ACHIEVEMENT_FAMILY.SURPRISES,
+            rank: ACHIEVEMENT_RANK.PLATINUM,
+            isSilent: true,
+            getTitle: () => TEXT.kernelPanicTitle(),
+            getDescription: () => TEXT.kernelPanicDescription(),
+            getHint: () => TEXT.kernelPanicHint(),
+            checkUnlocked: () => rules.hasPlayed(EASTER_EGG.FAKE_BLUE_SCREEN),
+        }),
     ];
 }
