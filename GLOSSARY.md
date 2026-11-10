@@ -239,8 +239,8 @@ The short greeting, with the Avatar and the Profile's name, shown when a Profile
 _Avoid_: welcome toast, login message
 
 **Play**:
-A game of at least one minute on a table other than an Untracked Table, which counts for the Profile active when it started. A shorter game is a launch by mistake and counts for nothing, except for the Rage Quit Achievement.
-_Avoid_: session (the session stats count only Plays, except the Rage Quit flag), launch (a launch becomes a Play only after a minute)
+A launch of at least one minute of a table other than an Untracked Table, however many games are played before it closes, which counts for the Profile active when it started. A shorter launch is a launch by mistake and counts for nothing, except for the Rage Quit Achievement.
+_Avoid_: session (the session stats count only Plays, except the Rage Quit flag), launch (a launch becomes a Play only after a minute), game (one Play can hold several games)
 
 **Play Log**:
 The dated list of a Profile's Plays: when each started, which table, and how long it lasted. Earlier games are known only by their totals.
