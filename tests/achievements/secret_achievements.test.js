@@ -87,7 +87,7 @@ test("a Secret Achievement keeps its title and description out of sight until Un
     // Missing: "???" and the hint, never the real texts.
     const rows = openList();
     const secretRows = rows.filter(row => row.title === LIST_TEXT.secretTitle);
-    assert.deepEqual(secretRows.map(row => row.description), [TEXT.rageQuitHint(), TEXT.worldTourHint(), TEXT.grandReturnHint(), ...SURPRISES_HINTS, TEXT.corvusExMachinaHint(), TEXT.ghostInTheMachineHint()]);
+    assert.deepEqual(secretRows.map(row => row.description), [TEXT.rageQuitHint(), TEXT.worldTourHint(), TEXT.grandReturnHint(), ...SURPRISES_HINTS, TEXT.corvusExMachinaHint(), TEXT.ghostInTheMachineHint(), TEXT.nekomancerHint()]);
     const shownTexts = rows.flatMap(row => [row.title, row.description]);
     for (const text of [rageQuit.title, rageQuit.description, grandReturn.title, grandReturn.description]) {
         assert.ok(!shownTexts.includes(text), `"${text}" stays out of sight`);
@@ -97,7 +97,7 @@ test("a Secret Achievement keeps its title and description out of sight until Un
     // Its own rank's muted emblem: Bronze for the Rage Quit, Silver for the
     // World Tour and the Grand Return, then the Surprises' own ranks.
     assert.deepEqual(secretRows.map(row => row.emblem),
-        ["bronze", "silver", "silver", "gold", "gold", "platinum", "gold", "bronze", "silver", "silver", "platinum", "platinum"].map(mutedEmblem));
+        ["bronze", "silver", "silver", "gold", "gold", "platinum", "gold", "bronze", "silver", "silver", "platinum", "platinum", "platinum"].map(mutedEmblem));
     assert.deepEqual(rageQuitRow.owners.avatars, [avatarOf("Bob")], "the Avatars of the Profiles that have it");
     assert.deepEqual(grandReturnRow.owners.avatars, []);
 
@@ -134,7 +134,7 @@ test("a Secret Achievement keeps its title and description out of sight until Un
     assert.ok(unlockedRageQuit, "its row shows its real title");
     assert.equal(unlockedRageQuit.description, rageQuit.description);
     assert.equal(unlockedRageQuit.unlocked, true);
-    assert.deepEqual(rowsAfter.filter(row => row.title === LIST_TEXT.secretTitle).map(row => row.description), [TEXT.worldTourHint(), TEXT.grandReturnHint(), ...SURPRISES_HINTS, TEXT.corvusExMachinaHint(), TEXT.ghostInTheMachineHint()]);
+    assert.deepEqual(rowsAfter.filter(row => row.title === LIST_TEXT.secretTitle).map(row => row.description), [TEXT.worldTourHint(), TEXT.grandReturnHint(), ...SURPRISES_HINTS, TEXT.corvusExMachinaHint(), TEXT.ghostInTheMachineHint(), TEXT.nekomancerHint()]);
     assert.ok(headerCountsEvery(rowsAfter));
 
     assertNoErrorLogged(fake);

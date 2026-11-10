@@ -70,12 +70,23 @@ export function createPlacedLayers(host, { referenceHeight: fixedHeight = null }
         else layer.setScale({ ySpan: record.ySpan });
     }
 
+    // size: the window's, as a draw without a size measures it.
+    function measure(size) {
+        if (fixedHeight === null) referenceHeight = size.height;
+        referenceWidth = referenceHeight * size.width / size.height;
+    }
+
     return {
         get referenceWidth() { return referenceWidth; },
-        // size: the window's, as a draw without a size measures it.
-        measure(size) {
-            if (fixedHeight === null) referenceHeight = size.height;
-            referenceWidth = referenceHeight * size.width / size.height;
+        measure,
+        // Measures the window with a throwaway hidden layer, and returns its size.
+        measureWindow(zIndex) {
+            const layer = createHiddenLayer(host, zIndex);
+            let size = null;
+            layer.draw(dc => { size = dc.getSize(); });
+            host.removeDrawingLayer(layer);
+            measure(size);
+            return size;
         },
         isShown: layer => records.has(layer) && records.get(layer).isShown,
         create(zIndex) {

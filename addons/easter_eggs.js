@@ -4,6 +4,7 @@
 // eXpansion Pack Settings. The rules live in common/easter_eggs/easter_egg_rules.js.
 // - The Crow is drawn once per start, a tick after the Startup Screen has closed.
 // - The Menu Glitch is drawn at the main menu's "menuopen", after Drawn Menus' listener.
+// - The Maneki-neko is drawn at one "gameselect" of the session.
 // ============================================================
 
 import { createPinballYHost } from "../common/core/pinbally_host.js";
@@ -18,6 +19,7 @@ import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getEasterEggRules } from "../common/easter_eggs/easter_egg_rules.js";
 import { createCrow } from "../common/easter_eggs/crow.js";
 import { createMenuGlitch } from "../common/easter_eggs/menu_glitch.js";
+import { createManekiNeko } from "../common/easter_eggs/maneki_neko.js";
 
 const SCRIPT_NAME = "EasterEggs";
 
@@ -39,6 +41,9 @@ export default function init() {
             if (ev.id === "main") glitch.tryPlay();
         }));
     }
+
+    const cat = createManekiNeko(host, { rules });
+    host.onGameListEvent("gameselect", safeHandler(SCRIPT_NAME, cat.onGameSelect));
 
     // A tick later: what the closing screen leads to has opened by then, and counts as busy.
     onStartupScreenClosed(safeHandler(SCRIPT_NAME, () => host.setTimeout(tryFly, 0)));

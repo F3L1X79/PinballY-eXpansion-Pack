@@ -19,7 +19,7 @@ import config from "../core/config.js";
 const SCRIPT_NAME = "EasterEggRules";
 
 // The keys of the flags in the "surprises" part: never change them.
-export const EASTER_EGG = Object.freeze({ CROW: "crow", MENU_GLITCH: "menuGlitch" });
+export const EASTER_EGG = Object.freeze({ CROW: "crow", MENU_GLITCH: "menuGlitch", MANEKI_NEKO: "manekiNeko" });
 
 const CHANCE = 1 / 100;
 // Cabinet-level file of the Profile store: the local day of the last Easter Egg.

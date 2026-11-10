@@ -32,5 +32,14 @@ export function buildEasterEggAchievements() {
             getHint: () => TEXT.ghostInTheMachineHint(),
             checkUnlocked: () => rules.hasPlayed(EASTER_EGG.MENU_GLITCH),
         }),
+        standaloneAchievement({
+            id: "nekomancer",
+            family: ACHIEVEMENT_FAMILY.SURPRISES,
+            rank: ACHIEVEMENT_RANK.PLATINUM,
+            getTitle: () => TEXT.nekomancerTitle(),
+            getDescription: () => TEXT.nekomancerDescription(),
+            getHint: () => TEXT.nekomancerHint(),
+            checkUnlocked: () => rules.hasPlayed(EASTER_EGG.MANEKI_NEKO),
+        }),
     ];
 }

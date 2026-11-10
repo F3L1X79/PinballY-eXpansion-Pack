@@ -168,18 +168,8 @@ export function createCrow(host, { rules, quietWheel }) {
         return layer;
     }
 
-    // A draw without a size gets a canvas the size of the window.
-    function measureWindow(placed) {
-        const layer = placed.create(DOTS_Z_INDEX);
-        let size = null;
-        layer.draw(dc => { size = dc.getSize(); });
-        placed.remove(layer);
-        placed.measure(size);
-        return size;
-    }
-
     function prepare(run) {
-        run.size = measureWindow(run.placed);
+        run.size = run.placed.measureWindow(DOTS_Z_INDEX);
         const { width, height } = run.size;
         run.birdWidth = width * BIRD_WIDTH;
         run.birdHeight = run.birdWidth * BIRD_CANVAS.height / BIRD_CANVAS.width;
