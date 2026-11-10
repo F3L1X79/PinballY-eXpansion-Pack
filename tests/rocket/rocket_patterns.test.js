@@ -6,7 +6,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { LANES, paceAt, createPatterns } from "../../common/easter_eggs/rocket_patterns.js";
+import { LANES, paceAt, createPatterns } from "../../common/rocket/rocket_patterns.js";
 
 const RAMP_MS = 45000;
 

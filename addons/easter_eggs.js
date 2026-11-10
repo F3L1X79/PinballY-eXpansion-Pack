@@ -23,6 +23,7 @@ import { createCrow } from "../common/easter_eggs/crow.js";
 import { createMenuGlitch } from "../common/easter_eggs/menu_glitch.js";
 import { createManekiNeko } from "../common/easter_eggs/maneki_neko.js";
 import { createRocket } from "../common/easter_eggs/rocket.js";
+import { createRocketEngine } from "../common/rocket/rocket_engine.js";
 import { createFakeBlueScreen } from "../common/easter_eggs/fake_blue_screen.js";
 import { getHighScoreStore } from "../common/high_scores/high_score_store.js";
 import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
@@ -31,20 +32,22 @@ import lang from "../common/core/i18n.js";
 
 const SCRIPT_NAME = "EasterEggs";
 
-let rocket = null;
+let rocketEngine = null;
 
 // First of all: the Rocket's "prelaunch" listener and the Drawn Screen
 // controls' button and attract mode listeners come before any other of the pack.
 export function installFirstListeners() {
-    rocket = createRocket(createPinballYHost(), {
-        controls: getDrawnScreenControls(), rules: getEasterEggRules, quietWheel: getQuietWheel, texts: () => lang.rocket,
-        musicFile: () => config.rocketMusicFile,
+    const host = createPinballYHost();
+    rocketEngine = createRocketEngine(host, {
+        controls: getDrawnScreenControls(), quietWheel: getQuietWheel, musicFile: () => config.rocketMusicFile,
     });
+    createRocket(host, { engine: rocketEngine, rules: getEasterEggRules, texts: () => lang.rocket });
 }
 
 export default function init() {
     const host = createPinballYHost();
-    if (rocket) getWheelDialogs().waitFor(rocket.screen);
+    // For the wheel dialog queue: nothing shows over the game.
+    if (rocketEngine) getWheelDialogs().waitFor(rocketEngine.screen);
     const rules = getEasterEggRules();
     const crow = createCrow(host, { rules, quietWheel: getQuietWheel() });
     const tryFly = safeHandler(SCRIPT_NAME, crow.tryFly);

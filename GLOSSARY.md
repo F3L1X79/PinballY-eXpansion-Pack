@@ -316,6 +316,10 @@ _Avoid_: masked tables, operator tables
 **Unconfigured table**:
 A table file PinballY found but that was never set up. It stays on a wheel that shows it and can be played, but it is not one a Profile can see. Shown as "table non configurée" in French.
 
+**System**:
+A program that plays tables, as the cabinet's owner set it up in PinballY under its own name, such as Visual Pinball X or Pinball FX. Two setups of the same program (Visual Pinball X and Visual Pinball X VR) are two Systems. Shown as "système" in French.
+_Avoid_: emulator, platform, system class (PinballY's coarse kind of System, where every Steam game is one)
+
 **Untracked Table**:
 A table listed in `UNTRACKED_TABLES`, not really a pinball game. It stays on the wheel and launches, but makes no Play, is not one a Profile can see, and the Random Game never draws it.
 _Avoid_: excluded table, ignored table
@@ -451,7 +455,7 @@ The screen that shows every Achievement in one scrolling list: the Unlocked ones
 _Avoid_: My Achievements, trophy room
 
 **Achievement Family**:
-A kind of Achievement, absent as a whole when the Add-on it depends on is turned off: Collection, Play Time, Period Tables, Sessions, Random Game, Manufacturers, Decades, Categories, Challenges, High Scores, Surprises, Ratings, Young Players. Young Players exists only for Child Profiles, in place of the Achievements a child never gets.
+A kind of Achievement, absent as a whole when the Add-on it depends on is turned off: Collection, Play Time, Period Tables, Sessions, Random Game, Manufacturers, Systems, Decades, Categories, Challenges, High Scores, Surprises, Ratings, Young Players. Young Players exists only for Child Profiles, in place of the Achievements a child never gets.
 _Avoid_: group (a group is the set of tables a completion Achievement covers, such as one manufacturer's tables), category (a PinballY table category)
 
 **Notified**:
