@@ -155,6 +155,21 @@ Order of work if the probe passes: (a) sampling by `GameTime` plus a GameOn edge
 - VPX has a manual "tournament score" export in the pause menu (`vpx:docs/Changelog.txt#L536`): manual, so not a game-end signal.
 - **Existing projects**: Cyber Pinball (GPL-3.0, so mechanism only, no copy) is the closest. It injects a poller in a duplicated table's script, reads `Controller.NVRAM` at map offsets, writes `key=value` lines to a file, and uses Inspector for SAM (`cp:livestate.ts#L20-L48`, `#L451-L490`). Its approach requires a table copy per game, which `GlobalPlugIn.vbs` avoids. VPin Studio: code search of `NVRAM` gives parsers and tests, none live (HS B3). `francisdb/vpinball-floating-scores` documents the same `Controller.NVRAM` route for effects.
 
+## Grill (2026-11-10): paused until VPX 10.8.1
+
+Félix paused the work: the hook would weigh on the cabinet (NVRAM copies on VPX's script thread) and on the pack (install outside the pack, merge, hundreds of vpxtool runs) for a narrow gain: an earlier game of a launch that was better and stayed below the table's board. The guide says that only the last game of a launch counts. To resume with Inspector once VPX 10.8.1 is stable and on the cabinet.
+
+Decisions that still hold whatever the capture route:
+- A Play stays the launch (`GLOSSARY.md`); games are not counted one by one. The Play Score becomes the best score among the launch's finished games.
+- An earlier game is dropped only when the table tells it was left unfinished, the same rule as today; an abandoned game may count on platforms without a reliable flag.
+- The `.nv` read at close still decides the last game; captured samples can only add earlier games. Without usable samples, the last-game rule applies silently.
+- A capture route that hitches on a platform excludes that platform rather than blocking the others.
+- Nothing new for the player: no game count in the toast or the Play Log. A mismatch between the last sample and the final `.nv` goes to the Play Score Anomaly Log.
+- Samples from the start of a launch are dropped (fixed delay, or scores equal to the `.nv` copied at launch). Samples left by a crash are deleted at the next start, logged, and credited to no one.
+- One High Score Toast once everything is decoded. Past a time bound, the pack falls back to the last game and writes it in the anomaly log.
+
+Decisions tied to the `GlobalPlugIn.vbs` hook, void if Inspector replaces it: the pack ships its own versioned file and updates it silently after a first consent; a prompt and a Settings line on the vpxtool model (Admin Profile, `OFFER_…=false` on "No thanks", uninstall line); the condition is the `LoadScript("GlobalPlugIn.vbs")` line in `core.vbs`, not a VPX version; one copy per distinct VPX folder of PinballY's systems (`game.system.exe`); a separate file loaded by one line between markers in `GlobalPlugIn.vbs`, chaining any existing `NVRAMCallback`; the hook stays idle without a marker file written for a tracked Play; full NVRAM copies only, never map offsets (no ODbL duties); about one copy every 2 s when the NVRAM changed, plus GameOn edges.
+
 ## Sources
 
 - `https://github.com/vpinball/vpinball/tree/4fd4426ca5a6a1f964c94b67bb8d91c4d2a8bc08` and tag `v10.8.0-2051-28dd6c3`: `src/scripts/core.vbs`, `src/scripts/controller.vbs`, `src/scripts/WPC.vbs`, `sam.vbs`, `Bally.vbs`, `stern.vbs`, `docs/Changelog.txt`, `docs/Changelog_Scripts.txt`, `src/core/ScriptGlobalTable.cpp`, `src/core/FileLocator.cpp`, `src/core/DynamicScript.cpp`, `src/core/player.cpp`, `plugins/README.md`, `plugins/plugins/*.h`, `plugins/pinmame/*`, `plugins/inspector/*`, `plugins/helloworld/plugin.cfg`, `make/CMakeLists_plugin_PinMAME.txt`.

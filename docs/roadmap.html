@@ -221,7 +221,6 @@
           <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
         </div>
         <div class="cell">
-          <a class="chip tr-play" href="#best-play-score"><b></b>Meilleure partie du lancement</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
@@ -239,6 +238,7 @@
           <a class="chip tr-play" href="#play-scores-final-only"><b></b>Play Scores Stern M-200</a>
         </div>
         <div class="cell">
+          <a class="chip tr-play" href="#best-play-score"><b></b>Meilleure partie du lancement</a>
           <a class="chip tr-share" href="#crt-filter"><b></b>Faux CRT</a>
           <a class="chip tr-play" href="#neon-confirmations"><b></b>Confirmations néon</a>
         </div>
@@ -278,30 +278,6 @@
     </div>
 
     <ol class="queue">
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="best-play-score" data-track="play" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Garder la meilleure partie d'un lancement, pas la dernière</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
-          </div>
-          <p>Quand on enchaîne les parties sans quitter la table, le Play Score ne voit que la dernière, car PinMAME n'écrit le <code>.nv</code> qu'à la fermeture. Un <code>GlobalPlugIn.vbs</code> relèverait la NVRAM pendant le jeu, et le pack retiendrait au retour sur la roue la meilleure partie finie du lancement. Sans relevé exploitable, la règle actuelle (la dernière partie) reste en place.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">research</span><i>›</i><span class="here">grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (sonde sur une table) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code> · <a href="research/best-play-score-capture.md">recherche</a></div>
-          <details>
-            <summary>Checklist</summary>
-            <ul>
-              <li>Sur la borne : versions de VPX et VPinMAME, et présence dans <code>core.vbs</code> de la ligne qui charge <code>GlobalPlugIn.vbs</code>.</li>
-              <li>Sonde sur une table : aucune saccade (surtout sur SAM, 131 Ko de NVRAM), instantanés lisibles par <code>vpxtool nvram show</code>.</li>
-              <li>Découpage des parties aux remises à zéro des scores, relevés du tout début du lancement écartés, partie abandonnée reconnue.</li>
-              <li>Installation dans le dossier Scripts de VPX, hors du pack : accord de Félix, et fusion avec un éventuel <code>GlobalPlugIn.vbs</code> existant.</li>
-            </ul>
-            <p class="ctx">Ajouté le 08/11/2026 à la demande de Félix, en tête de file, sans que ce soit forcément le prochain chantier traité. Le plugin VPX et la lecture de la mémoire de VPX sont écartés par la recherche.</p>
-          </details>
-        </div>
-      </li>
 
       <li draggable="true" tabindex="0" class="item tr-play" id="feld" data-track="play" data-rank="platinum">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
@@ -693,6 +669,29 @@
               <li>Chercher <code>stargzr</code> et <code>seawitch</code> dans <code>play_scores_anomalies.log</code> : le contrôle <code>finalScoresOnly</code> y écrit l'état avant → après de chaque partie qui ne donne rien.</li>
             </ul>
             <p class="ctx">Décidé le 07/11/2026 au bilan de #484 : pas de Play Score sans exemple réel. En fin de file à la demande de Félix. Le journal des anomalies des scores de partie existe depuis #488 (une ligne par ROM et par session).</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="best-play-score" data-track="play" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Garder la meilleure partie d'un lancement, pas la dernière</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
+          </div>
+          <p>En attente de VPX 10.8.1. Quand on enchaîne les parties sans quitter la table, seule la dernière donne le Play Score, car PinMAME n'écrit le <code>.nv</code> qu'à la fermeture. Un hook <code>GlobalPlugIn.vbs</code> alourdirait la borne et le pack pour un gain étroit : une partie précédente meilleure et restée sous le tableau de la table. Avec le plugin Inspector de VPX 10.8.1, le pack interrogerait la table depuis son JavaScript, sans aucun fichier dans le dossier de VPX.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">research</span><i>›</i><span class="here">grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/research</code> (Inspector sur la 10.8.1 stable) → <code>/grill-with-docs</code> (reprise) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code> · <a href="research/best-play-score-capture.md">recherche</a></div>
+          <details>
+            <summary>Checklist</summary>
+            <ul>
+              <li>VPX 10.8.1 sortie en version stable, et la borne passée à la 10.8.1 avec le plugin PinMAME.</li>
+              <li>Inspector : il écoute sur <code>0.0.0.0</code> et peut changer l'état de la table, donc pare-feu à prévoir ; coût de l'interrogation pendant le jeu.</li>
+              <li>Reprendre les décisions du grill du 10/11/2026 (section « Grill » de la recherche) : celles sur le découpage des parties restent valables, celles sur le hook tombent.</li>
+            </ul>
+            <p class="ctx">Ajouté le 08/11/2026. Grill du 10/11/2026 : le Play reste le lancement (glossaire), puis chantier mis en attente à la demande de Félix, de peur d'alourdir le système. En fin de file jusqu'à VPX 10.8.1 ; le guide dit que seule la dernière partie d'un lancement compte.</p>
           </details>
         </div>
       </li>
