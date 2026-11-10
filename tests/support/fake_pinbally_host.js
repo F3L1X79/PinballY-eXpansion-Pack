@@ -239,8 +239,10 @@ export function createFakePinballYHost({
     let underlayFile = null;
     // The wheel's icons, hidden by showWheel(false).
     let wheelShown = true;
-    // Every sound played, in order: { filePath, playerId }.
+    // Every sound played, in order: { filePath, playerId, looping }.
     const sounds = [];
+    // Every controls.stop() of a COM player, in order: { filePath, playerId }.
+    const soundStops = [];
     // Each Windows Media Player gets the next id when created.
     let nextSoundPlayerId = 1;
     // The single player behind playSound(), created on its first sound.
@@ -810,23 +812,40 @@ export function createFakePinballYHost({
         };
     }
 
+    function createLoopingSound(filePath) {
+        requireSoundFile(filePath);
+        const playerId = nextSoundPlayerId++;
+        return {
+            play() { sounds.push({ filePath, playerId, looping: true }); },
+            stop() { soundStops.push({ filePath, playerId }); },
+        };
+    }
+
     // A Windows Media Player COM object: it plays its URL when set with
     // autoStart on, or on controls.play(); a missing file plays nothing,
-    // without an error, as in Windows.
+    // without an error, as in Windows. setMode("loop", true) makes it loop.
     function createComMediaPlayer() {
         const playerId = nextSoundPlayerId++;
         let url = "";
+        let looping = false;
         const playUrl = () => {
-            if (files.has(url)) sounds.push({ filePath: url, playerId });
+            if (files.has(url)) sounds.push({ filePath: url, playerId, looping });
         };
         const player = {
-            settings: { autoStart: true },
+            settings: {
+                autoStart: true,
+                setMode(mode, on) { if (mode === "loop") looping = on; },
+            },
             get URL() { return url; },
             set URL(filePath) {
                 url = filePath;
                 if (player.settings.autoStart) playUrl();
             },
-            controls: { currentPosition: 0, play: playUrl },
+            controls: {
+                currentPosition: 0,
+                play: playUrl,
+                stop: () => { soundStops.push({ filePath: url, playerId }); },
+            },
         };
         return player;
     }
@@ -1564,6 +1583,7 @@ export function createFakePinballYHost({
         createMediaWindow: (desc) => mediaWindowOf(createRawMediaWindow(desc), FAKE_HWND),
         playSound,
         createSoundRotation,
+        createLoopingSound,
         runHiddenProgram,
         restartPinballY,
         startPackUpdate,
@@ -1625,6 +1645,9 @@ export function createFakePinballYHost({
         soundsPlayed: () => sounds.map(sound => sound.filePath),
         // The id of the player each sound played on, in the same order.
         soundPlayers: () => sounds.map(sound => sound.playerId),
+        // The sounds started on a player set to loop, in order.
+        loopingSoundsPlayed: () => sounds.filter(sound => sound.looping).map(sound => sound.filePath),
+        soundsStopped: () => soundStops.map(stop => stop.filePath),
         // Seeds a file (and its folders) without recording a write, modified
         // now unless a date is given; content is text, or bytes as a Uint8Array.
         addFile(filePath, content = "", { modified = new RealDate(nowMs) } = {}) {

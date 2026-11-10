@@ -675,6 +675,22 @@ export function createPinballYHost() {
             rotations.set(filePath, rotation);
             return rotation;
         },
+        // A sound played over and over until stopped, on its own player,
+        // loaded at once so that play() starts it in a few ms. Throws like playSound().
+        createLoopingSound: (filePath) => {
+            requireSoundFile(filePath);
+            const player = createAutomationObject("WMPlayer.OCX.7");
+            player.settings.autoStart = false;
+            player.settings.setMode("loop", true);
+            player.URL = filePath;
+            return {
+                play: () => {
+                    player.controls.currentPosition = 0;
+                    player.controls.play();
+                },
+                stop: () => { player.controls.stop(); },
+            };
+        },
         // Runs the program hidden, without waiting; returns { result() },
         // null while it runs, then { exitCode, output } (its standard output;
         // its standard error is dropped). At most MAX_PROGRAM_ARGS arguments.

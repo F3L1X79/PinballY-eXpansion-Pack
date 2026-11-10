@@ -1,6 +1,6 @@
 # Sound credits
 
-The pack's default sounds, all from [Freesound](https://freesound.org) under
+The pack's default sounds, all but one from [Freesound](https://freesound.org) under
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (public domain,
 no attribution required; credited here with thanks). `confetti.wav` and
 `fireworks.wav` were converted to 16-bit stereo.
@@ -16,6 +16,10 @@ no attribution required; credited here with thanks). `confetti.wav` and
 | `easter_eggs/distorted_echo.wav` | once in a long while (made louder) | [762819](https://freesound.org/people/isacjonsson1996/sounds/762819/) | isacjonsson1996 |
 | `easter_eggs/horn.wav` | once in a long while | [725098](https://freesound.org/people/gabrielf0102/sounds/725098/) | gabrielf0102 |
 | `easter_eggs/blue_screen.wav` | once in a long while (slowed down to 6 s) | [631555](https://freesound.org/people/xkeril/sounds/631555/) | xkeril |
+
+`easter_eggs/rocket_music.wav`, the music looping once in a long while, is
+not from Freesound: it is an original tune written for the pack and rendered
+by `maintainer/sounds/rocket_music.mjs`, under the pack's own license.
 
 Your own sounds go in `local/`, which git ignores; point `.env.local` at them
 (see `.env.example`).

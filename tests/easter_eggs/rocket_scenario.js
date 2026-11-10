@@ -18,6 +18,8 @@ export const ROCKET_IMAGES = [
     ...[1, 2, 3, 4, 5].map(index => `rocket_break_${index}`), ...[1, 2, 3, 4].map(index => `rocket_explosion_${index}`),
 ].map(name => `${IMAGES}\\${name}.png`);
 export const NAVIGATION_SOUND = "C:\\PinballY\\Assets\\Button Sounds\\Next.wav";
+// As config.js resolves the shipped music; tests set config.rocketMusicFile to it.
+export const MUSIC_FILE = `${PACK}\\assets\\sounds\\easter_eggs\\rocket_music.wav`;
 export const profileFile = name => `${PACK}\\profiles\\${name}\\profile.json`;
 export const TABLES = ["Medieval Madness", "Attack from Mars", "Theatre of Magic"].map((title, index) => ({
     id: index + 1, configId: title, title, manufacturer: "", year: 0, categories: [],
@@ -28,6 +30,8 @@ export const BACKDROP_PAINT_MS = 50;
 export const SPLASH_MS = 1900;
 export const LEAVING_MS = 120;
 export const SCORE_MS = 2000;
+// Long enough for the Achievement's toast to show and go.
+export const TOAST_GONE_MS = 30000;
 export const BACKDROP_Z_INDEX = 7500;
 export const TEXT_Z_INDEX = 7580;
 

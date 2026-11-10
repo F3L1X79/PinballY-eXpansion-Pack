@@ -1,5 +1,5 @@
 // ============================================================
-// Sound paths tests: the five sound settings, from the defaults or a
+// Sound paths tests: the sound settings, from the defaults or a
 // .env.local, may be relative to the pack's folder; absolute and network
 // paths stay as they are, and an empty value still means no sound. The
 // defaults are sounds shipped in assets\sounds\, each with its credit.
@@ -61,10 +61,10 @@ test("the other settings are left untouched", () => {
 test("every default sound ships with the pack and is credited", () => {
     const credits = readFileSync(new URL("../../assets/sounds/CREDITS.md", import.meta.url), "utf8");
     assert.deepEqual(Object.keys(SHIPPED_SOUNDS),
-        ["launchSoundFile", "achievementSoundFile", "profileGreetingSoundFile", "confettiSoundFile", "fireworksSoundFile"]);
+        ["launchSoundFile", "achievementSoundFile", "profileGreetingSoundFile", "confettiSoundFile", "fireworksSoundFile", "rocketMusicFile"]);
     for (const [key, path] of Object.entries(SHIPPED_SOUNDS)) {
-        assert.match(path, /^assets\\sounds\\[a-z_]+\.(mp3|wav)$/, `${key} is a shipped sound`);
+        assert.match(path, /^assets\\sounds\\(easter_eggs\\)?[a-z_]+\.(mp3|wav)$/, `${key} is a shipped sound`);
         assert.ok(existsSync(new URL(`../../${path.replace(/\\/g, "/")}`, import.meta.url)), `${path} exists`);
-        assert.ok(credits.includes(path.split("\\").pop()), `${path} is in CREDITS.md`);
+        assert.ok(credits.includes(`\`${path.slice("assets\\sounds\\".length).replace(/\\/g, "/")}\``), `${path} is in CREDITS.md`);
     }
 });

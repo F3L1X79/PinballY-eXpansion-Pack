@@ -23,6 +23,8 @@ export const SHIPPED_SOUNDS = Object.freeze({
     confettiSoundFile: "assets\\sounds\\confetti.wav",
     // Played once when the Fireworks start.
     fireworksSoundFile: "assets\\sounds\\fireworks.wav",
+    // Loops through a game of the Rocket.
+    rocketMusicFile: "assets\\sounds\\easter_eggs\\rocket_music.wav",
 });
 // The sounds with nothing shipped: silent until the player sets one.
 const UNSHIPPED_SOUNDS = Object.freeze({

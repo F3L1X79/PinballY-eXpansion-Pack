@@ -38,6 +38,7 @@ let rocket = null;
 export function installFirstListeners() {
     rocket = createRocket(createPinballYHost(), {
         controls: getDrawnScreenControls(), rules: getEasterEggRules, quietWheel: getQuietWheel, texts: () => lang.rocket,
+        musicFile: () => config.rocketMusicFile,
     });
 }
 

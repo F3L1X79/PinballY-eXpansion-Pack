@@ -3,6 +3,7 @@
 // (PlayGame, not started by the pack). The launch is cancelled, and a game of
 // dodging asteroids on the flippers plays instead until the crash, then the
 // score for 2 s and the wheel. The table is silent until just before it goes.
+// Its music (config's rocketMusicFile) loops from the opening word to the crash.
 // - Its "prelaunch" listener must be the pack's first: a cancelled launch never fires "postlaunch".
 // - Buttons and attract mode go through the Drawn Screen controls; Exit does nothing.
 // - Won at the start; its Achievement waits for the end, so that the toast shows on the wheel.
@@ -110,8 +111,8 @@ const lerp = (from, to, share) => from + (to - from) * share;
 
 // controls: the Drawn Screen controls; rules() and quietWheel(): read at the
 // launch, since the Rocket listens before main.js loads anything; texts():
-// { dodge, score }, as shown.
-export function createRocket(host, { controls, rules, quietWheel, texts }) {
+// { dodge, score }, as shown; musicFile(): the music's full path, "" for none.
+export function createRocket(host, { controls, rules, quietWheel, texts, musicFile }) {
     const screen = controls.register(SCRIPT_NAME);
     const pathOf = file => `${host.getProjectFolder()}\\${IMAGE_FOLDER}\\${file}`;
     const nowMs = () => host.now().getTime();
@@ -122,6 +123,28 @@ export function createRocket(host, { controls, rules, quietWheel, texts }) {
 
     // The game under way, null otherwise.
     let running = null;
+    // The music's player: undefined until the first game, null when there is none.
+    let music;
+
+    // Loaded at the first game, behind the backdrop; a music that cannot load is logged once.
+    function musicOfSession() {
+        if (music !== undefined) return music;
+        music = null;
+        const path = musicFile();
+        if (path === "") return null;
+        try {
+            music = host.createLoopingSound(path);
+        } catch (error) {
+            log(`Its music cannot be loaded, it plays silently: ${error.message}`);
+        }
+        return music;
+    }
+
+    function stopMusic(run) {
+        if (!run.music) return;
+        run.music.stop();
+        run.music = null;
+    }
 
     function canPlay() {
         const missing = ALL_FILES.map(pathOf).filter(path => !host.files.isImageReadable(path));
@@ -296,6 +319,8 @@ export function createRocket(host, { controls, rules, quietWheel, texts }) {
         show(run, run.splashWord, run.width / 2, run.height * SPLASH_WORD_Y);
 
         enterPhase(run, "splash");
+        run.music = musicOfSession();
+        if (run.music) run.music.play();
         run.frameTimer = host.setInterval(guarded(run, () => frame(run)), FRAME_MS);
     }
 
@@ -425,6 +450,7 @@ export function createRocket(host, { controls, rules, quietWheel, texts }) {
     }
 
     function crash(run, { row, asteroid }) {
+        stopMusic(run);
         hide(run, asteroid.sprite);
         hide(run, run.ship);
         if (run.flameShown) hide(run, run.flameShown);
@@ -472,6 +498,8 @@ export function createRocket(host, { controls, rules, quietWheel, texts }) {
     function leave(run) {
         if (run.phase === "leaving") return;
         run.phase = "leaving";
+        // Already stopped by the crash, unless a failure ends the game.
+        stopMusic(run);
         if (run.frameTimer !== null) host.clearInterval(run.frameTimer);
         run.frameTimer = null;
         host.clearTimeout(run.prepareTimer);
@@ -483,6 +511,7 @@ export function createRocket(host, { controls, rules, quietWheel, texts }) {
     function finish(run) {
         if (running !== run) return;
         running = null;
+        stopMusic(run);
         // First: a layer that cannot be removed must not keep its toast away.
         rules().finish(EASTER_EGG.ROCKET);
         for (const layer of run.layers) run.placed.remove(layer);
@@ -532,7 +561,7 @@ export function createRocket(host, { controls, rules, quietWheel, texts }) {
 
     function start() {
         const run = {
-            placed: createPlacedLayers(host), texts: texts(), phase: "preparing", opening: null, frameTimer: null, prepareTimer: null,
+            placed: createPlacedLayers(host), texts: texts(), phase: "preparing", opening: null, frameTimer: null, prepareTimer: null, music: null,
             layers: [], scrolling: [], laneLines: [], freeAsteroids: [], rows: [], queue: [], flameShown: null,
             width: 0, height: 0, score: 0, playMs: 0, nextEventInMs: 0, phaseStartMs: 0, lastFrameMs: 0, glideStartMs: 0,
         };
