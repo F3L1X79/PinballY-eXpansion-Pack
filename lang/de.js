@@ -396,6 +396,9 @@ export default {
         nekomancerTitle: () => "Nekomant",
         nekomancerDescription: () => "Eine Winkekatze ist am Bildschirmrand aufgetaucht und hat dich angehupt.",
         nekomancerHint: () => "Etwas winkt dir vom Rand zu.",
+        unauthorizedTakeoffTitle: () => "Unerlaubter Start",
+        unauthorizedTakeoffDescription: () => "Der Tisch, den du gestartet hast, wurde zu einer Rakete zwischen Asteroiden.",
+        unauthorizedTakeoffHint: () => "Ein Tisch kann einen Flugplan verbergen.",
         lunchBreakTitle: () => "Mittagspause",
         lunchBreakDescription: (from, to) => `Ein Spiel zwischen ${from} und ${to} starten, von Montag bis Freitag.`,
         lunchBreakHint: () => "Das Brötchen in der einen Hand, den Flipper in der anderen...",
@@ -1050,6 +1053,10 @@ export default {
         playNotSaved: "Dieses Spiel konnte nicht gespeichert werden: Es zählt nicht in Ihrer Statistik.",
         playNotInPlayLog: "Dieses Spiel wurde gezählt, fehlt aber in Ihrem Spielverlauf.",
         packUpdateFailed: (version, logPath) => `Die Aktualisierung auf v${version} ist fehlgeschlagen: Die vorherige Version bleibt erhalten. Details in ${logPath}`,
+    },
+    rocket: {
+        dodge: "AUSWEICHEN!",
+        score: "PUNKTE",
     },
     releaseHighlights: {
         "1.4.1": [

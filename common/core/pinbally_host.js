@@ -475,6 +475,10 @@ function requireSoundFile(filePath) {
 
 let randomSource = Math.random;
 
+// True during a playGame() call of the pack: PinballY fires "prelaunch"
+// synchronously inside it (pinbally-help.md §3, Timing).
+let isPackLaunching = false;
+
 // Only for the tests' fake host: Math is no PinballY global it could replace,
 // and every module making its own host would otherwise really draw.
 export function setRandomSource(source) {
@@ -593,7 +597,17 @@ export function createPinballYHost() {
         runCommand: (id) => {
             if (mainWindow.dispatchEvent(new CommandEvent(id))) mainWindow.doCommand(id);
         },
-        playGame: (game) => { mainWindow.playGame(game); },
+        playGame: (game) => {
+            isPackLaunching = true;
+            try {
+                mainWindow.playGame(game);
+            } finally {
+                isPackLaunching = false;
+            }
+        },
+        // Read in "prelaunch": true for a launch any host of the pack started
+        // (Random Game, a table a screen offered), false for the player's own.
+        isLaunchStartedByPack: () => isPackLaunching,
 
         // drawImage resolves relative paths from this folder, not from Scripts/.
         getProgramFolder: () => systemInfo.programDir,

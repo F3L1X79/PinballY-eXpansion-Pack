@@ -396,6 +396,9 @@ export default {
         nekomancerTitle: () => "Nekomante",
         nekomancerDescription: () => "Um gato da sorte surgiu da borda da tela e buzinou para você.",
         nekomancerHint: () => "Algo acena para você da borda.",
+        unauthorizedTakeoffTitle: () => "Decolagem não autorizada",
+        unauthorizedTakeoffDescription: () => "A mesa que você lançava virou um foguete no meio dos asteroides.",
+        unauthorizedTakeoffHint: () => "Uma mesa pode esconder um plano de voo.",
         lunchBreakTitle: () => "Hora do almoço",
         lunchBreakDescription: (from, to) => `Iniciar uma partida entre ${from} e ${to}, de segunda a sexta.`,
         lunchBreakHint: () => "O sanduíche numa mão, o flipper na outra...",
@@ -1050,6 +1053,10 @@ export default {
         playNotSaved: "Não foi possível salvar esta partida: ela não contará nas suas estatísticas.",
         playNotInPlayLog: "Esta partida foi contada, mas não está no seu histórico de partidas.",
         packUpdateFailed: (version, logPath) => `A atualização para v${version} falhou: a versão anterior continua no lugar. Detalhes em ${logPath}`,
+    },
+    rocket: {
+        dodge: "DESVIE!",
+        score: "PONTOS",
     },
     releaseHighlights: {
         "1.4.1": [

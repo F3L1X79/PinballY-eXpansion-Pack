@@ -2,6 +2,7 @@
 // Easter Eggs: rare events tied to their own moments, part of the pack
 // and impossible to turn off, so it has no entry among config.addOns or the
 // eXpansion Pack Settings. The rules live in common/easter_eggs/easter_egg_rules.js.
+// - installFirstListeners() runs before anything else in main.js: the Rocket's "prelaunch" and buttons.
 // - The Crow is drawn once per start, a tick after the Startup Screen has closed.
 // - The Menu Glitch is drawn at the main menu's "menuopen", after Drawn Menus' listener.
 // - The Maneki-neko is drawn at one "gameselect" of the session.
@@ -20,11 +21,26 @@ import { getEasterEggRules } from "../common/easter_eggs/easter_egg_rules.js";
 import { createCrow } from "../common/easter_eggs/crow.js";
 import { createMenuGlitch } from "../common/easter_eggs/menu_glitch.js";
 import { createManekiNeko } from "../common/easter_eggs/maneki_neko.js";
+import { createRocket } from "../common/easter_eggs/rocket.js";
+import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
+import { getWheelDialogs } from "../common/core/wheel_dialog.js";
+import lang from "../common/core/i18n.js";
 
 const SCRIPT_NAME = "EasterEggs";
 
+let rocket = null;
+
+// First of all: the Rocket's "prelaunch" listener and the Drawn Screen
+// controls' button and attract mode listeners come before any other of the pack.
+export function installFirstListeners() {
+    rocket = createRocket(createPinballYHost(), {
+        controls: getDrawnScreenControls(), rules: getEasterEggRules, quietWheel: getQuietWheel, texts: () => lang.rocket,
+    });
+}
+
 export default function init() {
     const host = createPinballYHost();
+    if (rocket) getWheelDialogs().waitFor(rocket.screen);
     const rules = getEasterEggRules();
     const crow = createCrow(host, { rules, quietWheel: getQuietWheel() });
     const tryFly = safeHandler(SCRIPT_NAME, crow.tryFly);

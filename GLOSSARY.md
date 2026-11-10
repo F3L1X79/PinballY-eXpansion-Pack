@@ -175,7 +175,7 @@ The active Profile's Avatar, shown at the top right of the wheel screen.
 _Avoid_: profile icon
 
 **Name Entry**:
-The screen where a new Profile's name is put together with the flippers, one character at a time. The only drawn screen with no Exit Button, its choices being the characters. Shown as "Saisie du nom" in French.
+The screen where a new Profile's name is put together with the flippers, one character at a time. It has no Exit Button, its choices being the characters. Shown as "Saisie du nom" in French.
 _Avoid_: virtual keyboard, onscreen keyboard (it has no keys), high score entry
 
 **Avatar Choice**:

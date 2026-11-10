@@ -407,6 +407,8 @@ export function createFakePinballYHost({
     // "single" or "batch" while the running game is a media capture.
     let captureMode;
     const launchList = [];
+    // True during the host's own playGame(), as the PinballY host flags the pack's launches.
+    let isPackLaunching = false;
     // The launch under way: its game, and how far the launch thread got
     // ("loading" from playGame, "opened" once "runbefore" fired, "started"
     // from "gamestarted"); and whether Exit Game was chosen during it.
@@ -486,10 +488,15 @@ export function createFakePinballYHost({
             type,
             defaultPrevented: false,
             preventDefault() { this.defaultPrevented = true; },
+            // The later listeners of this event are skipped (pinbally-help.md §3).
+            stopImmediatePropagation() { this.isPropagationStopped = true; },
         };
         // Copies accessors as accessors, so a menu's items stay live.
         Object.defineProperties(ev, Object.getOwnPropertyDescriptors(properties));
-        for (const handler of [...(handlers.get(type) || [])]) handler(ev);
+        for (const handler of [...(handlers.get(type) || [])]) {
+            handler(ev);
+            if (ev.isPropagationStopped) break;
+        }
         return ev;
     }
 
@@ -1296,8 +1303,23 @@ export function createFakePinballYHost({
     // Launches the wheel's current table.
     nativeCommands.set(BUILT_IN_COMMANDS.PlayGame, () => {
         const game = host.getCurrentTable();
-        if (game) host.playGame(game);
+        if (game) launchGame(game);
     });
+
+    // PinballY's playGame: clears the table's cached board
+    // (docs/research/high-scores.md), then fires the first launch events
+    // during this call, and leaves the wheel; a cancelled "prelaunch" launches
+    // nothing. command.CaptureGo launches a media capture (LaunchEvent.html).
+    function launchGame(game, { command: launchCommand = BUILT_IN_COMMANDS.PlayGame } = {}) {
+        highScoreCache.delete(game.configId);
+        if (fire("prelaunch", { game, command: launchCommand, overrides: {} }).defaultPrevented) return;
+        launchList.push(game);
+        uiMode = "running";
+        runMode = "starting";
+        launch = { game, stage: "loading", exitChosen: false, command: launchCommand };
+        fire("launchoverlayshow", { game });
+        showOverlayMessage("init");
+    }
 
     function getGameInfo(configId) {
         return allTables.find(table => table.configId === configId || table.id === configId) || null;
@@ -1520,20 +1542,17 @@ export function createFakePinballYHost({
             for (const handler of [...(handlers.get(ev.type) || [])]) handler(ev);
             return !(ev.cancelable && ev.defaultPrevented);
         },
-        // PinballY clears the table's cached board (docs/research/high-scores.md),
-        // then fires the first launch events during this call, and leaves
-        // the wheel; a cancelled "prelaunch" launches nothing. command.CaptureGo
-        // launches a media capture (LaunchEvent.html).
-        playGame: (game, { command: launchCommand = BUILT_IN_COMMANDS.PlayGame } = {}) => {
-            highScoreCache.delete(game.configId);
-            if (fire("prelaunch", { game, command: launchCommand, overrides: {} }).defaultPrevented) return;
-            launchList.push(game);
-            uiMode = "running";
-            runMode = "starting";
-            launch = { game, stage: "loading", exitChosen: false, command: launchCommand };
-            fire("launchoverlayshow", { game });
-            showOverlayMessage("init");
+        // A launch the pack asked for, as the PinballY host flags it; a test
+        // standing for the player calls it too, outside main.js's own host.
+        playGame: (game, options) => {
+            isPackLaunching = true;
+            try {
+                launchGame(game, options);
+            } finally {
+                isPackLaunching = false;
+            }
         },
+        isLaunchStartedByPack: () => isPackLaunching,
         getProgramFolder: () => programFolder,
         getProjectFolder: () => projectFolderOf(programFolder),
         getPinballYVersion: () => pinballYVersion,
@@ -1875,10 +1894,15 @@ export function createFakePinballYHost({
         // The cabinet enters attract mode after a while on its own: PinballY
         // then moves the wheel itself ("gameselect" outside wheel mode).
         // A native menu open closes with it, after "attractmodestart" (the
-        // order is not documented: to be checked on the cabinet).
+        // order is not documented: to be checked on the cabinet). A cancelled
+        // "attractmodestart" leaves everything as it was (pinbally-help.md §3).
         enterAttractMode() {
+            const previousMode = uiMode;
             uiMode = "attract";
-            fire("attractmodestart");
+            if (fire("attractmodestart").defaultPrevented) {
+                uiMode = previousMode;
+                return;
+            }
             if (shownMenu) {
                 const { id } = shownMenu;
                 shownMenu = null;
@@ -2003,7 +2027,7 @@ export function createFakePinballYHost({
                     on: onThroughGlobals,
                     showMenu,
                     getUIMode: getFullUIMode,
-                    playGame: host.playGame,
+                    playGame: launchGame,
                     doCommand: host.doCommand,
                     dispatchEvent: host.dispatchEvent,
                     createDrawingLayer,

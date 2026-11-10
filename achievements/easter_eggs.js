@@ -41,5 +41,14 @@ export function buildEasterEggAchievements() {
             getHint: () => TEXT.nekomancerHint(),
             checkUnlocked: () => rules.hasPlayed(EASTER_EGG.MANEKI_NEKO),
         }),
+        standaloneAchievement({
+            id: "unauthorizedTakeoff",
+            family: ACHIEVEMENT_FAMILY.SURPRISES,
+            rank: ACHIEVEMENT_RANK.PLATINUM,
+            getTitle: () => TEXT.unauthorizedTakeoffTitle(),
+            getDescription: () => TEXT.unauthorizedTakeoffDescription(),
+            getHint: () => TEXT.unauthorizedTakeoffHint(),
+            checkUnlocked: () => rules.hasPlayed(EASTER_EGG.ROCKET),
+        }),
     ];
 }

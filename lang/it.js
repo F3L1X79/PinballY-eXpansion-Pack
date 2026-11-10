@@ -395,6 +395,9 @@ export default {
         nekomancerTitle: () => "Nekomante",
         nekomancerDescription: () => "Un gatto portafortuna è sbucato dal bordo dello schermo e ti ha suonato il clacson.",
         nekomancerHint: () => "Qualcosa ti fa cenno dal bordo.",
+        unauthorizedTakeoffTitle: () => "Decollo non autorizzato",
+        unauthorizedTakeoffDescription: () => "Il tavolo che stavi lanciando è diventato un razzo tra gli asteroidi.",
+        unauthorizedTakeoffHint: () => "Un tavolo può nascondere un piano di volo.",
         lunchBreakTitle: () => "Pausa pranzo",
         lunchBreakDescription: (from, to) => `Avviare una partita tra le ${from} e le ${to}, dal lunedì al venerdì.`,
         lunchBreakHint: () => "Il panino in una mano, il flipper nell'altra...",
@@ -1049,6 +1052,10 @@ export default {
         playNotSaved: "Impossibile salvare questa partita: non conterà nelle tue statistiche.",
         playNotInPlayLog: "Questa partita è stata contata, ma manca dalla tua cronologia delle partite.",
         packUpdateFailed: (version, logPath) => `L'aggiornamento alla v${version} non è riuscito: la versione precedente resta al suo posto. Dettagli in ${logPath}`,
+    },
+    rocket: {
+        dodge: "SCHIVA!",
+        score: "PUNTEGGIO",
     },
     releaseHighlights: {
         "1.4.1": [

@@ -3,7 +3,7 @@
 // attract mode, and the screens set aside under one another, for the whole
 // pack. A stack of openings (one screen can be on it twice); a press acts on
 // the top one only, once. Listens to "commandbuttondown" and
-// "attractmodestart", from the first screen registered on.
+// "attractmodestart", from the first screen registered on; an opening may hold attract mode off.
 // - Swallows every press while a ready or getting-ready opening is on top.
 // - An opening set aside under a child outside the module neither acts nor swallows.
 // - Left to screens: opening, fade, Selection Marker, sounds, scrolling, waitFor().
@@ -50,7 +50,8 @@ export function createDrawnScreenControls(host) {
             if (ev.command === "Exit") return handlers.onExit();
             return undefined;
         }
-        if (ev.command === "Next" || ev.command === "Prev") return handlers.onMove(ev.command === "Next" ? 1 : -1);
+        // isRepeat: an auto-repeat of a held flipper, which most screens follow.
+        if (ev.command === "Next" || ev.command === "Prev") return handlers.onMove(ev.command === "Next" ? 1 : -1, ev.repeat === true);
         // Launch is the plunger, which selects in PinballY's own menus too.
         if (ev.command === "Select" || ev.command === "Launch") return handlers.onChoose();
         if (ev.command === "Exit") return handlers.onExit();
@@ -58,16 +59,23 @@ export function createDrawnScreenControls(host) {
     }
 
     // Fires when the cabinet sits idle: no screen stays over attract mode
-    // nor keeps the buttons, and nothing is brought back.
-    function closeEverything() {
-        for (const entry of [...stack].reverse()) close(entry);
+    // nor keeps the buttons, and nothing is brought back; unless the opening
+    // on top holds it off, and then no later listener hears a start that never happens.
+    function onAttractModeStart(ev) {
+        const entry = top();
+        if (entry && entry.holdsAttractMode) {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            return;
+        }
+        for (const opening of [...stack].reverse()) close(opening);
     }
 
     function listen() {
         if (isListening) return;
         isListening = true;
         host.on("commandbuttondown", safeHandler(SCRIPT_NAME, onPress));
-        host.on("attractmodestart", safeHandler(SCRIPT_NAME, closeEverything));
+        host.on("attractmodestart", safeHandler(SCRIPT_NAME, onAttractModeStart));
     }
 
     function close(entry) {
@@ -110,12 +118,12 @@ export function createDrawnScreenControls(host) {
         const screen = { scriptName, closedListeners: createClosedListeners(scriptName) };
         const openingsOf = () => stack.filter(entry => entry.screen === screen);
         return {
-            // handlers: onMove(direction), onChoose(), onExit(), close(), and
+            // handlers: onMove(direction, isRepeat), onChoose(), onExit(), close(), and
             // setAside() and showAgain() for a screen that opens children.
-            // onFailed: what fail() carries the failure on to. Getting ready
-            // until ready().
-            open(handlers, { onFailed = () => {} } = {}) {
-                const entry = { screen, handlers, onFailed, isReady: false, isSetAside: false };
+            // onFailed: what fail() carries the failure on to; holdsAttractMode:
+            // attract mode cannot start while it is on top. Getting ready until ready().
+            open(handlers, { onFailed = () => {}, holdsAttractMode = false } = {}) {
+                const entry = { screen, handlers, onFailed, holdsAttractMode, isReady: false, isSetAside: false };
                 stack.push(entry);
                 return {
                     ready() { entry.isReady = true; },

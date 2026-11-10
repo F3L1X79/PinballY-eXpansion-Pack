@@ -288,6 +288,9 @@ export default {
         nekomancerTitle: () => "Nekomancer",
         nekomancerDescription: () => "A lucky cat popped out of the edge of the screen and honked at you.",
         nekomancerHint: () => "Something beckons from the edge.",
+        unauthorizedTakeoffTitle: () => "Unauthorized Takeoff",
+        unauthorizedTakeoffDescription: () => "The table you launched turned into a rocket among the asteroids.",
+        unauthorizedTakeoffHint: () => "A table may hide a flight plan.",
         lunchBreakTitle: () => "Lunch Break",
         lunchBreakDescription: (from, to) => `Start a game between ${from} and ${to}, Monday to Friday.`,
         lunchBreakHint: () => "A sandwich in one hand, the flipper in the other...",
@@ -992,6 +995,11 @@ export default {
         playNotInPlayLog: "This game was counted, but it is missing from your play history.",
         // Under packUpdates.toastTitle; logPath: the Pack Update helper's log.
         packUpdateFailed: (version, logPath) => `The update to v${version} failed: the previous version is still in place. Details in ${logPath}`,
+    },
+    // The Rocket, an Easter Egg: the word slammed before the game, and its score.
+    rocket: {
+        dodge: "DODGE!",
+        score: "SCORE",
     },
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.

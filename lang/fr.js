@@ -399,6 +399,9 @@ export default {
         nekomancerTitle: () => "Nékomancien",
         nekomancerDescription: () => "Un chat porte-bonheur a surgi du bord de l'écran pour vous klaxonner.",
         nekomancerHint: () => "Quelque chose vous fait signe depuis le bord.",
+        unauthorizedTakeoffTitle: () => "Décollage non autorisé",
+        unauthorizedTakeoffDescription: () => "La table que vous lanciez s'est changée en fusée au milieu des astéroïdes.",
+        unauthorizedTakeoffHint: () => "Une table peut cacher un plan de vol.",
         lunchBreakTitle: () => "Pause déjeuner",
         lunchBreakDescription: (from, to) => `Lancer une partie entre ${from} et ${to}, du lundi au vendredi.`,
         lunchBreakHint: () => "Un sandwich d'une main, le flipper de l'autre...",
@@ -1055,6 +1058,10 @@ export default {
         playNotSaved: "Cette partie n'a pas pu être enregistrée : elle ne comptera pas dans vos statistiques.",
         playNotInPlayLog: "Cette partie a été comptée, mais elle manque à votre historique de parties.",
         packUpdateFailed: (version, logPath) => `La mise à jour en v${version} a échoué : la version précédente reste en place. Détails dans ${logPath}`,
+    },
+    rocket: {
+        dodge: "ESQUIVEZ !",
+        score: "SCORE",
     },
     releaseHighlights: {
         "1.4.1": [

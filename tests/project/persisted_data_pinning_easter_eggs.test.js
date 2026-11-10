@@ -31,7 +31,9 @@ test("the Easter Eggs keep their flags' key, their Achievement IDs and the daily
     assert.equal(rules.tryWin("menuGlitch"), true);
     fake.advanceTime(24 * 60 * 60 * 1000);
     assert.equal(rules.tryWin("manekiNeko"), true);
+    fake.advanceTime(24 * 60 * 60 * 1000);
+    assert.equal(rules.tryWin("rocket"), true);
 
-    assert.deepEqual(JSON.parse(fake.readFile(`${PROFILES}\\guest\\profile.json`)).surprises, { easterEggs: { crow: true, menuGlitch: true, manekiNeko: true } });
-    assert.deepEqual(buildEasterEggAchievements().map(achievement => achievement.id), ["corvusExMachina", "ghostInTheMachine", "nekomancer"]);
+    assert.deepEqual(JSON.parse(fake.readFile(`${PROFILES}\\guest\\profile.json`)).surprises, { easterEggs: { crow: true, menuGlitch: true, manekiNeko: true, rocket: true } });
+    assert.deepEqual(buildEasterEggAchievements().map(achievement => achievement.id), ["corvusExMachina", "ghostInTheMachine", "nekomancer", "unauthorizedTakeoff"]);
 });

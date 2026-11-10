@@ -64,6 +64,11 @@ test("a held Select, Launch or Exit counts once; held flippers repeat", () => {
     press(fake, "Next", true);
     press(fake, "Prev", true);
     assert.deepEqual(calls, ["A move 1", "A move -1"]);
+    const repeats = [];
+    recordingScreen(controls, "B", calls).open({ onMove: (direction, isRepeat) => repeats.push(isRepeat) }).ready();
+    press(fake, "Next");
+    press(fake, "Next", true);
+    assert.deepEqual(repeats, [false, true], "a screen can tell a held flipper's repeat");
     assert.ok(isHeldSelectLaunchOrExit({ command: "Exit", repeat: true }));
     assert.ok(!isHeldSelectLaunchOrExit({ command: "Exit", repeat: false }));
     assert.ok(!isHeldSelectLaunchOrExit({ command: "Next", repeat: true }));
@@ -234,6 +239,23 @@ test("attract mode closes every opening from the top, bringing nothing back", ()
     assert.deepEqual(calls, ["Stats close", "Household close", "Stats close"]);
     assert.deepEqual(chain.failures, []);
     assert.equal(press(fake, "Select").defaultPrevented, false, "nothing left to take the buttons");
+});
+
+test("an opening on top that holds attract mode off cancels it, and no later listener hears it", () => {
+    const { fake, controls } = setUp();
+    const calls = [];
+    const opening = recordingScreen(controls, "Game", calls).open({}, { holdsAttractMode: true });
+    let heardLater = false;
+    fake.on("attractmodestart", () => { heardLater = true; });
+    opening.ready();
+    const ev = fake.fire("attractmodestart", {});
+    assert.equal(ev.defaultPrevented, true, "attract mode does not start");
+    assert.equal(heardLater, false);
+    assert.deepEqual(calls, [], "the opening stays");
+    opening.close();
+    calls.length = 0;
+    fake.fire("attractmodestart", {});
+    assert.equal(heardLater, true, "once it has closed, attract mode starts as usual");
 });
 
 test("isOpen() holds while an opening of the screen is on, set aside included; onClosed() is told at each close", () => {

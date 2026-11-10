@@ -1,5 +1,5 @@
 ﻿// ============================================================
-// Entry point loaded by PinballY: reads the window's size at init, loads the Profile store, logs the startup
+// Entry point loaded by PinballY: installs the Easter Eggs' first listeners, reads the window's size at init, loads the Profile store, logs the startup
 // summary, keeps the Adult Tables off a Child Profile's wheel, switches to Guest
 // without the Profile picker, resolves the Startup Screen, restores the quiet wheel's
 // volume, starts the Play Error Toasts, initializes SCRIPTS in order but those off in
@@ -86,7 +86,7 @@ import * as easterEggs from "./addons/easter_eggs.js";
 // - drawnMenus must come after every Add-on and shared module that edits the
 //   entries, so its "menuopen" listener draws the final ones.
 // - easterEggs is not in config.addOns, so it always starts: it cannot be
-//   turned off.
+//   turned off. Its first listeners are installed before this list.
 // The other scripts don't depend on each other's order. In particular, the
 // Welcome Screen and the rating prompt go through the wheel dialog module,
 // which shows them in a fixed priority order, and Achievements are announced
@@ -139,7 +139,15 @@ const SCRIPTS = [
 
 const ENABLED_SCRIPTS = config.addOns;
 
-// First, during the scripts' init: the view's size is read while PinballY
+// Before anything listens: the Rocket cancels a launch, and no other listener
+// may hear its "prelaunch" and then wait for a "postlaunch" that never comes.
+try {
+    easterEggs.installFirstListeners();
+} catch (error) {
+    logError(SCRIPT_NAME, `ERROR installing the Easter Eggs' first listeners: ${error.message}`, null, error);
+}
+
+// Then, during the scripts' init: the view's size is read while PinballY
 // has not laid its window out yet, so the startup dialogs wait for the change.
 try {
     getWindowLayout();
