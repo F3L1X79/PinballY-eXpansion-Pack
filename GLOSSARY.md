@@ -14,6 +14,30 @@ _Avoid_: plugin, script (a script is just a `.js` file)
 A rare, unannounced event of the cabinet, each tied to its own moment: at most one a day for the whole cabinet, and never twice the same for a Profile. Described nowhere for the player. Each one gives the active Profile a Secret Achievement of the Surprises family.
 _Avoid_: Surprise (Surprises is only the Achievement family), hidden event, glitch
 
+**Rocket Game**:
+One of the two games of the main menu where a rocket dodges asteroids on the flippers, one with shooting and one without: the Rocket Easter Egg's game, played again on purpose. Its entries show only for a Profile that has had that Easter Egg.
+_Avoid_: mini-game, arcade, Rocket (alone: the Easter Egg)
+
+**Rocket Board**:
+The Household's five best scores in one Rocket Game, a Profile possibly holding several places, shown only at the end of a game of it.
+_Avoid_: leaderboard, high score table, Household Board (the High Score Board's view)
+
+**Rocket Game**:
+One of the two games of the main menu where a rocket dodges asteroids on the flippers, one with shooting and one without: the Rocket Easter Egg's game, played again on purpose. Its entries show only for a Profile that has had that Easter Egg.
+_Avoid_: mini-game, arcade, Rocket (alone: the Easter Egg)
+
+**Rocket Board**:
+The Household's five best scores in one Rocket Game, a Profile possibly holding several places, shown only at the end of a game of it.
+_Avoid_: leaderboard, high score table, Household Board (the High Score Board's view)
+
+**Rocket Game**:
+One of the two games of the main menu where a rocket dodges asteroids on the flippers, one with shooting and one without: the Rocket Easter Egg's game, played again on purpose. Its entries show only for a Profile that has had that Easter Egg.
+_Avoid_: mini-game, arcade, Rocket (alone: the Easter Egg)
+
+**Rocket Board**:
+The Household's five best scores in one Rocket Game, a Profile possibly holding several places, shown only at the end of a game of it.
+_Avoid_: leaderboard, high score table, Household Board (the High Score Board's view)
+
 **Discord Rich Presence**:
 What the Discord account signed in on the cabinet's PC shows publicly while PinballY runs: the table being played, or that one is being chosen, and never a Profile's name. Off until the owner accepts a Dialog saying what becomes public. Discord's own name for it, kept in every language.
 _Avoid_: Discord status, Discord activity, presence
