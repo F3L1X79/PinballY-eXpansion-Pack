@@ -15,27 +15,11 @@ A rare, unannounced event of the cabinet, each tied to its own moment: at most o
 _Avoid_: Surprise (Surprises is only the Achievement family), hidden event, glitch
 
 **Rocket Game**:
-One of the two games of the main menu where a rocket dodges asteroids on the flippers, one with shooting and one without: the Rocket Easter Egg's game, played again on purpose. Its entries show only for a Profile that has had that Easter Egg.
+The main menu's game where a rocket dodges asteroids on the flippers and shoots them with Launch: the Rocket Easter Egg's game, played again on purpose, with shooting added. Its entry shows only for a Profile that has had that Easter Egg.
 _Avoid_: mini-game, arcade, Rocket (alone: the Easter Egg)
 
 **Rocket Board**:
-The Household's five best scores in one Rocket Game, a Profile possibly holding several places, shown only at the end of a game of it.
-_Avoid_: leaderboard, high score table, Household Board (the High Score Board's view)
-
-**Rocket Game**:
-One of the two games of the main menu where a rocket dodges asteroids on the flippers, one with shooting and one without: the Rocket Easter Egg's game, played again on purpose. Its entries show only for a Profile that has had that Easter Egg.
-_Avoid_: mini-game, arcade, Rocket (alone: the Easter Egg)
-
-**Rocket Board**:
-The Household's five best scores in one Rocket Game, a Profile possibly holding several places, shown only at the end of a game of it.
-_Avoid_: leaderboard, high score table, Household Board (the High Score Board's view)
-
-**Rocket Game**:
-One of the two games of the main menu where a rocket dodges asteroids on the flippers, one with shooting and one without: the Rocket Easter Egg's game, played again on purpose. Its entries show only for a Profile that has had that Easter Egg.
-_Avoid_: mini-game, arcade, Rocket (alone: the Easter Egg)
-
-**Rocket Board**:
-The Household's five best scores in one Rocket Game, a Profile possibly holding several places, shown only at the end of a game of it.
+The Household's five best Rocket Game scores, a Profile possibly holding several places, shown only at the end of a Rocket Game.
 _Avoid_: leaderboard, high score table, Household Board (the High Score Board's view)
 
 **Discord Rich Presence**:
