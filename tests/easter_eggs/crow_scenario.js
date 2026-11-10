@@ -1,11 +1,12 @@
 // ============================================================
-// Crow tests' scenario: main.js on the fake globals, the Crow forced by its
-// option, and what the player sees of it. Never loaded by PinballY; one
+// Crow tests' scenario: main.js on the fake globals, the Crow's draw always
+// won, and what the player sees of it. Never loaded by PinballY; one
 // start per test file, as main.js loads once per process.
 // ============================================================
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
+import { winTheDrawOf } from "./winning_draw.js";
 
 const PACK = "C:\\PinballY\\Scripts\\ExpansionPack";
 const PROFILES = `${PACK}\\profiles`;
@@ -26,10 +27,10 @@ export const ALL_GONE_MS = 13000;
 // Longer than a toast's whole life (rise, hold, fade).
 export const TOAST_LIFE_MS = 6000;
 
-// addOns: the Add-ons turned on; forced: the force option's value; files:
+// addOns: the Add-ons turned on; wins: the Easter Egg whose draw wins; files:
 // which of the Crow's assets exist; seed(fake): anything else before the start.
 export async function startCrowScenario({
-    addOns = ["startupChoicePrompt", "profilePicker", "achievements", "sessionStatsTracker"], startupScreen = "welcome", forced = "crow",
+    addOns = ["startupChoicePrompt", "profilePicker", "achievements", "sessionStatsTracker"], startupScreen = "welcome", wins = "crow",
     files = [...WING_IMAGES, DOT_IMAGE, CALL], seed = () => {}, profiles = ["Alice", "Bob"],
 } = {}) {
     const fake = createFakePinballYHost({ tables: [TABLE], now: new Date(2026, 10, 9, 20, 0, 0) });
@@ -42,9 +43,9 @@ export async function startCrowScenario({
     for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);
     config.language = "en";
     config.startupScreen = startupScreen;
-    config.forceEasterEgg = forced;
 
     const { default: lang } = await import("../../common/core/i18n.js");
+    await winTheDrawOf(wins);
     const { getProfileStore } = await import("../../common/profiles/profile_store.js");
     await import("../../main.js");
     await settle();

@@ -9,11 +9,11 @@ import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import config from "../../common/core/config.js";
 import {
-    startRocketScenario, launchFromWheel, untilPlaying, untilCrash, isRocketShown, MUSIC_FILE, SCORE_MS, LEAVING_MS, BACKDROP_PAINT_MS, TOAST_GONE_MS,
+    startRocketScenario, launchFromWheel, nextDayForAnotherProfile, untilPlaying, untilCrash, isRocketShown, MUSIC_FILE, SCORE_MS, LEAVING_MS, BACKDROP_PAINT_MS, TOAST_GONE_MS,
 } from "./rocket_scenario.js";
 
 test("the music loops from the opening word to the crash, and again at the next game", async () => {
-    const { fake, lang, table } = await startRocketScenario();
+    const { fake, lang, store, table } = await startRocketScenario();
     fake.addFile(MUSIC_FILE);
     config.rocketMusicFile = MUSIC_FILE;
 
@@ -36,6 +36,7 @@ test("the music loops from the opening word to the crash, and again at the next 
     await settle();
     fake.advanceTime(TOAST_GONE_MS);
     await settle();
+    nextDayForAnotherProfile(fake, store, "Alice");
     launchFromWheel(fake, table);
     await settle();
     fake.advanceTime(BACKDROP_PAINT_MS);

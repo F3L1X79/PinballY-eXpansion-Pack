@@ -1,6 +1,6 @@
 // ============================================================
 // Fake Blue Screen tests' scenario: main.js on the fake globals, the Fake
-// Blue Screen forced by its option, a table played from the wheel and back,
+// Blue Screen's draw always won, a table played from the wheel and back,
 // and what the player sees of the screen.
 // Never loaded by PinballY; one start per test file, as main.js loads once
 // per process.
@@ -8,6 +8,7 @@
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
+import { winTheDrawOf } from "./winning_draw.js";
 
 const PACK = "C:\\PinballY\\Scripts\\ExpansionPack";
 export const BLUE_SCREEN_SOUND = `${PACK}\\assets\\sounds\\easter_eggs\\blue_screen.wav`;
@@ -23,10 +24,10 @@ export const BLUE = 0xFF0000AA;
 export const GREY = 0xFFAAAAAA;
 const SCREEN_Z = { first: 7600, last: 7601 };
 
-// forced: the force option's value; files: which files exist; addOns: those on;
+// wins: the Easter Egg whose draw wins; files: which files exist; addOns: those on;
 // layoutSize: the window's.
 export async function startBlueScreenScenario({
-    forced = "fakeBlueScreen", addOns = ["achievements", "sessionStatsTracker"], files = [BLUE_SCREEN_SOUND],
+    wins = "fakeBlueScreen", addOns = ["achievements", "sessionStatsTracker"], files = [BLUE_SCREEN_SOUND],
     layoutSize = { width: 1080, height: 1920 },
 } = {}) {
     const fake = createFakePinballYHost({ tables: TABLES, now: new Date(2026, 10, 10, 20, 0, 0), layoutSize });
@@ -37,9 +38,9 @@ export async function startBlueScreenScenario({
     for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);
     config.language = "en";
     config.startupScreen = "wheel";
-    config.forceEasterEgg = forced;
 
     const { default: lang } = await import("../../common/core/i18n.js");
+    await winTheDrawOf(wins);
     const { getProfileStore } = await import("../../common/profiles/profile_store.js");
     await import("../../main.js");
     await settle();

@@ -1,11 +1,12 @@
 // ============================================================
-// Menu Glitch tests' scenario: main.js on the fake globals, the Menu Glitch
-// forced by its option, past the startup, and what the player sees of it.
+// Menu Glitch tests' scenario: main.js on the fake globals, the Menu Glitch's
+// draw always won, past the startup, and what the player sees of it.
 // Never loaded by PinballY; one start per test file.
 // ============================================================
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
+import { winTheDrawOf } from "./winning_draw.js";
 
 const PACK = "C:\\PinballY\\Scripts\\ExpansionPack";
 const PROFILES = `${PACK}\\profiles`;
@@ -33,9 +34,9 @@ export async function startMenuGlitchScenario({ addOns = ["drawnMenus", "achieve
     for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key) || key === "profilePicker";
     config.language = "en";
     config.startupScreen = "wheel";
-    config.forceEasterEgg = "menuGlitch";
 
     const { default: lang } = await import("../../common/core/i18n.js");
+    await winTheDrawOf("menuGlitch");
     const { getProfileStore } = await import("../../common/profiles/profile_store.js");
     await import("../../main.js");
     await settle();

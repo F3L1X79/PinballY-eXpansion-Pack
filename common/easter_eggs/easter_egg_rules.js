@@ -4,7 +4,7 @@
 // Profile's memory ("surprises" part, so a Profile Reset gives it back) and
 // the busy checks. Each Easter Egg only says its moment and what it plays.
 // - A win is recorded before it plays: a crash never gives a second one.
-// - The force option skips the chance and both limits, never the busy checks.
+// - Nothing but the draw wins one: no option forces an Easter Egg.
 // ============================================================
 
 import { formatDateKey } from "../tables/period_table.js";
@@ -14,7 +14,6 @@ import { getProfileStore } from "../profiles/profile_store.js";
 import { getWheelDialogs } from "../core/wheel_dialog.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { safeHandler } from "../core/safe_handler.js";
-import config from "../core/config.js";
 
 const SCRIPT_NAME = "EasterEggRules";
 
@@ -29,9 +28,8 @@ const DAILY_FILE = "easter_egg_day";
 const DAILY_FILE_VERSION = 1;
 
 // wheelDialogs: { isIdle(), isOverlayOpen(except) }; achievementToasts: { hasToasts() };
-// forced: the Easter Egg named by the force option, "" for none; random: the
-// draw's source, the host's by default.
-export function createEasterEggRules(host, { profileStore, wheelDialogs, achievementToasts, forced = "", random = host.random }) {
+// random(name): the draw for that Easter Egg, the host's by default.
+export function createEasterEggRules(host, { profileStore, wheelDialogs, achievementToasts, random = () => host.random() }) {
     // Won and not finished yet: their Achievement waits for the end of the effect.
     const playing = new Set();
     const finishedListeners = [];
@@ -63,11 +61,10 @@ export function createEasterEggRules(host, { profileStore, wheelDialogs, achieve
     // nothing; over: the screen it plays on, which does not make the wheel busy.
     function tryWin(name, { canPlay = () => true, over = null } = {}) {
         if (isBusy(over)) return false;
-        const isForced = name === forced;
-        if (!isForced && hasHad(name)) return false;
-        if (!isForced && random() >= CHANCE) return false;
+        if (hasHad(name)) return false;
+        if (random(name) >= CHANCE) return false;
         if (!canPlay()) return false;
-        if (!isForced && isTodayTaken()) return false;
+        if (isTodayTaken()) return false;
         record(name);
         playing.add(name);
         return true;
@@ -90,14 +87,23 @@ export function createEasterEggRules(host, { profileStore, wheelDialogs, achieve
 }
 
 let sharedRules = null;
+let sharedDraw = null;
+
+// Only for the tests' scenarios, which reach the shared rules through main.js:
+// source(name) replaces their draw, so one Easter Egg can win and no other
+// random of the pack changes; null gives the host's draw back.
+export function setEasterEggDraw(source) {
+    sharedDraw = source;
+}
 
 export function getEasterEggRules() {
     if (!sharedRules) {
-        sharedRules = createEasterEggRules(createPinballYHost(), {
+        const host = createPinballYHost();
+        sharedRules = createEasterEggRules(host, {
             profileStore: getProfileStore(),
             wheelDialogs: getWheelDialogs(),
             achievementToasts: getAchievementToasts(),
-            forced: config.forceEasterEgg,
+            random: name => (sharedDraw ? sharedDraw(name) : host.random()),
         });
     }
     return sharedRules;

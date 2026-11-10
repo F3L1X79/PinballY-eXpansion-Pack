@@ -196,7 +196,7 @@
         <span class="recap" id="recap" aria-label="Chantiers par effort"></span>
       </div>
       <div class="gauge" aria-hidden="true"><i id="hero-gauge" style="width:0"></i></div>
-      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 08.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
+      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 10.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
     </div>
   </header>
 
@@ -218,11 +218,11 @@
 
         <div class="ax row">Moyen</div>
         <div class="cell sweet">
+          <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#best-play-score"><b></b>Meilleure partie du lancement</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
-          <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
         </div>
@@ -316,25 +316,28 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-play" id="mini-game" data-track="play" data-rank="silver">
+      <li draggable="true" tabindex="0" class="item tr-play" id="mini-game" data-track="play" data-rank="bronze">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
             <h3>Un mini-jeu aux boutons de flipper, avec son record par Profile</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">UI</span></div>
           </div>
-          <p>Une fusée monte entre des astéroïdes : le flipper gauche et le flipper droit la font passer d'un couloir à l'autre, sur cinq couloirs, de plus en plus vite. Deux jeux au menu principal, l'un avec tir sur Launch, l'autre sans tir pour les bornes à tirette, Exit pour quitter, chacun avec son tableau personnel et des Achievements pour un score atteint.</p>
+          <p>La fusée de l'Easter Egg, rejouable depuis le menu principal une fois trouvée : le flipper gauche et le flipper droit la font passer d'un couloir à l'autre, sur cinq couloirs, de plus en plus vite. Deux jeux, l'un avec tir sur Launch, l'autre sans tir pour les bornes à tirette, Exit pour quitter, chacun avec son tableau personnel et des Achievements pour un score atteint.</p>
           <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="here">spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
           <div class="links">Flow Matt : <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Entrées ajoutées par <code>getMainMenu().add(...)</code>. Après <a href="#feld">Feld (n° <span data-ref="feld"></span>)</a>, qui le précède</div>
           <details>
             <summary>Checklist</summary>
             <ul>
-              <li>Les entrées de menu n'apparaissent que pour un Profile qui y a droit.</li>
+              <li>Un seul moteur : le jeu de l'Easter Egg de la Rocket (#497) sort dans un module partagé, que l'Easter Egg et les deux jeux du menu utilisent ; même musique, même réglage <code>ROCKET_MUSIC_FILE</code>.</li>
+              <li>Add-on à part, désactivable dans <code>addOns</code> ; même activé, ses entrées de menu n'apparaissent que pour un Profile qui a l'Achievement de l'Easter Egg, Unauthorized Takeoff.</li>
+              <li>Un Profile Reset efface l'Achievement, donc les entrées, jusqu'à ce que la fusée revienne par hasard.</li>
               <li>Exception à la règle « pas d'animation sans fin » : le jeu s'arrête à la défaite.</li>
-              <li>À la fin d'une partie, le tableau personnel des 5 meilleurs scores du Profile, un par jeu ; pas de classement de la maison ; un Profile Reset l'efface.</li>
+              <li>À la fin d'une partie, le tableau personnel des 5 meilleurs scores du Profile, un par jeu ; pas de classement de la maison ; un Profile Reset l'efface. Une partie de l'Easter Egg n'y entre pas.</li>
+              <li>Guide : aucune page joueur (l'Easter Egg n'est décrit nulle part) ; une phrase vague dans le guide du propriétaire, « certaines surprises débloquent des entrées du menu ».</li>
             </ul>
-            <p class="ctx">Idée de Félix du 25/10/2026 ; la fusée remplace Flappy Bird et le dinosaure de Chrome le 01/11/2026. Précisé au grill du 08/11/2026.</p>
+            <p class="ctx">Idée de Félix du 25/10/2026 ; la fusée remplace Flappy Bird et le dinosaure de Chrome le 01/11/2026. Précisé au grill du 08/11/2026, puis le 10/11/2026 après l'Easter Egg de la Rocket : même moteur, débloqué par l'Easter Egg, effort ramené à petit.</p>
           </details>
         </div>
       </li>

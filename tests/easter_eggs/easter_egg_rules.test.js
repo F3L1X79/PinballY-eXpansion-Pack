@@ -1,14 +1,14 @@
 // ============================================================
 // The Easter Egg rules alone, with an injected random source, on the fake
 // PinballY host: the chance, the daily limit of the cabinet, the per-Profile
-// memory, the busy checks and the force option.
+// memory, the busy checks and the draw a scenario may replace.
 // ============================================================
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createFakePinballYHost } from "../support/fake_pinbally_host.js";
 import { createProfileStore } from "../../common/profiles/profile_store.js";
-import { createEasterEggRules, EASTER_EGG } from "../../common/easter_eggs/easter_egg_rules.js";
+import { createEasterEggRules, getEasterEggRules, setEasterEggDraw, EASTER_EGG } from "../../common/easter_eggs/easter_egg_rules.js";
 import { createWheelDialogs } from "../../common/core/wheel_dialog.js";
 
 const NOVEMBER_9 = new Date(2026, 10, 9, 20, 0, 0);
@@ -19,7 +19,7 @@ const WINNING = () => 0;
 const CROW = EASTER_EGG.CROW;
 const OPEN_SCREEN = () => ({ isOpen: () => true, onClosed() {} });
 
-function rulesOn(fake, { random = WINNING, forced = "", busy = {} } = {}) {
+function rulesOn(fake, { random = WINNING, busy = {} } = {}) {
     const store = createProfileStore(fake);
     const state = { dialogsIdle: true, overlayOpen: false, hasToasts: false, ...busy };
     const rules = createEasterEggRules(fake, {
@@ -28,7 +28,6 @@ function rulesOn(fake, { random = WINNING, forced = "", busy = {} } = {}) {
         achievementToasts: { hasToasts: () => state.hasToasts },
         // null: the host's own random source.
         ...(random ? { random } : {}),
-        forced,
     });
     return { rules, store, state };
 }
@@ -161,17 +160,22 @@ test("nothing is drawn during a game", () => {
     assert.equal(rules.tryWin(CROW), false);
 });
 
-test("the force option skips the chance and both limits for the named Easter Egg, never the busy checks", () => {
-    const { fake, rules, state } = start({ random: () => 0.99, forced: CROW });
-    assert.equal(rules.tryWin(CROW), true, "the chance skipped");
-    assert.equal(rules.tryWin(CROW), true, "both limits skipped");
-    state.hasToasts = true;
-    assert.equal(rules.tryWin(CROW), false, "still not while busy");
-    assert.equal(JSON.parse(fake.readFile(DAILY_FILE)).day, "2026-11-09");
+test("the draw is told which Easter Egg it is for, so a scenario can make one win and leave the others to the chance", () => {
+    const winsForTheCrow = name => (name === CROW ? 0 : 0.99);
+    assert.equal(start({ random: winsForTheCrow }).rules.tryWin(CROW), true);
+    assert.equal(start({ random: winsForTheCrow }).rules.tryWin(EASTER_EGG.ROCKET), false);
 });
 
-test("the force option leaves the other Easter Eggs to the chance", () => {
-    assert.equal(start({ random: () => 0.99, forced: "another" }).rules.tryWin(CROW), false);
+test("the shared rules draw from the host until a scenario replaces their draw, and nothing else wins them an Easter Egg", () => {
+    const fake = createFakePinballYHost({ now: NOVEMBER_9 });
+    // Never uninstalled: node --test runs each test file in its own process.
+    fake.installGlobals();
+    const rules = getEasterEggRules();
+    assert.equal(rules.tryWin(CROW), false, "the fake host never wins");
+    setEasterEggDraw(name => (name === CROW ? 0 : 0.99));
+    assert.equal(rules.tryWin(EASTER_EGG.ROCKET), false);
+    assert.equal(rules.tryWin(CROW), true);
+    setEasterEggDraw(null);
 });
 
 test("an Easter Egg counts as played once it has finished, and the listeners are told", () => {

@@ -1,12 +1,13 @@
 // ============================================================
-// Rocket tests' scenario: main.js on the fake globals, the Rocket forced by
-// its option, a launch from the wheel, and what the player sees of the game.
+// Rocket tests' scenario: main.js on the fake globals, the Rocket's draw
+// always won, a launch from the wheel, and what the player sees of the game.
 // Never loaded by PinballY; one start per test file, as main.js loads once
 // per process.
 // ============================================================
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
+import { winTheDrawOf } from "./winning_draw.js";
 
 const PACK = "C:\\PinballY\\Scripts\\ExpansionPack";
 const IMAGES = `${PACK}\\assets\\images\\easter_eggs`;
@@ -35,9 +36,9 @@ export const TOAST_GONE_MS = 30000;
 export const BACKDROP_Z_INDEX = 7500;
 export const TEXT_Z_INDEX = 7580;
 
-// forced: the force option's value; files: which images exist; addOns: those on.
+// wins: the Easter Egg whose draw wins; files: which images exist; addOns: those on.
 export async function startRocketScenario({
-    forced = "rocket", addOns = ["achievements", "sessionStatsTracker", "backglassClock", "highScores"], files = ROCKET_IMAGES,
+    wins = "rocket", addOns = ["achievements", "sessionStatsTracker", "backglassClock", "highScores"], files = ROCKET_IMAGES,
 } = {}) {
     const fake = createFakePinballYHost({ tables: TABLES, now: new Date(2026, 10, 9, 20, 0, 0) });
     fake.setWheelTables(TABLES.map(table => table.configId));
@@ -47,14 +48,21 @@ export async function startRocketScenario({
     for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);
     config.language = "en";
     config.startupScreen = "wheel";
-    config.forceEasterEgg = forced;
 
     const { default: lang } = await import("../../common/core/i18n.js");
+    await winTheDrawOf(wins);
     const { getProfileStore } = await import("../../common/profiles/profile_store.js");
     await import("../../main.js");
     await settle();
     fake.advanceTime(100);
     return { fake, lang, store: getProfileStore(), table: fake.getGameInfo(TABLES[0].configId) };
+}
+
+// The Rocket again: once a Profile and once a day, so the next day for another Profile.
+export function nextDayForAnotherProfile(fake, store, name) {
+    fake.addFolder(`${PACK}\\profiles\\${name}`);
+    store.switchTo(name);
+    fake.setNow(new Date(fake.now().getTime() + 24 * 60 * 60 * 1000));
 }
 
 // Layers already there at the launch, such as the Confetti Shower's at the same z.

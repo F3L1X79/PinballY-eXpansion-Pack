@@ -1,11 +1,12 @@
 // ============================================================
-// Maneki-neko tests' scenario: main.js on the fake globals, the cat forced by
-// its option, and what the player sees of it. Never loaded by PinballY; one
+// Maneki-neko tests' scenario: main.js on the fake globals, the cat's draw
+// always won, and what the player sees of it. Never loaded by PinballY; one
 // start per test file, as main.js loads once per process.
 // ============================================================
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
+import { winTheDrawOf } from "./winning_draw.js";
 
 const PACK = "C:\\PinballY\\Scripts\\ExpansionPack";
 const PROFILES = `${PACK}\\profiles`;
@@ -23,10 +24,10 @@ export const VISIBLE_MS = 2000;
 export const WHOLE_MS = 2400;
 export const TOAST_LIFE_MS = 6000;
 
-// random: the fake's draw, from before the start; forced: the force option's
-// value; files: which of the cat's assets exist; seed(fake): anything else.
+// random: the fake's random, from before the start; wins: the Easter Egg whose
+// draw wins; files: which of the cat's assets exist; seed(fake): anything else.
 export async function startManekiScenario({
-    random = () => 0.5, forced = "manekiNeko", addOns = ["achievements", "sessionStatsTracker"],
+    random = () => 0.5, wins = "manekiNeko", addOns = ["achievements", "sessionStatsTracker"],
     files = [LEFT_IMAGE, RIGHT_IMAGE, HORN], seed = () => {},
 } = {}) {
     const fake = createFakePinballYHost({ tables: TABLES, now: new Date(2026, 10, 9, 20, 0, 0) });
@@ -39,9 +40,9 @@ export async function startManekiScenario({
     for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);
     config.language = "en";
     config.startupScreen = "wheel";
-    config.forceEasterEgg = forced;
 
     const { default: lang } = await import("../../common/core/i18n.js");
+    await winTheDrawOf(wins);
     const { getProfileStore } = await import("../../common/profiles/profile_store.js");
     await import("../../main.js");
     await settle();
