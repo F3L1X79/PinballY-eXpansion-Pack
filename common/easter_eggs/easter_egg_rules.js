@@ -4,7 +4,7 @@
 // Profile's memory ("surprises" part, so a Profile Reset gives it back) and
 // the busy checks. Each Easter Egg only says its moment and what it plays.
 // - A win is recorded before it plays: a crash never gives a second one.
-// - Nothing but the draw wins one: no option forces an Easter Egg.
+// - Only the draw wins one; the tests' scenarios replace it via setEasterEggDraw.
 // ============================================================
 
 import { formatDateKey } from "../tables/period_table.js";
