@@ -218,7 +218,6 @@
 
         <div class="ax row">Moyen</div>
         <div class="cell sweet">
-          <a class="chip tr-play" href="#mini-game"><b></b>Mini-jeu</a>
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
@@ -277,34 +276,6 @@
     </div>
 
     <ol class="queue">
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="mini-game" data-track="play" data-rank="bronze">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Un mini-jeu aux boutons de flipper, avec son record par Profile</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">UI</span></div>
-          </div>
-          <p>La fusée de l'Easter Egg, rejouable depuis le menu principal une fois trouvée : le flipper gauche et le flipper droit la font passer d'un couloir à l'autre, sur cinq couloirs, de plus en plus vite, et Launch tire sur les astéroïdes (pas dans l'Easter Egg). Exit pour quitter, le top 5 de la maison en fin de partie, sans Achievement.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/502">#502</a>, tickets #503 à #506 (#505 et #506 tous deux après #504). Flow Matt : <code>/implement-spec</code> (un seul implémenteur pour la chaîne). Entrées ajoutées par <code>getMainMenu().add(...)</code>. Les Easter Eggs (spec #492) sont livrés</div>
-          <details>
-            <summary>Checklist</summary>
-            <ul>
-              <li>Un seul moteur : le jeu de l'Easter Egg de la Rocket (#497) sort dans un module partagé, que l'Easter Egg et le jeu du menu utilisent ; un seul jeu au menu, avec tir sur Launch (ou Select), le tir absent de l'Easter Egg ; même musique, même réglage <code>ROCKET_MUSIC_FILE</code>.</li>
-              <li>Add-on à part, désactivable dans <code>addOns</code> ; même activé, son entrée de menu n'apparaît que pour un Profile qui a l'Achievement de l'Easter Egg, Unauthorized Takeoff.</li>
-              <li>Un Profile Reset efface l'Achievement, donc les entrées, jusqu'à ce que la fusée revienne par hasard.</li>
-              <li>Exception à la règle « pas d'animation sans fin » : le jeu s'arrête à la défaite.</li>
-              <li>Écran d'intro : en bas, les commandes avec les noms des boutons de la borne (flippers gauche et droit pour changer de couloir, plus Launch pour tirer dans le jeu avec tir). L'intro de l'Easter Egg reste sans commandes.</li>
-              <li>À la fin d'une partie, un écran de score : en haut le score qu'on vient de faire, puis le top 5 de la maison du jeu (un par jeu, pas de tableau personnel), la ligne du joueur mise en valeur s'il y entre. Un même Profile peut y tenir plusieurs places ; un Profile Reset retire ses lignes. Une partie de l'Easter Egg n'y entre pas.</li>
-              <li>Pas de « rejouer » : l'écran se ferme au premier bouton ou après 10 s, retour au menu principal. Le top 5 ne se consulte que là, en fin de partie.</li>
-              <li>Guide : aucune page joueur (l'Easter Egg n'est décrit nulle part) ; une phrase vague dans le guide du propriétaire, « certaines surprises débloquent des entrées du menu ».</li>
-            </ul>
-            <p class="ctx">Idée de Félix du 25/10/2026 ; la fusée remplace Flappy Bird et le dinosaure de Chrome le 01/11/2026. Précisé au grill du 08/11/2026, puis le 10/11/2026 après l'Easter Egg de la Rocket : même moteur, débloqué par l'Easter Egg, effort ramené à petit, le top 5 de la maison remplace le tableau personnel.</p>
-          </details>
-        </div>
-      </li>
 
       <li draggable="true" tabindex="0" class="item tr-play" id="household-mission" data-track="play" data-rank="platinum">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
