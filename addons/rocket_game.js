@@ -1,7 +1,7 @@
 // ============================================================
 // Rocket Game: the Rocket Easter Egg's game, chosen from the main menu by a
 // Profile that has had that Easter Egg (a Profile Reset hides it again). An
-// intro naming the buttons, the game, then the score screen and the Rocket Board;
+// intro naming the buttons, the game with Launch shooting, then the score screen and the Rocket Board;
 // the main menu comes back on the entry, whether the game crashed, was given up or could not start.
 // - Only a crash saves a score: never a game given up with Exit, never the Easter Egg's.
 // - Shares the Easter Egg's engine (common/rocket/rocket_engine.js): one game at a time.
@@ -57,7 +57,8 @@ export default function init() {
         }
         engine.start({
             texts: lang.rocket,
-            intro: { commands: [lang.rocketGame.changeLane], ms: INTRO_MS },
+            intro: { commands: [lang.rocketGame.changeLane, lang.rocketGame.shoot], ms: INTRO_MS },
+            shooting: true,
             exitGivesUp: true,
             onCrashed: (score, end) => {
                 const recorded = orLogged(() => rocketBoard.record(score), null);

@@ -1069,6 +1069,7 @@ export default {
     rocketGame: {
         menuEntry: "Rakete",
         changeLane: "Linker / rechter Flipper: Spur wechseln",
+        shoot: "Start-Taste: schießen",
         yourScore: "Ihre Punkte",
     },
     fakeBlueScreen: {

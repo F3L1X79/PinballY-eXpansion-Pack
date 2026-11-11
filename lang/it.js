@@ -1068,6 +1068,7 @@ export default {
     rocketGame: {
         menuEntry: "Razzo",
         changeLane: "Flipper sinistro / destro: cambia corsia",
+        shoot: "Pulsante di lancio: spara",
         yourScore: "Il tuo punteggio",
     },
     fakeBlueScreen: {

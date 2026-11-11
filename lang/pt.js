@@ -1069,6 +1069,7 @@ export default {
     rocketGame: {
         menuEntry: "Foguete",
         changeLane: "Flipper esquerdo / direito: mudar de faixa",
+        shoot: "Botão de lançamento: disparar",
         yourScore: "Sua pontuação",
     },
     fakeBlueScreen: {

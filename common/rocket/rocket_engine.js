@@ -1,6 +1,6 @@
 // ============================================================
-// The Rocket's game: dodging asteroids on the flippers until the crash, then
-// the score for 2 s or the caller's own screen, drawn over everything. Shared
+// The Rocket's game: dodging asteroids on the flippers (and shooting them, when
+// asked) until the crash, then the score for 2 s or the caller's own screen. Shared
 // by the Easter Egg and the Rocket Game, which it tells at the end the final
 // score, or that it was given up. Its music (config's rocketMusicFile) loops from the opening word to the crash.
 // - Buttons and attract mode go through the Drawn Screen controls; Exit gives up only when asked.
@@ -48,7 +48,10 @@ const SCORE_PANEL_COLOR = 0xE8171D27;
 const BACKDROP_Z_INDEX = 7500;
 const SCROLL_Z_INDEX = 7501;
 const ASTEROID_Z_INDEX = 7510;
+// Each asteroid of the pool, and each break-up frame, has a z of its own from these on.
 const BREAK_Z_INDEX = 7540;
+// Past the last break-up frame's z.
+const SHOT_Z_INDEX = 7545;
 const FLAME_Z_INDEX = 7550;
 const SHIP_Z_INDEX = 7560;
 const EXPLOSION_Z_INDEX = 7570;
@@ -75,6 +78,12 @@ const JITTER_LANES = 0.28;
 // One full side-to-side swing of a weaving asteroid.
 const SWAY_MS = 1100;
 const POINTS_PER_ROW = 10;
+const POINTS_PER_BREAK = 5;
+// The shot, in shares of a lane, and the time it takes to rise one window:
+// faster than the fastest asteroid falls.
+const SHOT_WIDTH_SHARE = 0.07;
+const SHOT_LENGTH_SHARE = 0.4;
+const SHOT_RISE_MS = 500;
 
 const FRAME_MS = 16;
 // A long stutter must not teleport the asteroids through the ship.
@@ -294,7 +303,8 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         run.flameTop = run.shipCentreY + run.ship.h / 2 - FLAME_TUCK * shipScale;
         const explosionBox = EXPLOSION_CANVAS * shipScale * EXPLOSION_SCALE;
         run.explosionFrames = EXPLOSION_FILES.map((file, index) => imageSprite(run, EXPLOSION_Z_INDEX + index, file, EXPLOSION_CANVAS, EXPLOSION_CANVAS, explosionBox, explosionBox));
-        run.hitDistance = run.laneWidth * ASTEROID_SHARE / 2 * ASTEROID_HIT_SHARE + SHIP_DRAWN_WIDTH * shipScale / 2 * SHIP_HIT_SHARE;
+        run.asteroidHitRadius = run.laneWidth * ASTEROID_SHARE / 2 * ASTEROID_HIT_SHARE;
+        run.hitDistance = run.asteroidHitRadius + SHIP_DRAWN_WIDTH * shipScale / 2 * SHIP_HIT_SHARE;
     }
 
     function prepareAsteroids(run) {
@@ -306,6 +316,13 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         run.breakFrames = BREAK_FILES.slice(1).map((file, index) => imageSprite(run, BREAK_Z_INDEX + index, file, BREAK_CANVAS, BREAK_CANVAS, asteroidBox, asteroidBox));
     }
 
+    function prepareShot(run) {
+        if (!run.shooting) return;
+        const layer = newLayer(run, SHOT_Z_INDEX);
+        layer.draw(dc => dc.fillRect(0, 0, 4, 16, COLORS.gold), 4, 16);
+        run.shotSprite = spriteOf(layer, run.laneWidth * SHOT_WIDTH_SHARE, run.laneWidth * SHOT_LENGTH_SHARE, true);
+    }
+
     // Every layer drawn at once behind the opaque backdrop, which hides the table's
     // update() flashing the wheel too.
     function prepare(run) {
@@ -315,6 +332,7 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         addLaneLines(run);
         prepareShip(run);
         prepareAsteroids(run);
+        prepareShot(run);
 
         const splash = imageSprite(run, SPLASH_Z_INDEX, SPLASH_FILE, SPLASH_CANVAS.width, SPLASH_CANVAS.height, run.width, run.height);
         run.splash = { ...splash, stretched: true };
@@ -437,15 +455,80 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         return null;
     }
 
+    function releaseAsteroid(run, asteroid) {
+        hide(run, asteroid.sprite);
+        run.freeAsteroids.push(asteroid.sprite);
+    }
+
     function recycleGoneRows(run) {
         const isGone = row => row.y - row.trailPx > run.height + run.asteroidBox / 2;
         for (const row of run.rows.filter(isGone)) {
-            for (const asteroid of row.asteroids) {
-                hide(run, asteroid.sprite);
-                run.freeAsteroids.push(asteroid.sprite);
-            }
+            for (const asteroid of row.asteroids) releaseAsteroid(run, asteroid);
         }
         run.rows = run.rows.filter(row => !isGone(row));
+    }
+
+    // The break-up frames, where an asteroid broke; a new break-up cuts the last one short.
+    function startBreakUp(run, x, y) {
+        if (run.breakShown >= 0 && run.breakShown < run.breakFrames.length) hide(run, run.breakFrames[run.breakShown]);
+        run.breakShown = -1;
+        run.breakUp = { x, y, startMs: nowMs() };
+    }
+
+    function breakUpStep(run, now) {
+        if (!run.breakUp) return;
+        const { x, y, startMs } = run.breakUp;
+        run.breakShown = advance(run, run.breakFrames, run.breakShown, Math.min(run.breakFrames.length, Math.floor((now - startMs) / BREAK_FRAME_MS)), x, y);
+        if (run.breakShown >= run.breakFrames.length) run.breakUp = null;
+    }
+
+    function removeShot(run) {
+        if (!run.shot) return;
+        hide(run, run.shotSprite);
+        run.shot = null;
+    }
+
+    // From the ship's nose, up its lane; nothing while a shot still rises.
+    function fire(run) {
+        if (!run.shooting || run.phase !== "playing" || run.shot) return;
+        run.shot = { x: laneX(run, run.lane), tip: run.shipCentreY - run.ship.h / 2 };
+        show(run, run.shotSprite, run.shot.x, run.shot.tip + run.shotSprite.h / 2);
+    }
+
+    // The lowest asteroid the shot swept through since its last step, so that a fast shot never jumps one.
+    function shotTarget(run, fromBottom) {
+        const radius = run.asteroidHitRadius;
+        const reach = radius + run.shotSprite.w / 2;
+        let target = null;
+        for (const row of run.rows) {
+            for (const asteroid of row.asteroids) {
+                const y = row.y - asteroid.trailPx;
+                const isSwept = Math.abs(asteroid.x - run.shot.x) < reach && y + radius >= run.shot.tip && y - radius <= fromBottom && y + radius >= 0;
+                if (isSwept && (!target || y > target.y)) target = { row, asteroid, y };
+            }
+        }
+        return target;
+    }
+
+    function moveShot(run, stepMs) {
+        if (!run.shot) return;
+        const fromBottom = run.shot.tip + run.shotSprite.h;
+        run.shot.tip -= run.height / SHOT_RISE_MS * stepMs;
+        const target = shotTarget(run, fromBottom);
+        if (target) {
+            const { row, asteroid, y } = target;
+            // The row stays, even empty: it still scores as it passes.
+            row.asteroids = row.asteroids.filter(other => other !== asteroid);
+            releaseAsteroid(run, asteroid);
+            removeShot(run);
+            startBreakUp(run, asteroid.x, y);
+            run.score += POINTS_PER_BREAK;
+            drawScore(run);
+        } else if (run.shot.tip + run.shotSprite.h < 0) {
+            removeShot(run);
+        } else {
+            place(run, run.shotSprite, run.shot.x, run.shot.tip + run.shotSprite.h / 2);
+        }
     }
 
     function play(run, stepMs, now) {
@@ -466,6 +549,8 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
                 drawScore(run);
             }
         }
+        moveShot(run, stepMs);
+        breakUpStep(run, now);
         const hit = findHit(run);
         if (hit) crash(run, hit);
         else recycleGoneRows(run);
@@ -478,8 +563,8 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         hide(run, run.ship);
         if (run.flameShown) hide(run, run.flameShown);
         run.flameShown = null;
-        run.crashAt = { x: asteroid.x, y: row.y - asteroid.trailPx };
-        run.breakShown = -1;
+        removeShot(run);
+        startBreakUp(run, asteroid.x, row.y - asteroid.trailPx);
         run.explosionShown = -1;
         enterPhase(run, "crash");
     }
@@ -493,7 +578,7 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
     }
 
     function crashStep(run, elapsed) {
-        run.breakShown = advance(run, run.breakFrames, run.breakShown, Math.min(run.breakFrames.length, Math.floor(elapsed / BREAK_FRAME_MS)), run.crashAt.x, run.crashAt.y);
+        breakUpStep(run, nowMs());
         run.explosionShown = advance(run, run.explosionFrames, run.explosionShown, Math.min(run.explosionFrames.length, Math.floor(elapsed / EXPLOSION_FRAME_MS)), run.shipX, run.shipCentreY);
         if (elapsed < CRASH_MS) return;
         if (run.onCrashed) {
@@ -599,17 +684,18 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
     // texts: { dodge, score }, as shown; onEnd({ score } or { givenUp: true });
     // intro: the commands named under the opening word, and how long it stays;
     // exitGivesUp: Exit ends the game before its crash, with no score;
-    // onCrashed(score, end): replaces the 2 s score panel, the game kept still until end().
-    function start({ texts, onEnd, intro = { commands: [], ms: SPLASH_MS }, exitGivesUp = false, onCrashed = null }) {
+    // onCrashed(score, end): replaces the 2 s score panel, the game kept still until end();
+    // shooting: Select and Launch fire at the asteroids.
+    function start({ texts, onEnd, intro = { commands: [], ms: SPLASH_MS }, exitGivesUp = false, onCrashed = null, shooting = false }) {
         const run = {
-            placed: createPlacedLayers(host), texts, onEnd, intro, exitGivesUp, onCrashed, commandsSprite: null, phase: "preparing", opening: null, frameTimer: null, prepareTimer: null, music: null,
+            placed: createPlacedLayers(host), texts, onEnd, intro, exitGivesUp, onCrashed, shooting, commandsSprite: null, phase: "preparing", opening: null, frameTimer: null, prepareTimer: null, music: null,
             layers: [], scrolling: [], laneLines: [], freeAsteroids: [], rows: [], queue: [], flameShown: null, hasCrashed: false,
+            shotSprite: null, shot: null, breakUp: null, breakShown: -1,
             width: 0, height: 0, score: 0, playMs: 0, nextEventInMs: 0, phaseStartMs: 0, lastFrameMs: 0, glideStartMs: 0,
         };
         running = run;
-        const ignore = () => {};
         run.opening = screen.open(
-            { onMove: (direction, isRepeat) => onMove(run, direction, isRepeat), onChoose: ignore, onExit: () => onExit(run), close: () => finish(run) },
+            { onMove: (direction, isRepeat) => onMove(run, direction, isRepeat), onChoose: () => fire(run), onExit: () => onExit(run), close: () => finish(run) },
             { holdsAttractMode: true },
         );
         run.opening.ready();

@@ -1,7 +1,7 @@
 // ============================================================
 // The Rocket Game through main.js: its entry right after the Random Game,
 // only for a Profile that has had the Rocket Easter Egg; the intro naming
-// the flippers for 3.5 s; the game; the score screen with the score just
+// the flippers and Launch for 3.5 s; the game; the score screen with the score just
 // made and the Rocket Board, closed by a button; the main menu back on the entry; the score saved.
 // ============================================================
 
@@ -27,6 +27,7 @@ test("a Profile that had the Rocket plays it from the main menu, sees its score,
     await chooseRocketGame(fake, lang);
     assert.ok(gameTexts(fake).includes(lang.rocket.dodge), "the Easter Egg's word");
     assert.ok(gameTexts(fake).includes(lang.rocketGame.changeLane), "the commands at the bottom");
+    assert.ok(gameTexts(fake).includes(lang.rocketGame.shoot), "Launch shoots, under the flippers' line");
     fake.advanceTime(INTRO_MS - 100);
     assert.ok(gameTexts(fake).includes(lang.rocketGame.changeLane), "held 3.5 s");
     fake.advanceTime(200);

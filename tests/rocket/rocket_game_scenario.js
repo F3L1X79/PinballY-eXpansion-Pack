@@ -73,6 +73,10 @@ const shownIn = (fake, from, to) => fake.drawingLayers().filter(layer => layer.z
 export const isGameShown = fake => shownIn(fake, GAME_Z_INDEX.backdrop, GAME_Z_INDEX.last).length > 0;
 export const gameTexts = fake => shownIn(fake, GAME_Z_INDEX.backdrop, GAME_Z_INDEX.last).flatMap(layer => layer.texts());
 export const gameLayerCount = fake => fake.drawingLayers().filter(layer => layer.zIndex >= GAME_Z_INDEX.backdrop && layer.zIndex <= GAME_Z_INDEX.last).length;
+export const gameImages = fake => shownIn(fake, GAME_Z_INDEX.backdrop, GAME_Z_INDEX.last).flatMap(layer => layer.images());
+// The shot's own layer, while one rises.
+export const SHOT_Z_INDEX = 7545;
+export const shownShots = fake => shownIn(fake, SHOT_Z_INDEX, SHOT_Z_INDEX);
 export const isScoreScreenShown = fake => shownIn(fake, SCORE_SCREEN_Z_INDEX.backdrop, SCORE_SCREEN_Z_INDEX.backdrop).length > 0;
 export const scoreScreenTexts = fake => shownIn(fake, SCORE_SCREEN_Z_INDEX.score, SCORE_SCREEN_Z_INDEX.score).flatMap(layer => layer.texts());
 export const scoreScreenLayerCount = fake => fake.drawingLayers()

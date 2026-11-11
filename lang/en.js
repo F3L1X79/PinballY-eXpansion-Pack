@@ -1014,6 +1014,7 @@ export default {
     rocketGame: {
         menuEntry: "Rocket",
         changeLane: "Left / right flipper: change lane",
+        shoot: "Launch: shoot",
         yourScore: "Your score",
     },
     // The Fake Blue Screen: title and errorCode stay the same in every language.

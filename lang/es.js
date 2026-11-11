@@ -1070,6 +1070,7 @@ export default {
     rocketGame: {
         menuEntry: "Cohete",
         changeLane: "Flipper izquierdo / derecho: cambiar de carril",
+        shoot: "Botón de lanzamiento: disparar",
         yourScore: "Tu puntuación",
     },
     fakeBlueScreen: {
