@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
-import { DRAWN_MENU_Z_INDEX } from "../../common/drawn_menu/drawn_menu_painter.js";
+import { DRAWN_MENU_Z_INDEX, DRAWN_MENU_LOOK } from "../../common/drawn_menu/drawn_menu_painter.js";
 import {
     OPEN_OVER_MS, GLIDE_OVER_MS, isDrawnMenuShown, isAnythingDrawn, drawnMenuLines, highlightedEntry, press, openPauseMenu, chooseEntry,
 } from "./drawn_menu_reader.js";
@@ -80,11 +80,13 @@ test("the native pause menu is never cancelled and stays open underneath", () =>
     fake.closeMenu();
 });
 
-test("the cover is opaque black from the first frame; only the panel fades in", () => {
+test("the cover is the usual backdrop with the native menu's box in opaque black from the first frame; only the panel fades in", () => {
     fake.openPauseMenu();
 
     assert.equal(cover().alpha, 1);
-    assert.deepEqual(cover().fills(), [OPAQUE_BLACK]);
+    assert.deepEqual(cover().fills(), [DRAWN_MENU_LOOK.colors.backdrop, OPAQUE_BLACK]);
+    const [whole, box] = cover().strokes().map(stroke => stroke.rect);
+    assert.ok(box.width < whole.width / 2 && box.height < whole.height, "only the native menu's box is black");
     assert.deepEqual(panelAlphas(), [], "the panel starts transparent");
     fake.advanceTime(50);
     assert.ok(panelAlphas().length > 0 && panelAlphas().every(alpha => alpha < 1), "the panel fades in");

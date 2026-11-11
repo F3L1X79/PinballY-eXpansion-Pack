@@ -123,8 +123,9 @@ function splitMessage(message) {
 // unless named "Ref" (reference pixels): k turns the one into the other.
 // wrappedHeightAt(str, widthPx, { font, sizePx, weight }) measures a text
 // wrapped in that width: a dialog's title and message, and the headings
-// too wide for one line.
-export function computeGeometry({ width, height }, model, wrappedHeightAt) {
+// too wide for one line. around: a native menu's box, which the panel is
+// centred on and grows to cover, its list centred in it.
+export function computeGeometry({ width, height }, model, wrappedHeightAt, { around = null } = {}) {
     const k = menuScaleOf({ width, height });
     const zoom = k / (height / LOOK.referenceHeight);
     const listWidth = DRAWN_MENU_LIST_WIDTH * k;
@@ -162,9 +163,11 @@ export function computeGeometry({ width, height }, model, wrappedHeightAt) {
     const fixedRef = 2 * DRAWN_MENU_FACE_INSET + LOOK.listTop + listBottomRef + headerBlockRef + footerBlockRef;
     const maxPanelRef = LOOK.maxHeightShare * LOOK.referenceHeight / zoom;
     const areaHeightRef = Math.max(LOOK.rowHeights.entry, Math.min(rowsHeightRef, maxPanelRef - fixedRef));
-    const panelHeightRef = Math.max(LOOK.minPanelHeight, fixedRef + areaHeightRef);
+    const panelHeightRef = Math.max(LOOK.minPanelHeight, fixedRef + areaHeightRef, around ? around.height / k : 0);
     const contentTopRef = DRAWN_MENU_FACE_INSET + LOOK.listTop + (panelHeightRef - fixedRef - areaHeightRef) / 2;
-    const panelTop = Math.max(height * (1 - LOOK.maxHeightShare) / 2, height * LOOK.middleShare - panelHeightRef * k / 2);
+    const panelTop = around
+        ? around.y + around.height / 2 - panelHeightRef * k / 2
+        : Math.max(height * (1 - LOOK.maxHeightShare) / 2, height * LOOK.middleShare - panelHeightRef * k / 2);
     return {
         width,
         height,
@@ -430,9 +433,77 @@ export function drawSelectedText(host, dc, geometry, row, height) {
 }
 
 // The translucent backdrop, or the opaque cover.
-export function drawBackdrop(dc, covering = false) {
+// cover: null, the backdrop alone; WHOLE_WINDOW, opaque all over; or a
+// { x, y, width, height } box made opaque on the backdrop, hiding a native menu.
+export function drawBackdrop(dc, cover = null) {
     const { width, height } = dc.getSize();
-    dc.fillRect(0, 0, width, height, covering ? LOOK.colors.cover : LOOK.colors.backdrop);
+    if (cover === WHOLE_WINDOW) {
+        dc.fillRect(0, 0, width, height, LOOK.colors.cover);
+        return;
+    }
+    dc.fillRect(0, 0, width, height, LOOK.colors.backdrop);
+    if (cover) dc.fillRect(cover.x, cover.y, cover.width, cover.height, LOOK.colors.cover);
+}
+
+// The box hiding PinballY's menu of these native items: nativeMenuBox()
+// with a margin all round.
+export function nativeMenuCover(size, items, options) {
+    const box = nativeMenuBox(size, items, options);
+    const margin = NATIVE_MENU.coverMargin * size.height / LOOK.referenceHeight;
+    return { x: box.x - margin, y: box.y - margin, width: box.width + 2 * margin, height: box.height + 2 * margin };
+}
+
+export const WHOLE_WINDOW = "whole window";
+
+// PinballY's own menu layout (ShowMenu, AdjustSpritePosition and
+// CreateGPFont in its source; docs/pinbally/pinbally-help.md, 4.2), in its
+// 1920 reference pixels of the window's height.
+const NATIVE_MENU = Object.freeze({
+    width: 810, border: 4, spacer: 12, linePadding: 8, maxPagedHeight: 1440, minPerPage: 4,
+    // Its font's line spacing over its em size, unknown to scripts: above
+    // the usual 1.15 to 1.33, for the cover to err on the large side.
+    lineSpacing: 1.35,
+    defaultFontPoints: 42,
+    // Around the box, for a font with a larger line spacing still.
+    coverMargin: 8,
+});
+
+// The point size of PinballY's MenuFont setting ("<size> <weight> <family>",
+// "*" for its default).
+export function menuFontPointsOf(setting) {
+    const points = parseFloat(String(setting || "").trim().split(/\s+/)[0]);
+    return Number.isFinite(points) && points > 0 ? points : NATIVE_MENU.defaultFontPoints;
+}
+
+// Where PinballY draws its menu of these native items, in window pixels:
+// centred across, a quarter of the height down unless that leaves less
+// than a sixteenth above it; Page Up and Page Down count only when paging.
+export function nativeMenuBox({ width, height }, items, { menuFontPoints, pagingCommands = [] }) {
+    const [pageUp, pageDown] = pagingCommands;
+    const lineHeight = Math.ceil(menuFontPoints * 96 / 72 * NATIVE_MENU.lineSpacing) + NATIVE_MENU.linePadding;
+    let menuHeight = 2 * NATIVE_MENU.border;
+    let inPaged = false;
+    let hasPaged = false;
+    let pagedCount = 0;
+    for (const item of items) {
+        menuHeight += item.cmd === -1 && !item.title ? NATIVE_MENU.spacer : lineHeight;
+        if (item.cmd === pageUp) inPaged = hasPaged = true;
+        else if (item.cmd === pageDown) inPaged = false;
+        else if (inPaged) pagedCount++;
+    }
+    if (hasPaged) {
+        const unpaged = menuHeight - 2 * lineHeight;
+        if (pagedCount > NATIVE_MENU.minPerPage && unpaged > NATIVE_MENU.maxPagedHeight) {
+            for (let perPage = pagedCount; perPage > NATIVE_MENU.minPerPage && menuHeight > NATIVE_MENU.maxPagedHeight; perPage--) menuHeight -= lineHeight;
+        } else {
+            menuHeight = unpaged;
+        }
+    }
+    const unit = height / LOOK.referenceHeight;
+    const boxHeight = menuHeight * unit;
+    const offset = Math.min(0.25, 0.5 - menuHeight / LOOK.referenceHeight / 2 - 1 / 16);
+    const boxWidth = NATIVE_MENU.width * unit;
+    return { x: (width - boxWidth) / 2, y: height * (0.5 - offset) - boxHeight / 2, width: boxWidth, height: boxHeight };
 }
 
 // The selection's outline image with its glow margin, in window pixels,

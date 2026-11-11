@@ -26,6 +26,7 @@ import { addStyledText } from "../drawing/steamball_drawing.js";
 import { createHiddenLayer, hideLayer, placementOf, WINDOW_SPAN } from "../drawing/placed_layers.js";
 import {
     DRAWN_MENU_Z_INDEX, DRAWN_MENU_LOOK, ROW_KIND, pointsOf, computeGeometry, menuScaleOf, drawTexts, drawSelectedText, drawBackdrop, selectionSize,
+    nativeMenuCover, menuFontPointsOf, WHOLE_WINDOW,
 } from "./drawn_menu_painter.js";
 
 const SCRIPT_NAME = "DrawnMenus";
@@ -219,12 +220,22 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
     // Runs while a menu is open, its panel shown: stopped with the other timers.
     const windowWatch = createWindowWatch(host, SCRIPT_NAME);
 
-    // Draws the backdrop on a window-sized canvas, which also measures the window.
-    function measure(covering = false) {
+    // Over a native menu kept open, the box hiding it, which the panel is
+    // laid out around; null otherwise, or over a dialog, whose wrapped
+    // message's height PinballY measures with a font scripts cannot.
+    let coverBox = null;
+
+    // Draws the backdrop on a window-sized canvas, which also measures the
+    // window. covering: null, or { items, dialogStyle } for a native menu
+    // kept open, then hidden under an opaque box, or all over for a dialog.
+    function measure(covering = null) {
         backdrop.clear(TRANSPARENT);
         backdrop.draw(dc => {
             windowSize = dc.getSize();
-            drawBackdrop(dc, covering);
+            coverBox = covering && !covering.dialogStyle
+                ? nativeMenuCover(windowSize, covering.items, { menuFontPoints: menuFontPointsOf(host.settings.getString("MenuFont", "")), pagingCommands })
+                : null;
+            drawBackdrop(dc, covering ? coverBox || WHOLE_WINDOW : null);
         });
     }
 
@@ -399,7 +410,7 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
     // every layer placed; shown.layers lists the ones it shows.
     function layOut() {
         const { covering } = shown;
-        shown.geometry = computeGeometry(windowSize, shown.model, wrappedHeightAt);
+        shown.geometry = computeGeometry(windowSize, shown.model, wrappedHeightAt, { around: covering ? coverBox : null });
         const { geometry } = shown;
         scrollToSelected();
         drawTextsLayer();
@@ -434,7 +445,8 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
         return true;
     }
 
-    // covering: an opaque backdrop, shown at once, over a native menu kept open.
+    // covering: { items, dialogStyle } over a native menu kept open, the
+    // backdrop and its opaque box shown at once.
     function open(id, model, onClose, { fadeIn, covering }) {
         for (const sound of Object.values(sounds)) sound.load();
         // PinballY tells no script of a new window size: measured on each
@@ -566,7 +578,7 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
             if (kept !== undefined && !model.entries.some(index => model.rows[index].selected)) model.selected = kept;
             const chosen = model.entries.find(index => model.rows[index].cmd === selectedCmd);
             if (selectedCmd !== null && chosen !== undefined) model.selected = chosen;
-            open(id, model, safeHandler(SCRIPT_NAME, onClose || (() => {})), { fadeIn: refreshedCmd === null, covering: Boolean(keepNative) });
+            open(id, model, safeHandler(SCRIPT_NAME, onClose || (() => {})), { fadeIn: refreshedCmd === null, covering: keepNative ? { items, dialogStyle } : null });
             shown.onBack = onBack;
             shown.keepNative = keepNative;
             // The native menu's openings not closed yet; the panel hidden
