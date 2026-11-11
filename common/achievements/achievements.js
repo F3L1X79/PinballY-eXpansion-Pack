@@ -43,6 +43,7 @@ export const PROGRESS_UNIT = Object.freeze({
     MANUFACTURERS: "manufacturers",
     CHALLENGES: "challenges",
     RATED_TABLES: "ratedTables",
+    SYSTEMS: "systems",
 });
 
 // Every Achievement's Achievement Rank, from the easiest.
@@ -94,20 +95,21 @@ const MIN_PROGRESS_TARGET = 2;
 // getRecord (the best value ever reached, never below getCurrent()), the
 // record unlocks it instead, so it stays Unlocked when the value drops
 // again, while a missing one still shows the value.
-// Its rank comes either from its ladder, the thresholds of its series in
-// order, and its step in it (its target unless the ladder counts something
-// else, such as percentages), or, for a group completion, from the size of
-// the group, which is its target.
+// Its rank comes from exactly one of: its ladder, the thresholds of its
+// series in order, and its step in it (its target unless the ladder counts
+// something else, such as percentages); for a group completion, the size of
+// the group, which is its target; or a stated rank, for a standalone one.
 export function countedAchievement({
     id, family, getTitle, getDescription, target, unit, getCurrent, getRecord = getCurrent,
-    ladder, step = target, isGroupCompletion = false,
+    ladder, step = target, isGroupCompletion = false, rank,
 }) {
     const hasLadder = ladder !== undefined;
-    if (hasLadder === isGroupCompletion) throw new Error(`${id} needs either a ladder or to be a group completion, not both`);
+    const rankSources = [hasLadder, isGroupCompletion, rank !== undefined].filter(Boolean).length;
+    if (rankSources !== 1) throw new Error(`${id} needs exactly one of a ladder, a group completion or a stated rank`);
     return {
         id,
         family,
-        rank: hasLadder ? ladderRank(ladder, step) : groupCompletionRank(target),
+        rank: rank ?? (hasLadder ? ladderRank(ladder, step) : groupCompletionRank(target)),
         getTitle,
         getDescription,
         checkUnlocked: () => getRecord() >= target,

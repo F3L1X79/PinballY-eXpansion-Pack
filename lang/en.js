@@ -228,6 +228,8 @@ export default {
         manufacturerCompletionDescription: (manufacturer, count) => `Play all ${count} ${manufacturer} tables at least once.`,
         systemCompletionTitle: (system) => `${system} Master`,
         systemCompletionDescription: (system, count) => `Play all ${count} ${system} tables at least once.`,
+        everySystemTitle: () => "World Walker",
+        everySystemDescription: (count) => `Play at least one table of each of the ${count} Systems.`,
         firstTableTitle: () => "First Steps",
         firstTableDescription: () => "Play your very first table.",
         collectionPercentTitles: {
@@ -414,6 +416,9 @@ export default {
                 short: (current, target) => `${current}/${target}`,
             },
             ratedTables: {
+                short: (current, target) => `${current}/${target}`,
+            },
+            systems: {
                 short: (current, target) => `${current}/${target}`,
             },
         },

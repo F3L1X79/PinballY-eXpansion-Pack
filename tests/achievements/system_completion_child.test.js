@@ -2,7 +2,7 @@
 // System Achievements of a Child Profile through main.js on the fake
 // PinballY globals: on a cabinet with two Systems, a child who sees only one
 // System's tables (the other's are all Adult Tables) has none; an adult
-// Profile on the same cabinet has one per System.
+// Profile on the same cabinet has one per System, and World Walker.
 // ============================================================
 
 import { test } from "node:test";
@@ -28,7 +28,10 @@ test("a Child Profile who sees one System's tables only has no System Achievemen
         files: { [`${PROFILES_FOLDER}\\Alice\\profile.json`]: { version: 1, isChild: true, plays: {}, notified: [] } },
         folders: [`${PROFILES_FOLDER}\\Bob`],
     });
-    const systemTitles = ["Visual Pinball X", "Pinball FX"].map(name => lang.achievements.systemCompletionTitle(name));
+    const systemTitles = [
+        ...["Visual Pinball X", "Pinball FX"].map(name => lang.achievements.systemCompletionTitle(name)),
+        lang.achievements.everySystemTitle(),
+    ];
     const shownSystemTitles = () => listedTitles().filter(title => systemTitles.includes(title)).sort();
 
     // Without the Profile Picker, startup is always on Guest.

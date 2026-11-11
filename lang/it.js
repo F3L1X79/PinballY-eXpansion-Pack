@@ -335,6 +335,8 @@ export default {
         manufacturerCompletionDescription: (manufacturer, count) => `Giocare almeno una volta tutti i ${count} tavoli ${manufacturer}.`,
         systemCompletionTitle: (system) => `Maestro di ${system}`,
         systemCompletionDescription: (system, count) => `Giocare almeno una volta tutti i ${count} tavoli ${system}.`,
+        everySystemTitle: () => "Viandante dei mondi",
+        everySystemDescription: (count) => `Giocare almeno un tavolo di ciascuno dei ${count} sistemi.`,
         firstTableTitle: () => "Primi passi",
         firstTableDescription: () => "Giocare il tuo primissimo tavolo.",
         collectionPercentTitles: {
@@ -520,6 +522,9 @@ export default {
                 short: (current, target) => `${current}/${target}`,
             },
             ratedTables: {
+                short: (current, target) => `${current}/${target}`,
+            },
+            systems: {
                 short: (current, target) => `${current}/${target}`,
             },
         },

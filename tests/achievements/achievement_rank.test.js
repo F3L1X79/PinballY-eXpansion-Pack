@@ -34,7 +34,7 @@ const TABLES = GROUP_SIZES.flatMap(({ manufacturer, year, category, system, coun
 
 const { BRONZE, SILVER, GOLD, PLATINUM } = ACHIEVEMENT_RANK;
 
-test("every Achievement has an Achievement Rank deduced from its ladder or group", async () => {
+test("every Achievement has an Achievement Rank from its ladder, its group or its stated rank", async () => {
     const fake = createFakePinballYHost({ now: new Date(2026, 8, 23, 10, 0, 0), tables: TABLES });
     fake.addFolder(`${PROFILES_FOLDER}\\Alice`);
     fake.addFile(`${PROFILES_FOLDER}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: "Alice" }));
@@ -86,6 +86,8 @@ test("every Achievement has an Achievement Rank deduced from its ladder or group
     assert.deepEqual(ranksOf(GROUP_SIZES.map(group => `decadeCompletion:${Math.floor(group.year / 10) * 10}s`)), EXPECTED_GROUP_RANKS);
     assert.deepEqual(ranksOf(GROUP_SIZES.map(group => `categoryCompletion:${group.category}`)), EXPECTED_GROUP_RANKS);
     assert.deepEqual(ranksOf(GROUP_SIZES.map(group => `systemCompletion:${group.system}`)), EXPECTED_GROUP_RANKS);
+    // Four Systems, yet Bronze: one table on each is an easy goal.
+    assert.equal(rankById.get("everySystem"), BRONZE);
 
     assertNoErrorLogged(fake);
 });

@@ -84,6 +84,7 @@ const EXPECTED_ACHIEVEMENT_IDS = [
     "dayManufacturers:8",
     "decadeCompletion:1990s",
     "decadeCompletion:2020s",
+    "everySystem",
     "grandReturn",
     "manufacturerCompletion:Bally",
     "manufacturerCompletion:VPX Community",

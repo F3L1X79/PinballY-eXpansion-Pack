@@ -336,6 +336,8 @@ export default {
         manufacturerCompletionDescription: (manufacturer, count) => `Alle ${count} Tische von ${manufacturer} mindestens einmal spielen.`,
         systemCompletionTitle: (system) => `${system}-Meister`,
         systemCompletionDescription: (system, count) => `Alle ${count} ${system}-Tische mindestens einmal spielen.`,
+        everySystemTitle: () => "Weltenwanderer",
+        everySystemDescription: (count) => `Mindestens einen Tisch auf jedem der ${count} Systeme spielen.`,
         firstTableTitle: () => "Erste Schritte",
         firstTableDescription: () => "Den allerersten Tisch spielen.",
         collectionPercentTitles: {
@@ -521,6 +523,9 @@ export default {
                 short: (current, target) => `${current}/${target}`,
             },
             ratedTables: {
+                short: (current, target) => `${current}/${target}`,
+            },
+            systems: {
                 short: (current, target) => `${current}/${target}`,
             },
         },
