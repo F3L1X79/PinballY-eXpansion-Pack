@@ -9,7 +9,7 @@
 import lang from "../core/i18n.js";
 import { safeHandler } from "../core/safe_handler.js";
 import { prepareDrawnScreen } from "../stats/drawn_screen.js";
-import { drawBackdrop, oneLine } from "../drawing/steamball_drawing.js";
+import { drawBackdrop, drawAvatar, oneLine } from "../drawing/steamball_drawing.js";
 import { STEAMBALL_COLORS as COLORS, STEAMBALL_FONTS as FONTS } from "../drawing/steamball_palette.js";
 
 const SCRIPT_NAME = "RocketGame";
@@ -23,8 +23,8 @@ const CLOSE_AFTER_MS = 10000;
 const SCORE_PART_H = 460;
 const BOARD_LINE_H = 120;
 const BOARD_MARGIN = 60;
-// A board line's columns: the place, the name in what is left, the score.
-const BOARD_COLUMNS = Object.freeze({ place: 90, score: 270, gap: 20 });
+// A board line's columns: the place, the Avatar, the name in what is left, the score.
+const BOARD_COLUMNS = Object.freeze({ place: 90, avatar: 96, score: 270, gap: 20 });
 
 const panelOf = referenceWidth => ({ x: (referenceWidth - PANEL.w) / 2, y: PANEL.y, w: PANEL.w, h: PANEL.h });
 const scorePartOf = panel => ({ x: panel.x, y: panel.y, w: panel.w, h: SCORE_PART_H });
@@ -39,14 +39,17 @@ export function createRocketScoreScreen(host, { drawingAhead, drawnScreenControl
         oneLine(host, dc, String(score), { x: 0, y: h * 0.38, width: w, height: h * 0.45, size: 200, minSize: 80, weight: 700, color: COLORS.gold, font: FONTS.display, align: "center", cut: false });
     }
 
-    // Each line: its place, the Profile's name and the score; the highlighted one in gold.
+    // Each line: its place, the Profile's Avatar and name, the score; the highlighted one in gold.
     function paintBoard(dc, board, highlighted, { w }) {
+        const { place, avatar, score, gap } = BOARD_COLUMNS;
+        const nameX = place + gap + avatar + gap;
         board.forEach((line, index) => {
             const y = index * BOARD_LINE_H;
             const color = index === highlighted ? COLORS.gold : COLORS.title;
             const text = { y, height: BOARD_LINE_H, size: 64, minSize: 40, color, font: FONTS.display };
-            oneLine(host, dc, String(index + 1), { ...text, x: 0, width: BOARD_COLUMNS.place });
-            oneLine(host, dc, line.profileName, { ...text, x: BOARD_COLUMNS.place + BOARD_COLUMNS.gap, width: w - BOARD_COLUMNS.place - BOARD_COLUMNS.score - 2 * BOARD_COLUMNS.gap });
+            oneLine(host, dc, String(index + 1), { ...text, x: 0, width: place });
+            drawAvatar(dc, line.avatarPath, place + gap, y + (BOARD_LINE_H - avatar) / 2, avatar);
+            oneLine(host, dc, line.profileName, { ...text, x: nameX, width: w - nameX - score - gap });
             oneLine(host, dc, String(line.score), { ...text, x: w - BOARD_COLUMNS.score, width: BOARD_COLUMNS.score, align: "right", cut: false });
         });
     }
@@ -63,7 +66,7 @@ export function createRocketScoreScreen(host, { drawingAhead, drawnScreenControl
         screen.onClose();
     }
 
-    // board: the Rocket Board's lines, { profileName, score, date }, best first;
+    // board: the Rocket Board's lines, { profileName, avatarPath, score, date }, best first;
     // highlighted: the index of the game just played, -1 when off the board.
     // onClose(): once the screen has gone, or its opening was given up.
     function open({ score, board, highlighted, onClose }) {

@@ -77,10 +77,17 @@ export const gameImages = fake => shownIn(fake, GAME_Z_INDEX.backdrop, GAME_Z_IN
 // The shot's own layer, while one rises.
 export const SHOT_Z_INDEX = 7545;
 export const shownShots = fake => shownIn(fake, SHOT_Z_INDEX, SHOT_Z_INDEX);
+// The asteroids' pool, and those dimmed by their blink after a shot that did not break them.
+export const ASTEROID_Z_INDEX = { first: 7510, last: 7537 };
+export const blinkingAsteroids = fake => shownIn(fake, ASTEROID_Z_INDEX.first, ASTEROID_Z_INDEX.last).filter(layer => layer.alpha < 1);
 export const isScoreScreenShown = fake => shownIn(fake, SCORE_SCREEN_Z_INDEX.backdrop, SCORE_SCREEN_Z_INDEX.backdrop).length > 0;
 export const scoreScreenTexts = fake => shownIn(fake, SCORE_SCREEN_Z_INDEX.score, SCORE_SCREEN_Z_INDEX.score).flatMap(layer => layer.texts());
 export const scoreScreenLayerCount = fake => fake.drawingLayers()
     .filter(layer => layer.zIndex >= SCORE_SCREEN_Z_INDEX.backdrop - 2 && layer.zIndex <= SCORE_SCREEN_Z_INDEX.board).length;
+
+// The Avatars drawn on the Rocket Board, top to bottom.
+export const boardAvatars = fake => shownIn(fake, SCORE_SCREEN_Z_INDEX.board, SCORE_SCREEN_Z_INDEX.board)
+    .flatMap(layer => layer.strokes()).filter(stroke => "image" in stroke).map(stroke => stroke.image);
 
 // The Rocket Board's lines as shown, each { place, name, score, isHighlighted }:
 // the highlighted line is the one drawn in gold.

@@ -2,7 +2,7 @@
 // The Rocket Board through main.js: each finished Rocket Game saved among
 // the Profile's five best; the score screen's board, the Household's five
 // best (several places for one Profile, the first score first on a tie,
-// Guest left out), the line of the game just played highlighted.
+// Guest left out), each with its Avatar, the game just played highlighted.
 // ============================================================
 
 import { test } from "node:test";
@@ -11,8 +11,10 @@ import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { press } from "../welcome_screen/welcome_screen_reader.js";
 import {
-    startRocketGame, chooseRocketGame, untilCrash, untilScoreScreen, scoreScreenTexts, boardLines, hadTheRocket, profileFile, LEAVING_MS,
+    startRocketGame, chooseRocketGame, untilCrash, untilScoreScreen, scoreScreenTexts, boardLines, boardAvatars, hadTheRocket, profileFile, LEAVING_MS,
 } from "./rocket_game_scenario.js";
+
+const DEFAULT_AVATAR = "C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images\\default_avatar.png";
 
 const savedScores = (fake, name) => JSON.parse(fake.readFile(profileFile(name))).rocketScores;
 
@@ -50,6 +52,8 @@ test("the score screen shows the Household's five best, the first score first on
         { score: first - 1, date: "2026-11-01T12:00:00" },
         { score: first - 2, date: "2026-11-01T13:00:00" },
     ] }));
+    const bobAvatar = profileFile("Bob").replace("profile.json", "avatar.png");
+    fake.addFile(bobAvatar, "PNG");
     const second = await playOneGame(fake, lang);
     assert.equal(second, first, "the same game, the same score");
     assert.deepEqual(boardLines(fake), [
@@ -59,6 +63,7 @@ test("the score screen shows the Household's five best, the first score first on
         { place: "4", name: "Alice", score: String(first), isHighlighted: true },
         { place: "5", name: "Bob", score: String(first - 1), isHighlighted: false },
     ], "the first score keeps the higher place on a tie");
+    assert.deepEqual(boardAvatars(fake), [bobAvatar, bobAvatar, DEFAULT_AVATAR, DEFAULT_AVATAR, bobAvatar], "each line shows its Profile's Avatar");
     const aliceScores = savedScores(fake, "Alice");
     assert.equal(aliceScores.length, 2);
     assert.ok(aliceScores[0].date < aliceScores[1].date, "the first game first");

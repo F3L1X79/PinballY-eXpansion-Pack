@@ -27,12 +27,12 @@ export function createRocketBoard(host, { profileStore }) {
         return { profileName, ...entry };
     }
 
-    // The Household's five best, { profileName, score, date } best first, and
+    // The Household's five best, { profileName, avatarPath, score, date } best first, and
     // the index of recorded (record()'s line) among them, -1 when off the board.
     function board(recorded) {
-        const lines = profileStore.withCachedReads(() => profileStore.listProfileNames()
-            .filter(name => !sameName(name, GUEST_NAME))
-            .flatMap(profileName => profileStore.getRocketScoresOf(profileName).map(({ score, date }) => ({ profileName, score, date }))))
+        const lines = profileStore.withCachedReads(() => profileStore.listProfiles()
+            .filter(({ name }) => !sameName(name, GUEST_NAME))
+            .flatMap(({ name, avatarPath }) => profileStore.getRocketScoresOf(name).map(({ score, date }) => ({ profileName: name, avatarPath, score, date }))))
             .sort(byRank)
             .slice(0, BEST_KEPT);
         return { lines, highlighted: recorded ? lines.findIndex(line => isSameLine(line, recorded)) : -1 };

@@ -1,5 +1,5 @@
 // ============================================================
-// The Rocket Game through main.js: its entry right after the Random Game,
+// The Rocket Game through main.js: its entry right under My Achievements,
 // only for a Profile that has had the Rocket Easter Egg; the intro naming
 // the flippers and Launch for 3.5 s; the game; the score screen with the score just
 // made and the Rocket Board, closed by a button; the main menu back on the entry; the score saved.
@@ -17,12 +17,12 @@ import {
 } from "./rocket_game_scenario.js";
 
 test("a Profile that had the Rocket plays it from the main menu, sees its score, and lands back on the entry", async () => {
-    const { fake, lang, store } = await startRocketGame({ profiles: { Alice: hadTheRocket, Bob: {} }, active: "Bob", addOns: ["rocketGame", "randomGame"] });
+    const { fake, lang, store } = await startRocketGame({ profiles: { Alice: hadTheRocket, Bob: {} }, active: "Bob", addOns: ["rocketGame", "achievements"] });
     const entry = lang.rocketGame.menuEntry;
     assert.equal(mainMenuTitles(fake).includes(entry), false, "hidden from a Profile that never had the Easter Egg");
 
     store.switchTo("Alice");
-    assert.deepEqual(sectionHolding(mainMenuTitles(fake), entry), ["Play", lang.customMenuLabels.randomTable, entry], "right after the Random Game");
+    assert.deepEqual(sectionHolding(mainMenuTitles(fake), entry), ["My Profile", "My Achievements", entry], "right under My Achievements");
 
     await chooseRocketGame(fake, lang);
     assert.ok(gameTexts(fake).includes(lang.rocket.dodge), "the Easter Egg's word");

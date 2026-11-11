@@ -1075,7 +1075,7 @@ export default {
         score: "PUNTOS",
     },
     rocketGame: {
-        menuEntry: "Cohete",
+        menuEntry: "Aviator game",
         changeLane: "Flipper izquierdo / derecho: cambiar de carril",
         shoot: "Botón de lanzamiento: disparar",
         yourScore: "Tu puntuación",

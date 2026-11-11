@@ -79,6 +79,11 @@ const JITTER_LANES = 0.28;
 const SWAY_MS = 1100;
 const POINTS_PER_ROW = 10;
 const POINTS_PER_BREAK = 5;
+// An asteroid breaks at its fifth shot; the shots before make it blink.
+const SHOTS_TO_BREAK = 5;
+const HIT_BLINK_MS = 240;
+const HIT_BLINK_STEP_MS = 60;
+const HIT_BLINK_ALPHA = 0.25;
 // The shot, in shares of a lane, and the time it takes to rise one window:
 // faster than the fastest asteroid falls.
 const SHOT_WIDTH_SHARE = 0.07;
@@ -109,6 +114,7 @@ const COMMANDS_CANVAS_WIDTH = 1000;
 const COMMAND_LINE_HEIGHT = 70;
 const COMMAND_SIZE = 44;
 const COMMANDS_PADDING = 20;
+const COMMANDS_MARGIN = 40;
 const COMMANDS_Y = 0.86;
 const FLAME_FLICKER_MS = 70;
 const BREAK_FRAME_MS = 70;
@@ -289,10 +295,20 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
     // One line per command, on a dark band so that the rays behind never blur it.
     const commandsHeight = run => COMMAND_LINE_HEIGHT * run.intro.commands.length + COMMANDS_PADDING * 2;
 
+    // A command wider than the band would wrap onto the next one: all shrink to the widest.
     function paintCommands(run, dc) {
         dc.fillRect(0, 0, COMMANDS_CANVAS_WIDTH, commandsHeight(run), SCORE_PANEL_COLOR);
-        run.intro.commands.forEach((command, index) => drawCentredText(dc, command, COMMAND_SIZE, COLORS.title,
-            { x: 0, y: COMMANDS_PADDING + index * COMMAND_LINE_HEIGHT, width: COMMANDS_CANVAS_WIDTH, height: COMMAND_LINE_HEIGHT }));
+        const widths = run.intro.commands.map(command => {
+            const measured = host.createStyledText({ textStyle: { font: FONTS.display, size: COMMAND_SIZE, weight: 700 } });
+            measured.add(command);
+            return measured.measure(COMMANDS_CANVAS_WIDTH * 10).width;
+        });
+        const widest = Math.max(0, ...widths);
+        const fit = widest > 0 ? Math.min(1, (COMMANDS_CANVAS_WIDTH - COMMANDS_MARGIN) / widest) : 1;
+        const size = COMMAND_SIZE * fit;
+        const top = (COMMAND_LINE_HEIGHT - COMMAND_LINE_HEIGHT * fit) / 2;
+        run.intro.commands.forEach((command, index) => drawCentredText(dc, command, size, COLORS.title,
+            { x: 0, y: COMMANDS_PADDING + index * COMMAND_LINE_HEIGHT + top, width: COMMANDS_CANVAS_WIDTH, height: COMMAND_LINE_HEIGHT - top }));
     }
 
     function prepareShip(run) {
@@ -414,7 +430,7 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
             const trailPx = (event.trailsMs ? event.trailsMs[index] : 0) / pace.fallMs * run.height;
             row.trailPx = Math.max(row.trailPx, trailPx);
             show(run, sprite, x, row.y - trailPx);
-            row.asteroids.push({ sprite, x, baseX: x, trailPx, swayPx: (event.swayLanes || 0) * run.laneWidth, phase: random() * 2 * Math.PI, bornMs: run.playMs });
+            row.asteroids.push({ sprite, x, baseX: x, trailPx, swayPx: (event.swayLanes || 0) * run.laneWidth, phase: random() * 2 * Math.PI, bornMs: run.playMs, hits: 0, hitMs: null });
         }
         if (row.asteroids.length > 0) run.rows.push(row);
     }
@@ -435,6 +451,11 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
     function moveAsteroid(run, row, asteroid) {
         if (asteroid.swayPx !== 0) asteroid.x = asteroid.baseX + asteroid.swayPx * Math.sin(asteroid.phase + (run.playMs - asteroid.bornMs) / SWAY_MS * 2 * Math.PI);
         place(run, asteroid.sprite, asteroid.x, row.y - asteroid.trailPx);
+        if (asteroid.hitMs === null) return;
+        const sinceHit = run.playMs - asteroid.hitMs;
+        const isDim = sinceHit < HIT_BLINK_MS && Math.floor(sinceHit / HIT_BLINK_STEP_MS) % 2 === 0;
+        asteroid.sprite.layer.alpha = isDim ? HIT_BLINK_ALPHA : 1;
+        if (sinceHit >= HIT_BLINK_MS) asteroid.hitMs = null;
     }
 
     // Ease-out over the lane change.
@@ -515,7 +536,11 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         const fromBottom = run.shot.tip + run.shotSprite.h;
         run.shot.tip -= run.height / SHOT_RISE_MS * stepMs;
         const target = shotTarget(run, fromBottom);
-        if (target) {
+        if (target && target.asteroid.hits + 1 < SHOTS_TO_BREAK) {
+            target.asteroid.hits += 1;
+            target.asteroid.hitMs = run.playMs;
+            removeShot(run);
+        } else if (target) {
             const { row, asteroid, y } = target;
             // The row stays, even empty: it still scores as it passes.
             row.asteroids = row.asteroids.filter(other => other !== asteroid);

@@ -1074,7 +1074,7 @@ export default {
         score: "PUNKTE",
     },
     rocketGame: {
-        menuEntry: "Rakete",
+        menuEntry: "Aviator game",
         changeLane: "Linker / rechter Flipper: Spur wechseln",
         shoot: "Start-Taste: schießen",
         yourScore: "Ihre Punkte",

@@ -1073,7 +1073,7 @@ export default {
         score: "PUNTEGGIO",
     },
     rocketGame: {
-        menuEntry: "Razzo",
+        menuEntry: "Aviator game",
         changeLane: "Flipper sinistro / destro: cambia corsia",
         shoot: "Pulsante di lancio: spara",
         yourScore: "Il tuo punteggio",

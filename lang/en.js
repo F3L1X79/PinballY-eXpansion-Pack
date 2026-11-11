@@ -1019,7 +1019,7 @@ export default {
     },
     // The Rocket Game: its main menu entry, the intro's commands (the cabinet's buttons), the score screen.
     rocketGame: {
-        menuEntry: "Rocket",
+        menuEntry: "Aviator game",
         changeLane: "Left / right flipper: change lane",
         shoot: "Launch: shoot",
         yourScore: "Your score",

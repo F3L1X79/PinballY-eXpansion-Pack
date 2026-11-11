@@ -1,7 +1,7 @@
 // ============================================================
 // The Rocket Game's shooting through main.js: Launch fires one shot at a
 // time up the ship's lane, a press during its flight fires nothing more,
-// and a shot that breaks an asteroid shows its break-up and adds 5 points.
+// an asteroid blinks under a shot and breaks at its fifth, adding 5 points.
 // ============================================================
 
 import { test } from "node:test";
@@ -10,7 +10,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { press } from "../welcome_screen/welcome_screen_reader.js";
 import { ROCKET_IMAGES } from "../easter_eggs/rocket_scenario.js";
 import {
-    startRocketGame, chooseRocketGame, gameScore, gameImages, shownShots, scoreScreenLayerCount, INTRO_MS,
+    startRocketGame, chooseRocketGame, gameScore, gameImages, shownShots, blinkingAsteroids, scoreScreenLayerCount, INTRO_MS,
 } from "./rocket_game_scenario.js";
 
 const BREAK_UP_IMAGES = ROCKET_IMAGES.filter(path => /rocket_break_[2-5]\.png$/.test(path));
@@ -34,9 +34,11 @@ test("Launch fires one shot at a time, and a shot that breaks an asteroid adds 5
 
     let scores = [];
     let sawBreakUp = false;
+    let sawBlink = false;
     for (let elapsed = 0; elapsed < 60000 && scoreScreenLayerCount(fake) === 0; elapsed += 16) {
         if (elapsed % 160 === 0) press(fake, "Launch");
         fake.advanceTime(16);
+        sawBlink = sawBlink || blinkingAsteroids(fake).length > 0;
         const score = gameScore(fake, lang);
         if (score !== null && score !== scores.at(-1)) scores.push(score);
         if (score !== null && score % 10 === 5) {
@@ -48,5 +50,6 @@ test("Launch fires one shot at a time, and a shot that breaks an asteroid adds 5
     const steps = scores.slice(1).map((score, index) => score - scores[index]);
     assert.ok(steps.some(step => step === 5 || step === 15), `a broken asteroid's 5 points among ${scores.join(", ")}`);
     assert.ok(sawBreakUp, "the asteroid breaks up");
+    assert.ok(sawBlink, "a shot that does not break it makes it blink first");
     assertNoErrorLogged(fake);
 });
