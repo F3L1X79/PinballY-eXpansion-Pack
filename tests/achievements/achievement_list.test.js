@@ -58,6 +58,7 @@ const ASSETS = "C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images";
 const emblemOf = (rank, variant = "") => `${ASSETS}\\rank_${rank}${variant}.png`;
 const EMBLEM_IMAGES = Object.values(ACHIEVEMENT_RANK).flatMap(rank => ["_plain", "_missing"].map(variant => emblemOf(rank, variant)));
 const NAVIGATION_SOUND = "C:\\PinballY\\Assets\\Button Sounds\\Next.wav";
+const PREV_SOUND = "C:\\PinballY\\Assets\\Button Sounds\\Prev.wav";
 
 // Alice is active. She was Notified of gamma, then alpha, then delta; the
 // toast of beta still waits. household: the other Profiles' notified
@@ -68,7 +69,7 @@ function setUp({
     emblemImages = [],
 } = {}) {
     const fake = createFakePinballYHost();
-    if (withNavigationSound) fake.addFile(NAVIGATION_SOUND);
+    if (withNavigationSound) for (const path of [NAVIGATION_SOUND, PREV_SOUND]) fake.addFile(path);
     for (const path of emblemImages) fake.addFile(path, "PNG");
     fake.addFile(`${PROFILES}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: "Alice" }));
     for (const [name, profileNotified] of Object.entries({ Alice: notified, ...household })) {
@@ -258,14 +259,14 @@ test("Select or Launch on the Exit Button closes the list and goes back as Exit 
     }
 });
 
-test("each Next / Prev plays PinballY's navigation sound once, quick presses on three players in turn", () => {
+test("each Next / Prev plays PinballY's sound for its direction once, quick presses on three players in turn", () => {
     const { fake } = setUp();
     assert.deepEqual(fake.soundsPlayed(), [], "opening plays nothing");
 
-    for (const button of ["Next", "Next", "Prev", "Next"]) press(fake, button);
+    for (const button of ["Next", "Next", "Prev", "Next", "Next"]) press(fake, button);
 
-    assert.deepEqual(fake.soundsPlayed(), Array(4).fill(NAVIGATION_SOUND));
-    const [first, second, third, fourth] = fake.soundPlayers();
+    assert.deepEqual(fake.soundsPlayed(), [NAVIGATION_SOUND, NAVIGATION_SOUND, PREV_SOUND, NAVIGATION_SOUND, NAVIGATION_SOUND]);
+    const [first, second, , third, fourth] = fake.soundPlayers();
     assert.equal(new Set([first, second, third]).size, 3, "three different players");
     assert.equal(fourth, first);
 });

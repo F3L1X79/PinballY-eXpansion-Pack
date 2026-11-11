@@ -266,7 +266,7 @@ export function createHouseholdStats(host, {
         // Completed by setUp() once every step ran.
         const opening = { onBack, drawn, columnLayers, marker: null, glideTimer: null, glideMs: 0, opacity: 0 };
         opening.controlled = controls.open({
-            onMove: direction => move(opening, direction),
+            onMove: (direction, isRepeat) => move(opening, direction, isRepeat),
             onChoose: () => choose(opening),
             onExit: () => back(opening),
             close: () => remove(opening),
@@ -436,8 +436,8 @@ export function createHouseholdStats(host, {
     // direction: 1 for Next, -1 for Prev, through the Exit Button then each
     // column. Brings the selected column into view, gliding unless it comes
     // from the Exit Button: the columns then stay where they were.
-    function move(screen, direction) {
-        navigationSound.play();
+    function move(screen, direction, isRepeat) {
+        navigationSound.play(direction, isRepeat);
         const { columns, view } = screen.geometry;
         const previous = screen.selected;
         screen.selected = stepThroughExitButton(previous, direction, columns.length);

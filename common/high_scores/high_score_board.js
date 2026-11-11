@@ -269,8 +269,8 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
 
     // direction: 1 for Next, -1 for Prev, looping; a selected row is
     // scrolled into view, the least it takes.
-    function move(direction) {
-        navigationSound.play();
+    function move(direction, isRepeat) {
+        navigationSound.play(direction, isRepeat);
         const count = shown.choices.length;
         shown.selected = (shown.selected + direction + count) % count;
         const { kind, index } = selectedChoice(shown);

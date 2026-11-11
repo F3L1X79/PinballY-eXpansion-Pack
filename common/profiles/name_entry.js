@@ -283,8 +283,8 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
         }
     }
 
-    function move(direction) {
-        navigationSound.play();
+    function move(direction, isRepeat) {
+        navigationSound.play(direction, isRepeat);
         shown.cursor = (shown.cursor + direction + RING.length) % RING.length;
         placeRing();
     }

@@ -697,7 +697,7 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         run.glideFromX = run.shipX;
         run.glideToX = laneX(run, lane);
         run.glideStartMs = nowMs();
-        navigationSound.play();
+        navigationSound.play(direction);
     }
 
     // Before the crash only: the crash's own frames always play out.

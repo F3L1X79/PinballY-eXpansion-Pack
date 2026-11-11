@@ -6,7 +6,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { startHousehold, errorLines, played, PROFILES, DEFAULT_AVATAR, NAVIGATION_SOUND, HOUR, MEDIEVAL, MARS, THEATRE } from "./household_stats_scenario.js";
+import { startHousehold, errorLines, played, PROFILES, DEFAULT_AVATAR, NAVIGATION_SOUND, PREV_SOUND, HOUR, MEDIEVAL, MARS, THEATRE } from "./household_stats_scenario.js";
 import { openProfileStats, playerLevel, buttons, press } from "./profile_stats_reader.js";
 import { openHouseholdStats, columns, columnNames, labels, lineValues, goldOn, highlightedColumn, collectionPairMiddles } from "./household_stats_reader.js";
 
@@ -74,6 +74,8 @@ test("the Household side by side, the best of each line in gold", async () => {
     press(fake, "Next");
     press(fake, "Next");
     assert.equal(highlightedColumn(fake), "Bob", "and back");
-    assert.deepEqual(fake.soundsPlayed(), [...soundsBefore, ...Array(6).fill(NAVIGATION_SOUND)], "PinballY's navigation sound on each move");
+    assert.deepEqual(fake.soundsPlayed(),
+        [...soundsBefore, NAVIGATION_SOUND, PREV_SOUND, PREV_SOUND, PREV_SOUND, NAVIGATION_SOUND, NAVIGATION_SOUND],
+        "PinballY's sound for each move's direction");
     assert.deepEqual(errorLines(fake), []);
 });

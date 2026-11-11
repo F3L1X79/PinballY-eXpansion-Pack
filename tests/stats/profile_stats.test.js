@@ -47,7 +47,7 @@ test("the Profile Stats show the Profile, its buttons and its GAME totals, and d
         },
     }));
     fake.addFile(`${PROFILES}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: "Alice" }));
-    fake.addFile(NAVIGATION_SOUND);
+    for (const path of [NAVIGATION_SOUND, NAVIGATION_SOUND.replace("Next.wav", "Prev.wav")]) fake.addFile(path);
     fake.setWheelTables([MARS.configId, MEDIEVAL.configId, GODZILLA.configId]);
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();

@@ -395,9 +395,9 @@ export default function init() {
         if (wasStartupOpening && !atOnce && !isFollowed) notifyStartupScreenClosed();
     }
 
-    // direction: 1 for Next, -1 for Prev.
-    function move(direction) {
-        navigationSound.play();
+    // direction: 1 for Next, -1 for Prev; isRepeat: a held button's auto-repeat.
+    function move(direction, isRepeat) {
+        navigationSound.play(direction, isRepeat);
         const count = shown.screen.choices.length;
         shown.selected = (shown.selected + direction + count) % count;
         setOpacity(shown, shown.opacity);

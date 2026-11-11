@@ -50,7 +50,7 @@ export async function startOnWheel({
     for (const name of admins) fake.addFile(`${PROFILES_FOLDER}\\${name}\\profile.json`, markedProfile({ isAdmin: true }));
     for (const name of children) fake.addFile(`${PROFILES_FOLDER}\\${name}\\profile.json`, markedProfile({ isChild: true }));
     fake.addFile(`${PROFILES_FOLDER}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile }));
-    fake.addFile("C:\\PinballY\\Assets\\Button Sounds\\Next.wav");
+    for (const sound of ["Next", "Prev"]) fake.addFile(`C:\\PinballY\\Assets\\Button Sounds\\${sound}.wav`);
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);

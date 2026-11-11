@@ -13,6 +13,7 @@ import { AVATAR_FRAME_IMAGES } from "../mastery/mastery_bar_scenario.js";
 export const PROFILES = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 export const HOUR = 3600;
 export const NAVIGATION_SOUND = "C:\\PinballY\\Assets\\Button Sounds\\Next.wav";
+export const PREV_SOUND = "C:\\PinballY\\Assets\\Button Sounds\\Prev.wav";
 export const DEFAULT_AVATAR = "C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images\\default_avatar.png";
 // Past every startup toast.
 const ALL_TOASTS_MS = 600000;
@@ -63,7 +64,7 @@ export async function startHousehold({
     }
     if (hasDefaultAvatar) fake.addFile(DEFAULT_AVATAR, "png");
     if (frameImages) for (const file of AVATAR_FRAME_IMAGES) fake.addFile(file);
-    fake.addFile(NAVIGATION_SOUND);
+    for (const path of [NAVIGATION_SOUND, PREV_SOUND]) fake.addFile(path);
     for (const [path, content] of Object.entries(files)) fake.addFile(path, content);
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);

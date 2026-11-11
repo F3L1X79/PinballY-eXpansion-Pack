@@ -391,7 +391,7 @@ export function createProfileStats(host, {
         // Completed by setUp() once every step ran.
         const opening = { onReturn, drawn, marker: null, tooltipLayers: [], opacity: 0 };
         opening.controlled = controls.open({
-            onMove: direction => move(opening, direction),
+            onMove: (direction, isRepeat) => move(opening, direction, isRepeat),
             onChoose: () => choose(opening),
             onExit: () => back(opening),
             close: () => remove(opening),
@@ -484,8 +484,8 @@ export function createProfileStats(host, {
     }
 
     // direction: 1 for Next, -1 for Prev.
-    function move(screen, direction) {
-        navigationSound.play();
+    function move(screen, direction, isRepeat) {
+        navigationSound.play(direction, isRepeat);
         const count = screen.choices.length;
         screen.selected = (screen.selected + direction + count) % count;
         setOpacity(screen, screen.opacity);

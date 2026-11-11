@@ -34,7 +34,7 @@ test("the Welcome Screen opens on its turn at startup, greets the Profile and lo
         },
     }));
     fake.addFile(`${PROFILES}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: "Alice" }));
-    fake.addFile(NAVIGATION_SOUND);
+    for (const path of [NAVIGATION_SOUND, NAVIGATION_SOUND.replace("Next.wav", "Prev.wav")]) fake.addFile(path);
     // The wheel is not on the Last Played Table (Medieval Madness).
     fake.setWheelTables([MARS.configId, MEDIEVAL.configId]);
     // Never uninstalled: node --test runs each test file in its own process.

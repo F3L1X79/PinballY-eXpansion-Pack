@@ -14,6 +14,7 @@ import { writeCompoundFile } from "../support/compound_file_writer.js";
 export const NOW = new Date(2026, 9, 12, 20, 0, 0);
 export const PROFILES_FOLDER = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 const NAVIGATION_SOUND = "C:\\PinballY\\Assets\\Button Sounds\\Next.wav";
+const PREV_SOUND = "C:\\PinballY\\Assets\\Button Sounds\\Prev.wav";
 export const HIGH_SCORES_FILE = `${PROFILES_FOLDER}\\high_scores.json`;
 // A Profile's own Avatar file, and files to seed for those Profiles' Avatars.
 export const avatarOf = name => `${PROFILES_FOLDER}\\${name}\\avatar.png`;
@@ -151,8 +152,8 @@ export async function startHighScores({
     }
     fake.addFile(`${PROFILES_FOLDER}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: active }));
     for (const [path, content] of Object.entries(files)) fake.addFile(path, content);
-    // The High Score Board plays it on each move of its Selection Marker.
-    fake.addFile(NAVIGATION_SOUND);
+    // The High Score Board plays them on each move of its Selection Marker.
+    for (const path of [NAVIGATION_SOUND, PREV_SOUND]) fake.addFile(path);
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);

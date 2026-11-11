@@ -309,8 +309,8 @@ export function createAvatarFrameList(host, { profileStore, profileRewards, draw
 
     // direction: 1 for Next, -1 for Prev, through the Exit Button then
     // each row.
-    function move(direction) {
-        navigationSound.play();
+    function move(direction, isRepeat) {
+        navigationSound.play(direction, isRepeat);
         shown.selected = stepThroughExitButton(shown.selected, direction, content.rows.length);
         const topIndexBefore = shown.topIndex;
         scrollToSelected();

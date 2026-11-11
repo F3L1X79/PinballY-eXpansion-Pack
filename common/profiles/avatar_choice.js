@@ -266,8 +266,8 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
 
     // direction: 1 for Next, -1 for Prev, through the Exit Button then each
     // portrait; on the confirmation, round both choices.
-    function move(direction) {
-        navigationSound.play();
+    function move(direction, isRepeat) {
+        navigationSound.play(direction, isRepeat);
         const { confirmation } = shown;
         if (confirmation) {
             confirmation.selected = confirmation.selected === CHOICE.CHOOSE_AVATAR ? CHOICE.KEEP_DEFAULT : CHOICE.CHOOSE_AVATAR;

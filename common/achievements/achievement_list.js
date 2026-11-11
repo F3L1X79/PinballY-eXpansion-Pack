@@ -579,10 +579,10 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
     // direction: 1 for Next, -1 for Prev. Section headers are skipped; past
     // either end, the Exit Button is selected, the rows staying where they
     // are. Coming from it jumps instead of gliding across the whole list.
-    function move(direction) {
+    function move(direction, isRepeat) {
         const { items } = content;
         if (firstRowIndex() === -1) return;
-        navigationSound.play();
+        navigationSound.play(direction, isRepeat);
         if (shown.highlighted === EXIT_BUTTON) {
             shown.highlighted = direction > 0 ? firstRowIndex() : lastRowIndex();
             scrollToHighlighted();

@@ -61,7 +61,7 @@ async function startPack() {
     for (const file of AVATAR_FRAME_IMAGES) fake.addFile(file);
     for (let number = 1; number <= PORTRAIT_COUNT; number++) fake.addFile(portraitOf(number), `portrait ${number}`);
     fake.addFile(DEFAULT_AVATAR, "png");
-    fake.addFile(NAVIGATION_SOUND);
+    for (const path of [NAVIGATION_SOUND, NAVIGATION_SOUND.replace("Next.wav", "Prev.wav")]) fake.addFile(path);
     fake.setNvramBoard(TABLES[0].configId, BOARD);
     installVpxtool(fake);
     // Never uninstalled: node --test runs each test file in its own process.

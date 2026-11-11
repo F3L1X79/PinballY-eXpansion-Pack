@@ -34,7 +34,7 @@ export const LIST_VEIL = { shown: true, zIndex: ACHIEVEMENT_LIST_Z_INDEX.backdro
 export async function startPack({ drawMs = 0, language = "en" } = {}) {
     const fake = createFakePinballYHost({ now: new Date(2026, 8, 23, 10, 0, 0), tables: TABLES, drawMs });
     fake.addFile(GUEST_PROFILE_FILE, JSON.stringify({ version: 1, notified: [] }));
-    fake.addFile(NAVIGATION_SOUND);
+    for (const path of [NAVIGATION_SOUND, NAVIGATION_SOUND.replace("Next.wav", "Prev.wav")]) fake.addFile(path);
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = ["customMenuCommands", "achievements"].includes(key);

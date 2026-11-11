@@ -42,7 +42,7 @@ export async function startRocketScenario({
 } = {}) {
     const fake = createFakePinballYHost({ tables: TABLES, now: new Date(2026, 10, 9, 20, 0, 0) });
     fake.setWheelTables(TABLES.map(table => table.configId));
-    for (const path of [...files, NAVIGATION_SOUND]) fake.addFile(path);
+    for (const path of [...files, NAVIGATION_SOUND, NAVIGATION_SOUND.replace("Next.wav", "Prev.wav")]) fake.addFile(path);
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);

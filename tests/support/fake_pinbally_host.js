@@ -504,17 +504,20 @@ export function createFakePinballYHost({
 
     function setUnderlay(filePath) { underlayFile = filePath; }
 
-    // As PinballY searches a global image: the media folder, then the Assets folder.
-    function resolveGlobalImage(subfolder, baseName) {
+    // As PinballY searches a global media file: the media folder, then the Assets folder.
+    function resolveGlobalMedia(subfolder, baseName, extensions) {
         const program = withoutTrailingSlash(programFolder);
         for (const folder of [`${program}\\Media\\${subfolder}`, `${program}\\Assets\\${subfolder}`]) {
-            for (const extension of ["png", "jpg", "jpeg"]) {
+            for (const extension of extensions) {
                 const path = `${folder}\\${baseName}.${extension}`;
                 if (files.has(path)) return path;
             }
         }
         return undefined;
     }
+
+    const resolveGlobalImage = (subfolder, baseName) => resolveGlobalMedia(subfolder, baseName, ["png", "jpg", "jpeg"]);
+    const resolveGlobalSound = (subfolder, baseName) => resolveGlobalMedia(subfolder, baseName, ["wav"]);
 
     function returnToWheel() {
         uiMode = "wheel";
@@ -805,8 +808,8 @@ export function createFakePinballYHost({
         const playerIds = Array.from({ length: playerCount }, () => nextSoundPlayerId++);
         let next = 0;
         return {
-            play() {
-                sounds.push({ filePath, playerId: playerIds[next] });
+            play(volume = 100) {
+                sounds.push({ filePath, playerId: playerIds[next], volume });
                 next = (next + 1) % playerIds.length;
             },
         };
@@ -829,11 +832,12 @@ export function createFakePinballYHost({
         let url = "";
         let looping = false;
         const playUrl = () => {
-            if (files.has(url)) sounds.push({ filePath: url, playerId, looping });
+            if (files.has(url)) sounds.push({ filePath: url, playerId, looping, volume: player.settings.volume });
         };
         const player = {
             settings: {
                 autoStart: true,
+                volume: 100,
                 setMode(mode, on) { if (mode === "loop") looping = on; },
             },
             get URL() { return url; },
@@ -1542,6 +1546,7 @@ export function createFakePinballYHost({
         showWheel,
         getLaunchOverlayBackground: () => launchOverlay.bg,
         resolveGlobalImage,
+        resolveGlobalSound,
         createStyledText: (options) => new FakeStyledText(options, (text) => { logLines.push(text); }),
         allocateCommand,
         getBuiltInCommand,
@@ -1643,6 +1648,8 @@ export function createFakePinballYHost({
         launchOverlay: () => launchOverlay,
         drawings: () => drawingList.map(drawing => ({ ...drawing, texts: [...drawing.texts], images: [...drawing.images] })),
         soundsPlayed: () => sounds.map(sound => sound.filePath),
+        // Each sound's volume, 0 to 100, in the order played.
+        soundVolumes: () => sounds.map(sound => sound.volume),
         // The id of the player each sound played on, in the same order.
         soundPlayers: () => sounds.map(sound => sound.playerId),
         // The sounds started on a player set to loop, in order.
@@ -2044,7 +2051,8 @@ export function createFakePinballYHost({
                     refreshFilter,
                     createMetaFilter,
                     getGameInfo,
-                    resolveMedia: (subfolder, baseName) => resolveGlobalImage(subfolder, baseName),
+                    resolveMedia: (subfolder, baseName, type) =>
+                        (type === "wave" ? resolveGlobalSound : resolveGlobalImage)(subfolder, baseName),
                 },
                 mainWindow: {
                     on: onThroughGlobals,

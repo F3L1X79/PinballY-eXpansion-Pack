@@ -620,10 +620,10 @@ export default function init() {
         placeCarousel();
     }
 
-    // direction: 1 for Next, -1 for Prev. A press during a glide carries on
-    // from where the Avatars are.
-    function move(direction) {
-        navigationSound.play();
+    // direction: 1 for Next, -1 for Prev; isRepeat: a held button's
+    // auto-repeat. A press during a glide carries on from where the Avatars are.
+    function move(direction, isRepeat) {
+        navigationSound.play(direction, isRepeat);
         highlighted = (highlighted + direction + slots.length) % slots.length;
         glide += direction;
         if (glideTimer === null) {
@@ -778,7 +778,7 @@ export default function init() {
         // pick a Profile or close the carousel that just came back.
         if (isHeldSelectLaunchOrExit(ev)) return;
         if (ev.command === "Next" || ev.command === "Prev") {
-            move(ev.command === "Next" ? 1 : -1);
+            move(ev.command === "Next" ? 1 : -1, ev.repeat === true);
         } else if (ev.command === "Select" || ev.command === "Launch") {
             const chosen = slots[highlighted];
             if (chosen === NEW_PROFILE_SLOT) nameEntry.open(name => avatarChoice.open(name, () => showCreated(name)));

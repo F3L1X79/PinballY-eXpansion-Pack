@@ -15,6 +15,7 @@ PinballY's menus and other scripts' menus are drawn in the pack's Steamball look
 - In the main menu, Rate Table shows the selected table's Rating when it has one: five stars after its name, half stars included, as under the Mastery Bar ("Rate Table (current: 4.5 / 5)" in PinballY's own menu). It is the active Profile's own Rating, unless **Ratings per Profile** is off (see [Ratings and Favorite Tables](profiles.md#ratings-and-favorite-tables)).
 - In the pause, Exit and "Cancel" resume the game.
 - On every drawn menu and screen, a held Select, Launch or Exit counts once, while a held flipper keeps going.
+- Drawn menus and screens play PinballY's button sounds, like the wheel: your own if they are in `Media\Button Sounds`, at PinballY's button volume. **Mute Buttons** in the Operator Menu silences them all; a copy of `Silence.wav` (in PinballY's `Assets` folder) named after one sound silences only that one, such as `Next.wav` and `Prev.wav` for moves.
 - A shorter main menu gathers every wheel selection and filter group behind one "Change Filter" entry, and names the filter the wheel shows under its list ("Active filter: All Tables").
 
 ## Menu Cleanup

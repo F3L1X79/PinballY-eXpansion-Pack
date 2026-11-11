@@ -584,6 +584,9 @@ export function createPinballYHost() {
         // ("Images", "underlay"): the media folder first, then PinballY's
         // Assets folder; undefined when neither has one.
         resolveGlobalImage: (subfolder, baseName) => gameList.resolveMedia(subfolder, baseName, "image"),
+        // A .wav file found as PinballY finds its own, such as a button sound
+        // the owner replaced in Media\Button Sounds; undefined when none.
+        resolveGlobalSound: (subfolder, baseName) => gameList.resolveMedia(subfolder, baseName, "wave"),
         createStyledText: (options) => new StyledText(options),
 
         allocateCommand: (name) => command.allocate(name),
@@ -650,7 +653,8 @@ export function createPinballYHost() {
         // once, play it in turn. Restarting a player still playing blocks
         // PinballY for 60 to 130 ms, while one at rest starts in a few.
         // Shared by every caller asking for the same file, with the player
-        // count of the first. Throws like playSound().
+        // count of the first. play(volume) takes 0 to 100, 100 when omitted.
+        // Throws like playSound().
         createSoundRotation: (filePath, playerCount) => {
             if (!soundRotationsBySession.has(createAutomationObject)) soundRotationsBySession.set(createAutomationObject, new Map());
             const rotations = soundRotationsBySession.get(createAutomationObject);
@@ -665,9 +669,10 @@ export function createPinballYHost() {
             }
             let next = 0;
             const rotation = {
-                play: () => {
+                play: (volume = 100) => {
                     const player = players[next];
                     next = (next + 1) % players.length;
+                    player.settings.volume = volume;
                     player.controls.currentPosition = 0;
                     player.controls.play();
                 },

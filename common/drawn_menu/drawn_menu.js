@@ -602,7 +602,6 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
     function selectEntry(position, wrapped) {
         const { model } = shown;
         const previousScroll = shown.scroll;
-        sounds.move.play();
         model.selected = model.entries[position];
         scrollToSelected();
         drawSelectedTextLayer();
@@ -623,15 +622,17 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
 
     const currentPosition = () => shown.model.entries.indexOf(shown.model.selected);
 
-    // direction: 1 for Next, -1 for Prev, wrapping.
-    function move(direction) {
+    // direction: 1 for Next, -1 for Prev, wrapping; isRepeat: a held button's auto-repeat.
+    function move(direction, isRepeat) {
+        sounds.move.play(direction, isRepeat);
         const count = shown.model.entries.length;
         const position = currentPosition() + direction;
         selectEntry((position + count) % count, position < 0 || position >= count);
     }
 
     // By the entries one list area holds, stopping at the ends.
-    function movePage(direction) {
+    function movePage(direction, isRepeat) {
+        sounds.move.play(direction, isRepeat);
         const { geometry, model } = shown;
         const step = Math.max(1, Math.floor(geometry.areaHeight / (DRAWN_MENU_LOOK.rowHeights.entry * geometry.k)) - 1);
         selectEntry(Math.max(0, Math.min(model.entries.length - 1, currentPosition() + direction * step)), false);
@@ -690,10 +691,11 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
         // Swallowed first, so a failing move still never reaches the wheel.
         ev.preventDefault();
         if (shown.borrowing || shown.panelHidden || isHeldSelectLaunchOrExit(ev)) return;
-        if (ev.command === "Next") move(1);
-        else if (ev.command === "Prev") move(-1);
-        else if (ev.command === "NextPage") movePage(1);
-        else if (ev.command === "PrevPage") movePage(-1);
+        const isRepeat = ev.repeat === true;
+        if (ev.command === "Next") move(1, isRepeat);
+        else if (ev.command === "Prev") move(-1, isRepeat);
+        else if (ev.command === "NextPage") movePage(1, isRepeat);
+        else if (ev.command === "PrevPage") movePage(-1, isRepeat);
         else if (ev.command === "Select" || ev.command === "Launch") choose();
         else if (ev.command === "Exit") {
             sounds.deselect.play();

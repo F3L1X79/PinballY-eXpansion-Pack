@@ -17,6 +17,7 @@ import { sectionHolding } from "../support/main_menu_reader.js";
 const ADD_ONS_UNDER_TEST = ["uiTranslation", "customMenuCommands", "drawnMenus"];
 const BUTTON_SOUNDS = "C:\\PinballY\\Assets\\Button Sounds";
 const NEXT_SOUND = `${BUTTON_SOUNDS}\\Next.wav`;
+const PREV_SOUND = `${BUTTON_SOUNDS}\\Prev.wav`;
 const SELECT_SOUND = `${BUTTON_SOUNDS}\\Select.wav`;
 const DESELECT_SOUND = `${BUTTON_SOUNDS}\\Deselect.wav`;
 const TABLES = [
@@ -28,7 +29,7 @@ const fake = createFakePinballYHost({ now: new Date(2026, 9, 10, 20, 0, 0), tabl
 let LABELS;
 
 test("setup", async () => {
-    for (const path of [NEXT_SOUND, SELECT_SOUND, DESELECT_SOUND]) fake.addFile(path);
+    for (const path of [NEXT_SOUND, PREV_SOUND, SELECT_SOUND, DESELECT_SOUND]) fake.addFile(path);
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = ADD_ONS_UNDER_TEST.includes(key);
@@ -53,7 +54,7 @@ test("the main menu is drawn instead of the native one, with the pack's sections
     assert.equal(highlightedEntry(fake), "Play", "the cursor opens on the first entry");
 });
 
-test("Next and Prev move the cursor over the entries only, wrapping, with the navigation sound", () => {
+test("Next and Prev move the cursor over the entries only, wrapping, with their own sounds", () => {
     const soundsBefore = fake.soundsPlayed().length;
     press(fake, "Prev");
     assert.equal(highlightedEntry(fake), "Return", "Prev from the first entry wraps to the last");
@@ -61,7 +62,7 @@ test("Next and Prev move the cursor over the entries only, wrapping, with the na
     assert.equal(highlightedEntry(fake), "Play", "Next from the last entry wraps to the first");
     for (let count = 0; count < 2; count++) press(fake, "Next");
     assert.equal(highlightedEntry(fake), "Information", "the separator is skipped");
-    assert.deepEqual(fake.soundsPlayed().slice(soundsBefore), Array(4).fill(NEXT_SOUND));
+    assert.deepEqual(fake.soundsPlayed().slice(soundsBefore), [PREV_SOUND, NEXT_SOUND, NEXT_SOUND, NEXT_SOUND]);
 });
 
 test("the gold title lands at once on the new entry, while only the outline glides", () => {

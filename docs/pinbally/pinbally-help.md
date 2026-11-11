@@ -138,7 +138,7 @@ Changing the wheel and filters:
 Categories and media:
 - `createCategory(name)`, `deleteCategory(name)`, `renameCategory(old, new)`, `getAllCategories()`.
 - `createMediaType(desc)` (MediaTypes.html: `id`, `configId`, `name`, `folder`, `format`, `extensions`, `perSystem`, `isIndexed`, `pageFolders`…).
-- `resolveMedia(subfolder, baseName, "audio"|"image"|"video"|"wave") → path | undefined`.
+- `resolveMedia(subfolder, baseName, "audio"|"image"|"video"|"wave") → path | undefined`. It "uses the same search algorithm that the system uses for its own global media files". Button sounds are global media: `resolveMedia("Button Sounds", "Next", "wave")` finds the owner's own `Media\Button Sounds\Next.wav` (ButtonSounds.html: `AddCredit`, `CoinIn`, `Deselect`, `Launch`, `Next`, `Prev`, `Select`; a copy of `Assets\Silence.wav` silences one).
 - `getMediaDir()`.
 
 ### 2.4 GameInfo (GameInfo.html)
@@ -185,6 +185,7 @@ Categories and media:
 - **When to save.** PinballY saves on its own when the settings are dirty: before quitting, before launching a game, before opening Options, and after about 15 s of idle UI. Calling `save()` yourself is optional. The examples call `set()` without `save()` (KioskModeExample, FamilyFilterExample). They only save explicitly before logging off or shutting down (LogOffExample: `if (optionSettings.isDirty()) optionSettings.save();`).
 - `save()` followed by `reload()` is needed only to make changes to *system* settings take effect. It has visible side effects such as a video restart, so do it rarely.
 - Events on `optionSettings`: `settingspresave`, `settingspostsave` and `settingsreload`, none cancelable. The help calls the `succeeded` property "settingspostchange", but it belongs to `settingspostsave`.
+- Button sound settings, as commented in a cabinet's `Settings.txt` (2026-11-11): `Buttons.Mute` (1 mutes every button sound; the "Mute Buttons" command toggles it), `Buttons.MuteAutoRepeat` (1 mutes them on auto-repeat presses of a held button), `Buttons.Volume` (0 to 100, a percentage of the Windows volume, 100 when absent).
 
 ### 2.7 logfile / console (LogfileObject.html, ConsoleObject.html)
 - `logfile.log(...args)` writes to `PinballY.log` whatever the log options are.
