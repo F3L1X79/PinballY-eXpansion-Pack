@@ -8,6 +8,7 @@
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
+import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 import { ROCKET_IMAGES, NAVIGATION_SOUND, TABLES, profileFile } from "../easter_eggs/rocket_scenario.js";
 import { winTheDrawOf } from "../easter_eggs/winning_draw.js";
 
@@ -19,7 +20,7 @@ export const INTRO_MS = 3500;
 export const LEAVING_MS = 120;
 export const CLOSE_AFTER_MS = 10000;
 export const GAME_Z_INDEX = { backdrop: 7500, last: 7591 };
-export const SCORE_SCREEN_Z_INDEX = { backdrop: 7700, score: 7710 };
+export const SCORE_SCREEN_Z_INDEX = { backdrop: 7700, score: 7710, board: 7720 };
 // The score screen's opening: its steps, then its fade in.
 export const SCORE_SCREEN_OPEN_MS = 1000;
 
@@ -75,7 +76,26 @@ export const gameLayerCount = fake => fake.drawingLayers().filter(layer => layer
 export const isScoreScreenShown = fake => shownIn(fake, SCORE_SCREEN_Z_INDEX.backdrop, SCORE_SCREEN_Z_INDEX.backdrop).length > 0;
 export const scoreScreenTexts = fake => shownIn(fake, SCORE_SCREEN_Z_INDEX.score, SCORE_SCREEN_Z_INDEX.score).flatMap(layer => layer.texts());
 export const scoreScreenLayerCount = fake => fake.drawingLayers()
-    .filter(layer => layer.zIndex >= SCORE_SCREEN_Z_INDEX.backdrop - 2 && layer.zIndex <= SCORE_SCREEN_Z_INDEX.score).length;
+    .filter(layer => layer.zIndex >= SCORE_SCREEN_Z_INDEX.backdrop - 2 && layer.zIndex <= SCORE_SCREEN_Z_INDEX.board).length;
+
+// The Rocket Board's lines as shown, each { place, name, score, isHighlighted }:
+// the highlighted line is the one drawn in gold.
+export function boardLines(fake) {
+    const texts = shownIn(fake, SCORE_SCREEN_Z_INDEX.board, SCORE_SCREEN_Z_INDEX.board)
+        .flatMap(layer => layer.strokes()).filter(stroke => "text" in stroke);
+    const lines = [];
+    for (let index = 0; index + 2 < texts.length; index += 3) {
+        const [place, name, score] = texts.slice(index, index + 3);
+        lines.push({ place: place.text, name: name.text, score: score.text, isHighlighted: place.color === STEAMBALL_COLORS.gold });
+    }
+    return lines;
+}
+
+// Until the score screen has opened after the crash.
+export function untilScoreScreen(fake) {
+    for (let waitedMs = 0; !isScoreScreenShown(fake) && waitedMs < SCORE_SCREEN_OPEN_MS; waitedMs += 16) fake.advanceTime(16);
+    fake.advanceTime(SCORE_SCREEN_OPEN_MS);
+}
 
 // The game's score line at the top: "SCORE  n".
 export function gameScore(fake, lang) {

@@ -1,8 +1,9 @@
 // ============================================================
 // Rocket Game: the Rocket Easter Egg's game, chosen from the main menu by a
 // Profile that has had that Easter Egg (a Profile Reset hides it again). An
-// intro naming the buttons, the game, then the score screen; the main menu
-// comes back on the entry, whether the game crashed, was given up or could not start.
+// intro naming the buttons, the game, then the score screen and the Rocket Board;
+// the main menu comes back on the entry, whether the game crashed, was given up or could not start.
+// - Only a crash saves a score: never a game given up with Exit, never the Easter Egg's.
 // - Shares the Easter Egg's engine (common/rocket/rocket_engine.js): one game at a time.
 // - Never named in the settings: "Hidden Games", so as not to spoil the Easter Egg.
 // ============================================================
@@ -15,11 +16,16 @@ import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
 import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
 import { getWheelDialogs } from "../common/core/wheel_dialog.js";
+import { logHandlerError } from "../common/core/safe_handler.js";
+import { getProfileStore } from "../common/profiles/profile_store.js";
+import { createRocketBoard } from "../common/rocket/rocket_board.js";
 import lang from "../common/core/i18n.js";
 
+const SCRIPT_NAME = "RocketGame";
 const ENTRY = "rocketGame";
 // Against the Easter Egg's 1.9 s: long enough to read the commands.
 const INTRO_MS = 3500;
+const NO_BOARD = Object.freeze({ lines: [], highlighted: -1 });
 
 export default function init() {
     const host = createPinballYHost();
@@ -30,6 +36,18 @@ export default function init() {
     // Drawn over the wheel without leaving its UI mode: nothing shows over it.
     getWheelDialogs().waitFor(scoreScreen);
     const backToMainMenu = () => mainMenu.reopenOn(ENTRY);
+    const rocketBoard = createRocketBoard(host, { profileStore: getProfileStore() });
+
+    // A score that cannot be saved, or a board that cannot be read, is logged
+    // and the score screen still shows: the engine waits for its close to end the game.
+    function orLogged(run, fallback) {
+        try {
+            return run();
+        } catch (error) {
+            logHandlerError(SCRIPT_NAME, error);
+            return fallback;
+        }
+    }
 
     // Images missing (logged by canPlay()) or a game already under way: the main menu comes straight back.
     function play() {
@@ -41,7 +59,11 @@ export default function init() {
             texts: lang.rocket,
             intro: { commands: [lang.rocketGame.changeLane], ms: INTRO_MS },
             exitGivesUp: true,
-            onCrashed: (score, end) => scoreScreen.open({ score, onClose: end }),
+            onCrashed: (score, end) => {
+                const recorded = orLogged(() => rocketBoard.record(score), null);
+                const { lines, highlighted } = orLogged(() => rocketBoard.board(recorded), NO_BOARD);
+                scoreScreen.open({ score, board: lines, highlighted, onClose: end });
+            },
             onEnd: backToMainMenu,
         });
     }

@@ -1,6 +1,6 @@
 // ============================================================
 // How a Rocket Game ends, through main.js: Exit during the intro or the game
-// gives it up, with no score screen and the main menu back on the entry; a
+// gives it up, with no score screen, nothing saved and the main menu back on the entry; a
 // score screen left alone closes after 10 s, a held flipper's repeat never
 // closing it, and leads to the main menu on the entry.
 // ============================================================
@@ -35,6 +35,7 @@ test("Exit gives a Rocket Game up; a score screen left alone closes after 10 s",
         fake.advanceTime(LEAVING_MS + 50);
         await settle();
         assertBackOnTheEntry(why);
+        assert.equal(fake.readFile(profileFile("guest")), savedBefore, `nothing saved: ${why}`);
     }
 
     await chooseRocketGame(fake, lang);
@@ -49,6 +50,5 @@ test("Exit gives a Rocket Game up; a score screen left alone closes after 10 s",
     fake.advanceTime(300 + LEAVING_MS + 50);
     await settle();
     assertBackOnTheEntry("after 10 s");
-    assert.equal(fake.readFile(profileFile("guest")), savedBefore, "nothing saved");
     assertNoErrorLogged(fake);
 });

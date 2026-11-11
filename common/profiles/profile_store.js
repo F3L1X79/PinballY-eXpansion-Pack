@@ -577,6 +577,11 @@ export function createProfileStore(host) {
         hasPlayed: (configId) => (activeData.plays[configId] || NO_PLAY).count > 0,
         // Every play record of the named Profile, by table.
         getPlaysOf: (profileName) => profileWithData(profileName).data.plays,
+        // The named Profile's best Rocket Game scores, { score, date }; none before its first.
+        getRocketScoresOf: (profileName) => {
+            const scores = profileWithData(profileName).data.rocketScores;
+            return Array.isArray(scores) ? scores : [];
+        },
         // The Plays of the named Profile's Play Log started in that year, in
         // the order they ended; an empty list when the year has none.
         getPlayLogOf: (profileName, year) => readPlayLog(profileNamed(profileName), year),
@@ -587,7 +592,8 @@ export function createProfileStore(host) {
         getNotifiedOf: (profileName) => profileWithData(profileName).data.notified,
         updateProfileData,
         // Erases the named Profile's plays, Streaks, session stats, Random
-        // Games, Challenge progress, World Tour, Surprises and Notified Achievements.
+        // Games, Challenge progress, World Tour, Surprises, Rocket Game scores
+        // and Notified Achievements.
         resetProfile,
         // Whether the named Profile (the active one by default) is an Admin Profile.
         isAdmin,
