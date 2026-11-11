@@ -24,7 +24,8 @@ Menu Cleanup lightens PinballY's menus for every Profile, Admin Profiles include
 - Help and About from the Exit and Operator menus;
 - Information, Flyer and Instruction Card from the main menu (Rate Table and Add to Favorites stay);
 - PinballY's own High Scores entry (named **Table Scores** in the main menu) when the pack's High Scores are turned off;
-- the Filter by System, Filter by Last Played and Filter by Date Added groups from "Change Filter".
+- the Filter by Last Played and Filter by Date Added groups from "Change Filter";
+- the Filter by System group, only when your configured tables use a single system (only Visual Pinball X, say): with two systems or more (Visual Pinball X and Pinball FX, for instance), it stays.
 
 It is **off by default**, like the Backglass Clock: turn it on with `ADD_ON_MENU_CLEANUP=true`. PinballY's dedicated buttons for these screens, if you mapped them, still work.
 

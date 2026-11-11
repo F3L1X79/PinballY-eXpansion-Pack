@@ -1,7 +1,8 @@
 // ============================================================
 // Menu Cleanup (off by default): removes Help, About, Information, Flyer,
 // High Scores, Instruction Card and some filter submenus from PinballY's
-// native menus, for every Profile. Listens to "menuopen".
+// native menus, for every Profile. Listens to "menuopen" and "settingsreload".
+// - Filter by System goes only when the configured tables use at most one System.
 // - Leaves no doubled, leading or trailing separator.
 // - PinballY's dedicated buttons still open those screens.
 // ============================================================
@@ -18,11 +19,34 @@ const REMOVED_COMMANDS = {
     main: ["GameInfo", "Flyer", "HighScores", "Instructions", "FilterBySystem", "FilterByRecency", "FilterByAdded"],
 };
 
+// Systems told apart by displayName: GameSysInfo documents no id.
+function countConfiguredSystems() {
+    const names = new Set();
+    for (const game of gameList.getAllGames()) {
+        if (game.isConfigured === false || !game.system) continue;
+        names.add(game.system.displayName);
+    }
+    return names.size;
+}
+
 export default function init() {
+    // Counted at the first main menu opening, then again after the game
+    // list may have changed, not on every opening.
+    let systemCount = null;
+
+    // Fires when PinballY reloads its settings, which reloads the game list.
+    optionSettings.on("settingsreload", safeHandler(SCRIPT_NAME, () => {
+        systemCount = null;
+    }));
+
     // Fires when any menu opens, with a fresh item list each time.
     mainWindow.on("menuopen", safeHandler(SCRIPT_NAME, ev => {
-        const removed = REMOVED_COMMANDS[ev.id];
+        let removed = REMOVED_COMMANDS[ev.id];
         if (!removed) return;
+        if (ev.id === "main") {
+            if (systemCount === null) systemCount = countConfiguredSystems();
+            if (systemCount > 1) removed = removed.filter(name => name !== "FilterBySystem");
+        }
         const removedCmds = removed.map(name => command[name]);
         const items = [];
         for (const item of ev.items) {

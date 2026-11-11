@@ -24,7 +24,8 @@ Le nettoyage des menus allège les menus de PinballY pour tous les Profils, Prof
 - Aide et À propos des menus de sortie et opérateur ;
 - Informations, Affiche et Carte d'instructions du menu principal (Noter la table et Ajouter aux favoris restent) ;
 - l'entrée Meilleurs scores de PinballY (nommée **Scores de la table** dans le menu principal) quand les meilleurs scores du pack sont désactivés ;
-- les groupes Filtrer par système, Filtrer par dernière partie et Filtrer par date d'ajout de « Changer de filtre ».
+- les groupes Filtrer par dernière partie et Filtrer par date d'ajout de « Changer de filtre » ;
+- le groupe Filtrer par système, seulement si vos tables configurées utilisent un seul système (Visual Pinball X seul, par exemple) : avec deux systèmes ou plus (Visual Pinball X et Pinball FX, par exemple), il reste.
 
 Elle est **désactivée par défaut**, comme l'horloge du backglass : activez-la avec `ADD_ON_MENU_CLEANUP=true`. Les boutons dédiés de PinballY pour ces écrans, si vous les avez affectés, fonctionnent toujours.
 
