@@ -59,7 +59,7 @@ Applies to every window object:
   - `afterHwnd` can be `HWND.TOP`, `HWND.BOTTOM`, `HWND.TOPMOST` or `HWND.NOTOPMOST`.
   - flags: `SWP_NOSIZE` 1, `SWP_NOMOVE` 2, `SWP_NOZORDER` 4, `SWP_NOACTIVATE` 0x10, `SWP_NOOWNERZORDER` 0x200.
   - The call leaves full-screen mode first.
-- `showWindow(bool)`: shows or hides the window. The on/off state is saved in Settings.txt as `BackglassWindow.Visible`, `DMDWindow.Visible` and so on. The help doesn't say that the call itself writes the setting.
+- `showWindow(bool)`: shows or hides the window. The on/off state is saved in Settings.txt as `BackglassWindow.Visible`, `DMDWindow.Visible` and so on. The help doesn't say it, but the call itself writes the setting: the script binding is `FrameWin::ShowHideFrameWindow`, which sets `<prefix>.Visible` before `ShowWindow` (PinballY source, `PlayfieldView.cpp#L1373`, `FrameWin.cpp#L614-L623`). So a window hidden during a game is saved hidden if the settings are written before it is shown again (PinballY quit or the cabinet switched off mid-game), and the next startup creates it hidden (`FrameWin::CreateWin`, `#L438-L441`). When a game ends, PinballY shows each secondary window again by itself if its `Visible` setting is 1 (`SecondaryView::EndRunningGameMode` → `FrameWin::RestoreVisibility`, `#L626-L630`), never hiding one.
 
 **Secondary windows** (SecondaryWindow.html) are `backglassWindow`, `dmdWindow`, `topperWindow`, `instCardWindow` and custom windows. Extra members:
 - `backgroundScalingMode`: "stretch" (default) or "zoom".

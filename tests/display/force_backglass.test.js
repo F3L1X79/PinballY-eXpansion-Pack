@@ -1,8 +1,8 @@
 ﻿// ============================================================
 // Force Backglass on a cabinet, through main.js on the fake PinballY
 // globals: with a monitor for the backglass, the Add-on shows the
-// backglass window at startup, hides it while a table runs and shows it
-// again after the game.
+// backglass window at startup, hides it while a table runs without saving
+// it hidden, and shows it again after the game.
 // ============================================================
 
 import { test } from "node:test";
@@ -24,6 +24,8 @@ test("on two screens the backglass shows at startup, hides during a game and com
     assert.deepEqual(fake.backglassShowCalls(), [true], "shown at startup");
     fake.gameStarted(TABLE);
     assert.deepEqual(fake.backglassShowCalls(), [true, false], "hidden while the table runs");
+    assert.equal(fake.settings.getBool("BackglassWindow.Visible", true), true,
+        "never saved hidden: PinballY switched off mid-game still opens it, and shows it itself after the game");
     fake.gameOver(TABLE);
     assert.deepEqual(fake.backglassShowCalls(), [true, false, true], "shown again after the game");
 

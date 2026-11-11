@@ -443,6 +443,13 @@ export function createFakePinballYHost({
         },
     };
 
+    // Like PinballY's FrameWin::ShowHideFrameWindow: the call writes the
+    // window's Visible setting (docs/pinbally/pinbally-help.md, section 2.1).
+    function showBackglassWindow(visible) {
+        backglassShowCalls.push(visible);
+        settings.set("BackglassWindow.Visible", visible);
+    }
+
     let heardThroughGlobals = false;
     const onThroughGlobals = (eventName, handler) => {
         heardThroughGlobals = true;
@@ -1581,7 +1588,7 @@ export function createFakePinballYHost({
         getProjectFolder: () => projectFolderOf(programFolder),
         getPinballYVersion: () => pinballYVersion,
         countMonitors: () => monitorCount,
-        showBackglass: (visible) => { backglassShowCalls.push(visible); },
+        showBackglass: showBackglassWindow,
         getBackglassWindowRect: () => backglassRectOf({ hwndFrame: backglassFrame }),
         createBackglassDrawingLayer,
         removeBackglassDrawingLayer,
@@ -2102,7 +2109,7 @@ export function createFakePinballYHost({
                 HWND: FAKE_HWND,
                 systemInfo: { programDir: programFolder, version: pinballYVersion },
                 backglassWindow: {
-                    showWindow: (visible) => { backglassShowCalls.push(visible); },
+                    showWindow: showBackglassWindow,
                     hwndFrame: backglassFrame,
                     createDrawingLayer: createBackglassDrawingLayer,
                     removeDrawingLayer: removeBackglassDrawingLayer,

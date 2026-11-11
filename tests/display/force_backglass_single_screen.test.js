@@ -18,10 +18,16 @@ test("on a single screen the backglass window is hidden at startup and after a g
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = key === "forceBackglass";
+    // The owner's choice, from a session with the backglass screen on.
+    fake.settings.set("BackglassWindow.Visible", true);
 
     await import("../../main.js");
     await settle();
     assert.deepEqual(fake.backglassShowCalls(), [false], "hidden at startup");
+    assert.equal(fake.settings.getBool("BackglassWindow.Visible", true), true,
+        "the owner's choice is kept: a backglass screen seen late by Windows gets it back next time");
+    assert.ok(fake.logLines().some(line => line.startsWith("[ForceBackglass]") && line.includes("1 monitor")),
+        "the hiding is logged, with the monitor count");
     fake.gameStarted(TABLE);
     fake.gameOver(TABLE);
     await settle();
