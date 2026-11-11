@@ -27,7 +27,7 @@ const UNKNOWN = { matches: () => false };
 
 // Sections from the top down, each listing its slots in menu order.
 const SECTIONS = [
-    [builtIn("PlayGame"), packEntry("RANDOM_GAME"), packEntry("TABLE_SETUP"), packEntry("PROFILE_PICKER"), packEntry("WELCOME_SCREEN")],
+    [builtIn("PlayGame"), packEntry("RANDOM_GAME"), packEntry("ROCKET_GAME"), packEntry("TABLE_SETUP"), packEntry("PROFILE_PICKER"), packEntry("WELCOME_SCREEN")],
     [packEntry("PROFILE_STATS"), packEntry("ACHIEVEMENT_LIST")],
     [
         packEntry("HIGH_SCORE_BOARD"),

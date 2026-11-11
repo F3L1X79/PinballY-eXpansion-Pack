@@ -931,6 +931,11 @@ export default {
                 whenOn: "Avvia un tavolo a caso dal menu principale, sotto Gioca.",
                 whenOff: "Il tavolo a caso resta nel Benvenuto; con anche questo disattivato, niente obiettivi delle partite a caso.",
             },
+            rocketGame: {
+                name: "Giochi nascosti",
+                whenOn: "Voci del menu principale che alcune sorprese sbloccano.",
+                whenOff: "Nient'altro cambia.",
+            },
             hallOfFame: {
                 name: "Hall of Fame",
                 whenOn: "Un filtro dei tuoi dieci tavoli più giocati.",
@@ -1059,6 +1064,11 @@ export default {
     rocket: {
         dodge: "SCHIVA!",
         score: "PUNTEGGIO",
+    },
+    rocketGame: {
+        menuEntry: "Razzo",
+        changeLane: "Flipper sinistro / destro: cambia corsia",
+        yourScore: "Il tuo punteggio",
     },
     fakeBlueScreen: {
         title: "Windows",

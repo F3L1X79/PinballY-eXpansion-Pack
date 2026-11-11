@@ -933,6 +933,11 @@ export default {
                 whenOn: "Lanzar una mesa al azar desde el menú principal, bajo Jugar.",
                 whenOff: "La mesa al azar sigue en la bienvenida; con ella también desactivada, sin logros de partidas al azar.",
             },
+            rocketGame: {
+                name: "Juegos ocultos",
+                whenOn: "Entradas del menú principal que algunas sorpresas desbloquean.",
+                whenOff: "No cambia nada más.",
+            },
             hallOfFame: {
                 name: "Hall of Fame",
                 whenOn: "Un filtro con tus diez mesas más jugadas.",
@@ -1061,6 +1066,11 @@ export default {
     rocket: {
         dodge: "¡ESQUIVA!",
         score: "PUNTOS",
+    },
+    rocketGame: {
+        menuEntry: "Cohete",
+        changeLane: "Flipper izquierdo / derecho: cambiar de carril",
+        yourScore: "Tu puntuación",
     },
     fakeBlueScreen: {
         title: "Windows",

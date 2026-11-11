@@ -22,6 +22,8 @@ Tout tient dans un seul dossier, sans modifier PinballY.
 
 Sous « Joueurs et progression », **Notes par Profil** donne à chaque Profil ses propres notes et ses tables favorites, gardées dans un fichier `ratings.json` de son dossier. La première fois, chaque Profil, Invité compris, reçoit les notes et les favoris déjà présents sur la borne. Désactivé, tout le monde partage de nouveau les notes et les favoris de PinballY, et les Succès de notes disparaissent (`ADD_ON_PROFILE_RATINGS=false`).
 
+Sous « Menus et filtres », **Jeux cachés** est activé par défaut : certaines surprises débloquent des entrées de menu, ne soyez donc pas surpris d'en voir apparaître une dans le menu principal d'un joueur. Désactivé, ces entrées n'apparaissent jamais (`ADD_ON_ROCKET_GAME=false`).
+
 Tant que le pack n'a pas lu une fois la version de votre vpxtool (une dizaine de secondes après le premier démarrage qui le trouve), ou si cette version est illisible, il n'y a pas de ligne vpxtool.
 
 Le groupe **Mode hors ligne** réunit ce qui contacte internet, ou propose de le faire, un interrupteur chacun :

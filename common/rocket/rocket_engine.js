@@ -1,12 +1,16 @@
 // ============================================================
 // The Rocket's game: dodging asteroids on the flippers until the crash, then
-// the score for 2 s, drawn over everything. Started by its callers, which it
-// tells at the end the final score, or that it was given up.
-// Its music (config's rocketMusicFile) loops from the opening word to the crash.
-// - Buttons and attract mode go through the Drawn Screen controls; Exit does nothing.
+// the score for 2 s or the caller's own screen, drawn over everything. Shared
+// by the Easter Egg and the Rocket Game, which it tells at the end the final
+// score, or that it was given up. Its music (config's rocketMusicFile) loops from the opening word to the crash.
+// - Buttons and attract mode go through the Drawn Screen controls; Exit gives up only when asked.
 // - onEnd() runs before the layers go: a layer that cannot be removed must not keep a toast away.
 // ============================================================
 
+import config from "../core/config.js";
+import { createPinballYHost } from "../core/pinbally_host.js";
+import { getDrawnScreenControls } from "../core/drawn_screen_controls.js";
+import { getQuietWheel } from "../core/quiet_wheel.js";
 import { safeHandler } from "../core/safe_handler.js";
 import { createNavigationSound } from "../core/navigation_sound.js";
 import { createPlacedLayers } from "../drawing/placed_layers.js";
@@ -91,6 +95,12 @@ const SPLASH_WORD_Y = 0.42;
 // PinballY's text has no outline: the word is drawn in dark all around itself first.
 const OUTLINE_STEPS = 16;
 const OUTLINE_RADIUS = 9;
+// The commands an intro may name, at the screen's bottom.
+const COMMANDS_CANVAS_WIDTH = 1000;
+const COMMAND_LINE_HEIGHT = 70;
+const COMMAND_SIZE = 44;
+const COMMANDS_PADDING = 20;
+const COMMANDS_Y = 0.86;
 const FLAME_FLICKER_MS = 70;
 const BREAK_FRAME_MS = 70;
 const EXPLOSION_FRAME_MS = 90;
@@ -267,6 +277,15 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         drawAt(COLORS.gold, 0, 0);
     }
 
+    // One line per command, on a dark band so that the rays behind never blur it.
+    const commandsHeight = run => COMMAND_LINE_HEIGHT * run.intro.commands.length + COMMANDS_PADDING * 2;
+
+    function paintCommands(run, dc) {
+        dc.fillRect(0, 0, COMMANDS_CANVAS_WIDTH, commandsHeight(run), SCORE_PANEL_COLOR);
+        run.intro.commands.forEach((command, index) => drawCentredText(dc, command, COMMAND_SIZE, COLORS.title,
+            { x: 0, y: COMMANDS_PADDING + index * COMMAND_LINE_HEIGHT, width: COMMANDS_CANVAS_WIDTH, height: COMMAND_LINE_HEIGHT }));
+    }
+
     function prepareShip(run) {
         const shipScale = run.laneWidth * SHIP_SHARE / SHIP_CANVAS.width;
         run.shipCentreY = run.height * SHIP_CENTRE_Y;
@@ -314,6 +333,11 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         show(run, run.scoreSprite, run.width / 2, run.height * 0.04);
         show(run, run.splash, run.width / 2, run.height / 2);
         show(run, run.splashWord, run.width / 2, run.height * SPLASH_WORD_Y);
+        if (run.intro.commands.length > 0) {
+            run.commandsSprite = textSprite(run, SPLASH_WORD_Z_INDEX, COMMANDS_CANVAS_WIDTH, commandsHeight(run),
+                run.columnWidth * 0.9, dc => paintCommands(run, dc));
+            show(run, run.commandsSprite, run.width / 2, run.height * COMMANDS_Y);
+        }
 
         enterPhase(run, "splash");
         run.music = musicOfSession();
@@ -335,9 +359,10 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         const shake = shaken > 0 && shaken < SHAKE_MS ? (1 - shaken / SHAKE_MS) * run.width * SHAKE_SHARE : 0;
         const scaled = { ...word, w: word.w * scale, h: word.h * scale };
         place(run, scaled, run.width / 2 + (random() - 0.5) * 2 * shake, run.height * SPLASH_WORD_Y + (random() - 0.5) * 2 * shake);
-        if (elapsed < SPLASH_MS) return;
+        if (elapsed < run.intro.ms) return;
         hide(run, run.splash);
         hide(run, word);
+        if (run.commandsSprite) hide(run, run.commandsSprite);
         enterPhase(run, "playing");
     }
 
@@ -471,6 +496,14 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         run.breakShown = advance(run, run.breakFrames, run.breakShown, Math.min(run.breakFrames.length, Math.floor(elapsed / BREAK_FRAME_MS)), run.crashAt.x, run.crashAt.y);
         run.explosionShown = advance(run, run.explosionFrames, run.explosionShown, Math.min(run.explosionFrames.length, Math.floor(elapsed / EXPLOSION_FRAME_MS)), run.shipX, run.shipCentreY);
         if (elapsed < CRASH_MS) return;
+        if (run.onCrashed) {
+            // Still, under the caller's screen, until it ends the game.
+            enterPhase(run, "crashed");
+            host.clearInterval(run.frameTimer);
+            run.frameTimer = null;
+            run.onCrashed(run.score, safeHandler(SCRIPT_NAME, () => leave(run)));
+            return;
+        }
         const panel = textSprite(run, TEXT_Z_INDEX, 900, 420, run.columnWidth * 0.8, dc => {
             dc.fillRect(0, 0, 900, 420, SCORE_PANEL_COLOR);
             drawCentredText(dc, run.texts.score, 70, COLORS.description, { x: 0, y: 60, width: 900, height: 120 });
@@ -557,17 +590,26 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         navigationSound.play();
     }
 
-    // texts: { dodge, score }, as shown; onEnd({ score } or { givenUp: true }).
-    function start({ texts, onEnd }) {
+    // Before the crash only: the crash's own frames always play out.
+    function onExit(run) {
+        if (!run.exitGivesUp || run.hasCrashed) return;
+        leave(run);
+    }
+
+    // texts: { dodge, score }, as shown; onEnd({ score } or { givenUp: true });
+    // intro: the commands named under the opening word, and how long it stays;
+    // exitGivesUp: Exit ends the game before its crash, with no score;
+    // onCrashed(score, end): replaces the 2 s score panel, the game kept still until end().
+    function start({ texts, onEnd, intro = { commands: [], ms: SPLASH_MS }, exitGivesUp = false, onCrashed = null }) {
         const run = {
-            placed: createPlacedLayers(host), texts, onEnd, phase: "preparing", opening: null, frameTimer: null, prepareTimer: null, music: null,
+            placed: createPlacedLayers(host), texts, onEnd, intro, exitGivesUp, onCrashed, commandsSprite: null, phase: "preparing", opening: null, frameTimer: null, prepareTimer: null, music: null,
             layers: [], scrolling: [], laneLines: [], freeAsteroids: [], rows: [], queue: [], flameShown: null, hasCrashed: false,
             width: 0, height: 0, score: 0, playMs: 0, nextEventInMs: 0, phaseStartMs: 0, lastFrameMs: 0, glideStartMs: 0,
         };
         running = run;
         const ignore = () => {};
         run.opening = screen.open(
-            { onMove: (direction, isRepeat) => onMove(run, direction, isRepeat), onChoose: ignore, onExit: ignore, close: () => finish(run) },
+            { onMove: (direction, isRepeat) => onMove(run, direction, isRepeat), onChoose: ignore, onExit: () => onExit(run), close: () => finish(run) },
             { holdsAttractMode: true },
         );
         run.opening.ready();
@@ -576,4 +618,16 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
     }
 
     return { screen, canPlay, start, isRunning: () => running !== null };
+}
+
+let sharedEngine = null;
+
+// The pack's one engine: the Easter Egg and the Rocket Game never play at once.
+export function getRocketEngine() {
+    if (!sharedEngine) {
+        sharedEngine = createRocketEngine(createPinballYHost(), {
+            controls: getDrawnScreenControls(), quietWheel: getQuietWheel, musicFile: () => config.rocketMusicFile,
+        });
+    }
+    return sharedEngine;
 }

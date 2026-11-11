@@ -33,8 +33,8 @@ const categoryPages = ({ achievements = ON, clock = ON, menuCleanup = "Off" } = 
     "Wheel screen": ["[WHEEL SCREEN]", `Status line: ${ON}`, `Clock: ${clock}`, `Status Icons: ${ON}`, `Wheel Arc: ${ON}`, "---", "Back"],
     "Menus and filters": [
         "[MENUS AND FILTERS]",
-        `PinballY translation: ${ON}`, "Drawn Menus: On", `Menu commands: ${ON}`, `Random table: ${ON}`, `Hall of Fame: ${ON}`,
-        `Tables to Discover: ${ON}`, `Hidden Tables: ${ON}`, `Original Tables: ${ON}`, `Menu Cleanup: ${menuCleanup}`, "---", "Back",
+        `PinballY translation: ${ON}`, "Drawn Menus: On", `Menu commands: ${ON}`, `Random table: ${ON}`, `Hidden Games: ${ON}`,
+        `Hall of Fame: ${ON}`, `Tables to Discover: ${ON}`, `Hidden Tables: ${ON}`, `Original Tables: ${ON}`, `Menu Cleanup: ${menuCleanup}`, "---", "Back",
     ],
     "Launching and playing a table": [
         "[LAUNCHING AND PLAYING A TABLE]",

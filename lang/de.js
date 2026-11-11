@@ -932,6 +932,11 @@ export default {
                 whenOn: "Einen zufälligen Tisch aus dem Hauptmenü starten, unter Spielen.",
                 whenOff: "Der Zufallstisch bleibt auf der Willkommensseite; ist auch sie aus, keine Zufallsspiel-Erfolge.",
             },
+            rocketGame: {
+                name: "Versteckte Spiele",
+                whenOn: "Hauptmenü-Einträge, die manche Überraschungen freischalten.",
+                whenOff: "Sonst ändert sich nichts.",
+            },
             hallOfFame: {
                 name: "Hall of Fame",
                 whenOn: "Ein Filter mit Ihren zehn meistgespielten Tischen.",
@@ -1060,6 +1065,11 @@ export default {
     rocket: {
         dodge: "AUSWEICHEN!",
         score: "PUNKTE",
+    },
+    rocketGame: {
+        menuEntry: "Rakete",
+        changeLane: "Linker / rechter Flipper: Spur wechseln",
+        yourScore: "Ihre Punkte",
     },
     fakeBlueScreen: {
         title: "Windows",

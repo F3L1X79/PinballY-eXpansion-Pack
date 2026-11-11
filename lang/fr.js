@@ -937,6 +937,11 @@ export default {
                 whenOn: "Lancer une table au hasard depuis le menu principal, sous Jouer.",
                 whenOff: "La table au hasard reste sur l'écran d'accueil ; s'il est désactivé aussi, plus de Succès de tables au hasard.",
             },
+            rocketGame: {
+                name: "Jeux cachés",
+                whenOn: "Des entrées du menu principal que certaines surprises débloquent.",
+                whenOff: "Rien d'autre ne change.",
+            },
             hallOfFame: {
                 name: "Tables les plus jouées",
                 whenOn: "Un filtre de tes dix tables les plus jouées.",
@@ -1065,6 +1070,11 @@ export default {
     rocket: {
         dodge: "ESQUIVEZ !",
         score: "SCORE",
+    },
+    rocketGame: {
+        menuEntry: "Fusée",
+        changeLane: "Flipper gauche / droit : changer de couloir",
+        yourScore: "Votre score",
     },
     fakeBlueScreen: {
         title: "Windows",

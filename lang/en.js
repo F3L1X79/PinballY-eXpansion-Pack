@@ -863,6 +863,12 @@ export default {
                 whenOn: "Launch a random table from the main menu, under Play.",
                 whenOff: "The random table stays on the Welcome Screen; with that off too, no Random Game Achievements.",
             },
+            // Named so as not to spoil the surprise it unlocks.
+            rocketGame: {
+                name: "Hidden Games",
+                whenOn: "Main menu entries that some surprises unlock.",
+                whenOff: "Nothing else changes.",
+            },
             hallOfFame: {
                 name: "Hall of Fame",
                 whenOn: "A filter of your ten most played tables.",
@@ -1003,6 +1009,12 @@ export default {
     rocket: {
         dodge: "DODGE!",
         score: "SCORE",
+    },
+    // The Rocket Game: its main menu entry, the intro's commands (the cabinet's buttons), the score screen.
+    rocketGame: {
+        menuEntry: "Rocket",
+        changeLane: "Left / right flipper: change lane",
+        yourScore: "Your score",
     },
     // The Fake Blue Screen: title and errorCode stay the same in every language.
     fakeBlueScreen: {

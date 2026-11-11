@@ -119,6 +119,8 @@ export const DEFAULTS = {
         customMenuCommands: true,
         // "Launch a random table" in the main menu, under Play.
         randomGame: true,
+        // A main menu entry that only some surprises unlock.
+        rocketGame: true,
         customFilter: true,
         hallOfFame: true,
         tablesToDiscover: true,

@@ -932,6 +932,11 @@ export default {
                 whenOn: "Iniciar uma mesa aleatória pelo menu principal, sob Jogar.",
                 whenOff: "A mesa aleatória continua nas Boas-vindas; com elas também desativadas, sem conquistas de mesas aleatórias.",
             },
+            rocketGame: {
+                name: "Jogos ocultos",
+                whenOn: "Entradas do menu principal que algumas surpresas desbloqueiam.",
+                whenOff: "Nada mais muda.",
+            },
             hallOfFame: {
                 name: "Hall of Fame",
                 whenOn: "Um filtro das suas dez mesas mais jogadas.",
@@ -1060,6 +1065,11 @@ export default {
     rocket: {
         dodge: "DESVIE!",
         score: "PONTOS",
+    },
+    rocketGame: {
+        menuEntry: "Foguete",
+        changeLane: "Flipper esquerdo / direito: mudar de faixa",
+        yourScore: "Sua pontuação",
     },
     fakeBlueScreen: {
         title: "Windows",

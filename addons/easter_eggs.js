@@ -23,7 +23,7 @@ import { createCrow } from "../common/easter_eggs/crow.js";
 import { createMenuGlitch } from "../common/easter_eggs/menu_glitch.js";
 import { createManekiNeko } from "../common/easter_eggs/maneki_neko.js";
 import { createRocket } from "../common/easter_eggs/rocket.js";
-import { createRocketEngine } from "../common/rocket/rocket_engine.js";
+import { getRocketEngine } from "../common/rocket/rocket_engine.js";
 import { createFakeBlueScreen } from "../common/easter_eggs/fake_blue_screen.js";
 import { getHighScoreStore } from "../common/high_scores/high_score_store.js";
 import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
@@ -38,9 +38,7 @@ let rocketEngine = null;
 // controls' button and attract mode listeners come before any other of the pack.
 export function installFirstListeners() {
     const host = createPinballYHost();
-    rocketEngine = createRocketEngine(host, {
-        controls: getDrawnScreenControls(), quietWheel: getQuietWheel, musicFile: () => config.rocketMusicFile,
-    });
+    rocketEngine = getRocketEngine();
     createRocket(host, { engine: rocketEngine, rules: getEasterEggRules, texts: () => lang.rocket });
 }
 

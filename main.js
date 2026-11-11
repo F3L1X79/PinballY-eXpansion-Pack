@@ -33,6 +33,7 @@ import * as uiTranslation from "./addons/ui_translation.js";
 import * as statusLineInfo from "./addons/status_line_info.js";
 import * as customMenuCommands from "./addons/custom_menu_commands.js";
 import * as randomGame from "./addons/random_game.js";
+import * as rocketGame from "./addons/rocket_game.js";
 import * as customFilter from "./addons/custom_filter.js";
 import * as hallOfFame from "./addons/hall_of_fame.js";
 import * as tablesToDiscover from "./addons/tables_to_discover.js";
@@ -101,6 +102,7 @@ const SCRIPTS = [
     { key: "menuCleanup", module: menuCleanup },
     { key: "customMenuCommands", module: customMenuCommands },
     { key: "randomGame", module: randomGame },
+    { key: "rocketGame", module: rocketGame },
     { key: "customFilter", module: customFilter },
     { key: "hallOfFame", module: hallOfFame },
     { key: "tablesToDiscover", module: tablesToDiscover },
