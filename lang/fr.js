@@ -1094,6 +1094,10 @@ export default {
         restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
+        "1.5.0": [
+            "Quelques surprises rares se cachent maintenant sur la borne. Ouvrez l'œil !",
+            "Avec des tables sur deux systèmes ou plus, chaque système a son propre Succès, et Voyageur des mondes récompense une table jouée sur chaque système.",
+        ],
         "1.4.1": [
             "Les tables listées dans UNTRACKED_TABLES, comme un lecteur multimédia, restent maintenant hors des statistiques et des Succès.",
         ],

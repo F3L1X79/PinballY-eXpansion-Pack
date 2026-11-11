@@ -1089,6 +1089,10 @@ export default {
         restarting: "Neustart läuft",
     },
     releaseHighlights: {
+        "1.5.0": [
+            "Ein paar seltene Überraschungen verstecken sich jetzt im Automaten. Halte die Augen offen!",
+            "Mit Tischen auf zwei oder mehr Systemen hat jedes System seinen eigenen Erfolg, und Weltenwanderer belohnt einen Tisch, der auf jedem System gespielt wurde.",
+        ],
         "1.4.1": [
             "In UNTRACKED_TABLES aufgeführte Tische, etwa ein Mediaplayer, zählen jetzt nicht mehr für Statistiken und Erfolge.",
         ],

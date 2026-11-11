@@ -1090,6 +1090,10 @@ export default {
         restarting: "Reiniciando",
     },
     releaseHighlights: {
+        "1.5.0": [
+            "Algunas sorpresas raras se esconden ahora en la máquina. ¡Mantén los ojos abiertos!",
+            "Con mesas en dos sistemas o más, cada sistema tiene su propio Logro, y Caminante de mundos premia una mesa jugada en cada sistema.",
+        ],
         "1.4.1": [
             "Las mesas listadas en UNTRACKED_TABLES, como un reproductor multimedia, ya no cuentan para las estadísticas ni los Logros.",
         ],

@@ -1089,6 +1089,10 @@ export default {
         restarting: "A reiniciar",
     },
     releaseHighlights: {
+        "1.5.0": [
+            "Algumas surpresas raras escondem-se agora na máquina. Fique de olhos abertos!",
+            "Com mesas em dois sistemas ou mais, cada sistema tem a sua própria Conquista, e Andarilho dos mundos recompensa uma mesa jogada em cada sistema.",
+        ],
         "1.4.1": [
             "As mesas listadas em UNTRACKED_TABLES, como um reprodutor multimédia, agora ficam fora das estatísticas e das Conquistas.",
         ],

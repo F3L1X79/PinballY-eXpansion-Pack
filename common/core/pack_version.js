@@ -5,7 +5,7 @@
 // - Releases are plain X.Y.Z: a pre-release or another format is never newer.
 // ============================================================
 
-export const PACK_VERSION = "1.4.1";
+export const PACK_VERSION = "1.5.0";
 
 const VERSION_PATTERN = /^v?(\d+)\.(\d+)\.(\d+)$/;
 

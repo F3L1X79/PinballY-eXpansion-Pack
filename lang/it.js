@@ -1088,6 +1088,10 @@ export default {
         restarting: "Riavvio in corso",
     },
     releaseHighlights: {
+        "1.5.0": [
+            "Alcune sorprese rare ora si nascondono nel cabinato. Tieni gli occhi aperti!",
+            "Con tavoli su due sistemi o più, ogni sistema ha il proprio Obiettivo, e Viandante dei mondi premia un tavolo giocato su ogni sistema.",
+        ],
         "1.4.1": [
             "I tavoli elencati in UNTRACKED_TABLES, come un lettore multimediale, ora restano fuori dalle statistiche e dagli Obiettivi.",
         ],

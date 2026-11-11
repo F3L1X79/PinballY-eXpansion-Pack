@@ -2,6 +2,13 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.5.0 (2026-11-11)
+
+- **Surprises**: a few rare surprises now hide on the cabinet. We say no more.
+- **Hidden Games**: a new setting under "Menus and filters", on by default. See the guide's Settings page.
+- **System Achievements**: when the tables you can see use two Systems or more (as named in PinballY's settings), each System gets its own completion Achievement ("Pinball FX Master", say), and **World Walker** rewards a table played on every System. A new System with tables makes World Walker missing again until you play one of its tables, without a second toast. On a cabinet with a single System, nothing changes.
+- **Menu Cleanup**: Filter by System now stays in the main menu when your configured tables use two systems or more.
+
 ## v1.4.1 (2026-11-09)
 
 - **Untracked Tables**: list in `UNTRACKED_TABLES` (in `.env.local`, comma-separated titles exactly as in PinballY) the "tables" that are not really pinball games, such as a media player launched as a table. They stay on the wheel and launch, but leave the stats and Achievements, and the Random Game never draws them. Games already saved stay in the Profile's file: a table removed from the list comes back with them.

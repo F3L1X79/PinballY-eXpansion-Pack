@@ -1037,6 +1037,10 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.5.0": [
+            "A few rare surprises now hide on the cabinet. Keep your eyes open!",
+            "With tables on two Systems or more, each System has its own Achievement, and World Walker rewards a table played on every System.",
+        ],
         "1.4.1": [
             "Tables listed in UNTRACKED_TABLES, such as a media player, now stay out of the stats and Achievements.",
         ],
