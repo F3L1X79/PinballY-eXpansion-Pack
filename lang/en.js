@@ -226,6 +226,8 @@ export default {
         weeklyStreakDescription: (weeks) => `Play the table of the week ${weeks} weeks in a row.`,
         manufacturerCompletionTitle: (manufacturer) => `Die-Hard ${manufacturer} Fan`,
         manufacturerCompletionDescription: (manufacturer, count) => `Play all ${count} ${manufacturer} tables at least once.`,
+        systemCompletionTitle: (system) => `${system} Master`,
+        systemCompletionDescription: (system, count) => `Play all ${count} ${system} tables at least once.`,
         firstTableTitle: () => "First Steps",
         firstTableDescription: () => "Play your very first table.",
         collectionPercentTitles: {

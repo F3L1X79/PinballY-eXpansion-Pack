@@ -2,7 +2,7 @@
 // Achievement Rank of every Achievement, through main.js on the fake
 // PinballY globals: a ladder's steps go from Bronze to Platinum, a
 // standalone Achievement is Gold unless it states its rank, and a group
-// completion takes its rank from the size of its group.
+// completion (a System's included) takes its rank from the size of its group.
 // ============================================================
 
 import { test } from "node:test";
@@ -15,18 +15,19 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 const PROFILES_FOLDER = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 const ADD_ONS_UNDER_TEST = ["customMenuCommands", "randomGame", "sessionStatsTracker", "achievements", "challenges", "profilePicker"];
 
-// One manufacturer, decade and category per group size.
+// One manufacturer, decade, category and System per group size.
 const GROUP_SIZES = [
-    { manufacturer: "Stern", year: 2015, category: "Modern", count: 2 },
-    { manufacturer: "Williams", year: 1995, category: "Classic", count: 8 },
-    { manufacturer: "Bally", year: 1985, category: "SolidState", count: 20 },
-    { manufacturer: "Gottlieb", year: 1965, category: "EM", count: 40 },
+    { manufacturer: "Stern", year: 2015, category: "Modern", system: "Pinball FX", count: 2 },
+    { manufacturer: "Williams", year: 1995, category: "Classic", system: "Future Pinball", count: 8 },
+    { manufacturer: "Bally", year: 1985, category: "SolidState", system: "Visual Pinball X", count: 20 },
+    { manufacturer: "Gottlieb", year: 1965, category: "EM", system: "Pinball M", count: 40 },
 ];
-const TABLES = GROUP_SIZES.flatMap(({ manufacturer, year, category, count }) =>
+const TABLES = GROUP_SIZES.flatMap(({ manufacturer, year, category, system, count }) =>
     Array.from({ length: count }, (_, index) => {
         const title = `${manufacturer} ${index + 1}`;
         return {
             id: `${manufacturer}${index}`, configId: title, title, manufacturer, year, categories: [category],
+            system: { displayName: system },
             playCount: 0, playTime: 0, lastPlayed: null, rating: -1, isHidden: false,
         };
     }));
@@ -84,6 +85,7 @@ test("every Achievement has an Achievement Rank deduced from its ladder or group
     assert.deepEqual(ranksOf(GROUP_SIZES.map(group => `manufacturerCompletion:${group.manufacturer}`)), EXPECTED_GROUP_RANKS);
     assert.deepEqual(ranksOf(GROUP_SIZES.map(group => `decadeCompletion:${Math.floor(group.year / 10) * 10}s`)), EXPECTED_GROUP_RANKS);
     assert.deepEqual(ranksOf(GROUP_SIZES.map(group => `categoryCompletion:${group.category}`)), EXPECTED_GROUP_RANKS);
+    assert.deepEqual(ranksOf(GROUP_SIZES.map(group => `systemCompletion:${group.system}`)), EXPECTED_GROUP_RANKS);
 
     assertNoErrorLogged(fake);
 });

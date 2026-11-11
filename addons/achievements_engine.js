@@ -14,6 +14,7 @@
 import { evaluateAchievements, markNotified, ACHIEVEMENT_RANK } from "../common/achievements/achievements.js";
 import { buildDayManufacturersAchievements } from "../achievements/day_manufacturers.js";
 import { buildManufacturerCompletionAchievements } from "../achievements/manufacturer_completion.js";
+import { buildSystemCompletionAchievements } from "../achievements/system_completion.js";
 import { buildCollectionCompletionAchievements } from "../achievements/collection_completion.js";
 import { buildPlayTimeTotalAchievements } from "../achievements/play_time_totals.js";
 import { buildPeriodTableAchievements } from "../achievements/period_tables.js";
@@ -85,6 +86,7 @@ export function getAllAchievements({ asNonChild = false, profileName } = {}) {
     return [
         ...buildDayManufacturersAchievements(),
         ...buildManufacturerCompletionAchievements(seenBy),
+        ...buildSystemCompletionAchievements(seenBy),
         ...buildCollectionCompletionAchievements(seenBy),
         ...buildWorldTourAchievements(),
         ...buildPlayTimeTotalAchievements(),

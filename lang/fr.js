@@ -338,6 +338,8 @@ export default {
         decadeCompletionTitle: (decadeStartYear) => `Voyage dans les années ${decadeStartYear}`,
         manufacturerCompletionTitle: (manufacturer) => `Fan absolu de ${manufacturer}`,
         manufacturerCompletionDescription: (manufacturer, count) => `Jouer au moins une fois aux ${count} tables ${manufacturer}.`,
+        systemCompletionTitle: (system) => `Maître de ${system}`,
+        systemCompletionDescription: (system, count) => `Jouer au moins une fois aux ${count} tables ${system}.`,
         firstTableTitle: () => "Premiers pas",
         firstTableDescription: () => "Jouer une toute première table.",
         collectionPercentTitles: {

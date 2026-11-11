@@ -334,6 +334,8 @@ export default {
         weeklyStreakDescription: (weeks) => `Iniciar a mesa da semana ${weeks} semanas seguidas.`,
         manufacturerCompletionTitle: (manufacturer) => `Fã absoluto de ${manufacturer}`,
         manufacturerCompletionDescription: (manufacturer, count) => `Jogar pelo menos uma vez as ${count} mesas da ${manufacturer}.`,
+        systemCompletionTitle: (system) => `Mestre de ${system}`,
+        systemCompletionDescription: (system, count) => `Jogar pelo menos uma vez as ${count} mesas de ${system}.`,
         firstTableTitle: () => "Primeiros passos",
         firstTableDescription: () => "Jogar sua primeiríssima mesa.",
         collectionPercentTitles: {

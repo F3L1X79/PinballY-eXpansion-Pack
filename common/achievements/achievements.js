@@ -10,7 +10,8 @@
 
 // The kind of an Achievement; the Challenges, High Scores and Ratings ones
 // exist only while their Add-on is enabled, Surprises whenever the Achievements do,
-// Young Players only for a Child Profile.
+// Young Players only for a Child Profile, Systems only when the Profile's
+// tables use two Systems or more.
 export const ACHIEVEMENT_FAMILY = Object.freeze({
     COLLECTION: "collection",
     PLAY_TIME: "playTime",
@@ -18,6 +19,7 @@ export const ACHIEVEMENT_FAMILY = Object.freeze({
     SESSIONS: "sessions",
     RANDOM_GAME: "randomGame",
     MANUFACTURERS: "manufacturers",
+    SYSTEMS: "systems",
     DECADES: "decades",
     CATEGORIES: "categories",
     CHALLENGES: "challenges",

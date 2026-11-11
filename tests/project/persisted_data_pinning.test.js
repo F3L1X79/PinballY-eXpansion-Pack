@@ -35,18 +35,20 @@ const SECONDS_PER_HOUR = 3600;
 const TABLES = [
     {
         id: 1, configId: "Medieval Madness (Williams 1997)", title: "Medieval Madness (Williams 1997)",
-        manufacturer: "Williams", year: 1997, categories: ["Fantasy"],
+        manufacturer: "Williams", year: 1997, categories: ["Fantasy"], system: { displayName: "Visual Pinball X" },
         playCount: 5, playTime: 60 * SECONDS_PER_HOUR, lastPlayed: new Date(2025, 0, 1), rating: 4, isHidden: false,
     },
     {
         id: 2, configId: "Attack from Mars (Bally 1995)", title: "Attack from Mars (Bally 1995)",
-        manufacturer: "Bally", year: 1995, categories: ["SciFi", "Classic"],
+        manufacturer: "Bally", year: 1995, categories: ["SciFi", "Classic"], system: { displayName: "Visual Pinball X" },
         playCount: 3, playTime: 50 * SECONDS_PER_HOUR, lastPlayed: new Date(2026, 5, 1), rating: 5, isHidden: false,
     },
     {
         id: 3, configId: "Space Trip (VPX Community 2021)", title: "Space Trip (VPX Community 2021)",
         // Gives each category its second table: one table gives no Category Achievement.
         manufacturer: "VPX Community", year: 2021, categories: ["Fantasy", "SciFi", "Classic"],
+        // Its own System: the collection spans two, for the System Achievements.
+        system: { displayName: "Pinball FX" },
         playCount: 1, playTime: 100, lastPlayed: new Date(2026, 7, 1), rating: 3, isHidden: false,
     },
     {
@@ -54,10 +56,10 @@ const TABLES = [
         manufacturer: "", year: 0, categories: [],
         playCount: 2, playTime: 200, lastPlayed: new Date(2026, 8, 1), rating: 2, isHidden: false,
     },
-    // Hidden: must produce no Gottlieb, 1970s or "Retro" achievement.
+    // Hidden: must produce no Gottlieb, 1970s, "Retro" or Future Pinball achievement.
     {
         id: 5, configId: "Hidden Table (Gottlieb 1978)", title: "Hidden Table (Gottlieb 1978)",
-        manufacturer: "Gottlieb", year: 1978, categories: ["Retro"],
+        manufacturer: "Gottlieb", year: 1978, categories: ["Retro"], system: { displayName: "Future Pinball" },
         playCount: 0, playTime: 0, lastPlayed: null, rating: -1, isHidden: true,
     },
 ];
@@ -98,6 +100,8 @@ const EXPECTED_ACHIEVEMENT_IDS = [
     "randomGames:100",
     "randomGames:25",
     "randomGames:50",
+    "systemCompletion:Pinball FX",
+    "systemCompletion:Visual Pinball X",
     "tableOfTheDayFirstPlay",
     "tableOfTheDayPeriodsPlayed:10",
     "tableOfTheDayPeriodsPlayed:100",
