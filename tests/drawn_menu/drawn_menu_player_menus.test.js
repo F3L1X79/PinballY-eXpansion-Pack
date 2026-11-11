@@ -1,7 +1,7 @@
 // ============================================================
 // The player's other menus as Drawn Menus through main.js: Exit, power off,
-// filter, setup, categories, operator and capture menus are drawn (the
-// pause menu: drawn_menu_pause.test.js). Submenus open in
+// filter, setup, operator and capture menus are drawn (the pause menu:
+// drawn_menu_pause.test.js; categories: drawn_menu_categories.test.js). Submenus open in
 // place and go back to their parent entry; long lists scroll and page.
 // - A native menu opening replaces a Drawn one.
 // ============================================================
@@ -23,7 +23,6 @@ const ERA_SUBMENU_CMD = 950;
 const ERA_BACK_CMD = 951;
 const ERA_1970S_CMD = 952;
 const ERA_1980S_CMD = 953;
-const CATEGORY_CMD = 3100;
 const MANUFACTURERS = Array.from({ length: 40 }, (_, index) => `Manufacturer ${index + 1}`);
 
 const fake = createFakePinballYHost({ now: new Date(2026, 9, 10, 20, 0, 0) });
@@ -230,35 +229,6 @@ test("the table's setup menu is drawn", () => {
     assert.equal(fake.currentMenu(), null);
     assert.deepEqual(drawnMenuLines(fake), ["Edit Game Details", "Hide This Game", "---", "Back"]);
     press(fake, "Exit");
-});
-
-test("ticking a category redraws the categories menu in place, the cursor on it", () => {
-    const ticked = new Set(["Classics"]);
-    const categories = ["Classics", "Modern", "Kids"];
-    const categoriesMenu = () => [
-        ...categories.map((title, index) => ({ title, cmd: CATEGORY_CMD + index, checked: ticked.has(title), stayOpen: true })),
-        { title: "", cmd: -1 },
-        { title: "Save", cmd: CATEGORY_CMD + 10 },
-        { title: "Cancel", cmd: COMMAND.MenuReturn },
-    ];
-    // As PinballY: the tick toggles and the menu shows again, unanimated.
-    categories.forEach((title, index) => fake.setNativeCommand(CATEGORY_CMD + index, () => {
-        if (ticked.has(title)) ticked.delete(title);
-        else ticked.add(title);
-        fake.openMenu("game categories", categoriesMenu());
-    }));
-    openMenu(fake, "game categories", categoriesMenu());
-    assert.deepEqual(readDrawnMenu(fake).rows.slice(0, 3).map(row => row.mark), ["check", null, null]);
-
-    press(fake, "Next");
-    fake.fire("commandbuttondown", { command: "Select", repeat: false });
-
-    assert.ok(isDrawnMenuShown(fake), "shown again at once, without fading in");
-    assert.equal(fake.currentMenu(), null);
-    assert.deepEqual(readDrawnMenu(fake).rows.slice(0, 3).map(row => row.mark), ["check", "check", null]);
-    assert.equal(highlightedEntry(fake), "Modern");
-    press(fake, "Exit");
-    fake.advanceTime(OPEN_OVER_MS);
 });
 
 test("the operator menu is drawn, the eXpansion Pack Settings and Manage profiles in their own group", () => {

@@ -5,7 +5,7 @@
 // docs/adr/0013). Listens to "menuopen".
 // - Listens last of all the Add-ons, so it sees the final entries.
 // - Cancels the native menu only once drawing succeeded: any error shows the native one.
-// - Never cancels the pause menu: drawn over it kept open, Exit resumes the game.
+// - Never cancels the pause menu (Exit resumes) nor the category one (PinballY's edit list): drawn over them.
 // - Leaves native the pause menu during a media capture and a pack menu the module fell back on.
 // - A menu left native replaces an open Drawn Menu.
 // ============================================================
@@ -23,6 +23,7 @@ const SCRIPT_NAME = "DrawnMenus";
 const isNativeMenuId = id => id.startsWith("media drop") || id === "confirm delete media";
 const FILTER_MENU_IDS = FILTER_GROUPS.map(group => group.menuId);
 const PAUSE_MENU_ID = "pause game";
+const CATEGORIES_MENU_ID = "game categories";
 
 export default function init() {
     const drawnMenus = getDrawnMenus();
@@ -81,6 +82,13 @@ export default function init() {
             // Never cancelled, drawn or not: cancelled, PinballY hands the
             // focus back to the game and the Drawn Menu hears nothing.
             drawnMenus.draw(ev.id, items, { ...drawOptions, keepNative: { exitCmd: resumeGame } });
+            return;
+        }
+        if (ev.id === CATEGORIES_MENU_ID) {
+            // Never cancelled: PinballY drops its category edit list only
+            // when its own menu closes; kept, the next table would get the
+            // ticks and a category filter would tick instead (pinbally-help.md, 4.2).
+            drawnMenus.draw(ev.id, items, { ...drawOptions, keepNative: { exitButton: "Exit", redrawOnReopen: true } });
             return;
         }
         if (!drawnMenus.draw(ev.id, items, drawOptions)) return;

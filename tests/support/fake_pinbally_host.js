@@ -1306,6 +1306,17 @@ export function createFakePinballYHost({
         uiMode = "menu";
     }
 
+    // Like PinballY's CmdExit on an open menu (docs/pinbally/pinbally-help.md,
+    // 4.2): the native menu shown closes, firing its "menuclose". Fires no
+    // "commandbuttondown", as doButtonCommand never does.
+    function doButtonCommand(name, down) {
+        if (name !== "Exit" || !down || !shownMenu) return;
+        const { id } = shownMenu;
+        shownMenu = null;
+        if (uiMode === "menu") uiMode = runMode ? "running" : "wheel";
+        fire("menuclose", { id });
+    }
+
     // PinballY's pause menu closing, back to the game.
     function closePauseMenu() {
         if (!shownMenu || shownMenu.id !== PAUSE_MENU_ID) return;
@@ -1566,6 +1577,10 @@ export function createFakePinballYHost({
         // Like the PinballY host: "command" first, then doCommand.
         runCommand: (id) => {
             if (host.dispatchEvent(new FakeCommandEvent(id))) host.doCommand(id);
+        },
+        pressButton: (name) => {
+            doButtonCommand(name, true, 0);
+            doButtonCommand(name, false, 0);
         },
         // Like SystemClasses.js's EventTarget: runs the listeners, and
         // returns false when one prevented the default.
@@ -2067,6 +2082,7 @@ export function createFakePinballYHost({
                     getUIMode: getFullUIMode,
                     playGame: launchGame,
                     doCommand: host.doCommand,
+                    doButtonCommand,
                     dispatchEvent: host.dispatchEvent,
                     createDrawingLayer,
                     removeDrawingLayer,

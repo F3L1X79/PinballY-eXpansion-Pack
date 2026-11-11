@@ -337,6 +337,11 @@ System menu IDs:
 - Filters: "filter by category", "filter by era", "filter by manuf", "filter by rating", "filter by system", "filter by when added", "filter by when played".
 - Capture, media drop and elevation dialogs: "capture", "batch capture …", "media drop …", "elevation required", "approve elevation", "play pick system", "confirm delete gameinfo", "confirm delete media", "swf error".
 
+Native menu life, from PinballY's source (`PlayfieldView.cpp`; not in the help):
+- Select on a native menu starts its closing animation unless the entry is `stayOpen`, then runs the entry's command (`DoSelect`, `#L14080-L14101`). Exit on a menu that isn't the Exit menu plays "Deselect" and starts the closing animation (`CmdExit`, `#L14434-L14451`). `MenuReturn` has no handler of its own: run as a command, it closes nothing.
+- A menu replaced by another fires "menuopen" for the new one, then "menuclose" for the old one, even with the same id. A menu closing with none after it fires its "menuclose" once its animation ends (`OnCloseMenu`, `#L11616-L11627`).
+- **"game categories"** (Game Setup's category menu) works on an edit list, a copy of the selected table's categories made when the menu is first shown. Each category entry is `stayOpen` with the category filter's command: it toggles the category in the list and shows the menu again (`ToggleCategoryInEditList`). "Save" writes the list to the selected table; "Edit Categories" opens a dialog; "Cancel" is `MenuReturn`. The list is dropped only when a native menu closes with none after it (`OnCloseMenu`). While it is kept, every category filter command toggles instead of filtering (`#L5005-L5016`), and the next opening shows the kept list, whatever table is selected. So a script that cancels this menu leaves the list behind.
+
 ### 4.3 Custom commands
 1. Allocate the ID once at startup with `const CMD = command.allocate("myName")`.
 2. Add it to a menu (`addMenuItem` in `menuopen`, or `showMenu`).

@@ -593,6 +593,12 @@ export function createPinballYHost() {
         // PinballY's own command IDs, such as "PlayGame" or "MenuReturn".
         getBuiltInCommand: (name) => command[name],
         doCommand: (id) => { mainWindow.doCommand(id); },
+        // A mapped button pressed then released, as by the player, such as
+        // "Exit" to close the native menu shown; fires no "commandbuttondown".
+        pressButton: (name) => {
+            mainWindow.doButtonCommand(name, true, 0);
+            mainWindow.doButtonCommand(name, false, 0);
+        },
         // As a menu entry or a button runs it: "command" first, then
         // PinballY's own handling unless a listener prevented it.
         // doCommand() alone fires no "command" (JsDoCommand skips
