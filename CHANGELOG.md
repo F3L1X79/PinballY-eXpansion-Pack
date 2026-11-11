@@ -2,6 +2,13 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.5.1 (2026-11-11)
+
+- **Button sounds**: the drawn menus and screens now follow PinballY's own button sound settings: **Mute Buttons** in the Operator Menu silences them, they play at PinballY's button volume, and your own sounds in `Media\Button Sounds` replace the pack's (a copy of `Silence.wav` silences one). Moving back plays `Prev.wav`, as on the wheel.
+- **Backglass at startup**: on two screens or more, the backglass no longer stays hidden at startup after the cabinet was switched off during a game. If it does, the PinballY log now says how many monitors Windows saw at startup (a TV still waking up counts as missing).
+- **Table categories**: ticking categories on a table and saving no longer carries the ticks over to the next table, and Filter by Category filters again after an edit.
+- **Pause and category menus**: only the place of PinballY's own menu is black behind the drawn panel, instead of the whole screen.
+
 ## v1.5.0 (2026-11-11)
 
 - **Surprises**: a few rare surprises now hide on the cabinet. We say no more.

@@ -1089,6 +1089,10 @@ export default {
         restarting: "Neustart läuft",
     },
     releaseHighlights: {
+        "1.5.1": [
+            "Die gezeichneten Menüs und Bildschirme folgen jetzt den Tastenklängen von PinballY: Mute Buttons, Tastenlautstärke und deine eigenen Klänge.",
+            "Das Backglass bleibt beim Start nicht mehr verborgen, und die Kategorien eines Tisches gehen nicht mehr auf den nächsten Tisch über.",
+        ],
         "1.5.0": [
             "Ein paar seltene Überraschungen verstecken sich jetzt im Automaten. Halte die Augen offen!",
             "Mit Tischen auf zwei oder mehr Systemen hat jedes System seinen eigenen Erfolg, und Weltenwanderer belohnt einen Tisch, der auf jedem System gespielt wurde.",

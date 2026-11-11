@@ -1090,6 +1090,10 @@ export default {
         restarting: "Reiniciando",
     },
     releaseHighlights: {
+        "1.5.1": [
+            "Los menús y pantallas dibujados siguen ahora los sonidos de botones de PinballY: Mute Buttons, volumen de los botones y tus propios sonidos.",
+            "El backglass ya no se queda oculto al arrancar, y las categorías de una mesa ya no pasan a la mesa siguiente.",
+        ],
         "1.5.0": [
             "Algunas sorpresas raras se esconden ahora en la máquina. ¡Mantén los ojos abiertos!",
             "Con mesas en dos sistemas o más, cada sistema tiene su propio Logro, y Caminante de mundos premia una mesa jugada en cada sistema.",

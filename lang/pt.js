@@ -1089,6 +1089,10 @@ export default {
         restarting: "A reiniciar",
     },
     releaseHighlights: {
+        "1.5.1": [
+            "Os menus e ecrãs desenhados seguem agora os sons dos botões do PinballY: Mute Buttons, volume dos botões e os seus próprios sons.",
+            "O backglass já não fica escondido ao arrancar, e as categorias de uma mesa já não passam para a mesa seguinte.",
+        ],
         "1.5.0": [
             "Algumas surpresas raras escondem-se agora na máquina. Fique de olhos abertos!",
             "Com mesas em dois sistemas ou mais, cada sistema tem a sua própria Conquista, e Andarilho dos mundos recompensa uma mesa jogada em cada sistema.",

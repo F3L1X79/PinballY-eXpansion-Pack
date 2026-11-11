@@ -1037,6 +1037,10 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.5.1": [
+            "The drawn menus and screens now follow PinballY's button sounds: Mute Buttons, button volume and your own sounds.",
+            "The backglass no longer stays hidden at startup, and a table's categories no longer carry over to the next table.",
+        ],
         "1.5.0": [
             "A few rare surprises now hide on the cabinet. Keep your eyes open!",
             "With tables on two Systems or more, each System has its own Achievement, and World Walker rewards a table played on every System.",

@@ -1094,6 +1094,10 @@ export default {
         restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
+        "1.5.1": [
+            "Les menus et écrans dessinés suivent maintenant les sons des boutons de PinballY : Mute Buttons, volume des boutons et vos propres sons.",
+            "Le backglass ne reste plus caché au démarrage, et les catégories d'une table ne passent plus à la table suivante.",
+        ],
         "1.5.0": [
             "Quelques surprises rares se cachent maintenant sur la borne. Ouvrez l'œil !",
             "Avec des tables sur deux systèmes ou plus, chaque système a son propre Succès, et Voyageur des mondes récompense une table jouée sur chaque système.",

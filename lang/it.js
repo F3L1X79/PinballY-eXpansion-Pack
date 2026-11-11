@@ -1088,6 +1088,10 @@ export default {
         restarting: "Riavvio in corso",
     },
     releaseHighlights: {
+        "1.5.1": [
+            "I menu e le schermate disegnati ora seguono i suoni dei pulsanti di PinballY: Mute Buttons, volume dei pulsanti e i tuoi suoni.",
+            "Il backglass non resta più nascosto all'avvio, e le categorie di un tavolo non passano più al tavolo successivo.",
+        ],
         "1.5.0": [
             "Alcune sorprese rare ora si nascondono nel cabinato. Tieni gli occhi aperti!",
             "Con tavoli su due sistemi o più, ogni sistema ha il proprio Obiettivo, e Viandante dei mondi premia un tavolo giocato su ogni sistema.",
