@@ -7,7 +7,7 @@
 // ============================================================
 
 import { applyEnvOverrides } from "./env_overrides.js";
-import { projectFolderOf } from "./pinbally_host.js";
+import { createPinballYHost, projectFolderOf } from "./pinbally_host.js";
 import { logError } from "./error_log.js";
 import { setUntrackedTables } from "./untracked_tables.js";
 
@@ -203,6 +203,7 @@ function loadConfig() {
     // apply without the shipped sounds, which each test sets as it needs.
     if (typeof createAutomationObject !== "function") return { ...copyOfDefaults(), ...NO_SOUNDS };
 
+    const host = createPinballYHost();
     const projectFolder = projectFolderOf(systemInfo.programDir);
     const path = `${projectFolder}\\.env.local`;
     let text;
@@ -213,14 +214,14 @@ function loadConfig() {
         return resolveSoundFiles(copyOfDefaults(), projectFolder);
     }
     if (text === null) {
-        logfile.log(`${LOG_PREFIX} No .env.local found at ${path}; using defaults.`);
+        host.log(`${LOG_PREFIX} No .env.local found at ${path}; using defaults.`);
         return resolveSoundFiles(copyOfDefaults(), projectFolder);
     }
 
     const { config, overridden, problems } = applyEnvOverrides(DEFAULTS, text);
-    logfile.log(`${LOG_PREFIX} .env.local overrides: ${overridden.length > 0 ? overridden.join(", ") : "none"}.`);
+    host.log(`${LOG_PREFIX} .env.local overrides: ${overridden.length > 0 ? overridden.join(", ") : "none"}.`);
     for (const problem of problems) {
-        logfile.log(`${LOG_PREFIX} .env.local ${problem}; ignored.`);
+        host.log(`${LOG_PREFIX} .env.local ${problem}; ignored.`);
     }
     setUntrackedTables(config.untrackedTables);
     return resolveSoundFiles(config, projectFolder);

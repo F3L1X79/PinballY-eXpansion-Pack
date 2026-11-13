@@ -218,17 +218,17 @@ function drawCard(host, dc, look, toast, iconOf) {
 }
 
 // Seconds a card stays fully visible; an absurd value falls back to the default.
-function toHoldMs(toastSeconds) {
+function toHoldMs(host, toastSeconds) {
     if (toastSeconds > 0 && toastSeconds <= MAX_TOAST_SECONDS) return toastSeconds * 1000;
-    logfile.log(`[${SCRIPT_NAME}] achievementToastSeconds must be above 0 and at most ${MAX_TOAST_SECONDS}, `
+    host.log(`[${SCRIPT_NAME}] achievementToastSeconds must be above 0 and at most ${MAX_TOAST_SECONDS}, `
         + `not ${toastSeconds}; using ${DEFAULT_TOAST_SECONDS}.`);
     return DEFAULT_TOAST_SECONDS * 1000;
 }
 
 // An absurd scale falls back to the default.
-function toScale(scale) {
+function toScale(host, scale) {
     if (scale >= MIN_TOAST_SCALE && scale <= MAX_TOAST_SCALE) return scale;
-    logfile.log(`[${SCRIPT_NAME}] achievementToastScale must be from ${MIN_TOAST_SCALE} to ${MAX_TOAST_SCALE}, `
+    host.log(`[${SCRIPT_NAME}] achievementToastScale must be from ${MIN_TOAST_SCALE} to ${MAX_TOAST_SCALE}, `
         + `not ${scale}; using ${DEFAULT_TOAST_SCALE}.`);
     return DEFAULT_TOAST_SCALE;
 }
@@ -243,8 +243,8 @@ export function createAchievementToasts(host, {
     toastSeconds = DEFAULT_TOAST_SECONDS, soundFile = "", scale = DEFAULT_TOAST_SCALE, confettiShower = { start() {}, endsAtMs: () => null, onStopped() {} },
     fireworks = { start() {} }, wheelDialogs = { hasDrawnDialog: () => false, onDrawnDialogClosed() {} },
 } = {}) {
-    const holdMs = toHoldMs(toastSeconds);
-    const look = scaleLook(toScale(scale));
+    const holdMs = toHoldMs(host, toastSeconds);
+    const look = scaleLook(toScale(host, scale));
     // A sound that cannot play is logged and never stops the card.
     const playSound = safeHandler(SCRIPT_NAME, () => { if (soundFile) host.playSound(soundFile); });
     // A shower that fails is logged and never stops the card.

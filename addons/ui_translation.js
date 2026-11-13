@@ -10,12 +10,14 @@ import lang from "../common/core/i18n.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import config from "../common/core/config.js";
 import { translateMenuTitle } from "../common/menus/menu_title_translation.js";
+import { createPinballYHost } from "../common/core/pinbally_host.js";
 
 const SCRIPT_NAME = "UITranslation";
 
 const hasOwn = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
 
 export default function init() {
+    const host = createPinballYHost();
     const LAUNCH_OVERLAY_MESSAGES = lang.launchOverlayMessages || {};
 
     // The translated menu title, or the original one, logged when
@@ -26,7 +28,7 @@ export default function init() {
 
         if (config.logUntranslatedMenuTitles) {
             const charCodes = title.split("").map(c => c.charCodeAt(0)).join(",");
-            logfile.log(`[UITranslation] Missing translation: "${title}" (char codes: ${charCodes})`);
+            host.log(`[UITranslation] Missing translation: "${title}" (char codes: ${charCodes})`);
         }
 
         return title;

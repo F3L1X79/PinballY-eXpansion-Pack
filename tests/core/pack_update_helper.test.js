@@ -54,7 +54,7 @@ test("waits for PinballY after the ready file, then copies each keep-list entry 
     const renameOld = position("Rename-Item -LiteralPath $PackFolder -NewName $oldName");
     assert.ok(ready < wait && wait < keep && keep < tools && tools < renameOld);
     for (const entry of [
-        "'.env.local'", "'quiet_wheel_pending.json'", "'pack_update.json'", "'script_reader.json'", "'errors.log'", "'errors.old.log'",
+        "'.env.local'", "'quiet_wheel_pending.json'", "'pack_update.json'", "'script_reader.json'", "'errors.log'", "'errors.old.log'", "'info.log'", "'info.old.log'",
         "'play_scores_anomalies.log'", "'play_scores_anomalies.old.log'", "'profiles'", "'assets\\sounds\\local'", "'assets\\images\\default_scores\\local'",
     ]) {
         assert.ok(HELPER.includes(entry), `keeps ${entry}`);

@@ -8,6 +8,7 @@
 
 import config from "../common/core/config.js";
 import { safeHandler } from "../common/core/safe_handler.js";
+import { createPinballYHost } from "../common/core/pinbally_host.js";
 
 const SCRIPT_NAME = "LaunchEvents";
 
@@ -31,10 +32,11 @@ function idOrTableTitle(ev) {
 
 export default function init() {
     if (!config.logLaunchEvents) return;
+    const host = createPinballYHost();
 
     // Fires on every launch event; a single string, so a "%" in a title is written as is.
     const trace = safeHandler(SCRIPT_NAME, ev => {
-        logfile.log(`[${SCRIPT_NAME}] ${timestamp()} ${ev.type} ${idOrTableTitle(ev)}`);
+        host.log(`[${SCRIPT_NAME}] ${timestamp()} ${ev.type} ${idOrTableTitle(ev)}`);
     });
     for (const type of LAUNCH_EVENTS) mainWindow.on(type, trace);
 }

@@ -43,6 +43,10 @@ script_reader.json
 errors.log
 errors.old.log
 
+# The Info Log: every line the pack logged, and the cabinet checks
+info.log
+info.old.log
+
 # vpxtool, installed on each cabinet (see docs/adr/0021); the pack's own restart, Pack Update and Script Reader install helpers are shipped
 tools/*
 !tools/restart_pinbally.ps1

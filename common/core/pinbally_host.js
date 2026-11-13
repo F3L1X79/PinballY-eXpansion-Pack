@@ -1,12 +1,14 @@
 ﻿// ============================================================
 // Production PinballY host: the single seam through which the shared modules
 // reach PinballY (settings, clock, timers, tables, wheel, menus, layers,
-// custom windows, sounds, files, programs, restart, HTTP, registry, pipes, logfile.log).
+// custom windows, sounds, files, programs, restart, HTTP, registry, pipes, logs).
 // Every call passes straight through to PinballY's globals; tests use
 // tests/support/fake_pinbally_host.js. No side effects on import.
+// - log() also feeds info.log on the next tick or before the pack's Quit: a crash loses that tick.
 // ============================================================
 
 import { isUntrackedTable } from "./untracked_tables.js";
+import { INFO_LOG_FILE, appendDatedEntries, datedEntryOf } from "./dated_log_file.js";
 
 // Whether a table belongs to the household's visible tables. Unconfigured
 // tables never do, whatever "Hide unconfigured games" says: they show a raw
@@ -448,6 +450,7 @@ function createHelperQuitter(files, startHidden, getProcessId, { helperName, fil
                 if (files.fileExists(readyPath)) {
                     clearInterval(poll);
                     onQuitting();
+                    flushInfoLog();
                     mainWindow.doCommand(command.Quit);
                 } else if (waitedMs >= readyTimeoutMs) {
                     clearInterval(poll);
@@ -485,6 +488,34 @@ export function setRandomSource(source) {
     randomSource = source;
 }
 
+// The Info Log's entries of this tick, from every host instance, written in
+// one go on the next tick: appendText reads and saves the whole info.log
+// again, up to 1 MB, which ~50 startup lines would each pay.
+// Any host instance writes them: all reach the same pack folder.
+let pendingInfoEntries = "";
+let pendingInfoHost = null;
+let pendingInfoLogfile = null;
+
+// Also run right before the pack quits PinballY, so a restart loses no line.
+// The Info Log's own failure goes to logfile.log only, so it never loops.
+function flushInfoLog() {
+    if (pendingInfoEntries.length === 0) return;
+    const entries = pendingInfoEntries;
+    pendingInfoEntries = "";
+    const pinballYLogfile = pendingInfoLogfile;
+    appendDatedEntries(INFO_LOG_FILE, pendingInfoHost, entries, text => { pinballYLogfile.log(text); });
+}
+
+function queueInfoLine(host, line) {
+    const isFlushScheduled = pendingInfoEntries.length > 0;
+    pendingInfoEntries += datedEntryOf(line, host.now());
+    if (isFlushScheduled) return;
+    pendingInfoHost = host;
+    // Kept from the queuing tick: a test's fake globals may be gone by the flush.
+    pendingInfoLogfile = logfile;
+    setTimeout(flushInfoLog, 0);
+}
+
 export function createPinballYHost() {
     // Created on the first sound played: most sessions never play one.
     let mediaPlayer = null;
@@ -499,7 +530,7 @@ export function createPinballYHost() {
     const files = createFileSystem();
     const startHidden = createHiddenStarter();
 
-    return {
+    const host = {
         settings: {
             getString: (key, defaultValue) => optionSettings.get(key, defaultValue),
             getInt: (key, defaultValue) => optionSettings.getInt(key, defaultValue),
@@ -758,6 +789,13 @@ export function createPinballYHost() {
         openPipe: createPipeOpener(),
         getProcessId,
         files,
-        log: (text) => { logfile.log(text); },
+        // logfile.log, and the Info Log's info.log in the pack folder.
+        log: (text) => {
+            logfile.log(text);
+            queueInfoLine(host, text);
+        },
+        // The Info Log's info.log only: a check to read after a cabinet run.
+        logInfo: (text) => { queueInfoLine(host, text); },
     };
+    return host;
 }

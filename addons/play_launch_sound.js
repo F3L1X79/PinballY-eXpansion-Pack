@@ -9,6 +9,7 @@
 import config from "../common/core/config.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { logError } from "../common/core/error_log.js";
+import { createPinballYHost } from "../common/core/pinbally_host.js";
 
 // Playback volume, 0-100.
 const VOLUME_PERCENT = 100;
@@ -35,9 +36,10 @@ function initializeMediaPlayer() {
 const SCRIPT_NAME = "LaunchSound";
 
 export default function init() {
+    const host = createPinballYHost();
     const filePath = config.launchSoundFile;
     if (typeof filePath !== "string" || filePath.length === 0) {
-        logfile.log("[LaunchSound] launchSoundFile is not set in common/core/config.js; launch sound disabled.");
+        host.log(`[${SCRIPT_NAME}] launchSoundFile is not set in common/core/config.js; launch sound disabled.`);
         return;
     }
 
@@ -61,7 +63,7 @@ export default function init() {
         try {
             mediaPlayer.controls.stop();
         } catch (error) {
-            logfile.log("[LaunchSound] WARNING: could not stop launch sound (" + error.message + ").");
+            host.log(`[${SCRIPT_NAME}] WARNING: could not stop launch sound (${error.message}).`);
         }
     }));
 }

@@ -90,6 +90,10 @@ _Avoid_: Error Toast (for a failure of the pack), alert
 The pack's own file, kept through every Pack Update, where every error it meets is written down, so that it can still be read after PinballY has restarted. The Error Toast never refers the player to it. Shown as "journal des erreurs" in French.
 _Avoid_: logfile, PinballY.log (PinballY's own log, which keeps only the current session)
 
+**Info Log**:
+The pack's own file, kept through every Pack Update, with every line the pack writes to PinballY's log plus the checks meant to be read after a run on the cabinet. Shown as "journal d'informations" in French.
+_Avoid_: Error Log (errors only), PinballY.log (it also holds PinballY's own lines)
+
 ### Menus
 
 **Drawn Menu**:

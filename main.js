@@ -61,6 +61,8 @@ import * as drawnMenus from "./addons/drawn_menus.js";
 import * as launchEventsTrace from "./addons/launch_events_trace.js";
 import * as easterEggs from "./addons/easter_eggs.js";
 
+const host = createPinballYHost();
+
 // Scripts are initialized in this order, which is also the order their event
 // listeners are registered in, and listeners for the same event run in that
 // order too:
@@ -169,7 +171,7 @@ try {
 // As early as the Profile count allows, so it is the pack's first line in
 // a pasted logfile.log.
 try {
-    writeStartupSummary(createPinballYHost(), {
+    writeStartupSummary(host, {
         language: config.language,
         addOns: ENABLED_SCRIPTS,
         // Guest included. Names only: listProfiles() would probe every Avatar.
@@ -197,7 +199,7 @@ if (store && ENABLED_SCRIPTS.profilePicker === false) {
         const previousProfile = store.getActiveProfile();
         if (!previousProfile.isGuest) {
             store.switchTo(store.listProfiles().find(profile => profile.isGuest).name);
-            logfile.log(`[Startup] Profile picker disabled: switched from "${previousProfile.name}" to Guest.`);
+            host.log(`[${SCRIPT_NAME}] Profile picker disabled: switched from "${previousProfile.name}" to Guest.`);
         }
     } catch (error) {
         logError(SCRIPT_NAME, `ERROR switching to Guest: ${error.message}`, null, error);
@@ -245,7 +247,7 @@ function startSettings() {
 for (const { key, module } of SCRIPTS) {
     if (key === "drawnMenus") startSettings();
     if (ENABLED_SCRIPTS[key] === false) {
-        if (LOG_STARTUP_TIMING) logfile.log(`[Startup] "${key}" skipped (disabled in config).`);
+        if (LOG_STARTUP_TIMING) host.log(`[${SCRIPT_NAME}] "${key}" skipped (disabled in config).`);
         continue;
     }
 
@@ -258,7 +260,7 @@ for (const { key, module } of SCRIPTS) {
     }
 
     if (LOG_STARTUP_TIMING) {
-        logfile.log(`[Startup] "${key}" initialized in ${Date.now() - startTime} ms.`);
+        host.log(`[${SCRIPT_NAME}] "${key}" initialized in ${Date.now() - startTime} ms.`);
     }
 }
 

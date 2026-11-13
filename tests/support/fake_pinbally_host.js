@@ -416,6 +416,9 @@ export function createFakePinballYHost({
     // from "gamestarted"); and whether Exit Game was chosen during it.
     let launch = null;
     const logLines = [];
+    // The Info Log lines a module gave this host itself; main.js's own host
+    // writes them to info.log in the fake files.
+    const infoLines = [];
     const executedCommands = [];
     // What PinballY does itself for a command a test describes (opening a
     // filter submenu, applying a filter...), unless a listener prevented it.
@@ -1624,6 +1627,7 @@ export function createFakePinballYHost({
         getProcessId: () => FAKE_PINBALLY_PID,
         files: fileSystem,
         log: (text) => { logLines.push(text); },
+        logInfo: (text) => { infoLines.push(text); },
 
         // Every restart asked, through either host.
         restartsAsked: () => restartCount,
@@ -2012,6 +2016,7 @@ export function createFakePinballYHost({
         },
 
         logLines: () => [...logLines],
+        infoLines: () => [...infoLines],
         executedCommands: () => [...executedCommands],
         backglassShowCalls: () => [...backglassShowCalls],
         // Every custom window created, in order: { desc, borderlessMode(),

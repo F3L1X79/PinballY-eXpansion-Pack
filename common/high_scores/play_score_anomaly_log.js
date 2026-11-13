@@ -7,7 +7,7 @@
 // - The checks of ONCE_PER_SESSION are written once per ROM and check per session.
 // ============================================================
 
-import { timestampOf } from "../core/error_log.js";
+import { timestampOf } from "../core/dated_log_file.js";
 import { valueOf } from "./last_game_reader.js";
 
 const LOG_NAME = "play_scores_anomalies.log";
