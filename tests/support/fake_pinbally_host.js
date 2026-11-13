@@ -1526,13 +1526,14 @@ export function createFakePinballYHost({
     }
 
     // FilterInfo.testGame(game) of the filters the fake knows (FilterInfo.html):
-    // All, "all non-hidden games"; Favorites, the favourite ones; an Era
+    // All, every table, Hidden ones included as seen on the cabinet
+    // (pinbally-help.md §2.5, #515); Favorites, the favourite ones; an Era
     // (YearRange.from.to), those released in those years; a script filter,
     // its select() over the tables it is given. Null for a filter it does not know.
     function gameTestOf(filterId) {
         const filter = filters.get(filterId);
         const range = yearRangeOf(filterId);
-        if (filterId === "All") return game => !game.isHidden;
+        if (filterId === "All") return () => true;
         if (filterId === "Favorites") return game => !game.isHidden && game.isFavorite === true;
         if (range) return game => !game.isHidden && isInYearRange(game, range);
         if (filter) return game => canBeOnWheel(game, filter) && Boolean(filter.select(game));
@@ -1550,7 +1551,8 @@ export function createFakePinballYHost({
         const info = { id: filterId, cmd, title: filterTitleOf(filterId) };
         if (testGame) {
             info.testGame = testGame;
-            info.getGames = () => allTables.filter(game => game.isConfigured !== false && testGame(game));
+            // Hidden tables left out, All's included (seen on the cabinet, #515).
+            info.getGames = () => allTables.filter(game => canBeOnWheel(game, filters.get(filterId)) && testGame(game));
         }
         return info;
     }

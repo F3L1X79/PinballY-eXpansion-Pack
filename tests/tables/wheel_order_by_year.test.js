@@ -140,7 +140,7 @@ test("picking All Tables again keeps the order by year, the selected table kept"
 test("the Info Log answers the cabinet checks", () => {
     const infoLog = fake.readFile(INFO_LOG);
 
-    assert.match(infoLog, /\[WheelOrder\] testGame of All keeps 0 of 1 Hidden tables; the copy shows 9 tables, All's getGames\(\) 9\./);
+    assert.match(infoLog, /\[WheelOrder\] testGame of All keeps 1 of 1 Hidden tables; the copy shows 9 tables, All's getGames\(\) 9\./);
     assert.match(infoLog, /\[WheelOrder\] a listener registered after the cancelling one received the cancelled filterselect\./);
 });
 

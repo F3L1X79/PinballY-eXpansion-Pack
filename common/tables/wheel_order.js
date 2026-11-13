@@ -76,7 +76,8 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
         && !UNCOPIED_FILTERS.includes(filterId);
 
     // Cabinet check: whether testGame of All leaves the Hidden tables out, as
-    // FilterInfo.html says; the copy never tests them either way.
+    // FilterInfo.html says (it keeps them, pinbally-help.md section 2.5); the copy
+    // never tests them either way.
     function checkHiddenTables() {
         if (hasCheckedHiddenTables || sourceId !== ALL_TABLES_FILTER) return;
         hasCheckedHiddenTables = true;

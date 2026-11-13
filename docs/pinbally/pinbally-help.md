@@ -167,6 +167,7 @@ Categories and media:
 
 ### 2.5 Filters (FilterInfo.html)
 - FilterInfo members: `id` (permanent), `cmd` (session-only), `title` (localized, so don't match on it), `group`, `groupCmd`, `getGames()`, `testGame(game)`.
+- Seen on the cabinet (not in the help, #515, Info Log of 2026-11-13, two runs): `testGame` of the All filter returns true for Hidden tables (8 of 8), although the help says All selects the non-hidden games; its `getGames()` leaves them out (100 tables, as many as a script filter without `includeHidden` built from that `testGame`). A script filter's `select` never sees a Hidden table unless `includeHidden` is set.
 - System filter IDs: `All`, `Favorites`, `Hidden`, `Unconfigured`, `NeverPlayed`, `Uncategorized`, `Category.x`, `Manuf.x`, `YearRange.a.b`, `Rating.N` (N = −1..5), `PlayedWithin.N`, `NotPlayedWithin.N`, `AddedWithin.N`, `AddedBefore.N`, `User.id`.
 - `createFilter({id, title, menuTitle, select(game), before, after, group, sortKey, includeHidden, includeUnconfig, compareForSort(a,b), pageGroup(game)})`:
   - The ID may use letters, digits, `_` and `.`. The system adds the `User.` prefix.
@@ -272,7 +273,7 @@ Text may contain `[substitution]` variables (StatuslineOptions.html).
 | dofevent (DOFEventEvent.html) | mainWindow | yes → DOF value not changed | `name`, `value` |
 | underlaychange (UnderlayEvent.html) | mainWindow | yes | `filename` (writable), `game`, `options` |
 | gameselect (GameSelectEvent.html) | gameList | no (after the fact) | `game` (may be null) |
-| filterselect (FilterSelectEvent.html) | gameList | **yes; fires BEFORE the filter is applied** | `id` |
+| filterselect (FilterSelectEvent.html) | gameList | **yes; fires BEFORE the filter is applied** (seen on the cabinet, #515: a cancelled one still reaches the listeners registered after the canceller) | `id` |
 | highscoresrequest / highscoresready (HighScoresEvent.html) | gameList | request: yes → PinEMHi is not run | `game`, `scores`, `source`, `success` |
 | settingspresave / postsave / reload | optionSettings | no | `succeeded` |
 | statusline (StatusLineEvent.html) | each StatusLine | no; set `expandedText` to change the text | `sourceText`, `expandedText` |
