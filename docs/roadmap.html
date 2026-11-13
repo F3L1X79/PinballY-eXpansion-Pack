@@ -196,7 +196,7 @@
         <span class="recap" id="recap" aria-label="Chantiers par effort"></span>
       </div>
       <div class="gauge" aria-hidden="true"><i id="hero-gauge" style="width:0"></i></div>
-      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 10.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
+      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 13.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
     </div>
   </header>
 
@@ -220,6 +220,7 @@
         <div class="cell sweet">
         </div>
         <div class="cell">
+          <a class="chip tr-play" href="#wheel-sort-by-year"><b></b>Roue triée par année</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
@@ -234,6 +235,7 @@
         <div class="cell">
           <a class="chip tr-share" href="#pinbally-release-day"><b></b>Nouvelle version de PinballY</a>
           <a class="chip tr-play" href="#play-scores-final-only"><b></b>Play Scores Stern M-200</a>
+          <a class="chip tr-play" href="#attract-random-range"><b></b>Hasard du mode attract</a>
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#best-play-score"><b></b>Meilleure partie du lancement</a>
@@ -345,6 +347,53 @@
               <li>Le sens des lignes sur un écran tourné : horizontales pour le joueur, ou celles de l'écran physique ?</li>
             </ul>
             <p class="ctx">Idée de Félix du 04/11/2026, remontée dans la file à sa demande le 07/11/2026. Le résumé de l'aide PinballY ne mentionne aucun shader : ni courbure d'écran ni bavure de couleurs a priori, à confirmer dans l'aide complète. Pas de scintillement, selon la règle « pas d'animation sans fin ».</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="wheel-sort-by-year" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Trier la roue par année, même avec un filtre actif</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
+          </div>
+          <p>PinballY range toujours la roue par ordre alphabétique. Le pack proposerait un tri par année, de la plus ancienne à la plus récente, qui garde les tables du filtre en cours.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. <code>gameList.createFilter</code> accepte <code>compareForSort(a, b)</code>, déjà utilisé par <code>common/tables/selection_filter.js</code> ; le filtre trié reprend le filtre en cours par <code>getFilterInfo(id).testGame(game)</code></div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Comment l'activer : une entrée du menu principal à réappliquer, ou un réglage qui retrie seul à chaque <code>filterselect</code> ? Choisir un autre filtre fait perdre le tri, puisque le tri est lui-même un filtre.</li>
+              <li>Le titre du filtre trié : celui du filtre d'origine avec « par année » ? Et Exit ou un nouveau choix de filtre rendent-ils l'ordre alphabétique ?</li>
+              <li>Des sauts de page par décennie avec <code>pageGroup(game)</code> ? Où vont les tables sans année ?</li>
+              <li>D'autres tris tant qu'on y est (fabricant, dernière partie, nombre de parties), ou l'année seule ?</li>
+            </ul>
+            <p class="ctx">Idée externe de Dave du 13/11/2026.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="attract-random-range" data-track="play" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Choisir le hasard du mode attract</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span></div>
+          </div>
+          <p>En mode attract, PinballY avance d'un nombre de tables tiré entre 1 et 10. Le pack laisserait choisir l'écart maximal : 999 pour un vrai hasard sur toute la roue, 1 pour passer les tables dans l'ordre.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>prototype</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/prototype</code> (sur la borne, pour juger le mouvement de la roue) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. À accorder avec le mode attract de <code>common/core/drawn_screen_controls.js</code></div>
+          <details>
+            <summary>Questions ouvertes (3)</summary>
+            <ul>
+              <li>Corriger après coup ou tout piloter ? Corriger : rejouer <code>setWheelGame(n)</code> juste après chaque saut de PinballY (<code>gameselect</code>, ou le <code>dofevent</code> <code>PBYAttractWheelNext</code>), au risque de deux mouvements de roue à la suite. Piloter : « Switch games every » réglé très long, et le pack fait lui-même les sauts entre <code>attractmodestart</code> et <code>attractmodeend</code>.</li>
+              <li>Si le pack pilote, il prend le minuteur des sauts : le régler dans le pack, ou reprendre la valeur de PinballY ?</li>
+              <li>Sur un écart plus grand que la roue, on tire simplement dans toute la roue, en excluant la table affichée ?</li>
+            </ul>
+            <p class="ctx">Idée externe de Dave du 13/11/2026 ; il l'avait demandée à Mike Roberts il y a trois ans, sans suite. L'aide de PinballY n'expose ni ce tirage ni sa plage.</p>
           </details>
         </div>
       </li>

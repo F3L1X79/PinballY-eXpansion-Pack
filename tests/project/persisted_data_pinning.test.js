@@ -543,6 +543,34 @@ test("the Table ROM record keeps its file name and keys", () => {
     });
 });
 
+test("the Table ROM record keeps the keys of a table vpxtool failed on", () => {
+    const vpx = "C:\\Visual Pinball\\Tables\\New Table (Stern 2026).vpx";
+    const vpxtool = "C:\\PinballY\\Scripts\\ExpansionPack\\tools\\vpxtool.exe";
+    const fake = createFakePinballYHost({
+        now: NOW,
+        tables: [{ configId: "New Table (Stern 2026)", title: "New Table", gameFile: vpx, isHidden: false }],
+    });
+    fake.addFile(vpx, "table", { modified: new Date(2026, 5, 1, 12, 0, 0) });
+    fake.addProgram(vpxtool, args => (args[0] === "--version" ? { output: "vpxtool git:v0.38.0\n" } : { exitCode: 1, output: "" }),
+        { modified: new Date(2026, 5, 4, 12, 0, 0) });
+
+    createScriptQueue(fake, createTableRomRecord(fake, createProfileStore(fake))).start();
+    fake.advanceTime(60 * 1000);
+
+    assert.deepEqual(JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\table_roms.json`)), {
+        version: 1,
+        tables: {
+            "New Table (Stern 2026)": {
+                scriptFailure: {
+                    vpx: { modified: new Date(2026, 5, 1, 12, 0, 0).getTime(), size: 5 },
+                    vbs: null,
+                    vpxtool: { modified: new Date(2026, 5, 4, 12, 0, 0).getTime(), size: 7 },
+                },
+            },
+        },
+    });
+});
+
 test("the Script Reader state keeps its file name and keys, and reads them back", () => {
     const path = "C:\\PinballY\\Scripts\\ExpansionPack\\script_reader.json";
     const fake = createFakePinballYHost({ now: NOW });

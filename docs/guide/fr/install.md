@@ -35,6 +35,8 @@ Par la suite, **Réglages de l'eXpansion pack** affiche **Installer vpxtool v0.3
 
 Sans lui, la ROM d'une table est quand même trouvée, après sa première partie.
 
+Une table que vpxtool ne sait pas lire (souvent une table plus récente que lui) est notée une seule fois dans le journal d'erreurs, `errors.log` : elle n'est relue que lorsque son fichier change ou que vpxtool est mis à jour. En attendant, sa ROM est trouvée après sa première partie.
+
 ## PINemHi 3.6.8
 
 Avec PINemHi 3.6.8, les meilleurs scores sont lus sur les tableaux d'environ 300 ROM de plus.

@@ -1,7 +1,7 @@
 // ============================================================
 // vpxtool present but failing on one table, an Admin Profile picked at
-// startup through main.js on the fake host: the failure stays a log line,
-// read again at the next start, and brings no Error Toast.
+// startup through main.js on the fake host: the failure stays a log line
+// and brings no Error Toast.
 // ============================================================
 
 import { test } from "node:test";
@@ -23,6 +23,6 @@ test("vpxtool failing on one table: a log line only, no Error Toast", async () =
 
     assert.deepEqual(errorCards, []);
     assert.deepEqual(errorLines(fake), [
-        `[TableRoms] ERROR reading the script of "${BROKEN}": vpxtool exit code 1; read again at the next startup.`,
+        `[TableRoms] ERROR reading the script of "${BROKEN}": vpxtool exit code 1; read again once the table or vpxtool changes.`,
     ]);
 });

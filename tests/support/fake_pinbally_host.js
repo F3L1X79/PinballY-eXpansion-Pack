@@ -1685,9 +1685,10 @@ export function createFakePinballYHost({
             modifiedDates.set(filePath, modified.getTime());
         },
         // Seeds a program file and what it does when run: describe(args)
-        // gives { output, errorOutput, exitCode, durationMs }, all optional.
-        addProgram(filePath, describe) {
-            host.addFile(filePath, "program");
+        // gives { output, errorOutput, exitCode, durationMs }, all optional;
+        // file: addFile's options, such as { modified }.
+        addProgram(filePath, describe, file = {}) {
+            host.addFile(filePath, "program", file);
             programs.set(filePath, describe);
         },
         // The board PINemHi reads now in the table's NVRAM (shared by the

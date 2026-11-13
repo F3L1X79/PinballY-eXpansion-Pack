@@ -1,7 +1,7 @@
 // ============================================================
 // Table ROMs across a restart (first run in a child process): unchanged
 // tables are not read again; a changed .vpx or .vbs is, and the Add-on's own
-// ROM updated; a vpxtool failure was not recorded and is read again.
+// ROM updated; a table vpxtool failed on waits for a change, a timeout does not.
 // ============================================================
 
 import { test } from "node:test";
@@ -44,32 +44,33 @@ readScripts();
 process.stdout.write(JSON.stringify({ record: fake.readFile(RECORD_FILE), roms: roms(), log: log() }));
 `;
 
-test("a restart reads again only the changed tables and those vpxtool failed on", async () => {
+test("a restart reads again the changed tables and the timed-out one, not those vpxtool failed on", async () => {
     const firstRun = JSON.parse(execFileSync(process.execPath, ["--input-type=module", "-e", FIRST_RUN], { encoding: "utf8" }));
     assert.deepEqual(firstRun.log, [
         `[TableRoms] "${AFM}": ROM "afm_11" written (was empty; source: script).`,
         `[TableRoms] "${SPACE_TRIP}": its script loads no ROM.`,
-        `[TableRoms] ERROR reading the script of "${BROKEN}": vpxtool exit code 1; read again at the next startup.`,
+        `[TableRoms] ERROR reading the script of "${BROKEN}": vpxtool exit code 1; read again once the table or vpxtool changes.`,
         `[TableRoms] ERROR reading the script of "${SLOW}": no answer from vpxtool within 60 s; read again at the next startup.`,
-        `[TableRoms] ERROR reading the script of "${NOISY}": vpxtool's output is no ROM name: "error: cannot read the table!"; read again at the next startup.`,
+        `[TableRoms] ERROR reading the script of "${NOISY}": vpxtool's output is no ROM name: "error: cannot read the table!"; read again once the table or vpxtool changes.`,
         `[TableRoms] "${PATCHED}": ROM "pat_1" written (was empty; source: script).`,
         `[TableRoms] "${KEPT}": ROM "kept_1" written (was empty; source: script).`,
     ]);
-    assert.deepEqual(Object.keys(JSON.parse(firstRun.record).tables), [AFM, SPACE_TRIP, PATCHED, KEPT], "the failures are not recorded");
+    assert.deepEqual(Object.keys(JSON.parse(firstRun.record).tables), [AFM, SPACE_TRIP, BROKEN, NOISY, PATCHED, KEPT], "a timeout is not recorded");
 
-    // The AFM table file was updated, and the patched table's .vbs.
+    // The AFM and noisy table files were updated, and the patched table's .vbs.
     const { readScripts, roms, log, scriptsRead } = await startTableRoms({
         tables: TABLES.map(configId => table(configId, firstRun.roms[configId] ? { rom: firstRun.roms[configId] } : {})),
         files: {
             ...FIRST_FILES,
             [vpxFile(AFM)]: { content: "v2", modified: NEXT_DAY },
+            [vpxFile(NOISY)]: { content: "v2", modified: NEXT_DAY },
             [vbsFile(PATCHED)]: { content: "patch 2", modified: NEXT_DAY },
             [RECORD_FILE]: { content: firstRun.record },
         },
         vpxtool: {
             [vpxFile(AFM)]: "afm_113",
             [vpxFile(SPACE_TRIP)]: "never_asked",
-            [vpxFile(BROKEN)]: "brk_l1",
+            [vpxFile(BROKEN)]: "never_asked",
             [vpxFile(SLOW)]: "slow_1",
             [vpxFile(NOISY)]: "noisy_2",
             [vpxFile(PATCHED)]: "pat_2",
@@ -78,11 +79,11 @@ test("a restart reads again only the changed tables and those vpxtool failed on"
     });
     readScripts();
 
-    assert.deepEqual(scriptsRead(), [AFM, BROKEN, SLOW, NOISY, PATCHED].map(vpxFile));
+    assert.deepEqual(scriptsRead(), [AFM, SLOW, NOISY, PATCHED].map(vpxFile));
     assert.deepEqual(roms(), {
         [AFM]: "afm_113",
         [SPACE_TRIP]: "",
-        [BROKEN]: "brk_l1",
+        [BROKEN]: "",
         [SLOW]: "slow_1",
         [NOISY]: "noisy_2",
         [PATCHED]: "pat_2",
@@ -90,7 +91,6 @@ test("a restart reads again only the changed tables and those vpxtool failed on"
     });
     assert.deepEqual(log(), [
         `[TableRoms] "${AFM}": ROM "afm_113" written (was "afm_11"; source: script).`,
-        `[TableRoms] "${BROKEN}": ROM "brk_l1" written (was empty; source: script).`,
         `[TableRoms] "${SLOW}": ROM "slow_1" written (was empty; source: script).`,
         `[TableRoms] "${NOISY}": ROM "noisy_2" written (was empty; source: script).`,
         `[TableRoms] "${PATCHED}": ROM "pat_2" written (was "pat_1"; source: script).`,

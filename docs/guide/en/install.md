@@ -35,6 +35,8 @@ Later on, **eXpansion Pack Settings** shows **Install vpxtool v0.38.0** while it
 
 Without it, a table's ROM is still found, after its first Play.
 
+A table vpxtool cannot read (often a table newer than vpxtool) is noted once in the Error Log, `errors.log`: it is read again only when its file changes or vpxtool is updated. Meanwhile, its ROM is found after its first Play.
+
 ## PINemHi 3.6.8
 
 With PINemHi 3.6.8, the High Scores read the boards of about 300 more ROMs.

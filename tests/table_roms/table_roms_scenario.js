@@ -49,9 +49,12 @@ export const fakeVpxtool = answers => (args) => {
 
 // files: { path: { content, modified (a date, or its ms) } } seeded before startup (table
 // files, the record file); vpxtool: the fake's answers, or none when it
-// is not installed; nvramFolder: VPinMAME's NVRAM folder in the registry,
-// none when null; nvFiles: the ROM names of the .nv files already in it.
-export async function startTableRoms({ tables, files = {}, vpxtool, enabled = true, nvramFolder = NVRAM_FOLDER, nvFiles = [] }) {
+// is not installed; vpxtoolModified: when vpxtool.exe was last written;
+// nvramFolder: VPinMAME's NVRAM folder in the registry, none when null;
+// nvFiles: the ROM names of the .nv files already in it.
+export async function startTableRoms({
+    tables, files = {}, vpxtool, vpxtoolModified = NOW, enabled = true, nvramFolder = NVRAM_FOLDER, nvFiles = [],
+}) {
     const fake = createFakePinballYHost({ now: NOW, tables });
     if (nvramFolder !== null) {
         fake.setRegistryValue(NVRAM_REGISTRY_KEY, nvramFolder);
@@ -59,7 +62,7 @@ export async function startTableRoms({ tables, files = {}, vpxtool, enabled = tr
     }
     for (const rom of nvFiles) fake.addFile(`${nvramFolder}\\${rom}.nv`, "nvram", { modified: new Date(2026, 0, 1) });
     for (const [path, { content = "script", modified = NOW }] of Object.entries(files)) fake.addFile(path, content, { modified: new Date(modified) });
-    if (vpxtool) fake.addProgram(VPXTOOL, fakeVpxtool(vpxtool));
+    if (vpxtool) fake.addProgram(VPXTOOL, fakeVpxtool(vpxtool), { modified: new Date(vpxtoolModified) });
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = enabled && key === "tableRoms";

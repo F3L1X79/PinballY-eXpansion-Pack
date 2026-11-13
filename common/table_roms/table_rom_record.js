@@ -1,7 +1,8 @@
 // ============================================================
 // Table ROM record: the Table ROMs Add-on's memory in table_roms.json next to
-// cabinet.json: per table, its file state when last read, the ROM found and
-// the ROM last written into PinballY. Every write goes through decideRomWrite().
+// cabinet.json: per table, its file state when last read (or when vpxtool
+// failed on it), the ROM found and the ROM last written into PinballY.
+// Every write goes through decideRomWrite().
 // - Saved through the Profile store, so no Profile Reset touches it.
 // ============================================================
 
@@ -72,17 +73,26 @@ export function createTableRomRecord(host, store) {
 
     return {
         // Whether the table's script must be read: never read, or its game
-        // file or .vbs changed since (state: { vpx, vbs }, each
+        // file or .vbs changed since; after a failure, only once one of them
+        // or vpxtool.exe changed (state: { vpx, vbs, vpxtool }, each
         // { modified, size } or null).
         needsScriptRead: (configId, state) => {
-            const lastRead = existingEntry(configId).script;
-            return !isRecord(lastRead) || !sameFileState(lastRead.vpx, state.vpx) || !sameFileState(lastRead.vbs, state.vbs);
+            const { script, scriptFailure } = existingEntry(configId);
+            const sameTable = seen => isRecord(seen) && sameFileState(seen.vpx, state.vpx) && sameFileState(seen.vbs, state.vbs);
+            if (sameTable(script)) return false;
+            return !(sameTable(scriptFailure) && sameFileState(scriptFailure.vpxtool, state.vpxtool));
+        },
+        // Remembers a failure that comes from the table's files, not from a busy cabinet.
+        applyScriptFailure: (configId, state) => {
+            entryOf(configId).scriptFailure = { vpx: state.vpx, vbs: state.vbs, vpxtool: state.vpxtool };
+            save();
         },
         // Remembers what the table's script gave (rom null: no ROM) and
         // applies it to PinballY's ROM field.
         applyScriptRead: (configId, state, rom) => {
             const entry = entryOf(configId);
             entry.script = { vpx: state.vpx, vbs: state.vbs, rom };
+            delete entry.scriptFailure;
             if (rom !== null) applyFinding(configId, { rom, source: ROM_SOURCE.script });
             // A ROM a .nv confirmed makes it a ROM table whatever its script says.
             else if (!(entry.written && entry.written.source === ROM_SOURCE.nv)) log(`"${configId}": its script loads no ROM.`);
