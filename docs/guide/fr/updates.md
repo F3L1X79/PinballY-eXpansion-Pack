@@ -21,7 +21,6 @@ Sont conservés :
 - les fichiers que vous avez mis dans `tools`, `vpxtool.exe` compris ;
 - vos propres sons et images de score par défaut ;
 - le journal des erreurs, `errors.log` ;
-- le journal d'informations, `info.log` ;
 - le journal des anomalies des scores de partie, `play_scores_anomalies.log`.
 
 ## Quand une mise à jour échoue
