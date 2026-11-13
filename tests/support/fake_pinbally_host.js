@@ -64,6 +64,12 @@ const SYSTEM_GROUP_COMMANDS = {
     "[Rating]": "FilterByRating", "[Played]": "FilterByRecency", "[!Played]": "FilterByRecency", "[!!Played]": "FilterByRecency",
     "[Added]": "FilterByAdded", "[!Added]": "FilterByAdded",
 };
+// An Era filter's years, { from, to }, from its id "YearRange.from.to"; null otherwise.
+const yearRangeOf = filterId => {
+    const match = /^YearRange\.(\d+)\.(\d+)$/.exec(filterId);
+    return match ? { from: Number(match[1]), to: Number(match[2]) } : null;
+};
+const isInYearRange = (game, { from, to }) => game.year >= from && game.year <= to;
 const nativeGroupOf = filterId => {
     const found = NATIVE_FILTER_GROUPS.find(([prefix]) => filterId.startsWith(prefix));
     return found ? found[1] : null;
@@ -1431,8 +1437,15 @@ export function createFakePinballYHost({
                 .filter(game => canBeOnWheel(game) && game.isFavorite === true)
                 .map(game => game.configId);
             runMetaFilters();
+        } else if (yearRangeOf(filterId)) {
+            // PinballY's Era filter: the visible, configured tables of those years.
+            currentFilterId = filterId;
+            wheelConfigIds = allTables
+                .filter(game => canBeOnWheel(game) && isInYearRange(game, yearRangeOf(filterId)))
+                .map(game => game.configId);
+            runMetaFilters();
         } else if (nativeGroupOf(filterId)) {
-            // PinballY's own group filters keep the wheel as it is here.
+            // PinballY's other group filters keep the wheel as it is here.
             currentFilterId = filterId;
             runMetaFilters();
         } else {
@@ -1512,13 +1525,34 @@ export function createFakePinballYHost({
         return era ? `${era[1]}s Tables` : filterId;
     }
 
+    // FilterInfo.testGame(game) of the filters the fake knows (FilterInfo.html):
+    // All, "all non-hidden games"; Favorites, the favourite ones; an Era
+    // (YearRange.from.to), those released in those years; a script filter,
+    // its select() over the tables it is given. Null for a filter it does not know.
+    function gameTestOf(filterId) {
+        const filter = filters.get(filterId);
+        const range = yearRangeOf(filterId);
+        if (filterId === "All") return game => !game.isHidden;
+        if (filterId === "Favorites") return game => !game.isHidden && game.isFavorite === true;
+        if (range) return game => !game.isHidden && isInYearRange(game, range);
+        if (filter) return game => canBeOnWheel(game, filter) && Boolean(filter.select(game));
+        return null;
+    }
+
     // Like gameList.getFilterInfo(): the filter by its id, with its
-    // session-only command (FilterInfo.cmd). Only All Tables, Favorites and
-    // the script filters: the fake has no other filter's command.
+    // session-only command (FilterInfo.cmd), its title, and testGame() and
+    // getGames() where the fake knows its rule. Only All Tables, Favorites,
+    // the Eras and the script filters; an Era has no command here.
     function getFilterInfo(filterId) {
         const cmd = commandOf(filterId);
-        if (cmd === undefined) throw new Error(`The fake host knows no filter ${filterId}.`);
-        return { id: filterId, cmd };
+        const testGame = gameTestOf(filterId);
+        if (cmd === undefined && !testGame) throw new Error(`The fake host knows no filter ${filterId}.`);
+        const info = { id: filterId, cmd, title: filterTitleOf(filterId) };
+        if (testGame) {
+            info.testGame = testGame;
+            info.getGames = () => allTables.filter(game => game.isConfigured !== false && testGame(game));
+        }
+        return info;
     }
 
     function allocateCommand(name) {
@@ -1762,6 +1796,12 @@ export function createFakePinballYHost({
         },
         // Shows a script filter, by its full id ("User.<id>").
         selectFilter: applyFilter,
+        // The player picks a filter in a menu: "filterselect" fires before
+        // the filter is applied, and a listener cancelling it leaves the
+        // filter unapplied (FilterSelectEvent.html).
+        chooseFilter(filterId) {
+            if (!fire("filterselect", { id: filterId }).defaultPrevented) setCurrentFilter(filterId);
+        },
         // The script filters' descriptions, as created.
         scriptFilters: () => [...filters.values()],
         upperStatusLine: () => upperStatusLine.map(entry => entry.text),

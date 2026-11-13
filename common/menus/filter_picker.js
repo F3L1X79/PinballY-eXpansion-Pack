@@ -1,8 +1,8 @@
 // ============================================================
 // Filter Picker: the submenu that takes the wheel selections and filter
-// groups out of the main menu. Created by the main menu module; its entry
-// names the Active Filter. Listens to "menuopen", "menuclose", "command",
-// "attractmodestart" and "filterselect".
+// groups out of the main menu, with Add-ons' entries before Back. Created
+// by the main menu module; its entry names the Active Filter. Listens to
+// "menuopen", "menuclose", "command", "attractmodestart" and "filterselect".
 // - Shown by turning a main menu opening into it, not with showMenu (no "menuopen").
 // - Back and Exit go up one level at a time (see docs/adr/0013).
 // ============================================================
@@ -41,6 +41,8 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
     const isGroupItem = item => groupCmds.includes(item.cmd);
     const backCmd = host.allocateCommand("filterPickerBack");
     const menuReturnCmd = host.getBuiltInCommand("MenuReturn");
+    // The Add-ons' entries just before Back, in the order added: { label(), cmd, action }.
+    const extraEntries = [];
     // Set when the next main menu opening shows the Filter Picker instead:
     // { selectedCmd }, the item the cursor goes to (null for the first).
     let opening = null;
@@ -82,9 +84,13 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
             selections,
             groups.map(item => Object.assign({}, item, { radio: item.cmd === activeGroupCmd })),
         ].filter(items => items.length > 0);
+        const extraItems = extraEntries
+            .map(entry => ({ title: entry.label(), cmd: entry.cmd }))
+            .filter(item => item.title !== undefined);
         ev.id = FILTER_PICKER_MENU_ID;
         ev.items = [
             ...sections.flatMap(items => [...items, { cmd: SEPARATOR_CMD }]),
+            ...extraItems,
             { title: lang.customMenuLabels.filterPickerBack, cmd: backCmd },
         ].map(item => (item.cmd === SEPARATOR_CMD ? item : Object.assign({}, item, { selected: item.cmd === selectedCmd })));
         ev.menuUpdated = true;
@@ -129,9 +135,18 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
     // the only menu listing the groups.
     host.on("command", safeHandler(SCRIPT_NAME, ev => {
         if (shownLevel && ev.id !== menuReturnCmd) shownLevel.chosen = true;
+        const extraEntry = extraEntries.find(entry => entry.cmd === ev.id);
         if (ev.id === backCmd) back();
         else if (groupCmds.includes(ev.id)) openedGroupCmd = ev.id;
+        else if (extraEntry) extraEntry.action();
     }));
+
+    // An Add-on's entry, just before Back; label: a function returning its
+    // text on each opening (undefined leaves it out), action: run when
+    // chosen, the menus then closing as for a filter.
+    function addEntry({ name, label, action }) {
+        extraEntries.push({ label: safeHandler(SCRIPT_NAME, label), cmd: host.allocateCommand(name), action });
+    }
 
     // Fires when any menu closes, after the "menuopen" of a menu shown in
     // its place. A native level closed with nothing chosen and no menu in
@@ -159,5 +174,5 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
         openedGroupCmd = null;
     }));
 
-    return { isGroupItem, mainMenuOpened, back, entryCmd, activeFilterName };
+    return { isGroupItem, mainMenuOpened, back, entryCmd, activeFilterName, addEntry };
 }

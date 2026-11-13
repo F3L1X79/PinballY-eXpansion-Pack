@@ -38,6 +38,7 @@ import * as customFilter from "./addons/custom_filter.js";
 import * as hallOfFame from "./addons/hall_of_fame.js";
 import * as tablesToDiscover from "./addons/tables_to_discover.js";
 import * as hiddenTables from "./addons/hidden_tables.js";
+import * as wheelOrder from "./addons/wheel_order.js";
 import * as menuCleanup from "./addons/menu_cleanup.js";
 import * as profilePicker from "./addons/profile_picker.js";
 import * as profileRatings from "./addons/profile_ratings.js";
@@ -109,6 +110,7 @@ const SCRIPTS = [
     { key: "hallOfFame", module: hallOfFame },
     { key: "tablesToDiscover", module: tablesToDiscover },
     { key: "hiddenTables", module: hiddenTables },
+    { key: "wheelOrder", module: wheelOrder },
     { key: "profilePicker", module: profilePicker },
     { key: "clock", module: clock },
     { key: "statusIcons", module: statusIcons },

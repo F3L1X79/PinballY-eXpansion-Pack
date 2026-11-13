@@ -72,6 +72,13 @@ To read the boards of about 300 more ROMs, update PINemHi (see [Install](install
 - A reminder asks you to rate a table once you have played it long enough (`ASK_TO_RATE_AFTER_MINUTES_PLAYED`), unless your Profile has rated it already.
 - Star ratings and "Favorite Tables" are the active Profile's own: what you rate or add to the favourites changes nobody else's (see [Profiles](profiles.md#ratings-and-favorite-tables)).
 
+## Wheel Order
+
+- The wheel lists its tables alphabetically by default. "Order: alphabetical", just before Back behind "Change Filter", switches it to by year: the oldest table first, the tables of the same year alphabetically, and the tables without a year at the end, alphabetically. Choosing "Order: by year" brings the alphabetical order back.
+- The menus close, and the table you were on stays selected.
+- The order is the same for every Profile, and stays when you pick another of PinballY's filters: All Tables, Favorite Tables, an era, a manufacturer...
+- Turned off in the eXpansion Pack Settings (**Wheel Order**, `ADD_ON_WHEEL_ORDER=false`), the entry is gone and the wheel stays alphabetical.
+
 ---
 
 [← Guide index](index.md)

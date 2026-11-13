@@ -22,7 +22,7 @@ Everything stays in one folder, with no change to PinballY itself.
 
 Under "Players and progress", **Ratings per Profile** gives each Profile its own star Ratings and Favorite Tables, kept in a `ratings.json` file of its folder. The first time it runs, every Profile, Guest included, is given the Ratings and Favorite Tables already on the cabinet. Turned off, everyone shares PinballY's Ratings and Favorite Tables again, and the Ratings Achievements are gone (`ADD_ON_PROFILE_RATINGS=false`).
 
-Under "Menus and filters", **Hidden Games** is on by default: some surprises unlock menu entries, so do not be puzzled when one appears in a player's main menu. Turned off, those entries never show (`ADD_ON_ROCKET_GAME=false`).
+Under "Menus and filters", **Hidden Games** is on by default: some surprises unlock menu entries, so do not be puzzled when one appears in a player's main menu. Turned off, those entries never show (`ADD_ON_ROCKET_GAME=false`). **Wheel Order** is on too, its wheel alphabetical until a player switches it to by year; turned off, "Change Filter" loses its order entry and the wheel stays alphabetical (`ADD_ON_WHEEL_ORDER=false`, see [Wheel Order](choosing_a_table.md#wheel-order)).
 
 Until the pack has read your vpxtool's version once (about ten seconds into the first start that finds it), or while that version cannot be read, there is no vpxtool line.
 

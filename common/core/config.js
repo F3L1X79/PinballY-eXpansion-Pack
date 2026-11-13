@@ -125,6 +125,8 @@ export const DEFAULTS = {
         hallOfFame: true,
         tablesToDiscover: true,
         hiddenTables: true,
+        // The Filter Picker's entry switching the wheel between alphabetical and by year.
+        wheelOrder: true,
         sessionStatsTracker: true,
         achievements: true,
         seamlessLaunchOverlay: true,

@@ -72,6 +72,13 @@ Pour lire les tableaux d'environ 300 ROM de plus, mettez PINemHi à jour (voir [
 - Un rappel vous propose de noter une table une fois que vous y avez assez joué (`ASK_TO_RATE_AFTER_MINUTES_PLAYED`), sauf si votre Profil l'a déjà notée.
 - Les notes en étoiles et les « Tables favorites » sont celles du Profil actif : ce que vous notez ou ajoutez aux favoris ne change rien pour les autres (voir [Profils](profiles.md#notes-et-tables-favorites)).
 
+## Ordre de la roue
+
+- La roue range ses tables par ordre alphabétique par défaut. « Ordre : alphabétique », juste avant Retour derrière « Changer de filtre », la range par année : la table la plus ancienne d'abord, les tables d'une même année par ordre alphabétique, et les tables sans année à la fin, par ordre alphabétique. Choisir « Ordre : par année » rétablit l'ordre alphabétique.
+- Les menus se ferment, et la table sur laquelle vous étiez reste sélectionnée.
+- L'ordre est le même pour tous les Profils, et reste quand vous choisissez un autre filtre de PinballY : Toutes les tables, Tables favorites, une époque, un fabricant…
+- Désactivé dans les Réglages de l'eXpansion pack (**Ordre de la roue**, `ADD_ON_WHEEL_ORDER=false`), l'entrée disparaît et la roue reste alphabétique.
+
 ---
 
 [← Sommaire du guide](index.md)

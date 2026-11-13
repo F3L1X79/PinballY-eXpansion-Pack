@@ -188,6 +188,9 @@ export default {
         // The Filter Picker's way back, and its main menu entry naming the Active Filter.
         filterPickerBack: "Back",
         activeFilter: (name) => `Active filter: ${name}`,
+        // The Filter Picker's entry before Back, naming the current Wheel Order.
+        wheelOrderAlphabetical: "Order: alphabetical",
+        wheelOrderByYear: "Order: by year",
         // The Drawn main menu's "Change Filter" entry, and its footer's label before the Active Filter.
         changeFilter: "Change Filter",
         activeFilterLabel: "Active filter:",
@@ -897,6 +900,11 @@ export default {
                 name: "Original Tables",
                 whenOn: "An Original Tables filter, under Filter by Manufacturer.",
                 whenOff: "Nothing else changes.",
+            },
+            wheelOrder: {
+                name: "Wheel Order",
+                whenOn: "An entry of Change Filter lists the wheel's tables by year, oldest first.",
+                whenOff: "The wheel stays alphabetical.",
             },
             menuCleanup: {
                 name: "Menu Cleanup",

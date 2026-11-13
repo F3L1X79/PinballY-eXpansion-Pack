@@ -297,6 +297,9 @@ export default {
         currentRating: (rating) => `(attuale: ${String(rating).replace(".", ",")} / 5)`,
         filterPickerBack: "Indietro",
         activeFilter: (name) => `Filtro attivo: ${name}`,
+        // The Filter Picker's entry before Back, naming the current Wheel Order.
+        wheelOrderAlphabetical: "Ordine: alfabetico",
+        wheelOrderByYear: "Ordine: per anno",
         // The Drawn main menu's "Change Filter" entry, and its footer's label before the Active Filter.
         changeFilter: "Cambia filtro",
         activeFilterLabel: "Filtro attivo:",
@@ -964,6 +967,11 @@ export default {
                 name: "Tavoli originali",
                 whenOn: "Un filtro Tavoli originali, in Filtra per produttore.",
                 whenOff: "Nient'altro cambia.",
+            },
+            wheelOrder: {
+                name: "Ordine della ruota",
+                whenOn: "Una voce di Cambia filtro ordina i tavoli della ruota per anno, dal più vecchio.",
+                whenOff: "La ruota resta in ordine alfabetico.",
             },
             menuCleanup: {
                 name: "Menu ripuliti",

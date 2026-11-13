@@ -1,7 +1,7 @@
 ﻿// ============================================================
 // Pinning test: plays a scripted session through main.js and locks every
 // persisted key and Achievement ID (profile.json, cabinet.json, Challenges,
-// Play Log, World Tour, Avatar Frame, Table ROMs, High Scores, .env.local's OFFER_VPXTOOL).
+// Play Log, World Tour, Avatar Frame, Table ROMs, High Scores, Wheel Order, .env.local's OFFER_VPXTOOL).
 // - These strings are players' saved progress: this test must keep passing unchanged.
 // - The Surprises part's keys are in persisted_data_pinning_surprises.test.js.
 // ============================================================
@@ -14,6 +14,7 @@ import { applyEnvOverrides } from "../../common/core/env_overrides.js";
 import { createProfileStore } from "../../common/profiles/profile_store.js";
 import { createPeriodTable, formatDateKey, TABLE_OF_THE_DAY, TABLE_OF_THE_WEEK } from "../../common/tables/period_table.js";
 import { createRandomGame } from "../../common/tables/random_game.js";
+import { createWheelOrder } from "../../common/tables/wheel_order.js";
 import { createChallenges, CHALLENGE_TEMPLATE_IDS } from "../../common/challenges/challenge.js";
 import { buildChallengeAchievements } from "../../achievements/challenges.js";
 import { buildWorldTourAchievements } from "../../achievements/world_tour.js";
@@ -441,6 +442,17 @@ test("the adult Periods of a Period Table keep their key next to its lock in cab
         period: "2026-09-23",
         adultPeriods: ["2026-09-22", "2026-09-23"],
     });
+});
+
+test("the Wheel Order keeps its key and values in cabinet.json", () => {
+    const fake = createFakePinballYHost({ now: NOW, tables: TABLES });
+    const wheelOrder = createWheelOrder(fake, createProfileStore(fake), { isEnabled: true });
+    const saved = () => JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\cabinet.json`)).wheelOrder;
+
+    wheelOrder.toggle();
+    assert.equal(saved(), "byYear");
+    wheelOrder.toggle();
+    assert.equal(saved(), "alphabetical");
 });
 
 test("the Challenge template ids stay byte-identical", () => {

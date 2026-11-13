@@ -298,6 +298,9 @@ export default {
         currentRating: (rating) => `(aktuell: ${String(rating).replace(".", ",")} / 5)`,
         filterPickerBack: "Zurück",
         activeFilter: (name) => `Aktiver Filter: ${name}`,
+        // The Filter Picker's entry before Back, naming the current Wheel Order.
+        wheelOrderAlphabetical: "Reihenfolge: alphabetisch",
+        wheelOrderByYear: "Reihenfolge: nach Jahr",
         // The Drawn main menu's "Change Filter" entry, and its footer's label before the Active Filter.
         changeFilter: "Filter wechseln",
         activeFilterLabel: "Aktiver Filter:",
@@ -965,6 +968,11 @@ export default {
                 name: "Original-Tische",
                 whenOn: "Ein Filter Original-Tische, unter Nach Hersteller filtern.",
                 whenOff: "Sonst ändert sich nichts.",
+            },
+            wheelOrder: {
+                name: "Reihenfolge des Rads",
+                whenOn: "Ein Eintrag in Filter wechseln ordnet die Tische des Rads nach Jahr, die ältesten zuerst.",
+                whenOff: "Das Rad bleibt alphabetisch.",
             },
             menuCleanup: {
                 name: "Menüs aufräumen",
