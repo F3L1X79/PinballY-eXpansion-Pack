@@ -1,7 +1,7 @@
 // ============================================================
 // Daily Streak: a Profile's days in a row on the cabinet, read from its Play
 // Log whenever asked, so nothing is persisted. Shared through getDailyStreak().
-// No event, no side effect.
+// Also tells the days since a Profile's last Play. No event, no side effect.
 // - A Profile Reset sets the Play Log aside, so it brings the streak back to 0.
 // - The day changes at midnight, as for the Table of the Day.
 // ============================================================
@@ -48,7 +48,19 @@ export function createDailyStreak(host, store) {
         return { current, longest: longestRun(days), isTodayCounted };
     }
 
-    return { read };
+    // Calendar days from the named Profile's last Play to today; null
+    // without any Play.
+    function daysSinceLastPlay(profileName) {
+        const days = [...playedDays(profileName)];
+        if (days.length === 0) return null;
+        const [year, month, day] = days.reduce((last, key) => (key > last ? key : last)).split("-").map(Number);
+        const now = host.now();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        // Rounded: a day across a clock change lasts 23 or 25 hours.
+        return Math.round((today - new Date(year, month - 1, day)) / 86400000);
+    }
+
+    return { read, daysSinceLastPlay };
 }
 
 let sharedDailyStreak = null;

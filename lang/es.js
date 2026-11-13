@@ -214,6 +214,8 @@ export default {
 
     welcomeScreen: {
         greetings: { morning: "Buenos días", afternoon: "Buenas tardes", evening: "Buenas noches", night: "Todavía en pie" },
+        // In place of the greeting by the hour: last Play 7 to 30 days ago, then older.
+        returning: { week: "Hola de nuevo", month: "Cuánto tiempo" },
         // Spanish opens the exclamation too.
         greetingWithName: (greeting, name) => [`¡${greeting}, `, name, "!"],
         greetingAlone: (greeting) => `¡${greeting}!`,

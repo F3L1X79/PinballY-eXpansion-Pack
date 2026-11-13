@@ -214,6 +214,8 @@ export default {
 
     welcomeScreen: {
         greetings: { morning: "Guten Morgen", afternoon: "Guten Tag", evening: "Guten Abend", night: "Noch wach" },
+        // In place of the greeting by the hour: last Play 7 to 30 days ago, then older.
+        returning: { week: "Willkommen zurück", month: "Lange nicht gesehen" },
         greetingWithName: (greeting, name) => [`${greeting}, `, name, "!"],
         greetingAlone: (greeting) => `${greeting}!`,
         stayOn: (tableTitle) => `Bei ${tableTitle} bleiben`,

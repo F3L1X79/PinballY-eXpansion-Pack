@@ -97,6 +97,8 @@ export default {
     welcomeScreen: {
         // By the hour: 5-12 h, 12-18 h, 18-22 h, 22-5 h.
         greetings: { morning: "Good morning", afternoon: "Good afternoon", evening: "Good evening", night: "Still up" },
+        // In place of the greeting by the hour: last Play 7 to 30 days ago, then older.
+        returning: { week: "Welcome back", month: "Long time no see" },
         // The greeting's runs, the Profile's name (shown in gold) apart.
         greetingWithName: (greeting, name) => [`${greeting}, `, name, "!"],
         greetingAlone: (greeting) => `${greeting}!`,

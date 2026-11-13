@@ -12,6 +12,7 @@ Chaque jour une table que personne à la maison n'a encore jouée, ou celle dél
 - De là, lancez l'une d'elles, restez sur la table de la roue, changez de joueur ou tentez une table au hasard.
 - Jouez-les plusieurs jours ou plusieurs semaines d'affilée pour faire une série.
 - Ni l'une ni l'autre n'est jamais une table masquée ou non configurée (un fichier de table trouvé par PinballY mais jamais configuré), même quand votre roue l'affiche.
+- Si votre dernière partie date d'une semaine ou plus, l'écran d'accueil vous dit « Bon retour », et après plus de 30 jours « Ça faisait un bail ». Invité garde le bonjour habituel tant que « Changer de joueur » existe.
 - Quand quelqu'un d'autre vous prend un record, Invité compris, votre prochain écran d'accueil vous dit qui, une seule fois, pour que vous sachiez quel record reprendre.
 - Tant que l'écran d'accueil est ouvert, le son des vidéos de la table de la roue est baissé, et revient à sa fermeture.
 

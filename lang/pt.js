@@ -214,6 +214,8 @@ export default {
 
     welcomeScreen: {
         greetings: { morning: "Bom dia", afternoon: "Boa tarde", evening: "Boa noite", night: "Ainda por aqui" },
+        // In place of the greeting by the hour: last Play 7 to 30 days ago, then older.
+        returning: { week: "Olá de novo", month: "Quanto tempo" },
         greetingWithName: (greeting, name) => [`${greeting}, `, name, "!"],
         greetingAlone: (greeting) => `${greeting}!`,
         stayOn: (tableTitle) => `Ficar em ${tableTitle}`,

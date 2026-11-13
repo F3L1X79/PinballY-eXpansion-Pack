@@ -215,6 +215,8 @@ export default {
     // The Welcome Screen, at startup (see addons/welcome_screen.js).
     welcomeScreen: {
         greetings: { morning: "Bien le bonjour", afternoon: "Hey salut", evening: "Bien le bonsoir", night: "Salut nocturne" },
+        // In place of the greeting by the hour: last Play 7 to 30 days ago, then older.
+        returning: { week: "Bon retour", month: "Ça faisait un bail" },
         greetingWithName: (greeting, name) => [`${greeting}, `, name, " !"],
         greetingAlone: (greeting) => `${greeting} !`,
         stayOn: (tableTitle) => `Rester sur ${tableTitle}`,

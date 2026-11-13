@@ -12,6 +12,7 @@ Every day there is a table nobody in the house has played yet, or the one left a
 - From there, launch one of them, stay on the table on the wheel, change player or spin a Random Game.
 - Play them several days or weeks in a row to build a Streak.
 - Neither is ever a hidden table or an unconfigured one (a table file PinballY found but that was never set up), even when your wheel shows it.
+- If your last game was a week ago or more, the Welcome Screen says "Welcome back", and after more than 30 days "Long time no see". Guest keeps the usual greeting as long as Change Player is there.
 - When someone else takes one of your High Scores, Guest included, your next Welcome Screen tells you who, once, so you know which record to win back.
 - While the Welcome Screen is open, the video sound of the table on the wheel is turned down, and comes back as it closes.
 

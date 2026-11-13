@@ -52,6 +52,9 @@ const SCRIPT_NAME = "WelcomeScreen";
 
 // The Lost Records line names this many tables at most, then counts the others.
 const MAX_NAMED_LOST_RECORDS = 3;
+// Days since the last Play: welcomed back from 7, a long time no see past 30.
+const RETURNING_AFTER_DAYS = 7;
+const LONG_ABSENCE_AFTER_DAYS = 30;
 // Exit always leaves the bare wheel.
 const EXIT_LOOK = EXIT_BUTTON_LOOK.CLOSE;
 
@@ -115,6 +118,16 @@ export default function init() {
         const { current, isTodayCounted } = dailyStreak.read();
         if (current < 2) return null;
         return { count: current, text: isTodayCounted ? TEXT.cabinetStreak.playedToday : TEXT.cabinetStreak.notYetToday };
+    }
+
+    // The greeting by the hour, or a returning one after a week away. Guest
+    // keeps the hour's when Change Player exists: it is then anybody's Profile.
+    function greetingWordsOf(profile, picker) {
+        const byTheHour = TEXT.greetings[partOfDay(host.now().getHours())];
+        if (picker && profile.isGuest) return byTheHour;
+        const days = dailyStreak.daysSinceLastPlay(profile.name);
+        if (days === null || days < RETURNING_AFTER_DAYS) return byTheHour;
+        return days > LONG_ABSENCE_AFTER_DAYS ? TEXT.returning.month : TEXT.returning.week;
     }
 
     // Each missing Avatar logged once: the screen opens on every change of player.
@@ -211,7 +224,7 @@ export default function init() {
 
     function readScreen(profile) {
         const picker = getChangePlayer() !== null;
-        const greeting = TEXT.greetings[partOfDay(host.now().getHours())];
+        const greeting = greetingWordsOf(profile, picker);
         // What the wheel shows behind the screen: staying keeps it.
         const current = host.getCurrentTable();
         const stay = current ? cleanTitle(current.title) : null;
