@@ -44,11 +44,22 @@ Le pack ne réagit qu'à ce qui est installé : il ne regarde jamais ce que Pinb
 PinballY recrée `PinballY.log` à chaque lancement : le pack écrit donc aussi chaque erreur qu'il rencontre dans son propre journal des erreurs, qui survit aux redémarrages :
 
 - **Où** : `PinballY\Scripts\ExpansionPack\errors.log`.
-- **Quoi** : une ligne par erreur, avec sa date, son heure, la version du pack et l'add-on en cause, et la pile d'appels en retrait en dessous. Il dit aussi pourquoi un fichier du dossier `profiles` n'a pas pu être lu, sous quel nom il a été gardé, et si ses données ont été reprises de sa sauvegarde ou sont reparties de zéro. Les avertissements et les informations ne vont que dans `PinballY.log`.
+- **Quoi** : une ligne par erreur, avec sa date, son heure, la version du pack et l'add-on en cause, et la pile d'appels en retrait en dessous. Il dit aussi pourquoi un fichier du dossier `profiles` n'a pas pu être lu, sous quel nom il a été gardé, et si ses données ont été reprises de sa sauvegarde ou sont reparties de zéro. Les avertissements et les informations ne vont que dans `PinballY.log` et le journal d'informations.
 - **Taille** : au-delà de 1 Mo, il devient `errors.old.log` au démarrage suivant, et un nouveau `errors.log` commence.
 - Il est conservé à chaque mise à jour du pack, et ne peut jamais être désactivé.
 
 Les toasts n'y renvoient jamais le joueur : il est pour le propriétaire de la borne. **Joignez `errors.log` (et `errors.old.log` s'il existe) quand vous signalez un problème.**
+
+## Le journal d'informations (`info.log`)
+
+Chaque ligne que le pack écrit dans `PinballY.log`, erreurs comprises, va aussi dans son journal d'informations, avec quelques lignes en plus pour vérifier le comportement du pack sur votre borne. Il ne demande d'activer aucun réglage de journal de PinballY, et il survit aux redémarrages :
+
+- **Où** : `PinballY\Scripts\ExpansionPack\info.log`.
+- **Quoi** : une ligne par message du pack, avec sa date, son heure et la version du pack. Les lignes de PinballY lui-même (tables, médias, ses propres erreurs) restent seulement dans `PinballY.log`.
+- **Taille** : au-delà de 1 Mo, il devient `info.old.log` au démarrage suivant, et un nouveau `info.log` commence.
+- Il est conservé à chaque mise à jour du pack.
+
+**Joignez aussi `info.log` quand vous signalez un problème** : il montre ce que le pack faisait juste avant.
 
 ## `PinballY.log`
 
