@@ -360,16 +360,10 @@
             <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
           </div>
           <p>PinballY range toujours la roue par ordre alphabétique. Le pack proposerait un tri par année, de la plus ancienne à la plus récente, qui garde les tables du filtre en cours.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. <code>gameList.createFilter</code> accepte <code>compareForSort(a, b)</code>, déjà utilisé par <code>common/tables/selection_filter.js</code> ; le filtre trié reprend le filtre en cours par <code>getFilterInfo(id).testGame(game)</code></div>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="here">tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/513">#513</a>. Flow Matt : <code>/to-tickets</code> → <code>/implement</code>. Un Ordre de la roue (Wheel Order) pour toute la borne, choisi dans le Filter Picker : par année, sauts de page par décennie, My High Scores garde son classement.</div>
           <details>
-            <summary>Questions ouvertes (4)</summary>
-            <ul>
-              <li>Comment l'activer : une entrée du menu principal à réappliquer, ou un réglage qui retrie seul à chaque <code>filterselect</code> ? Choisir un autre filtre fait perdre le tri, puisque le tri est lui-même un filtre.</li>
-              <li>Le titre du filtre trié : celui du filtre d'origine avec « par année » ? Et Exit ou un nouveau choix de filtre rendent-ils l'ordre alphabétique ?</li>
-              <li>Des sauts de page par décennie avec <code>pageGroup(game)</code> ? Où vont les tables sans année ?</li>
-              <li>D'autres tris tant qu'on y est (fabricant, dernière partie, nombre de parties), ou l'année seule ?</li>
-            </ul>
+            <summary>Contexte</summary>
             <p class="ctx">Idée externe de Dave du 13/11/2026.</p>
           </details>
         </div>

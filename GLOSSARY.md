@@ -136,6 +136,10 @@ _Avoid_: Filter Tables, filter menu (each group's own list is a filter menu too)
 The filter the wheel applies right now, a wheel selection or a filter from one of PinballY's groups. Shown as "Filtre actif" in French.
 _Avoid_: current filter, current selection
 
+**Wheel Order**:
+The order in which the wheel lists the tables of the Active Filter: alphabetical, or by year from the oldest. It stays when the Active Filter changes. A wheel selection with its own ranking keeps that ranking. Shown as "Ordre de la roue" in French.
+_Avoid_: sort, sort filter, sorted filter
+
 **Selection Marker**:
 The soft gold glow that flows without end around the current choice of a drawn screen. The choice it surrounds is the current (or highlighted) choice; only the glow itself is never called a highlight.
 _Avoid_: halo (for the selection; a Rank emblem's or a Mastery square's halo stays a halo), cursor, highlight
