@@ -13,7 +13,7 @@ import { createProfileStore } from "../../common/profiles/profile_store.js";
 const NOW = new Date(2026, 8, 24, 21, 0, 0);
 const DATE = "2026-09-24_21-00-00";
 const PACK = "C:\\PinballY\\Scripts\\ExpansionPack";
-const ERROR_LOG = `${PACK}\\errors.log`;
+const ERROR_LOG = `${PACK}\\logs\\errors.log`;
 const PROFILES = `${PACK}\\profiles`;
 const ALICE = `${PROFILES}\\Alice`;
 const CABINET_FILE = `${PROFILES}\\cabinet.json`;

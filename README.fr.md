@@ -52,7 +52,7 @@ Nécessite **Windows** et **PinballY 1.1.0 Beta 10** (plus la fonctionnalité fa
    ```js
    import("./ExpansionPack/main.js").catch(e => logfile.log("ExpansionPack: " + e.message));
    ```
-4. **Redémarrez PinballY.** `PinballY.log` montre une ligne « initialized » par Add-on ; les erreurs sont aussi gardées dans `Scripts\ExpansionPack\errors.log`.
+4. **Redémarrez PinballY.** `PinballY.log` montre une ligne « initialized » par Add-on ; les erreurs sont aussi gardées dans `Scripts\ExpansionPack\logs\errors.log`.
 5. **Choisissez vos Add-ons**, l'écran de démarrage et la langue dans **Réglages de l'eXpansion pack**, depuis le menu opérateur, puis redémarrez PinballY d'une seule pression.
 
 Vos réglages et vos Profils restent dans `Scripts\ExpansionPack` : copiez ce dossier pour sauvegarder, supprimez-le avec la ligne d'import pour désinstaller un jour au besoin. Quand une nouvelle version du pack sort, PinballY propose la mise à jour au démarrage, d'une seule pression, en gardant vos réglages et vos Profils.

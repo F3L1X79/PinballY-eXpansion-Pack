@@ -789,7 +789,7 @@ export function createPinballYHost() {
         openPipe: createPipeOpener(),
         getProcessId,
         files,
-        // logfile.log, and the Info Log's info.log in the pack folder.
+        // logfile.log, and the Info Log's info.log in the pack's logs folder.
         log: (text) => {
             logfile.log(text);
             queueInfoLine(host, text);

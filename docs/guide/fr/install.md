@@ -49,7 +49,7 @@ Avec PINemHi 3.6.8, les meilleurs scores sont lus sur les tableaux d'environ 300
 
 Après le redémarrage de PinballY, consultez `PinballY.log` : il liste vos réglages, une ligne « initialized » par add-on, et des lignes `ERROR` qui désignent l'add-on en cause.
 
-PinballY recrée `PinballY.log` à chaque lancement : le pack garde donc aussi chaque erreur dans `Scripts\ExpansionPack\errors.log`, d'un lancement à l'autre (voir [Dépannage](troubleshooting.md)).
+PinballY recrée `PinballY.log` à chaque lancement : le pack garde donc aussi chaque erreur dans `Scripts\ExpansionPack\logs\errors.log`, d'un lancement à l'autre (voir [Dépannage](troubleshooting.md)).
 
 Dès que la borne compte au moins deux Profils sans compter Invité, PinballY démarre sur « Changer de joueur » ; voir [Profils](profiles.md) et le réglage `STARTUP_SCREEN` dans [Réglages](settings.md).
 

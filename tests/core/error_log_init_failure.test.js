@@ -13,7 +13,7 @@ import { errorLines } from "../support/error_log.js";
 import { PACK_VERSION } from "../../common/core/pack_version.js";
 
 const NOW = new Date(2026, 9, 27, 8, 30, 0);
-const ERROR_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\errors.log";
+const ERROR_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\logs\\errors.log";
 const fake = createFakePinballYHost({ now: NOW });
 
 test("a script whose init throws lands in errors.log", async () => {

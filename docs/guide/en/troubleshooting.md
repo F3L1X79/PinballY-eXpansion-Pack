@@ -43,7 +43,7 @@ The pack reacts only to what is installed: it never checks what PinballY has pub
 
 PinballY starts a new `PinballY.log` at each launch, so the pack also writes every error it meets to its own Error Log, which survives restarts:
 
-- **Where**: `PinballY\Scripts\ExpansionPack\errors.log`.
+- **Where**: `PinballY\Scripts\ExpansionPack\logs\errors.log`.
 - **What**: one line per error, with its date, time, Pack Version and the Add-on at fault, and the call stack indented below. It also says why a file of the `profiles` folder could not be read, under which name it was kept, and whether its data came back from its backup or started from zero. Warnings and information go to `PinballY.log` and the Info Log only.
 - **Size**: once over 1 MB, it becomes `errors.old.log` at the next start, and a new `errors.log` begins.
 - It is kept through every Pack Update, and can never be turned off.
@@ -54,7 +54,7 @@ The toasts never send the player to it: it is for the cabinet owner. **Attach `e
 
 Every line the pack writes to `PinballY.log`, errors included, also goes to its Info Log, with a few extra lines meant to check how the pack behaves on your cabinet. It needs no PinballY log setting turned on, and it survives restarts:
 
-- **Where**: `PinballY\Scripts\ExpansionPack\info.log`.
+- **Where**: `PinballY\Scripts\ExpansionPack\logs\info.log`.
 - **What**: one line per pack message, with its date, time and Pack Version. PinballY's own lines (tables, media, its own errors) stay in `PinballY.log` only.
 - **Size**: once over 1 MB, it becomes `info.old.log` at the next start, and a new `info.log` begins.
 - It is kept through every Pack Update.

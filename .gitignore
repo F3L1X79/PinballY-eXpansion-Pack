@@ -39,13 +39,13 @@ pack_update.json
 # The Script Reader's state: the installed vpxtool's version, read at an earlier start
 script_reader.json
 
-# The Error Log: every error the pack logged, kept across launches
-errors.log
-errors.old.log
-
-# The Info Log: every line the pack logged, and the cabinet checks
-info.log
-info.old.log
+# The pack's logs, kept across launches: the Error Log, the Info Log, the Play Score anomaly log
+logs/
+# The same logs as an older version left them in the pack folder, moved into logs/ at the next start
+/errors.log
+/errors.old.log
+/play_scores_anomalies.log
+/play_scores_anomalies.old.log
 
 # vpxtool, installed on each cabinet (see docs/adr/0021); the pack's own restart, Pack Update and Script Reader install helpers are shipped
 tools/*
@@ -55,10 +55,6 @@ tools/*
 
 # The ROM .nv copied at each launch, for its Play Score
 play_scores/
-
-# The Play Score anomaly log: the Play Score rules' oddities, kept across launches
-play_scores_anomalies.log
-play_scores_anomalies.old.log
 
 # Personal sounds, not published (see .env.example)
 assets/sounds/local/

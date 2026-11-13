@@ -12,8 +12,8 @@ import { PACK_VERSION } from "../../common/core/pack_version.js";
 
 const NOW = new Date(2026, 10, 13, 21, 0, 0);
 const PACK = "C:\\PinballY\\Scripts\\ExpansionPack";
-const INFO_LOG = `${PACK}\\info.log`;
-const ERROR_LOG = `${PACK}\\errors.log`;
+const INFO_LOG = `${PACK}\\logs\\info.log`;
+const ERROR_LOG = `${PACK}\\logs\\errors.log`;
 
 test("logInfo writes to info.log only", async () => {
     const fake = createFakePinballYHost({ now: NOW });

@@ -12,7 +12,7 @@ import config from "../../common/core/config.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 
 const NOW = new Date(2026, 10, 13, 21, 0, 0);
-const INFO_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\info.log";
+const INFO_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\logs\\info.log";
 
 test("a locked info.log gives one logfile.log line and PinballY goes on", async () => {
     const fake = createFakePinballYHost({ now: NOW });

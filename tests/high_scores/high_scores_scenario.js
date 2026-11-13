@@ -91,8 +91,8 @@ export function lastGame(scores, { playerCount = 1, gameOver = true, finalScores
     return JSON.stringify({ _fileformat: fileFormat, game_state: gameState }, null, 2);
 }
 // The Play Score anomaly log, and its rotated older file.
-export const ANOMALY_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\play_scores_anomalies.log";
-export const OLD_ANOMALY_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\play_scores_anomalies.old.log";
+export const ANOMALY_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\logs\\play_scores_anomalies.log";
+export const OLD_ANOMALY_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\logs\\play_scores_anomalies.old.log";
 
 // Longer than a toast's whole life (rise, hold, fade).
 const ONE_TOAST_MS = 6000;

@@ -13,8 +13,8 @@ import { PACK_VERSION } from "../../common/core/pack_version.js";
 
 const NOW = new Date(2026, 9, 27, 8, 30, 0);
 const PACK = "C:\\PinballY\\Scripts\\ExpansionPack";
-const ERROR_LOG = `${PACK}\\errors.log`;
-const OLD_ERROR_LOG = `${PACK}\\errors.old.log`;
+const ERROR_LOG = `${PACK}\\logs\\errors.log`;
+const OLD_ERROR_LOG = `${PACK}\\logs\\errors.old.log`;
 const FULL_LOG = "2026-10-01 20:00:00 v0.1.0 [Clock] ERROR an old one\r\n".repeat(20000);
 
 test("an errors.log over 1 MB becomes errors.old.log, the older one replaced", async () => {

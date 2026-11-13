@@ -12,7 +12,7 @@ import { readDrawnMenu, drawnMenuLines, chooseEntry, squeezed, OPEN_OVER_MS } fr
 import { readLoader } from "../support/loader_reader.js";
 import { startOnSettings, openSettings, openDialog, romnameRuns, errorsAfterStart, VPXTOOL } from "./install_vpxtool_scenario.js";
 
-const ERROR_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\errors.log";
+const ERROR_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\logs\\errors.log";
 const FAILED = "vpxtool could not be installed; nothing has changed. You can try again from the eXpansion Pack Settings.";
 
 let fake;

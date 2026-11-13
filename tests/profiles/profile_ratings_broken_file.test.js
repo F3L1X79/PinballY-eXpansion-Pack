@@ -12,7 +12,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 
 const NOW = new Date(2026, 10, 7, 21, 0, 0);
 const PACK = "C:\\PinballY\\Scripts\\ExpansionPack";
-const ERROR_LOG = `${PACK}\\errors.log`;
+const ERROR_LOG = `${PACK}\\logs\\errors.log`;
 const PROFILES = `${PACK}\\profiles`;
 const ALICE = `${PROFILES}\\Alice`;
 const MEDIEVAL = "Medieval Madness (Williams 1997)";

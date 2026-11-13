@@ -1,6 +1,6 @@
 // ============================================================
 // Error Log: every error the pack logs goes to logfile.log (and so the Info
-// Log), its line unchanged, and to errors.log in the pack folder, which
+// Log), its line unchanged, and to errors.log in the logs folder, which
 // PinballY does not recreate at each launch. Dating and rotation: see
 // dated_log_file.js. Warnings and information never come here.
 // - Never throws for errors.log: a failure is one logfile.log line per session.

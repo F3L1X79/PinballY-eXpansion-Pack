@@ -1,19 +1,21 @@
 // ============================================================
-// The pack's dated log files in the pack folder (the Error Log's errors.log,
-// the Info Log's info.log): each entry dated with the Pack Version. Once per
-// start, a file over 1 MB becomes its ".old.log" before the start's first entry.
+// The pack's log files, in its logs folder: the Error Log's errors.log and
+// the Info Log's info.log, each entry dated with the Pack Version, and the
+// Play Score anomaly log. Once per session and file: the logs folder is made,
+// a file an older version left in the pack folder moves in, and a full file
+// becomes its ".old.log" before the session's first entry.
 // - Never throws: a failure is one line per file and session, through the caller's report.
 // ============================================================
 
 import { PACK_VERSION } from "./pack_version.js";
 
-export const ERROR_LOG_FILE = { name: "errors.log", oldName: "errors.old.log", scriptName: "ErrorLog" };
-export const INFO_LOG_FILE = { name: "info.log", oldName: "info.old.log", scriptName: "InfoLog" };
+export const LOGS_FOLDER_NAME = "logs";
+export const ERROR_LOG_FILE = { name: "errors.log", oldName: "errors.old.log", scriptName: "ErrorLog", rotationBytes: 1024 * 1024 };
+export const INFO_LOG_FILE = { name: "info.log", oldName: "info.old.log", scriptName: "InfoLog", rotationBytes: 1024 * 1024 };
 
-const ROTATION_SIZE_BYTES = 1024 * 1024;
 const CONTINUATION_INDENT = "    ";
 
-// By file path: whichever host instance writes first rotates the file and
+// By file path: whichever host instance writes first prepares the file and
 // reports a failure, once for the whole session.
 const sessionStates = new Map();
 
@@ -30,10 +32,26 @@ export function datedEntryOf(text, now, extraLines = "") {
     return [`${timestampOf(now)} v${PACK_VERSION} ${first}`, ...continuation].map(entryLine => `${entryLine}\r\n`).join("");
 }
 
-function rotateWhenFull(files, folder, path, logFile) {
+export const logPathOf = (packFolder, fileName) => `${packFolder}\\${LOGS_FOLDER_NAME}\\${fileName}`;
+
+// The logs folder made again at each write: the owner may delete it during a session.
+export function appendToLog(files, packFolder, fileName, text) {
+    files.createFolder(`${packFolder}\\${LOGS_FOLDER_NAME}`);
+    files.appendText(logPathOf(packFolder, fileName), text);
+}
+
+// Before the session's first entry. logFile: { name, oldName, rotationBytes }.
+// A file in the logs folder already wins over one left in the pack folder.
+export function prepareLogFile(files, packFolder, logFile) {
+    files.createFolder(`${packFolder}\\${LOGS_FOLDER_NAME}`);
+    for (const name of [logFile.name, logFile.oldName]) {
+        const leftover = `${packFolder}\\${name}`;
+        if (files.fileExists(leftover) && !files.fileExists(logPathOf(packFolder, name))) files.renameFile(leftover, logPathOf(packFolder, name));
+    }
+    const path = logPathOf(packFolder, logFile.name);
     const info = files.getFileInfo(path);
-    if (!info || info.size <= ROTATION_SIZE_BYTES) return;
-    const oldPath = `${folder}\\${logFile.oldName}`;
+    if (!info || info.size <= logFile.rotationBytes) return;
+    const oldPath = logPathOf(packFolder, logFile.oldName);
     if (files.fileExists(oldPath)) files.deleteFile(oldPath);
     files.renameFile(path, oldPath);
 }
@@ -48,20 +66,20 @@ export function appendDatedEntries(logFile, host, entries, report) {
         report(`[${logFile.scriptName}] ${logFile.name} could not be written: ${writeError.message}`);
     };
     try {
-        const folder = host.getProjectFolder();
-        const path = `${folder}\\${logFile.name}`;
-        if (!sessionStates.has(path)) sessionStates.set(path, { rotationChecked: false, failureLogged: false });
+        const packFolder = host.getProjectFolder();
+        const path = logPathOf(packFolder, logFile.name);
+        if (!sessionStates.has(path)) sessionStates.set(path, { prepared: false, failureLogged: false });
         state = sessionStates.get(path);
-        if (!state.rotationChecked) {
-            state.rotationChecked = true;
-            // A failed rotation still lets these entries in, the file staying over 1 MB.
+        if (!state.prepared) {
+            state.prepared = true;
+            // A failed preparation still lets these entries try, the file maybe staying full.
             try {
-                rotateWhenFull(host.files, folder, path, logFile);
-            } catch (rotationError) {
-                reportFailure(rotationError);
+                prepareLogFile(host.files, packFolder, logFile);
+            } catch (preparationError) {
+                reportFailure(preparationError);
             }
         }
-        host.files.appendText(path, entries);
+        appendToLog(host.files, packFolder, logFile.name, entries);
     } catch (writeError) {
         reportFailure(writeError);
     }

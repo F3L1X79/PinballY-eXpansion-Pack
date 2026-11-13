@@ -13,7 +13,7 @@ import { errorLines } from "../support/error_log.js";
 
 const NOW = new Date(2026, 9, 27, 20, 0, 0);
 const PACK = "C:\\PinballY\\Scripts\\ExpansionPack";
-const ERROR_LOG = `${PACK}\\errors.log`;
+const ERROR_LOG = `${PACK}\\logs\\errors.log`;
 const ALICE_FILE = `${PACK}\\profiles\\Alice\\profile.json`;
 const MARS = {
     id: 1, configId: "Attack from Mars (Bally 1995)", title: "Attack from Mars", manufacturer: "Bally", year: 1995,

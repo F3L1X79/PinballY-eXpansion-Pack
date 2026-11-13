@@ -25,6 +25,9 @@ const NOT_KEPT = {
     "assets\\images\\default_scores\\worskpace": "maintainer's source sheets",
     // Written by the pack, but remade when needed.
     "play_scores": "the .nv copies, remade at each launch",
+    // Left by a version before the logs folder; the older version's own helper keeps them.
+    "errors.log": "moved into logs at the next start", "errors.old.log": "moved into logs at the next start",
+    "play_scores_anomalies.log": "moved into logs at the next start", "play_scores_anomalies.old.log": "moved into logs at the next start",
 };
 
 // .gitignore's ignoring lines as Windows paths of the pack folder: no

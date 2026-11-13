@@ -1,5 +1,5 @@
 // ============================================================
-// Play Score anomaly log: play_scores_anomalies.log in the pack folder, one
+// Play Score anomaly log: play_scores_anomalies.log in the logs folder, one
 // line per oddity of the Play Score rules (the checks of ANOMALY), with the
 // game state read before and after the game, for the owner to send with a
 // report. Once per start, a file over 100 KB becomes the .old.log first.
@@ -7,12 +7,10 @@
 // - The checks of ONCE_PER_SESSION are written once per ROM and check per session.
 // ============================================================
 
-import { timestampOf } from "../core/dated_log_file.js";
+import { appendToLog, prepareLogFile, timestampOf } from "../core/dated_log_file.js";
 import { valueOf } from "./last_game_reader.js";
 
-const LOG_NAME = "play_scores_anomalies.log";
-const OLD_LOG_NAME = "play_scores_anomalies.old.log";
-const ROTATION_SIZE_BYTES = 100 * 1024;
+const LOG_FILE = { name: "play_scores_anomalies.log", oldName: "play_scores_anomalies.old.log", rotationBytes: 100 * 1024 };
 // The _fileformat values seen on the cabinet.
 const KNOWN_FILE_FORMATS = [0.7, 0.8];
 
@@ -85,22 +83,14 @@ export function valueAnomaliesOf(before, after) {
 
 // host: the PinballY host; scriptName: the writer's name in logfile.log.
 export function createPlayScoreAnomalyLog(host, scriptName) {
-    let rotationChecked = false;
+    let prepared = false;
     let failureLogged = false;
     const written = new Set();
-
-    function rotateWhenFull(folder, path) {
-        const info = host.files.getFileInfo(path);
-        if (!info || info.size <= ROTATION_SIZE_BYTES) return;
-        const oldPath = `${folder}\\${OLD_LOG_NAME}`;
-        if (host.files.fileExists(oldPath)) host.files.deleteFile(oldPath);
-        host.files.renameFile(path, oldPath);
-    }
 
     const reportFailure = (error) => {
         if (failureLogged) return;
         failureLogged = true;
-        host.log(`[${scriptName}] ${LOG_NAME} could not be written: ${error instanceof Error ? error.message : String(error)}`);
+        host.log(`[${scriptName}] ${LOG_FILE.name} could not be written: ${error instanceof Error ? error.message : String(error)}`);
     };
 
     return {
@@ -116,18 +106,17 @@ export function createPlayScoreAnomalyLog(host, scriptName) {
             const stateOf = answer => (answer === null ? "-" : compactGameState(answer.gameState));
             const line = `${timestampOf(host.now())} "${configId}" ${rom} ${check}${detail ? ` (${detail})` : ""}: ${stateOf(before)} -> ${stateOf(after)}\r\n`;
             try {
-                const folder = host.getProjectFolder();
-                const path = `${folder}\\${LOG_NAME}`;
-                if (!rotationChecked) {
-                    rotationChecked = true;
-                    // A failed rotation still lets this line in, the file staying over 100 KB.
+                const packFolder = host.getProjectFolder();
+                if (!prepared) {
+                    prepared = true;
+                    // A failed preparation still lets this line try, the file maybe staying over 100 KB.
                     try {
-                        rotateWhenFull(folder, path);
+                        prepareLogFile(host.files, packFolder, LOG_FILE);
                     } catch (error) {
                         reportFailure(error);
                     }
                 }
-                host.files.appendText(path, line);
+                appendToLog(host.files, packFolder, LOG_FILE.name, line);
             } catch (error) {
                 reportFailure(error);
             }

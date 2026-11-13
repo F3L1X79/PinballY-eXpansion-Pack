@@ -49,7 +49,7 @@ With PINemHi 3.6.8, the High Scores read the boards of about 300 more ROMs.
 
 After restarting PinballY, check `PinballY.log`: it lists your overrides, one "initialized" line per Add-on, and `ERROR` lines naming the Add-on at fault.
 
-PinballY starts a new `PinballY.log` at each launch, so the pack also keeps every error in `Scripts\ExpansionPack\errors.log`, across launches: see [Troubleshooting](troubleshooting.md).
+PinballY starts a new `PinballY.log` at each launch, so the pack also keeps every error in `Scripts\ExpansionPack\logs\errors.log`, across launches: see [Troubleshooting](troubleshooting.md).
 
 Once the cabinet has two Profiles or more besides Guest, PinballY starts on Change Player; see [Profiles](profiles.md) and the `STARTUP_SCREEN` setting in [Settings](settings.md).
 

@@ -1,5 +1,5 @@
 // ============================================================
-// Info Log: info.log in the pack folder gets every line the pack writes to
+// Info Log: info.log in the logs folder gets every line the pack writes to
 // logfile.log (through the host's log), plus the checks to read after a
 // cabinet run, written here with logInfo and never to logfile.log.
 // Dating and rotation: see dated_log_file.js.

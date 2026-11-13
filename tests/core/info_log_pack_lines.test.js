@@ -12,7 +12,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { PACK_VERSION } from "../../common/core/pack_version.js";
 
 const NOW = new Date(2026, 10, 13, 21, 0, 0);
-const INFO_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\info.log";
+const INFO_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\logs\\info.log";
 
 test("every pack line of logfile.log is also in info.log, dated", async () => {
     const fake = createFakePinballYHost({ now: NOW });
