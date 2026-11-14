@@ -77,7 +77,7 @@ Pour lire les tableaux d'environ 300 ROM de plus, mettez PINemHi à jour (voir [
 - La roue range ses tables par ordre alphabétique par défaut. « Ordre : alphabétique », juste avant Retour derrière « Changer de filtre », la range par année : la table la plus ancienne d'abord, les tables d'une même année par ordre alphabétique, et les tables sans année à la fin, par ordre alphabétique. Choisir « Ordre : par année » rétablit l'ordre alphabétique.
 - Les menus se ferment, et la table sur laquelle vous étiez reste sélectionnée.
 - L'ordre est le même pour tous les Profils, et reste quand vous choisissez un autre filtre de PinballY : Toutes les tables, Tables favorites, une époque, un fabricant…
-- Les sélections de tables du pack le suivent aussi : « Tables à découvrir », « Tables les plus jouées », « Tables masquées », « Tables du défi » et « Tables Originales ». « Mes meilleurs scores » garde son propre classement, votre meilleure place d'abord, quel que soit l'ordre.
+- Les sélections de tables du pack le suivent aussi : « Tables à découvrir », « Tables masquées », « Tables du défi » et « Tables Originales ». « Tables les plus jouées » (la plus jouée d'abord) et « Mes meilleurs scores » (votre meilleure place d'abord) gardent leur propre classement, quel que soit l'ordre.
 - Désactivé dans les Réglages de l'eXpansion pack (**Ordre de la roue**, `ADD_ON_WHEEL_ORDER=false`), l'entrée disparaît et la roue reste alphabétique.
 
 ---

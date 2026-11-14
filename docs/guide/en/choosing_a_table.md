@@ -77,7 +77,7 @@ To read the boards of about 300 more ROMs, update PINemHi (see [Install](install
 - The wheel lists its tables alphabetically by default. "Order: alphabetical", just before Back behind "Change Filter", switches it to by year: the oldest table first, the tables of the same year alphabetically, and the tables without a year at the end, alphabetically. Choosing "Order: by year" brings the alphabetical order back.
 - The menus close, and the table you were on stays selected.
 - The order is the same for every Profile, and stays when you pick another of PinballY's filters: All Tables, Favorite Tables, an era, a manufacturer...
-- The pack's wheel selections follow it too: "Tables to Discover", "Most Played Tables", "Hidden Tables", "Challenge Tables" and "Original Tables". "My High Scores" keeps its own ranking, your best place first, whatever the order.
+- The pack's wheel selections follow it too: "Tables to Discover", "Hidden Tables", "Challenge Tables" and "Original Tables". "Most Played Tables" (the most played first) and "My High Scores" (your best place first) keep their own ranking, whatever the order.
 - Turned off in the eXpansion Pack Settings (**Wheel Order**, `ADD_ON_WHEEL_ORDER=false`), the entry is gone and the wheel stays alphabetical.
 
 ---
