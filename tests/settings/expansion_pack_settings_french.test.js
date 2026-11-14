@@ -40,7 +40,9 @@ test("the list speaks French", async () => {
     press(fake, "Exit");
     fake.advanceTime(OPEN_OVER_MS);
     chooseEntry(fake, "Langue : Español au redémarrage", "Next");
-    assert.equal(highlightedEntry(fake), "Mode hors ligne", "the language line comes before the Offline Mode group");
+    assert.equal(highlightedEntry(fake), "Mode attraction : Comme PinballY", "the Attract Order line comes after the language");
+    press(fake, "Next");
+    assert.equal(highlightedEntry(fake), "Mode hors ligne", "then the Offline Mode group");
     press(fake, "Select");
     fake.advanceTime(OPEN_OVER_MS);
     assert.deepEqual(drawnMenuLines(fake), [

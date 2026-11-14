@@ -1,9 +1,9 @@
 // ============================================================
 // eXpansion Pack Settings: their entry in the Operator Menu, in its own group after Batch Capture, for whoever
 // sees the setup entries, opens the list of Add-on categories (their Add-ons as saved in .env.local,
-// read again on each opening, one page per Add-on whose Save rewrites its one line), the Startup screen and
-// Language pages, the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
-// Listens to "menuopen", "command" and "commandbuttondown"; writes .env.local.
+// read again on each opening, one page per Add-on whose Save rewrites its one line), the Startup screen,
+// Language and Attract Order pages, the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
+// Listens to "menuopen", "command" and "commandbuttondown"; writes .env.local, and PinballY's attract switch time for the Attract Order.
 // - Started by main.js whatever config.addOns says, its "menuopen" listener before the Drawn Menus Add-on's.
 // - Always drawn (getPackMenus), even with the Drawn Menus Add-on off.
 // - Nothing applies before PinballY restarts but the Script Reader Prompt's No thanks: "on restart" marks a saved value that differs from the running one.
@@ -33,6 +33,7 @@ import { getScriptReaderInstaller, scriptReaderDialogText } from "../table_roms/
 import { getScriptReaderState } from "../table_roms/script_reader_state.js";
 import { ADD_ON_GROUPS } from "./add_on_catalogue.js";
 import { saveEnvSetting } from "./env_local_rewrite.js";
+import { saveAttractOrderSwitches } from "../tables/attract_order.js";
 
 const SCRIPT_NAME = "ExpansionPackSettings";
 const OPERATOR_MENU_ID = "operator";
@@ -41,6 +42,7 @@ const CATEGORY_MENU_ID = "expansionPackSettingsCategory";
 const PAGE_MENU_ID = "expansionPackSettingsPage";
 const LANGUAGE_MENU_ID = "expansionPackSettingsLanguage";
 const STARTUP_SCREEN_MENU_ID = "expansionPackSettingsStartupScreen";
+const ATTRACT_ORDER_MENU_ID = "expansionPackSettingsAttractOrder";
 const OFFLINE_MODE_MENU_ID = "expansionPackSettingsOfflineMode";
 const UPDATE_CHECK_MENU_ID = "expansionPackSettingsUpdateCheck";
 const OFFER_VPXTOOL_MENU_ID = "expansionPackSettingsOfferVpxtool";
@@ -76,7 +78,9 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     // asksConsent's On from off), in the list's order: each by its config key,
     // its choices' names in their order, and its value as compared (a language
     // whatever its case, as i18n.js reads it), offline when its line is in the
-    // Offline Mode group. One command for its line, one per choice. A switch's
+    // Offline Mode group. isShown(saved settings), when given, lists its line;
+    // afterSave(from, to) writes what else the choice needs once saved.
+    // One command for its line, one per choice. A switch's
     // choices are keyed "true" / "false": String turns the saved boolean into
     // one of them. Discord Rich Presence's key only names its commands, the
     // Add-on's own page having that name; keyPath and read are the Add-on's value.
@@ -84,6 +88,15 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     const choiceSettings = [
         { key: "startupScreen", menuId: STARTUP_SCREEN_MENU_ID, names: TEXT.startupScreenNames, line: TEXT.startupScreenLine, normalize: String },
         { key: "language", menuId: LANGUAGE_MENU_ID, names: TEXT.languageNames, line: TEXT.languageLine, normalize: value => String(value).toLowerCase() },
+        {
+            key: "attractOrder",
+            menuId: ATTRACT_ORDER_MENU_ID,
+            names: TEXT.attractOrderNames,
+            line: TEXT.attractOrderLine,
+            normalize: String,
+            isShown: saved => saved.addOns.wheelOrder,
+            afterSave: (from, to) => saveAttractOrderSwitches(host, profileStore, from, to),
+        },
         { key: "updateCheck", menuId: UPDATE_CHECK_MENU_ID, names: ON_OFF, line: TEXT.updateCheckLine, normalize: String, offline: true },
         { key: "offerVpxtool", menuId: OFFER_VPXTOOL_MENU_ID, names: ON_OFF, line: TEXT.offerVpxtoolLine, normalize: String, offline: true },
         {
@@ -169,7 +182,8 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         getMenus().show(LIST_MENU_ID, [
             ...ADD_ON_GROUPS.map(({ group }) => ({ title: TEXT.groups[group], cmd: groupCommands.get(group), hasSubmenu: true })),
             SEPARATOR,
-            ...choiceSettings.filter(setting => !setting.offline).map(setting => choiceLineOf(saved, setting)),
+            ...choiceSettings.filter(setting => !setting.offline && (!setting.isShown || setting.isShown(saved)))
+                .map(setting => choiceLineOf(saved, setting)),
             { title: TEXT.offlineMode, cmd: offlineModeCommand, hasSubmenu: true },
             SEPARATOR,
             ...(installs.length > 0 ? [...installs, SEPARATOR] : []),
@@ -325,9 +339,11 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
 
     // A failed read or write is caught here, not by safeHandler, for the
     // owner to see it; reopen then shows the page on the choice saved before.
-    function save(keyPath, value, { onSaved, reopen }) {
+    // alsoWrite: what else the choice writes once .env.local is saved.
+    function save(keyPath, value, { onSaved, reopen, alsoWrite = null }) {
         try {
             saveEnvSetting(host, keyPath, value, SCRIPT_NAME);
+            if (alsoWrite) alsoWrite();
         } catch (error) {
             logHandlerError(SCRIPT_NAME, error);
             getMenus().show(NOT_SAVED_MENU_ID, [
@@ -368,8 +384,10 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
 
     // Choosing On while saved on keeps it without asking again.
     function saveChoice({ setting, value }) {
-        const saveValue = () => save(setting.keyPath, value, { onSaved: () => backToLine(setting), reopen: () => openChoicePage(setting) });
-        const turnsOn = value === "true" && setting.normalize(setting.read(readSaved())) !== "true";
+        const from = setting.normalize(setting.read(readSaved()));
+        const alsoWrite = setting.afterSave ? () => setting.afterSave(from, value) : null;
+        const saveValue = () => save(setting.keyPath, value, { onSaved: () => backToLine(setting), reopen: () => openChoicePage(setting), alsoWrite });
+        const turnsOn = value === "true" && from !== "true";
         if (setting.asksConsent && turnsOn) openDiscordConsent(saveValue, () => openChoicePage(setting));
         else saveValue();
     }

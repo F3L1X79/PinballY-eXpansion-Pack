@@ -31,7 +31,7 @@ test("Offline Mode comes after the language line as a submenu, with no Update en
     chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 
-    assert.deepEqual(drawnMenuLines(fake).slice(5), ["---", "Startup screen: Profile picker", "Language: English", "Offline Mode", "---", "Back"]);
+    assert.deepEqual(drawnMenuLines(fake).slice(5), ["---", "Startup screen: Profile picker", "Language: English", "Attract Order: As PinballY", "Offline Mode", "---", "Back"]);
     assert.ok(markedEntries(fake, "submenu").includes("Offline Mode"));
 });
 

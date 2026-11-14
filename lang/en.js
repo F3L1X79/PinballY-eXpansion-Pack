@@ -758,6 +758,9 @@ export default {
         languageLine: (languageName) => `Language: ${languageName}`,
         startupScreenLine: (screenName) => `Startup screen: ${screenName}`,
         startupScreenNames: { welcome: "Welcome Screen", profilePicker: "Profile picker", wheel: "Wheel" },
+        // How attract mode moves through the tables, shown with the Wheel Order Add-on on.
+        attractOrderLine: (orderName) => `Attract Order: ${orderName}`,
+        attractOrderNames: { pinballY: "As PinballY", inOrder: "In Order" },
         // The Offline Mode group, heading its own page, and its switches.
         offlineMode: "Offline Mode",
         updateCheckLine: (state) => `Pack update check: ${state}`,

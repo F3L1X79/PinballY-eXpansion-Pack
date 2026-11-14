@@ -14,7 +14,7 @@ Tout tient dans un seul dossier, sans modifier PinballY.
 
 ## Réglages de l'eXpansion pack
 
-**Réglages de l'eXpansion pack**, dans le menu opérateur, règle les Add-ons, l'écran de démarrage, la langue et le mode hors ligne sans éditer aucun fichier, puis redémarre PinballY d'une pression. On y trouve aussi « Mettre à jour en vX.Y.Z » après avoir répondu « Plus tard » à l'invite de mise à jour (voir [Mises à jour](updates.md)), et, tant que l'Add-on « ROM des tables » est activé, une ligne vpxtool (voir [Installation](install.md#vpxtool) et [Mises à jour](updates.md#garder-vpxtool-à-jour)) :
+**Réglages de l'eXpansion pack**, dans le menu opérateur, règle les Add-ons, l'écran de démarrage, la langue, l'ordre du mode attract et le mode hors ligne sans éditer aucun fichier, puis redémarre PinballY d'une pression. On y trouve aussi « Mettre à jour en vX.Y.Z » après avoir répondu « Plus tard » à l'invite de mise à jour (voir [Mises à jour](updates.md)), et, tant que l'Add-on « ROM des tables » est activé, une ligne vpxtool (voir [Installation](install.md#vpxtool) et [Mises à jour](updates.md#garder-vpxtool-à-jour)) :
 
 - « Installer vpxtool v0.38.0 » tant que vpxtool manque ;
 - « Mettre à jour vpxtool (v0.37.1 → v0.38.0) » tant que le vôtre est plus ancien que la version que nomme le pack ;
@@ -22,7 +22,14 @@ Tout tient dans un seul dossier, sans modifier PinballY.
 
 Sous « Joueurs et progression », **Notes par Profil** donne à chaque Profil ses propres notes et ses tables favorites, gardées dans un fichier `ratings.json` de son dossier. La première fois, chaque Profil, Invité compris, reçoit les notes et les favoris déjà présents sur la borne. Désactivé, tout le monde partage de nouveau les notes et les favoris de PinballY, et les Succès de notes disparaissent (`ADD_ON_PROFILE_RATINGS=false`).
 
-Sous « Menus et filtres », **Jeux cachés** est activé par défaut : certaines surprises débloquent des entrées de menu, ne soyez donc pas surpris d'en voir apparaître une dans le menu principal d'un joueur. Désactivé, ces entrées n'apparaissent jamais (`ADD_ON_ROCKET_GAME=false`). **Ordre de la roue** est activé aussi, sa roue alphabétique jusqu'à ce qu'un joueur la passe par année ; désactivé, « Changer de filtre » perd son entrée d'ordre et la roue reste alphabétique (`ADD_ON_WHEEL_ORDER=false`, voir [Ordre de la roue](choosing_a_table.md#ordre-de-la-roue)).
+Sous « Menus et filtres », **Jeux cachés** est activé par défaut : certaines surprises débloquent des entrées de menu, ne soyez donc pas surpris d'en voir apparaître une dans le menu principal d'un joueur. Désactivé, ces entrées n'apparaissent jamais (`ADD_ON_ROCKET_GAME=false`). **Ordre de la roue** est activé aussi, sa roue alphabétique jusqu'à ce qu'un joueur la passe par année ; désactivé, « Changer de filtre » perd son entrée d'ordre et la roue reste alphabétique (`ADD_ON_WHEEL_ORDER=false`, voir [Ordre de la roue](choosing_a_table.md#ordre-de-la-roue)). La ligne « Mode attraction » ci-dessous en dépend : elle n'apparaît que si Ordre de la roue est activé, et, Ordre de la roue désactivé, le mode attract est celui de PinballY.
+
+La ligne **Mode attraction**, après la langue, choisit comment le mode attract passe d'une table à l'autre quand la borne reste inactive :
+
+- **Comme PinballY** (par défaut) : PinballY saute quelques tables au hasard à chaque changement, comme sans le pack.
+- **Dans l'ordre** : chaque changement passe à la table suivante de la roue, avec le tour d'un cran de PinballY, et reprend à la première après la dernière. Avec la roue par année, le mode attract devient une visite chronologique.
+
+Pour cela, le pack prend la main sur les changements de PinballY : enregistrer « Dans l'ordre » garde la valeur de l'option « Switch games every » de PinballY, met à sa place une valeur d'un jour pour que PinballY ne change plus de table, et change lui-même de table à l'intervalle que vous aviez réglé. Enregistrer « Comme PinballY » rend votre valeur. Comme les autres lignes, le choix s'applique au redémarrage de PinballY (`ATTRACT_ORDER`). **Avant de retirer le pack, remettez le mode attraction sur « Comme PinballY »** : sinon le mode attract de PinballY garde la valeur d'un jour et ne change plus jamais de table.
 
 Tant que le pack n'a pas lu une fois la version de votre vpxtool (une dizaine de secondes après le premier démarrage qui le trouve), ou si cette version est illisible, il n'y a pas de ligne vpxtool.
 
@@ -62,6 +69,7 @@ ADD_ON_CLOCK=false
 | `PROFILE_PICKER_SOUND_FILE` | vide | Son joué à chaque apparition du carrousel « Changer de joueur » : au démarrage (`STARTUP_SCREEN=profilePicker`) ou depuis un menu ; aucun n'est fourni avec le pack. |
 | `AVATAR_CHOICE_SOUND_FILE` | vide | Son joué une fois quand le Choix de l'Avatar apparaît, après la saisie du nom d'un nouveau Profil ; aucun n'est fourni avec le pack. |
 | `STARTUP_SCREEN` | `profilePicker` | Ce que PinballY montre en premier : `profilePicker` (le carrousel « Changer de joueur », puis l'écran d'accueil ; sauté tant que la borne compte moins de deux Profils en plus d'Invité), `welcome` (l'écran d'accueil) ou `wheel` (la roue seule, le dernier joueur salué). Un écran dont la fonctionnalité est désactivée cède la place au suivant, du carrousel à l'écran d'accueil puis à la roue. |
+| `ATTRACT_ORDER` | `pinballY` | Comment le mode attract passe d'une table à l'autre, seulement si Ordre de la roue est activé : `pinballY` (comme PinballY) ou `inOrder` (la table suivante de la roue). Réglez-le plutôt dans les Réglages de l'eXpansion pack : l'y enregistrer règle aussi l'option « Switch games every » de PinballY (voir [plus haut](#réglages-de-lexpansion-pack)). |
 | `ACHIEVEMENT_TOAST_SECONDS` | `4` | Secondes d'affichage d'une annonce de Succès (60 au plus). |
 | `ACHIEVEMENT_TOAST_SCALE` | `1.0` | Taille de l'annonce, de `0.5` à `3` : à augmenter sur un grand écran. |
 | `CONFETTI` | `true` | `false` coupe la pluie de confettis qui accompagne l'annonce d'un Défi réussi, d'un Succès Platine, du niveau 10 de maîtrise sur une table ou d'un nouveau palier de la collection, si votre PC peine. |

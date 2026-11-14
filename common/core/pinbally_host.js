@@ -591,9 +591,10 @@ export function createPinballYHost() {
         refreshFilter: () => { gameList.refreshFilter(); },
         // Always on top of the current filter, in effect at once; returns its id.
         createMetaFilter: (desc) => gameList.createMetaFilter(desc),
-        // Makes the table at this wheel offset the current one, instantly:
-        // no spin animation, no sound, no "gameselect".
-        setWheelGame: (offset) => { gameList.setWheelGame(offset, { animate: false }); },
+        // Makes the table at this wheel offset the current one; never fires
+        // "gameselect", no sound. Instantly unless animate (PinballY's spin,
+        // quicker with fast), GameList.html.
+        setWheelGame: (offset, { animate = false, fast = false } = {}) => { gameList.setWheelGame(offset, { animate, fast }); },
 
         // Only the mode name ("wheel", "menu", "popup", "running", "attract").
         getUIMode: () => mainWindow.getUIMode().mode,

@@ -1,7 +1,7 @@
 ﻿// ============================================================
 // Pinning test: plays a scripted session through main.js and locks every
 // persisted key and Achievement ID (profile.json, cabinet.json, Challenges,
-// Play Log, World Tour, Avatar Frame, Table ROMs, High Scores, Wheel Order, .env.local's OFFER_VPXTOOL).
+// Play Log, World Tour, Avatar Frame, Table ROMs, High Scores, Wheel Order, Attract Order, .env.local's OFFER_VPXTOOL).
 // - These strings are players' saved progress: this test must keep passing unchanged.
 // - The Surprises part's keys are in persisted_data_pinning_surprises.test.js.
 // ============================================================
@@ -15,6 +15,7 @@ import { createProfileStore } from "../../common/profiles/profile_store.js";
 import { createPeriodTable, formatDateKey, TABLE_OF_THE_DAY, TABLE_OF_THE_WEEK } from "../../common/tables/period_table.js";
 import { createRandomGame } from "../../common/tables/random_game.js";
 import { createWheelOrder } from "../../common/tables/wheel_order.js";
+import { saveAttractOrderSwitches } from "../../common/tables/attract_order.js";
 import { createChallenges, CHALLENGE_TEMPLATE_IDS } from "../../common/challenges/challenge.js";
 import { buildChallengeAchievements } from "../../achievements/challenges.js";
 import { buildWorldTourAchievements } from "../../achievements/world_tour.js";
@@ -464,6 +465,15 @@ test("the Wheel Order keeps its source's key in cabinet.json", () => {
     wheelOrder.toggle();
 
     assert.equal(JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\cabinet.json`)).wheelOrderSource, "Favorites");
+});
+
+test("the Attract Order keeps PinballY's switch time under its key in cabinet.json", () => {
+    const fake = createFakePinballYHost({ now: NOW, tables: TABLES });
+    fake.seedSettings({ "AttractMode.SwitchTime": 7 });
+
+    saveAttractOrderSwitches(fake, createProfileStore(fake), "pinballY", "inOrder");
+
+    assert.equal(JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\cabinet.json`)).attractOrderSwitchTime, 7);
 });
 
 test("the Challenge template ids stay byte-identical", () => {

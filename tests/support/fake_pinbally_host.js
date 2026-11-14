@@ -415,6 +415,8 @@ export function createFakePinballYHost({
     // "single" or "batch" while the running game is a media capture.
     let captureMode;
     const launchList = [];
+    // Every wheel move a script asked for, in order: { offset, animate, fast }.
+    const wheelMoveList = [];
     // True during the host's own playGame(), as the PinballY host flags the pack's launches.
     let isPackLaunching = false;
     // The launch under way: its game, and how far the launch thread got
@@ -1494,6 +1496,13 @@ export function createFakePinballYHost({
         wheelConfigIds = [...configIds.slice(start), ...configIds.slice(0, start)];
     }
 
+    // A script's gameList.setWheelGame(offset, { animate, fast }): the move
+    // and its options recorded; animate is false when left out.
+    function setWheelGameFromScript(offset, { animate = false, fast = false } = {}) {
+        wheelMoveList.push({ offset, animate, fast });
+        setWheelGame(offset);
+    }
+
     // Like Next Page / Previous Page on the wheel (FilterInfo.html, pageGroup):
     // the wheel steps until a table of another page group, the filter's
     // pageGroup or else the first letter of the title. Backwards, it goes
@@ -1614,7 +1623,7 @@ export function createFakePinballYHost({
         getFilterCompare: (filterId) => (filters.has(filterId) ? filters.get(filterId).compareForSort ?? null : null),
         refreshFilter,
         createMetaFilter,
-        setWheelGame,
+        setWheelGame: setWheelGameFromScript,
         getUIMode: () => uiMode,
         getFullUIMode,
         showMenu,
@@ -2052,6 +2061,8 @@ export function createFakePinballYHost({
         },
 
         launches: () => [...launchList],
+        // The wheel moves scripts asked for: { offset, animate, fast }.
+        wheelMoves: () => wheelMoveList.map(move => ({ ...move })),
         // capture: "single" or "batch" for a media capture's game; "single"
         // by default for a game launched with command.CaptureGo.
         gameStarted(game, { capture } = {}) {
@@ -2154,7 +2165,7 @@ export function createFakePinballYHost({
                     getCurFilter: () => ({ id: currentFilterId, title: filterTitleOf(currentFilterId), groupCmd: groupCmdOf(currentFilterId) }),
                     getFilterInfo,
                     setCurFilter: setCurrentFilter,
-                    setWheelGame: (offset) => { setWheelGame(offset); },
+                    setWheelGame: (offset, options) => { setWheelGameFromScript(offset, options); },
                     refreshFilter,
                     createMetaFilter,
                     getGameInfo,

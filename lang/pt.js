@@ -839,6 +839,9 @@ export default {
         languageLine: (languageName) => `Idioma: ${languageName}`,
         startupScreenLine: (screenName) => `Tela inicial: ${screenName}`,
         startupScreenNames: { welcome: "Boas-vindas", profilePicker: "Escolha do perfil", wheel: "Roleta" },
+        // How attract mode moves through the tables, shown with the Wheel Order Add-on on.
+        attractOrderLine: (orderName) => `Modo de atração: ${orderName}`,
+        attractOrderNames: { pinballY: "Como PinballY", inOrder: "Em ordem" },
         offlineMode: "Modo offline",
         updateCheckLine: (state) => `Procurar atualizações do pack: ${state}`,
         offerVpxtoolLine: (state) => `Oferecer vpxtool: ${state}`,

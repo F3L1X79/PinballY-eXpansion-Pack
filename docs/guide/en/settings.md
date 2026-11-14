@@ -14,7 +14,7 @@ Everything stays in one folder, with no change to PinballY itself.
 
 ## eXpansion Pack Settings
 
-**eXpansion Pack Settings**, in the Operator Menu, sets the Add-ons, the startup screen, the language and the Offline Mode without editing any file, then restarts PinballY in one press. It also offers "Update to vX.Y.Z" once you answered "Later" to the Update Prompt (see [Updates](updates.md)), and, while the Table ROMs Add-on is on, a vpxtool line (see [Install](install.md#vpxtool) and [Updates](updates.md#keeping-vpxtool-up-to-date)):
+**eXpansion Pack Settings**, in the Operator Menu, sets the Add-ons, the startup screen, the language, the Attract Order and the Offline Mode without editing any file, then restarts PinballY in one press. It also offers "Update to vX.Y.Z" once you answered "Later" to the Update Prompt (see [Updates](updates.md)), and, while the Table ROMs Add-on is on, a vpxtool line (see [Install](install.md#vpxtool) and [Updates](updates.md#keeping-vpxtool-up-to-date)):
 
 - "Install vpxtool v0.38.0" while vpxtool is missing;
 - "Update vpxtool (v0.37.1 → v0.38.0)" while yours is older than the version the pack names;
@@ -22,7 +22,14 @@ Everything stays in one folder, with no change to PinballY itself.
 
 Under "Players and progress", **Ratings per Profile** gives each Profile its own star Ratings and Favorite Tables, kept in a `ratings.json` file of its folder. The first time it runs, every Profile, Guest included, is given the Ratings and Favorite Tables already on the cabinet. Turned off, everyone shares PinballY's Ratings and Favorite Tables again, and the Ratings Achievements are gone (`ADD_ON_PROFILE_RATINGS=false`).
 
-Under "Menus and filters", **Hidden Games** is on by default: some surprises unlock menu entries, so do not be puzzled when one appears in a player's main menu. Turned off, those entries never show (`ADD_ON_ROCKET_GAME=false`). **Wheel Order** is on too, its wheel alphabetical until a player switches it to by year; turned off, "Change Filter" loses its order entry and the wheel stays alphabetical (`ADD_ON_WHEEL_ORDER=false`, see [Wheel Order](choosing_a_table.md#wheel-order)).
+Under "Menus and filters", **Hidden Games** is on by default: some surprises unlock menu entries, so do not be puzzled when one appears in a player's main menu. Turned off, those entries never show (`ADD_ON_ROCKET_GAME=false`). **Wheel Order** is on too, its wheel alphabetical until a player switches it to by year; turned off, "Change Filter" loses its order entry and the wheel stays alphabetical (`ADD_ON_WHEEL_ORDER=false`, see [Wheel Order](choosing_a_table.md#wheel-order)). The Attract Order line below belongs to it: it shows only while Wheel Order is on, and with Wheel Order off, attract mode is PinballY's own.
+
+The **Attract Order** line, after the language, chooses how attract mode moves through the tables once the cabinet sits idle:
+
+- **As PinballY** (the default): PinballY jumps a few tables at random at each switch, as without the pack.
+- **In Order**: each switch moves to the next table of the wheel, with PinballY's own one-step spin, and starts over at the first after the last. With the wheel by year, attract mode is a chronological tour.
+
+To do this, the pack takes PinballY's switches over: saving In Order keeps the value of PinballY's "Switch games every" option, puts a one-day value in its place so PinballY no longer switches, and switches itself at the interval you had set. Saving As PinballY gives your value back. Like the other lines, the choice applies when PinballY restarts (`ATTRACT_ORDER`). **Before removing the pack, set the Attract Order back to As PinballY**: otherwise PinballY's attract mode keeps the one-day value and never switches tables.
 
 Until the pack has read your vpxtool's version once (about ten seconds into the first start that finds it), or while that version cannot be read, there is no vpxtool line.
 
@@ -62,6 +69,7 @@ ADD_ON_CLOCK=false
 | `PROFILE_PICKER_SOUND_FILE` | empty | Sound played each time the Profile picker carousel appears: at startup (`STARTUP_SCREEN=profilePicker`) or from "Change Player"; none ships with the pack. |
 | `AVATAR_CHOICE_SOUND_FILE` | empty | Sound played once when Avatar Choice shows, after a new Profile's name is entered; none ships with the pack. |
 | `STARTUP_SCREEN` | `profilePicker` | What PinballY shows first: `profilePicker` (the "Change Player" carousel, then the Welcome Screen; skipped while the cabinet has fewer than two Profiles besides Guest), `welcome` (the Welcome Screen) or `wheel` (the bare wheel, the last player greeted). A screen whose feature is turned off gives way to the next one, from the carousel to the Welcome Screen to the wheel. |
+| `ATTRACT_ORDER` | `pinballY` | How attract mode moves through the tables, only while Wheel Order is on: `pinballY` (as PinballY does) or `inOrder` (the next table of the wheel). Set it in the eXpansion Pack Settings rather than here: saving it there also sets PinballY's "Switch games every" (see [above](#expansion-pack-settings)). |
 | `ACHIEVEMENT_TOAST_SECONDS` | `4` | Seconds an Achievement toast stays on screen (up to 60). |
 | `ACHIEVEMENT_TOAST_SCALE` | `1.0` | Size of the toast, from `0.5` to `3`. Raise it on a large screen. |
 | `CONFETTI` | `true` | `false` turns off the Confetti Shower that falls with the toast of a completed Challenge, a Platinum Achievement, Mastery Level 10 on a table or a new Collection Tier, if your PC struggles with it. |

@@ -18,7 +18,7 @@ const fake = createFakePinballYHost({ now: new Date(2026, 9, 22, 20, 0, 0) });
 
 const CATEGORIES = ["Players and progress", "Wheel screen", "Menus and filters", "Launching and playing a table", "Debugging"];
 
-const listLines = (language = "English") => [...CATEGORIES, "---", "Startup screen: Profile picker", `Language: ${language}`, "Offline Mode", "---", "Back"];
+const listLines = (language = "English") => [...CATEGORIES, "---", "Startup screen: Profile picker", `Language: ${language}`, "Attract Order: As PinballY", "Offline Mode", "---", "Back"];
 
 // Every Add-on but Drawn Menus runs off here: a saved On shows "on restart".
 const ON = "On (on restart)";
