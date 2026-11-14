@@ -1,26 +1,28 @@
 // ============================================================
 // Wheel Order module: the order the wheel lists the Active Filter's tables
-// in, alphabetical or by year, saved in cabinet.json. Gives the compare and
-// page groups the pack's filters sort and page with, and the chosen filter.
-// start() creates the sorted copy, listens to "filterselect" and logs the
-// cabinet checks (alphabetical order, each Next / Previous Page reached).
+// in, alphabetical or by year, and the sorted copy's source, both saved in
+// cabinet.json. Gives the compare and page groups the pack's filters sort
+// and page with, and the chosen filter. start() creates the sorted copy, puts
+// the saved order on the filter PinballY restored, and logs the cabinet checks.
 // - By year, a PinballY or other script's filter choice is cancelled and its sorted copy shown instead.
 // - The pack's own filters are never copied: switching the order runs the active one again.
 // - With the Wheel Order Add-on off, the order is always alphabetical.
-// - An unknown value in cabinet.json is logged and read as alphabetical.
+// - An unknown order, or an unreadable or gone source, is logged as an error: alphabetical, or All, instead.
 // ============================================================
 
 import config from "../core/config.js";
 import { ALL_TABLES_FILTER, createPinballYHost } from "../core/pinbally_host.js";
 import { safeHandler } from "../core/safe_handler.js";
 import { logInfo } from "../core/info_log.js";
+import { logError } from "../core/error_log.js";
 import { getProfileStore } from "../profiles/profile_store.js";
 
 const SCRIPT_NAME = "WheelOrder";
 
 export const WHEEL_ORDERS = Object.freeze({ ALPHABETICAL: "alphabetical", BY_YEAR: "byYear" });
-// The cabinet.json key; pinned in tests/project/persisted_data_pinning.test.js.
+// The cabinet.json keys; pinned in tests/project/persisted_data_pinning.test.js.
 const CABINET_KEY = "wheelOrder";
+const SOURCE_CABINET_KEY = "wheelOrderSource";
 // The sorted copy standing in for the Active Filter while by year.
 const COPY_ID = "project.WheelOrder";
 const COPY_FULL_ID = `User.${COPY_ID}`;
@@ -79,18 +81,44 @@ const PAGE_COMMANDS = Object.freeze({ NextPage: "Next Page", PrevPage: "Previous
 
 // isEnabled: whether the Wheel Order Add-on is on.
 export function createWheelOrder(host, profileStore, { isEnabled }) {
-    function readSaved() {
+    function readSavedOrder() {
         const saved = profileStore.getCabinetData()[CABINET_KEY];
         if (saved === undefined) return WHEEL_ORDERS.ALPHABETICAL;
         if (Object.values(WHEEL_ORDERS).includes(saved)) return saved;
-        host.log(`[${SCRIPT_NAME}] Unknown Wheel Order ${JSON.stringify(saved)} in cabinet.json; alphabetical instead.`);
+        logError(SCRIPT_NAME, `ERROR unknown Wheel Order ${JSON.stringify(saved)} in cabinet.json; alphabetical instead.`, host);
         return WHEEL_ORDERS.ALPHABETICAL;
     }
 
-    let order = readSaved();
+    // Why the copy cannot take this saved source, null when it can: not a
+    // filter it copies, or one PinballY no longer knows, which may give
+    // nothing back or throw (the help says neither).
+    function sourceProblemOf(saved) {
+        if (typeof saved !== "string") return "unreadable";
+        if (!isCopied(saved)) return "not a copied filter";
+        try {
+            const info = host.getFilterInfo(saved);
+            return info && typeof info.testGame === "function" ? null : "unknown to PinballY";
+        } catch (error) {
+            return `unknown to PinballY (${error.message})`;
+        }
+    }
+
+    // The copy's source the last session saved, All Tables when there is
+    // none; one it cannot take is logged and All Tables taken instead.
+    function readSavedSource() {
+        const saved = profileStore.getCabinetData()[SOURCE_CABINET_KEY];
+        if (saved === undefined) return ALL_TABLES_FILTER;
+        const problem = sourceProblemOf(saved);
+        if (problem === null) return saved;
+        logError(SCRIPT_NAME, `ERROR Wheel Order source ${JSON.stringify(saved)} in cabinet.json ${problem}; All instead.`, host);
+        return ALL_TABLES_FILTER;
+    }
+
+    let order = readSavedOrder();
     // Set by start(): the sorted copy is created and its listeners installed.
     let isStarted = false;
-    // The filter the sorted copy selects the tables of, while by year.
+    // The filter the sorted copy selects the tables of, while by year; saved
+    // in cabinet.json each time it changes.
     let sourceId = ALL_TABLES_FILTER;
     // The cabinet checks, each logged once a session.
     let hasCheckedHiddenTables = false;
@@ -157,8 +185,12 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
     }
 
     // The copy of this filter becomes the Active Filter, the same table
-    // selected when the copy has it (setCurrentFilter keeps it).
+    // selected when the copy has it (setCurrentFilter keeps it); a new
+    // source is saved in cabinet.json for the next start.
     function showCopyOf(filterId) {
+        if (profileStore.getCabinetData()[SOURCE_CABINET_KEY] !== filterId) {
+            profileStore.updateCabinetData(cabinet => { cabinet[SOURCE_CABINET_KEY] = filterId; });
+        }
         sourceId = filterId;
         if (host.getCurrentFilterId() === COPY_FULL_ID) refreshKeepingTable();
         else host.setCurrentFilter(COPY_FULL_ID);
@@ -245,8 +277,29 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
         host.onGameListEvent("filterselect", safeHandler(SCRIPT_NAME, ev => {
             if (cancelledFilterId !== null && ev.id === cancelledFilterId) reportLaterListener(true);
         }));
-        applyToActiveFilter();
+        applyAtStartup();
         checkAlphabeticalOrder();
+    }
+
+    // Puts the saved Wheel Order on the filter PinballY restored: the copy
+    // takes its saved source again, any other filter is treated as a choice.
+    function applyAtStartup() {
+        const restoredId = host.getCurrentFilterId();
+        // Cabinet check: whether PinballY restores a script filter (the copy) or falls back to All.
+        logInfo(SCRIPT_NAME, `filter restored at startup: ${restoredId}, Wheel Order ${get()}.`, host);
+        if (restoredId === COPY_FULL_ID) {
+            const savedSource = readSavedSource();
+            if (isByYear()) showCopyOf(savedSource);
+            else host.setCurrentFilter(savedSource);
+        } else if (isByYear() && isSelfSorting(restoredId)) {
+            // On the next tick, once every Add-on has created its filter:
+            // PinballY may have listed this one before the pack sorted it.
+            host.setTimeout(safeHandler(SCRIPT_NAME, () => {
+                if (host.getCurrentFilterId() === restoredId) refreshKeepingTable();
+            }), 0);
+        } else {
+            applyToActiveFilter();
+        }
     }
 
     const isCopyActive = () => isStarted && host.getCurrentFilterId() === COPY_FULL_ID;

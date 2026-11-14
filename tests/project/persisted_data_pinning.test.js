@@ -455,6 +455,17 @@ test("the Wheel Order keeps its key and values in cabinet.json", () => {
     assert.equal(saved(), "alphabetical");
 });
 
+test("the Wheel Order keeps its source's key in cabinet.json", () => {
+    const fake = createFakePinballYHost({ now: NOW, tables: TABLES });
+    fake.setWheelTables([], { filterId: "Favorites" });
+    const wheelOrder = createWheelOrder(fake, createProfileStore(fake), { isEnabled: true });
+    wheelOrder.start({ copyTitle: "By year" });
+
+    wheelOrder.toggle();
+
+    assert.equal(JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\cabinet.json`)).wheelOrderSource, "Favorites");
+});
+
 test("the Challenge template ids stay byte-identical", () => {
     for (const id of ["differentTables", "manufacturerTables", "decadeTables", "differentManufacturers", "differentDecades",
         "neverPlayedTables", "dustyTables", "tableOfTheDayDays", "tableOfTheWeekGames", "activeDays",
