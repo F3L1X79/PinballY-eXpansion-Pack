@@ -158,7 +158,7 @@ export function computeGeometry({ width, height }, model, wrappedHeightAt, { aro
     // message as below it, down to the separator's line in the middle of its box.
     const messageTopRef = model.title === null ? 0 : titleHeightRef + LOOK.message.gap + LOOK.rowHeights.separator / 2;
     const headerBlockRef = model.message === null ? 0 : messageTopRef + messageHeightRef + LOOK.message.gap + LOOK.rowHeights.separator;
-    const footerBlockRef = model.footer ? LOOK.rowHeights.separator + LOOK.footer.height : 0;
+    const footerBlockRef = model.footer ? LOOK.rowHeights.separator + model.footer.length * LOOK.footer.height : 0;
     const listBottomRef = model.footer ? LOOK.listTop : LOOK.listBottom;
     const fixedRef = 2 * DRAWN_MENU_FACE_INSET + LOOK.listTop + listBottomRef + headerBlockRef + footerBlockRef;
     const maxPanelRef = LOOK.maxHeightShare * LOOK.referenceHeight / zoom;
@@ -261,12 +261,18 @@ function drawSeparator(dc, x, y, width, height, k, alpha) {
     }
 }
 
-// The footer's label in its muted colour and the name in gold, on one
-// centred line: shrunk when estimated too wide, then the name cut with an
-// ellipsis (two colours on one line, which oneLine() cannot draw).
-function drawFooter(host, dc, { label, name }, { x, y, width, k }) {
+// The footer's lines under a separator, one footer row each.
+function drawFooter(host, dc, lines, { x, y, width, k }) {
     const separatorHeight = LOOK.rowHeights.separator * k;
     drawSeparator(dc, x, y, width, separatorHeight, k, 0xFF);
+    const height = LOOK.footer.height * k;
+    lines.forEach((footerLine, index) => drawFooterLine(host, dc, footerLine, { x, y: y + separatorHeight + index * height, width, k }));
+}
+
+// A footer line's label in its muted colour and the name in gold, on one
+// centred line: shrunk when estimated too wide, then the name cut with an
+// ellipsis (two colours on one line, which oneLine() cannot draw).
+function drawFooterLine(host, dc, { label, name }, { x, y, width, k }) {
     const labelPart = `${label} `;
     const fullSize = LOOK.footer.size * k;
     const estimated = estimatedWidthPx(labelPart + name, fullSize);
@@ -284,7 +290,7 @@ function drawFooter(host, dc, { label, name }, { x, y, width, k }) {
     styled.add(Object.assign({}, textStyle, { text: labelPart }));
     styled.add(Object.assign({}, textStyle, { color: LOOK.colors.gold, text: shownName }));
     const height = LOOK.footer.height * k;
-    styled.draw(dc, { x, y: y + separatorHeight + (height - lineHeight) / 2, width, height: lineHeight });
+    styled.draw(dc, { x, y: y + (height - lineHeight) / 2, width, height: lineHeight });
 }
 
 // A heading in capitals, on one line or wrapped whole in its row, which

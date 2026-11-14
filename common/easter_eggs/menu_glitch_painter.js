@@ -59,9 +59,12 @@ export function drawMenuCopy(host, dc, box, view, { textOf, colorOf }) {
         }
     });
     if (model.footer) {
-        const footerRow = { title: `${model.footer.label} ${model.footer.name}` };
-        line(textOf(footerRow, -1), listTop + geometry.areaHeight + LOOK.rowHeights.separator * k, LOOK.footer.height * k,
-            colorOf(footerRow, -1) || LOOK.colors.footerLabel, LOOK.footer.size * k);
+        const footerTop = listTop + geometry.areaHeight + LOOK.rowHeights.separator * k;
+        model.footer.forEach(({ label, name }, index) => {
+            const footerRow = { title: `${label} ${name}` };
+            line(textOf(footerRow, -1), footerTop + index * LOOK.footer.height * k, LOOK.footer.height * k,
+                colorOf(footerRow, -1) || LOOK.colors.footerLabel, LOOK.footer.size * k);
+        });
     }
     const rowHeight = geometry.rowHeights[model.selected];
     const size = selectionSize(geometry, rowHeight);

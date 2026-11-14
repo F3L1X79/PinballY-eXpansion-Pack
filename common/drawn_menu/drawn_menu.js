@@ -75,7 +75,7 @@ const markNameOf = item => {
 // What the menu shows: its title and message (dialogs only: two static
 // items before the rows are a title and a message, a single one a message;
 // each its runs or its title), its rows, the cursor on the selected entry,
-// and its footer ({ label, name } or null); null when it has no entry to choose.
+// and its footer's lines ([{ label, name }] or null); null when it has no entry to choose.
 export function buildMenuModel(items, { dialogStyle = false, pagingCommands = [], footer = null } = {}) {
     let title = null;
     let message = null;
@@ -549,8 +549,8 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
     // drawn, when it cannot, or when it has no entry to choose.
     // onBack: what Exit and a MenuReturn entry run instead of only closing
     // (a submenu going back to its menu); selectedCmd: the entry the cursor
-    // opens on, over the one PinballY marks; footer: { label, name } under
-    // the list; keepNative: over a native menu left open (never cancelled),
+    // opens on, over the one PinballY marks; footer: lines
+    // [{ label, name }] under the list; keepNative: over a native menu left open (never cancelled),
     // hidden by an opaque cover, closing on that native menu's "menuclose":
     // { exitCmd } runs it for Exit and a MenuReturn entry; { exitButton }
     // presses that button instead, after any entry that isn't stayOpen,

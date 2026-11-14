@@ -308,6 +308,8 @@ export default {
         // The Drawn main menu's "Change Filter" entry, and its footer's label before the Active Filter.
         changeFilter: "Filter wechseln",
         activeFilterLabel: "Aktiver Filter:",
+        // The footer's line under it, before the current Wheel Order.
+        wheelOrderLabel: "Reihenfolge des Rads:",
     },
 
     achievements: {

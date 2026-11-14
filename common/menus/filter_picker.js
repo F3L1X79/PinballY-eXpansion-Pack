@@ -182,17 +182,28 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
         ], { onBack: up });
     }
 
+    // Each page's current choice, as a line { label: its statusLabel, name }
+    // for the Drawn main menu's footer, under the Active Filter.
+    function pageStatusLines() {
+        return extraEntries
+            .filter(entry => entry.page)
+            .map(entry => ({ label: entry.page.statusLabel, choice: entry.page.choices.find(choice => choice.isCurrent()) }))
+            .filter(({ choice }) => choice !== undefined)
+            .map(({ label, choice }) => ({ label, name: choice.label }));
+    }
+
     // An Add-on's entry, just before Back; label: a function returning its
     // text on each opening (undefined leaves it out), action: run when
     // chosen, the menus then closing as for a filter. Or, with page, the
-    // entry opens a page of its own: { title, choices: [{ name, label,
-    // isCurrent(), action }] }, a choice's action run only when it is not
-    // the current one, the menus then closing as for a filter.
+    // entry opens a page of its own: { title, statusLabel, choices: [{ name,
+    // label, isCurrent(), action }] }, a choice's action run only when it is
+    // not the current one, the menus then closing as for a filter.
     function addEntry({ name, label, action = null, page = null }) {
         const cmd = host.allocateCommand(name);
         const shownPage = page && {
             id: `${FILTER_PICKER_MENU_ID} ${name}`,
             title: page.title,
+            statusLabel: page.statusLabel,
             choices: page.choices.map(choice => {
                 const pageChoice = {
                     label: choice.label,
@@ -233,5 +244,5 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
         openedGroupCmd = null;
     }));
 
-    return { isGroupItem, mainMenuOpened, back, entryCmd, chosenFilterName, addEntry };
+    return { isGroupItem, mainMenuOpened, back, entryCmd, chosenFilterName, pageStatusLines, addEntry };
 }

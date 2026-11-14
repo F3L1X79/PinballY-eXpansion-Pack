@@ -144,6 +144,10 @@ _Avoid_: current filter, current selection
 The order in which the wheel lists the tables of the Active Filter: alphabetical, or by year from the oldest. It stays when the Active Filter changes. A wheel selection with its own ranking keeps that ranking. Shown as "Ordre de la roue" in French.
 _Avoid_: sort, sort filter, sorted filter
 
+**Attract Order**:
+How attract mode moves from one table to the next: as PinballY does (a short random jump), In Order (the next table of the wheel), or Whole Wheel (every table of the Active Filter once, in a shuffled order, before any comes back).
+_Avoid_: attract randomness, attract range, shuffle mode
+
 **Selection Marker**:
 The soft gold glow that flows without end around the current choice of a drawn screen. The choice it surrounds is the current (or highlighted) choice; only the glow itself is never called a highlight.
 _Avoid_: halo (for the selection; a Rank emblem's or a Mastery square's halo stays a halo), cursor, highlight

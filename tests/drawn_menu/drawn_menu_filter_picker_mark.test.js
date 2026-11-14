@@ -39,7 +39,7 @@ test("the main menu draws no gold dot, its footer naming the Era filter", () => 
     assert.deepEqual(markedRows(), []);
     const row = readDrawnMenu(fake).rows.find(candidate => candidate.title === LABELS.changeFilter);
     assert.equal(row.mark, "submenu");
-    assert.equal(readDrawnMenu(fake).footer.name, "1980s Tables");
+    assert.equal(readDrawnMenu(fake).footer[0].name, "1980s Tables");
 });
 
 test("the Filter Picker draws it on Filter by Era alone", () => {

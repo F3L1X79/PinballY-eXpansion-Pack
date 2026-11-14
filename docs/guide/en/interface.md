@@ -16,7 +16,7 @@ PinballY's menus and other scripts' menus are drawn in the pack's Steamball look
 - In the pause, Exit and "Cancel" resume the game.
 - On every drawn menu and screen, a held Select, Launch or Exit counts once, while a held flipper keeps going.
 - Drawn menus and screens play PinballY's button sounds, like the wheel: your own if they are in `Media\Button Sounds`, at PinballY's button volume. **Mute Buttons** in the Operator Menu silences them all; a copy of `Silence.wav` (in PinballY's `Assets` folder) named after one sound silences only that one, such as `Next.wav` and `Prev.wav` for moves.
-- A shorter main menu gathers every wheel selection and filter group behind one "Change Filter" entry, and names the filter you chose under its list ("Active filter: All Tables"), whatever the order. Just before its Back, "Order: alphabetical" opens the Wheel Order page, where you choose between the alphabetical order and by year (see [Wheel Order](choosing_a_table.md#wheel-order)).
+- A shorter main menu gathers every wheel selection and filter group behind one "Change Filter" entry, and names the filter you chose under its list ("Active filter: All Tables"), whatever the order, then the order itself ("Wheel Order: Alphabetical"), for information only. Just before its Back, "Order: alphabetical" opens the Wheel Order page, where you choose between the alphabetical order and by year (see [Wheel Order](choosing_a_table.md#wheel-order)).
 
 ## Menu Cleanup
 

@@ -35,7 +35,7 @@ export const isAnythingDrawn = fake => fake.drawingLayers()
 // note with its note, the title then without it, an entry with stars with
 // the Rating they show as stars),
 // { kind: "heading", title } or { kind: "separator" };
-// and the footer under the list ({ label, name }, null when none).
+// and the footer's lines under the list ([{ label, name }], null when none).
 export function readDrawnMenu(fake) {
     const layer = textsLayer(fake);
     if (!layer) throw new Error("No Drawn Menu is shown.");
@@ -47,14 +47,14 @@ export function readDrawnMenu(fake) {
     const rows = [];
     let inSeparator = false;
     for (const stroke of layer.strokes()) {
-        if (footer !== null) {
-            if ("text" in stroke) footer = { ...footer, [stroke.color === COLORS.gold ? "name" : "label"]: stroke.text.trim() };
-            continue;
-        }
         if ("text" in stroke && stroke.color === COLORS.footerLabel && rows.length > 0) {
             // The rule above the footer is not a row.
-            if (rows.at(-1).kind === "separator") rows.pop();
-            footer = { label: stroke.text.trim(), name: null };
+            if (footer === null && rows.at(-1).kind === "separator") rows.pop();
+            footer = [...(footer || []), { label: stroke.text.trim(), name: null }];
+            continue;
+        }
+        if (footer !== null) {
+            if ("text" in stroke) footer.at(-1).name = stroke.text.trim();
             continue;
         }
         if ("fill" in stroke && STAR_COLORS.includes(stroke.fill)) {

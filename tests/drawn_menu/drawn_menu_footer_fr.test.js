@@ -29,7 +29,7 @@ test("the line reads Changer de filtre and the footer Filtre actif : <nom>", () 
 
     const { rows, footer } = readDrawnMenu(fake);
     assert.equal(rows.find(row => row.title === "Changer de filtre").mark, "submenu");
-    assert.deepEqual(footer, { label: "Filtre actif :", name: "Toutes les tables" });
+    assert.deepEqual(footer, [{ label: "Filtre actif :", name: "Toutes les tables" }]);
     press(fake, "Exit");
 });
 

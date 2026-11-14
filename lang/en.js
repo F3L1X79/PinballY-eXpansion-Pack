@@ -198,6 +198,8 @@ export default {
         // The Drawn main menu's "Change Filter" entry, and its footer's label before the Active Filter.
         changeFilter: "Change Filter",
         activeFilterLabel: "Active filter:",
+        // The footer's line under it, before the current Wheel Order.
+        wheelOrderLabel: "Wheel Order:",
     },
 
     // Thresholded titles are keyed by their threshold, which is part of the

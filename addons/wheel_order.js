@@ -21,6 +21,7 @@ export default function init() {
         label: () => (wheelOrder.isByYear() ? TEXT.wheelOrderByYear : TEXT.wheelOrderAlphabetical),
         page: {
             title: TEXT.wheelOrderPage,
+            statusLabel: TEXT.wheelOrderLabel,
             choices: [
                 { name: "wheelOrderAlphabetical", label: TEXT.wheelOrderPageAlphabetical, isCurrent: () => !wheelOrder.isByYear(), action: switchOrder },
                 { name: "wheelOrderByYear", label: TEXT.wheelOrderPageByYear, isCurrent: () => wheelOrder.isByYear(), action: switchOrder },

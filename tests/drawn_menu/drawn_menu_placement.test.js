@@ -33,7 +33,16 @@ test("a menu too tall for the third never goes above the top margin", () => {
 });
 
 test("under a footer, the content ends as far from the panel's bottom as it starts from its top", () => {
-    const model = { ...menuOf(4), footer: { label: "Active filter:", name: "All Tables" } };
+    const model = { ...menuOf(4), footer: [{ label: "Active filter:", name: "All Tables" }] };
     const { panel, contentTop, contentHeight } = computeGeometry(WINDOW, model, noMessage);
     assert.ok(Math.abs((panel.y + panel.height - contentTop - contentHeight) - (contentTop - panel.y)) < 1e-6);
+});
+
+test("each footer line adds one footer row to the content", () => {
+    const oneLine = computeGeometry(WINDOW, { ...menuOf(4), footer: [{ label: "Active filter:", name: "All Tables" }] }, noMessage);
+    const twoLines = computeGeometry(WINDOW, {
+        ...menuOf(4),
+        footer: [{ label: "Active filter:", name: "All Tables" }, { label: "Wheel Order:", name: "By year" }],
+    }, noMessage);
+    assert.ok(Math.abs(twoLines.contentHeight - oneLine.contentHeight - DRAWN_MENU_LOOK.footer.height * oneLine.k) < 1e-6);
 });

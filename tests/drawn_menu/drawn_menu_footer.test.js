@@ -37,7 +37,7 @@ test("the main menu draws the Change Filter entry and a footer naming the Active
     assert.ok(line, "the Change Filter line");
     assert.equal(line.mark, "submenu");
     assert.ok(!rows.some(row => row.title && row.title.startsWith("Active filter")));
-    assert.deepEqual(footer, { label: "Active filter:", name: "All Tables" });
+    assert.deepEqual(footer, [{ label: "Active filter:", name: "All Tables" }], "no Wheel Order line, its Add-on off");
     assert.equal(rows.at(-1).title, "Return", "the footer under Return, the last line");
     press(fake, "Exit");
 });
@@ -71,7 +71,7 @@ test("the footer follows a filter change on the next opening", () => {
     fake.setCurrentFilter(ERA_1980S_FILTER);
     openMainMenu(fake);
 
-    assert.equal(readDrawnMenu(fake).footer.name, "1980s Tables");
+    assert.equal(readDrawnMenu(fake).footer[0].name, "1980s Tables");
     press(fake, "Exit");
 });
 
@@ -80,7 +80,7 @@ test("a name too long for the footer is cut with an ellipsis", () => {
     fake.setCurrentFilter("User.LongName");
     openMainMenu(fake);
 
-    const { name } = readDrawnMenu(fake).footer;
+    const [{ name }] = readDrawnMenu(fake).footer;
     assert.ok(name.endsWith("\u2026"), name);
     assert.ok("Tables From The Golden Age Of Electromechanical Pinball Machines".startsWith(name.slice(0, -1)), name);
     press(fake, "Exit");
