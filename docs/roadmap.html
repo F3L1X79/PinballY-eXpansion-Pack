@@ -221,6 +221,7 @@
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#wheel-sort-by-year"><b></b>Roue triée par année</a>
+          <a class="chip tr-play" href="#wheel-position-markers"><b></b>Repères sur la roue</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
@@ -365,6 +366,31 @@
           <details>
             <summary>Contexte</summary>
             <p class="ctx">Idée externe de Dave du 13/11/2026.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="wheel-position-markers" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Des repères de position sur la roue</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Sur la roue, un petit calque permanent dit où l'on en est : un mini-sélecteur sur l'alphabet qui montre la lettre en cours (ou l'année, ou la décennie, quand la roue est triée par année), la position dans la roue (« 12/87 »), un cœur quand la table fait partie des Favorite Tables du Profile actif, et d'autres marques du même genre.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>prototype</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/prototype</code> (le calque sur la borne, pour juger la place et la lisibilité) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après la <a href="#wheel-sort-by-year">roue triée par année (n° <span data-ref="wheel-sort-by-year"></span>)</a> : le sélecteur suit l'Ordre de la roue (Wheel Order) qu'elle livre</div>
+          <details>
+            <summary>Questions ouvertes (5)</summary>
+            <ul>
+              <li>Le sélecteur : toute la barre A–Z (ou les décennies) avec la lettre en cours en surbrillance, ou seulement la lettre ? Les lettres sans table sont-elles grisées ou absentes ? Il reprend les sauts de page de PinballY (par lettre, par décennie avec le Wheel Order par année).</li>
+              <li>« x/xx » se calcule avec <code>gameList.getWheelCount()</code> et <code>getAllWheelGames()</code>, mis à jour sur <code>gameselect</code> et <code>filterselect</code>. Mais <code>setWheelGame</code> ne déclenche pas <code>gameselect</code> : à couvrir (mode attract, sauts du pack).</li>
+              <li>Le cœur suit les Favorite Tables du Profile actif (celles du pack, une liste par Profile), pas le <code>isFavorite</code> de PinballY : à confirmer, et que montrer avec Invité ?</li>
+              <li>Quelles autres marques : note du Profile, record de la maison, table jamais jouée, Table of the Day ? Lesquelles restent lisibles sans surcharger la roue, et sont-elles réglables une à une ?</li>
+              <li>Le coût d'un calque permanent redessiné à chaque changement de table, sans gêner le défilement rapide de la roue : dessiner seulement à l'arrêt, via <code>getDrawingAhead()</code> ? Caché pendant une partie, les menus et les Drawn Screens ; aucune animation sans fin.</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 14/11/2026, pendant l'implémentation de la roue triée par année.</p>
           </details>
         </div>
       </li>
