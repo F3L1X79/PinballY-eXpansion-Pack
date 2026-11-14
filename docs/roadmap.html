@@ -313,15 +313,18 @@
             <h3>Choisir le hasard du mode attract</h3>
             <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span></div>
           </div>
-          <p>En mode attract, PinballY avance d'un nombre de tables tiré entre 1 et 10. Le pack laisserait choisir l'écart maximal : 999 pour un vrai hasard sur toute la roue, 1 pour passer les tables dans l'ordre.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>prototype</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/prototype</code> (sur la borne, pour juger le mouvement de la roue) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. À accorder avec le mode attract de <code>common/core/drawn_screen_controls.js</code></div>
+          <p>En mode attract, PinballY avance d'un nombre de tables tiré entre 1 et 10. L'Attract Order laisse choisir : comme PinballY, dans l'ordre de la roue, ou toute la roue sans remise.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
+          <div class="links">Flow Matt : spec #521, tickets #522 à #526 (#526 sur la borne) → <code>/implement</code>. À accorder avec le mode attract de <code>common/core/drawn_screen_controls.js</code> (un écran ouvert peut l'annuler)</div>
           <details>
-            <summary>Questions ouvertes (3)</summary>
+            <summary>Décisions du grill du 14/11/2026</summary>
             <ul>
-              <li>Corriger après coup ou tout piloter ? Corriger : rejouer <code>setWheelGame(n)</code> juste après chaque saut de PinballY (<code>gameselect</code>, ou le <code>dofevent</code> <code>PBYAttractWheelNext</code>), au risque de deux mouvements de roue à la suite. Piloter : « Switch games every » réglé très long, et le pack fait lui-même les sauts entre <code>attractmodestart</code> et <code>attractmodeend</code>.</li>
-              <li>Si le pack pilote, il prend le minuteur des sauts : le régler dans le pack, ou reprendre la valeur de PinballY ?</li>
-              <li>Sur un écart plus grand que la roue, on tire simplement dans toute la roue, en excluant la table affichée ?</li>
+              <li>Le pack pilote : il écrit lui-même « Switch games every » très long dans <code>optionSettings</code>, garde la valeur d'origine et la rend en revenant à « Comme PinballY ». Il fait un seul saut par intervalle entre <code>attractmodestart</code> et <code>attractmodeend</code>. Le <code>/prototype</code> n'a plus lieu d'être : pas de double mouvement.</li>
+              <li>L'intervalle est la valeur d'origine de PinballY. Changée par le propriétaire pendant que le pack pilote, elle devient la nouvelle valeur gardée, et la valeur longue est réécrite.</li>
+              <li>Trois choix nommés dans les Expansion Pack Settings : « Comme PinballY » (défaut : le pack ne fait rien, c'est l'interrupteur), « Dans l'ordre » (+1, animé), « Toute la roue » (sans remise, remélangée à chaque session depuis la table affichée, animée en <code>fast</code>).</li>
+              <li>Les sauts du pack ne déclenchent pas <code>gameselect</code> : ce qui affiche la table (Profile Ratings, Table Mastery, ligne d'état) suit, ce qui compte les déplacements du joueur (World Tour, Maneki-neko) les ignore.</li>
+              <li>Pas d'Add-on à part : l'Attract Order fait partie de l'Add-on Wheel Order. Le guide (réglages, en et fr) prévient de revenir à « Comme PinballY » avant de désactiver l'Add-on ou de retirer le pack.</li>
+              <li>À vérifier sur la borne : la clé d'<code>optionSettings</code> de « Switch games every », et si PinballY la relit sans redémarrer (sinon « Redémarrer maintenant / Plus tard », jamais en mode attract).</li>
             </ul>
             <p class="ctx">Idée externe de Dave du 13/11/2026 ; il l'avait demandée à Mike Roberts il y a trois ans, sans suite. L'aide de PinballY n'expose ni ce tirage ni sa plage.</p>
           </details>
