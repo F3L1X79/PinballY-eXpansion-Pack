@@ -1,8 +1,8 @@
 // ============================================================
 // The Hall of Fame filter, through main.js on the fake PinballY globals:
-// the wheel shows the active Profile's most played tables, in the Wheel
-// Order, never by PinballY's own play stats, and shows the new Profile's as
-// soon as a switch happens while the Hall of Fame is on the wheel.
+// the wheel shows the active Profile's ranking, never PinballY's own play
+// stats, and shows the new Profile's ranking as soon as a switch happens
+// while the Hall of Fame is on the wheel.
 // ============================================================
 
 import { test } from "node:test";
@@ -32,7 +32,7 @@ function seedProfile(fake, name, plays) {
 
 const wheelTitles = fake => fake.getWheelTables().map(game => game.title);
 
-test("the Hall of Fame shows the active Profile's most played tables and follows a switch", async () => {
+test("the Hall of Fame shows the active Profile's ranking and follows a switch", async () => {
     const fake = createFakePinballYHost({ now: NOW, tables: [MEDIEVAL, MARS, THEATRE] });
     seedProfile(fake, "guest", { [MEDIEVAL.configId]: play(2, 3600), [MARS.configId]: play(5, 600) });
     seedProfile(fake, "Alice", { [MARS.configId]: play(1, 7200) });
@@ -48,11 +48,11 @@ test("the Hall of Fame shows the active Profile's most played tables and follows
     await settle();
 
     fake.selectFilter(HALL_OF_FAME_FILTER_ID);
-    assert.deepEqual(wheelTitles(fake), ["Attack from Mars", "Medieval Madness"], "Guest's tables, alphabetical");
+    assert.deepEqual(wheelTitles(fake), ["Medieval Madness", "Attack from Mars"], "Guest's ranking");
 
     getProfileStore().switchTo("Alice");
     await settle();
-    assert.deepEqual(wheelTitles(fake), ["Attack from Mars"], "Alice's tables, at once");
+    assert.deepEqual(wheelTitles(fake), ["Attack from Mars"], "Alice's ranking, at once");
 
     assertNoErrorLogged(fake);
 });

@@ -1,8 +1,8 @@
 // ============================================================
 // The Wheel Order on the pack's own filters through main.js: Tables to
-// Discover, Most Played Tables, Hidden Tables and Original Tables list
-// their tables by title, then by year once switched (oldest first, ties by
-// title, no year last), each staying the Active Filter, the table kept.
+// Discover, Hidden Tables and Original Tables list their tables by title,
+// then by year once switched (oldest first, ties by title, no year last),
+// each staying the Active Filter, the table kept; Most Played Tables keeps its ranking.
 // ============================================================
 
 import { test } from "node:test";
@@ -35,10 +35,12 @@ const TABLES = [
     table("Dracula", 1993, { isHidden: true }),
 ];
 const play = seconds => ({ count: 1, seconds, lastPlayed: "2026-11-01T20:00:00" });
-// Most played first: Black Knight, Medieval Madness, Space Trip, Eight Ball.
+// Most played first. Neither the year order nor the alphabetical one is a
+// turn of this ranking, so a wheel read from its first table tells them apart.
 const PLAYS = {
-    "Black Knight": play(4000), "Medieval Madness": play(3000), "Space Trip": play(2000), "Eight Ball": play(1000),
+    "Medieval Madness": play(4000), "Black Knight": play(3000), "Space Trip": play(2000), "Eight Ball": play(1000),
 };
+const MOST_PLAYED_RANKING = ["Medieval Madness", "Black Knight", "Space Trip", "Eight Ball"];
 
 const fake = createFakePinballYHost({ now: new Date(2026, 10, 14, 20, 0, 0), tables: TABLES });
 let lang;
@@ -79,7 +81,7 @@ test("alphabetical: the pack's filters list their tables by title", async () => 
     assert.deepEqual(wheelTitles(), ["Attack from Mars", "Cirqus Voltaire", "Homebrew"]);
 
     await chooseFilter(MOST_PLAYED);
-    assert.deepEqual(wheelTitles(), ["Black Knight", "Eight Ball", "Medieval Madness", "Space Trip"]);
+    assert.deepEqual(orderFrom(MOST_PLAYED_RANKING[0]), MOST_PLAYED_RANKING, "Most Played Tables keeps its ranking");
 
     await chooseFilter(HIDDEN_TABLES);
     assert.deepEqual(wheelTitles(), ["Dracula", "Lost Prototype", "Old Secret"]);
@@ -120,7 +122,7 @@ test("by year: the wheel selections list their tables oldest first, no year last
 
     await chooseFilter(MOST_PLAYED);
     assert.equal(fake.currentFilterId(), MOST_PLAYED);
-    assert.deepEqual(orderFrom("Eight Ball"), ["Eight Ball", "Black Knight", "Medieval Madness", "Space Trip"]);
+    assert.deepEqual(orderFrom(MOST_PLAYED_RANKING[0]), MOST_PLAYED_RANKING, "Most Played Tables keeps its ranking");
 
     await chooseFilter(HIDDEN_TABLES);
     assert.equal(fake.currentFilterId(), HIDDEN_TABLES);

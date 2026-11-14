@@ -281,6 +281,72 @@
 
     <ol class="queue">
 
+      <li draggable="true" tabindex="0" class="item tr-play" id="wheel-sort-by-year" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Trier la roue par année, même avec un filtre actif</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
+          </div>
+          <p>PinballY range toujours la roue par ordre alphabétique. Le pack proposerait un tri par année, de la plus ancienne à la plus récente, qui garde les tables du filtre en cours.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
+          <div class="links">Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/513">#513</a>, tickets #514 à #519. Flow Matt : <code>/implement-spec 513</code>. Un Ordre de la roue (Wheel Order) pour toute la borne, choisi dans le Filter Picker : par année, sauts de page par décennie, My High Scores garde son classement.</div>
+          <details>
+            <summary>Contexte</summary>
+            <p class="ctx">Idée externe de Dave du 13/11/2026.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="wheel-position-markers" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Des repères de position sur la roue</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Sur la roue, un petit calque permanent dit où l'on en est : un mini-sélecteur sur l'alphabet qui montre la lettre en cours (ou l'année, ou la décennie, quand la roue est triée par année), la position dans la roue (« 12/87 »), un cœur quand la table fait partie des Favorite Tables du Profile actif, et d'autres marques du même genre.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>prototype</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/prototype</code> (le calque sur la borne, pour juger la place et la lisibilité) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après la <a href="#wheel-sort-by-year">roue triée par année (n° <span data-ref="wheel-sort-by-year"></span>)</a> : le sélecteur suit l'Ordre de la roue (Wheel Order) qu'elle livre</div>
+          <details>
+            <summary>Questions ouvertes (5)</summary>
+            <ul>
+              <li>Le sélecteur : toute la barre A–Z (ou les décennies) avec la lettre en cours en surbrillance, ou seulement la lettre ? Les lettres sans table sont-elles grisées ou absentes ? Il reprend les sauts de page de PinballY (par lettre, par décennie avec le Wheel Order par année).</li>
+              <li>« x/xx » se calcule avec <code>gameList.getWheelCount()</code> et <code>getAllWheelGames()</code>, mis à jour sur <code>gameselect</code> et <code>filterselect</code>. Mais <code>setWheelGame</code> ne déclenche pas <code>gameselect</code> : à couvrir (mode attract, sauts du pack).</li>
+              <li>Le cœur suit les Favorite Tables du Profile actif (celles du pack, une liste par Profile), pas le <code>isFavorite</code> de PinballY : à confirmer, et que montrer avec Invité ?</li>
+              <li>Quelles autres marques : note du Profile, record de la maison, table jamais jouée, Table of the Day ? Lesquelles restent lisibles sans surcharger la roue, et sont-elles réglables une à une ?</li>
+              <li>Le coût d'un calque permanent redessiné à chaque changement de table, sans gêner le défilement rapide de la roue : dessiner seulement à l'arrêt, via <code>getDrawingAhead()</code> ? Caché pendant une partie, les menus et les Drawn Screens ; aucune animation sans fin.</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 14/11/2026, pendant l'implémentation de la roue triée par année.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="attract-random-range" data-track="play" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Choisir le hasard du mode attract</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span></div>
+          </div>
+          <p>En mode attract, PinballY avance d'un nombre de tables tiré entre 1 et 10. Le pack laisserait choisir l'écart maximal : 999 pour un vrai hasard sur toute la roue, 1 pour passer les tables dans l'ordre.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>prototype</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/prototype</code> (sur la borne, pour juger le mouvement de la roue) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. À accorder avec le mode attract de <code>common/core/drawn_screen_controls.js</code></div>
+          <details>
+            <summary>Questions ouvertes (3)</summary>
+            <ul>
+              <li>Corriger après coup ou tout piloter ? Corriger : rejouer <code>setWheelGame(n)</code> juste après chaque saut de PinballY (<code>gameselect</code>, ou le <code>dofevent</code> <code>PBYAttractWheelNext</code>), au risque de deux mouvements de roue à la suite. Piloter : « Switch games every » réglé très long, et le pack fait lui-même les sauts entre <code>attractmodestart</code> et <code>attractmodeend</code>.</li>
+              <li>Si le pack pilote, il prend le minuteur des sauts : le régler dans le pack, ou reprendre la valeur de PinballY ?</li>
+              <li>Sur un écart plus grand que la roue, on tire simplement dans toute la roue, en excluant la table affichée ?</li>
+            </ul>
+            <p class="ctx">Idée externe de Dave du 13/11/2026 ; il l'avait demandée à Mike Roberts il y a trois ans, sans suite. L'aide de PinballY n'expose ni ce tirage ni sa plage.</p>
+          </details>
+        </div>
+      </li>
+
       <li draggable="true" tabindex="0" class="item tr-play" id="household-mission" data-track="play" data-rank="platinum">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -330,72 +396,6 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-share" id="crt-filter" data-track="share" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Un faux mode CRT sur la roue</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen</span><span class="tag">UI</span></div>
-          </div>
-          <p>Un filtre graphique façon vieil écran sur la roue, hors partie : un calque statique de scanlines et de vignettage, à activer dans les réglages.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>prototype</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/prototype</code> (un PNG sur un calque, à juger sur la borne) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Pourrait devenir une option des <a href="#themes">thèmes (n° <span data-ref="themes"></span>)</a></div>
-          <details>
-            <summary>Questions ouvertes (3)</summary>
-            <ul>
-              <li>Le rendu est-il beau et la roue reste-t-elle fluide sur la borne ? PinballY remplit chaque pixel d'un calque à chaque image : le coût d'un calque plein écran est à mesurer.</li>
-              <li>Le filtre couvre-t-il aussi les menus et les écrans dessinés, ou la roue seule ? Et le backglass ?</li>
-              <li>Le sens des lignes sur un écran tourné : horizontales pour le joueur, ou celles de l'écran physique ?</li>
-            </ul>
-            <p class="ctx">Idée de Félix du 04/11/2026, remontée dans la file à sa demande le 07/11/2026. Le résumé de l'aide PinballY ne mentionne aucun shader : ni courbure d'écran ni bavure de couleurs a priori, à confirmer dans l'aide complète. Pas de scintillement, selon la règle « pas d'animation sans fin ».</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="wheel-sort-by-year" data-track="play" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Trier la roue par année, même avec un filtre actif</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
-          </div>
-          <p>PinballY range toujours la roue par ordre alphabétique. Le pack proposerait un tri par année, de la plus ancienne à la plus récente, qui garde les tables du filtre en cours.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/513">#513</a>, tickets #514 à #519. Flow Matt : <code>/implement-spec 513</code>. Un Ordre de la roue (Wheel Order) pour toute la borne, choisi dans le Filter Picker : par année, sauts de page par décennie, My High Scores garde son classement.</div>
-          <details>
-            <summary>Contexte</summary>
-            <p class="ctx">Idée externe de Dave du 13/11/2026.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="wheel-position-markers" data-track="play" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Des repères de position sur la roue</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
-          </div>
-          <p>Sur la roue, un petit calque permanent dit où l'on en est : un mini-sélecteur sur l'alphabet qui montre la lettre en cours (ou l'année, ou la décennie, quand la roue est triée par année), la position dans la roue (« 12/87 »), un cœur quand la table fait partie des Favorite Tables du Profile actif, et d'autres marques du même genre.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>prototype</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/prototype</code> (le calque sur la borne, pour juger la place et la lisibilité) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Après la <a href="#wheel-sort-by-year">roue triée par année (n° <span data-ref="wheel-sort-by-year"></span>)</a> : le sélecteur suit l'Ordre de la roue (Wheel Order) qu'elle livre</div>
-          <details>
-            <summary>Questions ouvertes (5)</summary>
-            <ul>
-              <li>Le sélecteur : toute la barre A–Z (ou les décennies) avec la lettre en cours en surbrillance, ou seulement la lettre ? Les lettres sans table sont-elles grisées ou absentes ? Il reprend les sauts de page de PinballY (par lettre, par décennie avec le Wheel Order par année).</li>
-              <li>« x/xx » se calcule avec <code>gameList.getWheelCount()</code> et <code>getAllWheelGames()</code>, mis à jour sur <code>gameselect</code> et <code>filterselect</code>. Mais <code>setWheelGame</code> ne déclenche pas <code>gameselect</code> : à couvrir (mode attract, sauts du pack).</li>
-              <li>Le cœur suit les Favorite Tables du Profile actif (celles du pack, une liste par Profile), pas le <code>isFavorite</code> de PinballY : à confirmer, et que montrer avec Invité ?</li>
-              <li>Quelles autres marques : note du Profile, record de la maison, table jamais jouée, Table of the Day ? Lesquelles restent lisibles sans surcharger la roue, et sont-elles réglables une à une ?</li>
-              <li>Le coût d'un calque permanent redessiné à chaque changement de table, sans gêner le défilement rapide de la roue : dessiner seulement à l'arrêt, via <code>getDrawingAhead()</code> ? Caché pendant une partie, les menus et les Drawn Screens ; aucune animation sans fin.</li>
-            </ul>
-            <p class="ctx">Idée de Félix du 14/11/2026, pendant l'implémentation de la roue triée par année.</p>
-          </details>
-        </div>
-      </li>
-
       <li draggable="true" tabindex="0" class="item tr-share" id="script-conflicts" data-track="share" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -420,25 +420,49 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-play" id="attract-random-range" data-track="play" data-rank="bronze">
+      <li draggable="true" tabindex="0" class="item tr-share" id="crt-filter" data-track="share" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
-            <h3>Choisir le hasard du mode attract</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span></div>
+            <h3>Un faux mode CRT sur la roue</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen</span><span class="tag">UI</span></div>
           </div>
-          <p>En mode attract, PinballY avance d'un nombre de tables tiré entre 1 et 10. Le pack laisserait choisir l'écart maximal : 999 pour un vrai hasard sur toute la roue, 1 pour passer les tables dans l'ordre.</p>
+          <p>Un filtre graphique façon vieil écran sur la roue, hors partie : un calque statique de scanlines et de vignettage, à activer dans les réglages.</p>
           <div class="stepper"><span class="here">idée</span><i>›</i><span>prototype</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/prototype</code> (sur la borne, pour juger le mouvement de la roue) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. À accorder avec le mode attract de <code>common/core/drawn_screen_controls.js</code></div>
+          <div class="links">Flow Matt : <code>/prototype</code> (un PNG sur un calque, à juger sur la borne) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Pourrait devenir une option des <a href="#themes">thèmes (n° <span data-ref="themes"></span>)</a></div>
           <details>
             <summary>Questions ouvertes (3)</summary>
             <ul>
-              <li>Corriger après coup ou tout piloter ? Corriger : rejouer <code>setWheelGame(n)</code> juste après chaque saut de PinballY (<code>gameselect</code>, ou le <code>dofevent</code> <code>PBYAttractWheelNext</code>), au risque de deux mouvements de roue à la suite. Piloter : « Switch games every » réglé très long, et le pack fait lui-même les sauts entre <code>attractmodestart</code> et <code>attractmodeend</code>.</li>
-              <li>Si le pack pilote, il prend le minuteur des sauts : le régler dans le pack, ou reprendre la valeur de PinballY ?</li>
-              <li>Sur un écart plus grand que la roue, on tire simplement dans toute la roue, en excluant la table affichée ?</li>
+              <li>Le rendu est-il beau et la roue reste-t-elle fluide sur la borne ? PinballY remplit chaque pixel d'un calque à chaque image : le coût d'un calque plein écran est à mesurer.</li>
+              <li>Le filtre couvre-t-il aussi les menus et les écrans dessinés, ou la roue seule ? Et le backglass ?</li>
+              <li>Le sens des lignes sur un écran tourné : horizontales pour le joueur, ou celles de l'écran physique ?</li>
             </ul>
-            <p class="ctx">Idée externe de Dave du 13/11/2026 ; il l'avait demandée à Mike Roberts il y a trois ans, sans suite. L'aide de PinballY n'expose ni ce tirage ni sa plage.</p>
+            <p class="ctx">Idée de Félix du 04/11/2026, remontée dans la file à sa demande le 07/11/2026. Le résumé de l'aide PinballY ne mentionne aucun shader : ni courbure d'écran ni bavure de couleurs a priori, à confirmer dans l'aide complète. Pas de scintillement, selon la règle « pas d'animation sans fin ».</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-share" id="stats-api" data-track="share" data-rank="gold">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Une API des statistiques pour les autres développeurs</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen-gros</span></div>
+          </div>
+          <p>Offrir aux auteurs d'autres scripts PinballY un accès à toutes nos statistiques et métriques (Profiles, Plays, Player Level, Table Mastery, Achievements, Challenges, Streaks…), pour qu'ils les réutilisent dans leurs propres plugins.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. La Distribution (spec #331, livrée) fixe où vit le pack chez les autres</div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>La forme : un module ES à importer (<code>import … from "./ExpansionPack/api.js"</code>, mais la racine n'accepte que <code>main.js</code>), des événements, ou un fichier JSON exporté que n'importe quel outil peut lire ?</li>
+              <li>Lecture seule, ou aussi quelques actions (changer de Profile, lancer la Table of the Day) ?</li>
+              <li>Quelles données : tout ce qu'affichent les Profile Stats, ou aussi le Play Log brut ?</li>
+              <li>Comment garantir la compatibilité d'une version à l'autre (numéro de version de l'API, données figées comme dans <code>tests/project/persisted_data_pinning.test.js</code>) ?</li>
+            </ul>
+            <p class="ctx">Idée du 10/10/2026. Les données existent déjà dans le Profile Store, le Play Log et <code>common/stats/profile_stats.js</code> ; le travail est surtout de choisir une surface stable et de la documenter.</p>
           </details>
         </div>
       </li>
@@ -490,26 +514,26 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-share" id="stats-api" data-track="share" data-rank="gold">
+      <li draggable="true" tabindex="0" class="item tr-share" id="themes" data-track="share" data-rank="platinum">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
-            <h3>Une API des statistiques pour les autres développeurs</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen-gros</span></div>
+            <h3>Thèmes : d'autres palettes que Steamball, au choix</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">gros</span></div>
           </div>
-          <p>Offrir aux auteurs d'autres scripts PinballY un accès à toutes nos statistiques et métriques (Profiles, Plays, Player Level, Table Mastery, Achievements, Challenges, Streaks…), pour qu'ils les réutilisent dans leurs propres plugins.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. La Distribution (spec #331, livrée) fixe où vit le pack chez les autres</div>
+          <p>Le propriétaire choisit le thème de tous les écrans dessinés (Welcome Screen, Achievement List, Profile Stats, toasts, Drawn Menus…) parmi plusieurs, Steamball restant celui par défaut.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (les palettes, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Avant l'<a href="#theme-editor">éditeur de palette (n° <span data-ref="theme-editor"></span>)</a></div>
           <details>
             <summary>Questions ouvertes (4)</summary>
             <ul>
-              <li>La forme : un module ES à importer (<code>import … from "./ExpansionPack/api.js"</code>, mais la racine n'accepte que <code>main.js</code>), des événements, ou un fichier JSON exporté que n'importe quel outil peut lire ?</li>
-              <li>Lecture seule, ou aussi quelques actions (changer de Profile, lancer la Table of the Day) ?</li>
-              <li>Quelles données : tout ce qu'affichent les Profile Stats, ou aussi le Play Log brut ?</li>
-              <li>Comment garantir la compatibilité d'une version à l'autre (numéro de version de l'API, données figées comme dans <code>tests/project/persisted_data_pinning.test.js</code>) ?</li>
+              <li>Quels thèmes, et combien pour commencer ?</li>
+              <li>Ce que couvre un thème : seulement les couleurs et les polices de <code>common/drawing/steamball_palette.js</code>, ou aussi les images peintes d'avance (cadres, panneau et verre des Drawn Menus, blasons), à repeindre une fois par thème par les scripts de <code>maintainer/</code> ?</li>
+              <li>Où le choisir : un réglage dans <code>.env.local</code>, un choix par Profile, ou une entrée de menu ?</li>
+              <li>Les confettis et les feux d'artifice suivent-ils le thème ?</li>
             </ul>
-            <p class="ctx">Idée du 10/10/2026. Les données existent déjà dans le Profile Store, le Play Log et <code>common/stats/profile_stats.js</code> ; le travail est surtout de choisir une surface stable et de la documenter.</p>
+            <p class="ctx">Idée du 10/10/2026. Aujourd'hui, les couleurs passent déjà presque toutes par <code>common/drawing/steamball_palette.js</code>, mais les images PNG sont peintes en Steamball.</p>
           </details>
         </div>
       </li>
@@ -535,30 +559,6 @@
               <li>Une carte « ton style de joueur » : taux d'exploration (tables différentes par Play), régularité, et un archétype (Explorer, Completionist…) ? Avec quels seuils, pour que ça ne ressemble pas à un horoscope ?</li>
             </ul>
             <p class="ctx">Idée externe du 30/09/2026, sans doute la plus partageable. Pas en tête de file car elle a besoin d'une année de journal et de la Distribution pour être vue : le Play Log ne date que du 01/10/2026, le premier bilan complet sera celui de 2027.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-share" id="themes" data-track="share" data-rank="platinum">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Thèmes : d'autres palettes que Steamball, au choix</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">gros</span></div>
-          </div>
-          <p>Le propriétaire choisit le thème de tous les écrans dessinés (Welcome Screen, Achievement List, Profile Stats, toasts, Drawn Menus…) parmi plusieurs, Steamball restant celui par défaut.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (les palettes, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Avant l'<a href="#theme-editor">éditeur de palette (n° <span data-ref="theme-editor"></span>)</a></div>
-          <details>
-            <summary>Questions ouvertes (4)</summary>
-            <ul>
-              <li>Quels thèmes, et combien pour commencer ?</li>
-              <li>Ce que couvre un thème : seulement les couleurs et les polices de <code>common/drawing/steamball_palette.js</code>, ou aussi les images peintes d'avance (cadres, panneau et verre des Drawn Menus, blasons), à repeindre une fois par thème par les scripts de <code>maintainer/</code> ?</li>
-              <li>Où le choisir : un réglage dans <code>.env.local</code>, un choix par Profile, ou une entrée de menu ?</li>
-              <li>Les confettis et les feux d'artifice suivent-ils le thème ?</li>
-            </ul>
-            <p class="ctx">Idée du 10/10/2026. Aujourd'hui, les couleurs passent déjà presque toutes par <code>common/drawing/steamball_palette.js</code>, mais les images PNG sont peintes en Steamball.</p>
           </details>
         </div>
       </li>
