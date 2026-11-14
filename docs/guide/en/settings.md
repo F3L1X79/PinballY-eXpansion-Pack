@@ -28,8 +28,9 @@ The **Attract Order** line, after the language, chooses how attract mode moves t
 
 - **As PinballY** (the default): PinballY jumps a few tables at random at each switch, as without the pack.
 - **In Order**: each switch moves to the next table of the wheel, with PinballY's own one-step spin, and starts over at the first after the last. With the wheel by year, attract mode is a chronological tour.
+- **Whole Wheel**: every table of the wheel is shown once, in a shuffled order, before any comes back, never the table already on screen. Each switch is one fast spin of the wheel, and each new attract mode shuffles again.
 
-To do this, the pack takes PinballY's switches over: saving In Order keeps the value of PinballY's "Switch games every" option, puts a one-day value in its place so PinballY no longer switches, and switches itself at the interval you had set. Saving As PinballY gives your value back. Like the other lines, the choice applies when PinballY restarts (`ATTRACT_ORDER`). **Before removing the pack, set the Attract Order back to As PinballY**: otherwise PinballY's attract mode keeps the one-day value and never switches tables.
+To do this, the pack takes PinballY's switches over: saving In Order or Whole Wheel keeps the value of PinballY's "Switch games every" option, puts a one-day value in its place so PinballY no longer switches, and switches itself at the interval you had set. Saving As PinballY gives your value back. Like the other lines, the choice applies when PinballY restarts (`ATTRACT_ORDER`). **Before removing the pack, set the Attract Order back to As PinballY**: otherwise PinballY's attract mode keeps the one-day value and never switches tables.
 
 Until the pack has read your vpxtool's version once (about ten seconds into the first start that finds it), or while that version cannot be read, there is no vpxtool line.
 
@@ -69,7 +70,7 @@ ADD_ON_CLOCK=false
 | `PROFILE_PICKER_SOUND_FILE` | empty | Sound played each time the Profile picker carousel appears: at startup (`STARTUP_SCREEN=profilePicker`) or from "Change Player"; none ships with the pack. |
 | `AVATAR_CHOICE_SOUND_FILE` | empty | Sound played once when Avatar Choice shows, after a new Profile's name is entered; none ships with the pack. |
 | `STARTUP_SCREEN` | `profilePicker` | What PinballY shows first: `profilePicker` (the "Change Player" carousel, then the Welcome Screen; skipped while the cabinet has fewer than two Profiles besides Guest), `welcome` (the Welcome Screen) or `wheel` (the bare wheel, the last player greeted). A screen whose feature is turned off gives way to the next one, from the carousel to the Welcome Screen to the wheel. |
-| `ATTRACT_ORDER` | `pinballY` | How attract mode moves through the tables, only while Wheel Order is on: `pinballY` (as PinballY does) or `inOrder` (the next table of the wheel). Set it in the eXpansion Pack Settings rather than here: saving it there also sets PinballY's "Switch games every" (see [above](#expansion-pack-settings)). |
+| `ATTRACT_ORDER` | `pinballY` | How attract mode moves through the tables, only while Wheel Order is on: `pinballY` (as PinballY does), `inOrder` (the next table of the wheel) or `wholeWheel` (every table once, shuffled). Set it in the eXpansion Pack Settings rather than here: saving it there also sets PinballY's "Switch games every" (see [above](#expansion-pack-settings)). |
 | `ACHIEVEMENT_TOAST_SECONDS` | `4` | Seconds an Achievement toast stays on screen (up to 60). |
 | `ACHIEVEMENT_TOAST_SCALE` | `1.0` | Size of the toast, from `0.5` to `3`. Raise it on a large screen. |
 | `CONFETTI` | `true` | `false` turns off the Confetti Shower that falls with the toast of a completed Challenge, a Platinum Achievement, Mastery Level 10 on a table or a new Collection Tier, if your PC struggles with it. |

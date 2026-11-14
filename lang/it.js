@@ -840,7 +840,7 @@ export default {
         startupScreenNames: { welcome: "Benvenuto", profilePicker: "Scelta del profilo", wheel: "Ruota" },
         // How attract mode moves through the tables, shown with the Wheel Order Add-on on.
         attractOrderLine: (orderName) => `Modalità attrazione: ${orderName}`,
-        attractOrderNames: { pinballY: "Come PinballY", inOrder: "In ordine" },
+        attractOrderNames: { pinballY: "Come PinballY", inOrder: "In ordine", wholeWheel: "Tutta la ruota" },
         offlineMode: "Modalità offline",
         updateCheckLine: (state) => `Controllo aggiornamenti del pack: ${state}`,
         offerVpxtoolLine: (state) => `Proponi vpxtool: ${state}`,

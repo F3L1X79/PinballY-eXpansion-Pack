@@ -1,8 +1,9 @@
 // ============================================================
-// Attract Order module: how attract mode moves through the tables, As PinballY
-// or In Order, started by the Wheel Order Add-on. In Order, the pack takes
-// PinballY's switches over: one animated step of the wheel per kept interval,
-// from an unprevented "attractmodestart" to "attractmodeend". Logs the cabinet checks.
+// Attract Order module: how attract mode moves through the tables (As PinballY,
+// In Order, Whole Wheel), started by the Wheel Order Add-on. In Order and Whole
+// Wheel, the pack takes PinballY's switches over: one animated move per kept
+// interval, from an unprevented "attractmodestart" to "attractmodeend", the
+// next table or a fast jump through a new shuffle. Logs the cabinet checks.
 // - saveAttractOrderSwitches (from the Settings) writes PinballY's option: PinballY reads it only at its start.
 // - The pack switches only while that option holds the long value, else PinballY switches too.
 // - Never calls optionSettings.save(): PinballY saves its dirty settings before quitting.
@@ -16,7 +17,7 @@ import { getProfileStore } from "../profiles/profile_store.js";
 
 const SCRIPT_NAME = "AttractOrder";
 
-export const ATTRACT_ORDERS = Object.freeze({ PINBALLY: "pinballY", IN_ORDER: "inOrder" });
+export const ATTRACT_ORDERS = Object.freeze({ PINBALLY: "pinballY", IN_ORDER: "inOrder", WHOLE_WHEEL: "wholeWheel" });
 // PinballY's "Switch games every (seconds)": the key is not in the help, to check on the cabinet.
 export const SWITCH_TIME_KEY = "AttractMode.SwitchTime";
 // One day: PinballY then never switches on its own.
@@ -27,9 +28,33 @@ const PINBALLY_DEFAULT_SWITCH_TIME = 5;
 const KEPT_SWITCH_TIME_KEY = "attractOrderSwitchTime";
 
 // An Attract Order the pack does not know is As PinballY.
-const isPackSwitching = order => order === ATTRACT_ORDERS.IN_ORDER;
+const isPackSwitching = order => order === ATTRACT_ORDERS.IN_ORDER || order === ATTRACT_ORDERS.WHOLE_WHEEL;
 
 const isSwitchTime = value => Number.isInteger(value) && value > 0;
+
+// Fisher-Yates, through the host's draw.
+function shuffle(host, items) {
+    const shuffled = [...items];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(host.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+// The wheel's tables by configId in a new order for Whole Wheel. The table on
+// screen is left out of a new attract mode's first shuffle (already shown),
+// and never first in the next ones.
+// The wheel's tables by configId, the one on screen first.
+const wheelConfigIds = host => host.getWheelTables().map(game => game.configId);
+
+function shuffleWheel(host, { includeOnScreen }) {
+    const [onScreen, ...others] = wheelConfigIds(host);
+    const shuffled = shuffle(host, others);
+    if (!includeOnScreen || onScreen === undefined) return shuffled;
+    const at = 1 + Math.floor(host.random() * shuffled.length);
+    return [...shuffled.slice(0, at), onScreen, ...shuffled.slice(at)];
+}
 
 // Called once the Settings saved the Attract Order from one value to the
 // other: PinballY's own interval is kept in cabinet.json and the long value
@@ -60,6 +85,8 @@ export function createAttractOrder(host, profileStore, { order }) {
     let switchTimer = null;
     let startTimer = null;
     let hasReportedPinballYSwitch = false;
+    // Whole Wheel: the configIds of this attract mode's shuffle not shown yet.
+    let stillToShow = [];
 
     function stopSwitching() {
         if (startTimer !== null) host.clearTimeout(startTimer);
@@ -68,10 +95,24 @@ export function createAttractOrder(host, profileStore, { order }) {
         switchTimer = null;
     }
 
-    // The wrap after the last table is the wheel's own.
+    // In Order: the wrap after the last table is the wheel's own.
     function switchTable() {
-        if (host.getWheelTables().length < 2) return;
-        host.setWheelGame(1, { animate: true });
+        const configIds = wheelConfigIds(host);
+        if (configIds.length < 2) return;
+        if (order !== ATTRACT_ORDERS.WHOLE_WHEEL) {
+            host.setWheelGame(1, { animate: true });
+            return;
+        }
+        // A table the wheel no longer shows (a filter changed), or the one on
+        // screen, is skipped. Bounded, never a frozen timer: tables sharing a
+        // configId could make every draw land on the one on screen.
+        let offset = -1;
+        for (let tries = 0; offset <= 0 && tries < 2 * configIds.length + 1; tries++) {
+            if (stillToShow.length === 0) stillToShow = shuffleWheel(host, { includeOnScreen: true });
+            offset = configIds.indexOf(stillToShow.shift());
+        }
+        if (offset <= 0) offset = 1;
+        host.setWheelGame(offset, { animate: true, fast: true });
     }
 
     function listenToAttractMode(intervalSeconds) {
@@ -83,6 +124,7 @@ export function createAttractOrder(host, profileStore, { order }) {
             startTimer = host.setTimeout(safeHandler(SCRIPT_NAME, () => {
                 startTimer = null;
                 if (host.getUIMode() !== "attract") return;
+                stillToShow = order === ATTRACT_ORDERS.WHOLE_WHEEL ? shuffleWheel(host, { includeOnScreen: false }) : [];
                 switchTimer = host.setInterval(safeHandler(SCRIPT_NAME, switchTable), intervalSeconds * 1000);
             }), 0);
         }));

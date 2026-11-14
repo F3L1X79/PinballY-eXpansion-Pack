@@ -1,9 +1,9 @@
 // ============================================================
 // The Attract Order line of the eXpansion Pack Settings, through main.js:
 // after the language, only while the Wheel Order Add-on is saved on; its
-// page lists As PinballY and In Order. Saving In Order keeps PinballY's
-// "Switch games every" in cabinet.json and writes the long value; saving
-// As PinballY gives the kept value back. Both apply on restart.
+// page lists As PinballY, In Order and Whole Wheel. Saving one of the last two
+// keeps PinballY's "Switch games every" and writes the long value (the other
+// leaves it alone); As PinballY gives it back. All apply on restart.
 // ============================================================
 
 import { test } from "node:test";
@@ -44,10 +44,10 @@ test("the Attract Order line comes after the startup screen and the language", (
     assert.deepEqual(drawnMenuLines(fake).slice(6, 9), ["Startup screen: Profile picker", "Language: English", "Attract Order: As PinballY"]);
 });
 
-test("its page lists As PinballY and In Order, the saved one marked, then Cancel", () => {
+test("its page lists As PinballY, In Order and Whole Wheel, the saved one marked, then Cancel", () => {
     choose("Attract Order: As PinballY");
 
-    assert.deepEqual(drawnMenuLines(fake), ["As PinballY", "In Order", "---", "Cancel"]);
+    assert.deepEqual(drawnMenuLines(fake), ["As PinballY", "In Order", "Whole Wheel", "---", "Cancel"]);
     assert.deepEqual(markedEntries(fake, "radio"), ["As PinballY"]);
 });
 
@@ -62,6 +62,24 @@ test("saving In Order keeps PinballY's interval and writes the long value, shown
 
 test("saving In Order again leaves PinballY's option and the kept value alone", () => {
     choose("Attract Order: In Order (on restart)");
+    choose("In Order");
+
+    assert.equal(keptSwitchTime(), 7);
+    assert.equal(switchTime(), "86400");
+});
+
+test("saving Whole Wheel from In Order leaves PinballY's option and the kept value alone", () => {
+    choose("Attract Order: In Order (on restart)");
+    choose("Whole Wheel");
+
+    assert.equal(fake.readFile(ENV_LOCAL), "ATTRACT_ORDER=wholeWheel\r\n");
+    assert.equal(highlightedEntry(fake), "Attract Order: Whole Wheel (on restart)");
+    assert.equal(keptSwitchTime(), 7);
+    assert.equal(switchTime(), "86400");
+});
+
+test("saving In Order from Whole Wheel leaves them alone too", () => {
+    choose("Attract Order: Whole Wheel (on restart)");
     choose("In Order");
 
     assert.equal(keptSwitchTime(), 7);
