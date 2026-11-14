@@ -30,6 +30,7 @@ An unofficial extension of [PinballY](http://mjrnet.org/pinscape/PinballY.php) t
 - Every minute on a table builds your Mastery Level of it, from Rookie to Pinball Wizard.
 - High Scores are credited to the Profile that played, whatever the initials, and shown on a podium: the table's board, the household's best, and your own best five. With [vpxtool](docs/guide/en/install.md#vpxtool), on ROM tables whose memory keeps the last score, a game that misses the table's own board still counts on those last two as a Play Score, and a Personal Best or House Record is announced.
 - Short of ideas? A Random Game spins on a wheel of fortune.
+- The wheel can list its tables by year, whatever the filter, with Next Page jumping from one decade to the next.
 
 → [Choosing a table](docs/guide/en/choosing_a_table.md)
 

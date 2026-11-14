@@ -30,6 +30,7 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 - Chaque minute passée sur une table fait monter votre maîtrise de celle-ci, de Novice à Mage du flipper.
 - Les meilleurs scores sont attribués au Profil qui jouait, quelles que soient les initiales, et présentés sur un podium : le tableau de la table, les meilleurs de la maison, et vos cinq meilleurs. Avec [vpxtool](docs/guide/fr/install.md#vpxtool), sur les tables à ROM dont la mémoire garde le dernier score, une partie qui n'entre pas au tableau de la table compte quand même sur ces deux derniers comme score de partie, et un record perso ou un record de la maison est annoncé.
 - À court d'idées ? Une table au hasard tourne sur une roue de la fortune.
+- La roue peut ranger ses tables par année, quel que soit le filtre, et Page suivante saute alors d'une décennie à l'autre.
 
 → [Choisir une table](docs/guide/fr/choosing_a_table.md)
 
