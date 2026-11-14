@@ -78,6 +78,7 @@ Pour lire les tableaux d'environ 300 ROM de plus, mettez PINemHi à jour (voir [
 - Les menus se ferment, et la table sur laquelle vous étiez reste sélectionnée.
 - L'ordre est le même pour tous les Profils, et reste quand vous choisissez un autre filtre de PinballY : Toutes les tables, Tables favorites, une époque, un fabricant…
 - Les sélections de tables du pack le suivent aussi : « Tables à découvrir », « Tables masquées », « Tables du défi » et « Tables Originales ». « Tables les plus jouées » (la plus jouée d'abord) et « Mes meilleurs scores » (votre meilleure place d'abord) gardent leur propre classement, quel que soit l'ordre.
+- Par année, les boutons Page suivante et Page précédente sautent d'une décennie à l'autre : les années 1980, les années 1990, les années 2000, les années 2010, les années 2020, puis les tables sans année. Par ordre alphabétique, ils sautent d'une lettre à l'autre, comme d'habitude. Sur « Tables les plus jouées » et « Mes meilleurs scores », ils avancent d'une table à la fois.
 - Désactivé dans les Réglages de l'eXpansion pack (**Ordre de la roue**, `ADD_ON_WHEEL_ORDER=false`), l'entrée disparaît et la roue reste alphabétique.
 
 ---

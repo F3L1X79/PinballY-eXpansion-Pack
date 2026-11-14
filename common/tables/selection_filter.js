@@ -3,14 +3,14 @@
 // Add-on computes (Challenge Tables, My High Scores). Returns the filter's
 // full id ("User.<id>") and runAgainIfCurrent. Listens to "wheelmode".
 // - Runs again only when its tables changed, so closing a menu never moves the wheel.
-// - Listed in the Wheel Order, unless ranked: then in its own order, each table its own Next/Previous Page stop.
+// - Listed and paged in the Wheel Order, unless ranked: then in its own order, each table its own Next/Previous Page stop.
 // ============================================================
 
 import { safeHandler } from "../core/safe_handler.js";
 import { ALL_TABLES_FILTER } from "../core/pinbally_host.js";
 
-// compareForSort: how an unranked selection sorts (the Add-ons pass the Wheel Order's).
-export function createSelectionFilter(host, { scriptName, selectConfigIds, ranked = false, compareForSort, ...filter }) {
+// sortFields: an unranked selection's compareForSort and pageGroup (the Add-ons pass the Wheel Order's).
+export function createSelectionFilter(host, { scriptName, selectConfigIds, ranked = false, sortFields = {}, ...filter }) {
     const filterId = `User.${filter.id}`;
     // Kept after the scan, like PinballY keeps the filter's selection: the
     // position of each table, by config ID.
@@ -18,15 +18,15 @@ export function createSelectionFilter(host, { scriptName, selectConfigIds, ranke
     let positions = new Map();
     const sameTables = tables => tables.length === configIds.length && tables.every((configId, index) => configId === configIds[index]);
     // PinballY sorts and pages the wheel with these once select() is done.
-    const sortFields = ranked ? {
+    const rankedSortFields = {
         compareForSort: (a, b) => positions.get(a.configId) - positions.get(b.configId),
         // Group 0 would make the wheel skip the table, so groups start at 1.
         pageGroup: game => positions.get(game.configId) + 1,
-    } : { compareForSort };
+    };
 
     host.createFilter({
         ...filter,
-        ...sortFields,
+        ...(ranked ? rankedSortFields : sortFields),
         // Fires each time the filter runs, before PinballY scans the tables.
         before: safeHandler(scriptName, () => {
             configIds = selectConfigIds();

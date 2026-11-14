@@ -1494,6 +1494,31 @@ export function createFakePinballYHost({
         wheelConfigIds = [...configIds.slice(start), ...configIds.slice(0, start)];
     }
 
+    // Like Next Page / Previous Page on the wheel (FilterInfo.html, pageGroup):
+    // the wheel steps until a table of another page group, the filter's
+    // pageGroup or else the first letter of the title. Backwards, it goes
+    // on to that group's first table, as the button switches "to the
+    // previous letter" (CommandButtonEvent.html). Returns the offset of the
+    // table reached, 0 when the wheel has a single group.
+    function pageOffset(direction) {
+        const shown = host.getWheelTables();
+        const filter = filters.get(currentFilterId);
+        const groupOf = filter && filter.pageGroup
+            ? game => filter.pageGroup(game)
+            : game => String(game.title ?? "").charAt(0);
+        const at = offset => shown[((offset % shown.length) + shown.length) % shown.length];
+        if (shown.length === 0) return 0;
+        const startGroup = groupOf(shown[0]);
+        let offset = direction;
+        while (Math.abs(offset) < shown.length && groupOf(at(offset)) === startGroup) offset += direction;
+        if (Math.abs(offset) >= shown.length) return 0;
+        if (direction < 0) {
+            const reached = groupOf(at(offset));
+            while (Math.abs(offset - 1) < shown.length && groupOf(at(offset - 1)) === reached) offset -= 1;
+        }
+        return offset;
+    }
+
     // Like FilterInfo.groupCmd: the command of the main menu item opening
     // the filter's group; undefined for a top-level filter.
     function groupCmdOf(filterId) {
@@ -1794,6 +1819,17 @@ export function createFakePinballYHost({
         // The player moves the wheel by this offset (Next, Prev, Next Page...):
         // unlike setWheelGame(), PinballY fires "gameselect" with the new table.
         moveWheel(offset) {
+            setWheelGame(offset);
+            fire("gameselect", { game: host.getWheelTables()[0] || null });
+        },
+        // The player presses Next Page or Previous Page on the wheel:
+        // "commandbuttondown" fires first, then, unless a listener cancelled
+        // it, the wheel turns to the first table of the next or previous page
+        // group and "gameselect" fires with it.
+        pressPageButton(pageCommand) {
+            if (fire("commandbuttondown", { command: pageCommand, repeat: false }).defaultPrevented) return;
+            const offset = pageOffset(pageCommand === "NextPage" ? 1 : -1);
+            if (offset === 0) return;
             setWheelGame(offset);
             fire("gameselect", { game: host.getWheelTables()[0] || null });
         },

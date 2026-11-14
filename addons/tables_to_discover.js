@@ -13,7 +13,7 @@ import { getActiveProfileTables } from "../common/tables/visible_tables.js";
 import {
     getTablesToDiscover, TABLES_TO_DISCOVER_FILTER_ID, TABLES_TO_DISCOVER_FULL_FILTER_ID,
 } from "../common/tables/tables_to_discover.js";
-import { compareInWheelOrder } from "../common/tables/wheel_order.js";
+import { WHEEL_ORDER_SORT } from "../common/tables/wheel_order.js";
 
 const SCRIPT_NAME = "TablesToDiscover";
 
@@ -40,7 +40,7 @@ export default function init() {
             gameIds = new Set(getTablesToDiscover(getActiveProfileTables(), profileStore).map(game => game.id));
         }),
         select: game => gameIds.has(game.id),
-        compareForSort: compareInWheelOrder,
+        ...WHEEL_ORDER_SORT,
     });
 
     // refreshFilter() runs the filter again, so its before() reads the new

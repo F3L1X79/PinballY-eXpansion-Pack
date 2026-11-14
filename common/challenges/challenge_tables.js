@@ -13,12 +13,12 @@ const SCRIPT_NAME = "ChallengeTables";
 // PinballY's "All Tables" has sort key "3000" and the Hall of Fame "6000" in the [Top] group.
 const UNDER_ALL_TABLES_SORT_KEY = "5000";
 
-// compareForSort: how the wheel lists them, the Wheel Order's in the Add-on.
-export function createChallengeTables(host, challenges, mainMenu, { compareForSort }) {
+// sortFields: how the wheel lists and pages them, the Wheel Order's in the Add-on.
+export function createChallengeTables(host, challenges, mainMenu, { sortFields }) {
     const selectConfigIds = () => challenges.getTablesToPlay().map(table => table.configId);
     const { filterId } = createSelectionFilter(host, {
         scriptName: SCRIPT_NAME,
-        compareForSort,
+        sortFields,
         id: "project.ChallengeTables",
         title: lang.customMenuLabels.challengeTables,
         group: "[Top]",

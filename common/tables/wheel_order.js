@@ -1,9 +1,9 @@
 // ============================================================
-// Wheel Order module: the single place that knows the order the wheel lists
-// the Active Filter's tables in, alphabetical or by year. Reads and writes
-// it in cabinet.json, gives the compare the pack's own filters sort with and
-// the chosen filter (the one the player picked). start() creates the sorted
-// copy, listens to "filterselect" and logs the alphabetical order check.
+// Wheel Order module: the order the wheel lists the Active Filter's tables
+// in, alphabetical or by year, saved in cabinet.json. Gives the compare and
+// page groups the pack's filters sort and page with, and the chosen filter.
+// start() creates the sorted copy, listens to "filterselect" and logs the
+// cabinet checks (alphabetical order, each Next / Previous Page reached).
 // - By year, a PinballY or other script's filter choice is cancelled and its sorted copy shown instead.
 // - The pack's own filters are never copied: switching the order runs the active one again.
 // - With the Wheel Order Add-on off, the order is always alphabetical.
@@ -48,6 +48,34 @@ export function compareByYear(a, b) {
     }
     return compareTitles(a, b);
 }
+
+// Next / Previous Page groups. Group 0 makes the wheel skip the table, so
+// none is 0: a decade is its first year, the tables without a year one last
+// group after every decade.
+const NO_YEAR_PAGE_GROUP = 100000;
+const decadeOf = year => Math.floor(year / 10) * 10;
+
+export function pageGroupByYear(game) {
+    const year = yearOf(game);
+    return year === null ? NO_YEAR_PAGE_GROUP : decadeOf(year);
+}
+
+const firstLetterOf = game => String(game.title ?? "").charAt(0);
+
+// Like PinballY's default grouping (FilterInfo.html): the Unicode code of the title's first letter.
+function pageGroupByLetter(game) {
+    const first = firstLetterOf(game);
+    return first === "" ? 1 : first.codePointAt(0);
+}
+
+// The page group as the Info Log names it.
+function pageGroupLabel(game, isByYear) {
+    if (!isByYear) return `letter ${firstLetterOf(game)}`;
+    const group = pageGroupByYear(game);
+    return group === NO_YEAR_PAGE_GROUP ? "no year" : `the ${group}s`;
+}
+
+const PAGE_COMMANDS = Object.freeze({ NextPage: "Next Page", PrevPage: "Previous Page" });
 
 // isEnabled: whether the Wheel Order Add-on is on.
 export function createWheelOrder(host, profileStore, { isEnabled }) {
@@ -149,6 +177,35 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
         }
     }
 
+    // Cabinet check: the page group each Next / Previous Page reaches on a
+    // filter paging in the Wheel Order (PinballY gives no way to read its own).
+    function listenToPageButtons() {
+        // The page button just pressed, until the table it reaches is selected.
+        let pressedPage = null;
+        // PinballY gives no filter's pageGroup back: the compare the host kept,
+        // the module's own function, tells a filter created with WHEEL_ORDER_SORT.
+        const isPagedInWheelOrder = filterId => filterId === COPY_FULL_ID
+            || host.getFilterCompare(filterId) === compareInWheelOrder;
+        // Fires before PinballY carries out the button: the turn comes after.
+        host.on("commandbuttondown", safeHandler(SCRIPT_NAME, ev => {
+            pressedPage = PAGE_COMMANDS[ev.command] !== undefined && host.getUIMode() === "wheel"
+                && isPagedInWheelOrder(host.getCurrentFilterId()) ? ev.command : null;
+        }));
+        // A press that left the wheel in place (a single page group) fires no
+        // "gameselect": forgotten before a menu or filter change fires one.
+        const forgetPress = safeHandler(SCRIPT_NAME, () => { pressedPage = null; });
+        host.on("menuopen", forgetPress);
+        host.onGameListEvent("filterselect", forgetPress);
+        // Fires once the wheel has turned; never when a single page group leaves it in place.
+        host.onGameListEvent("gameselect", safeHandler(SCRIPT_NAME, ev => {
+            if (pressedPage === null || !ev.game) return;
+            const command = PAGE_COMMANDS[pressedPage];
+            pressedPage = null;
+            logInfo(SCRIPT_NAME, `${command} on ${getChosenFilterId()}, ${isByYear() ? "by year" : "alphabetical"}: `
+                + `${pageGroupLabel(ev.game, isByYear())}, "${ev.game.title}".`, host);
+        }));
+    }
+
     // Creates the sorted copy and takes the player's filter choices over;
     // once, by the Wheel Order Add-on. copyTitle: the copy's name where
     // PinballY and the menus name the Active Filter.
@@ -166,7 +223,9 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
             // testGame gives null for an invalid game.
             select: game => source !== null && source.testGame(game) === true,
             compareForSort: compareByYear,
+            pageGroup: pageGroupByYear,
         });
+        listenToPageButtons();
         // Fires before a filter the player picked is applied: while by year,
         // it is cancelled and the copy of that filter shown instead, on the
         // next tick: no setCurFilter runs inside PinballY's own dispatch,
@@ -191,6 +250,7 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
     }
 
     const isCopyActive = () => isStarted && host.getCurrentFilterId() === COPY_FULL_ID;
+    const getChosenFilterId = () => (isCopyActive() ? sourceId : host.getCurrentFilterId());
 
     // The filter the player picked: the copy's source while the copy stands
     // in for it, the Active Filter otherwise. isStandIn: the copy is active,
@@ -213,7 +273,7 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
         isByYear,
         start,
         getChosenFilter,
-        getChosenFilterId: () => (isCopyActive() ? sourceId : host.getCurrentFilterId()),
+        getChosenFilterId,
         // Switches between alphabetical and by year, saved in cabinet.json at
         // once, and puts it on the Active Filter, the same table selected.
         toggle() {
@@ -227,6 +287,8 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
         // The compareForSort of the pack's own filters (spec #513): by year
         // or, like PinballY's default, by title.
         compareForSort: (a, b) => (isByYear() ? compareByYear(a, b) : compareTitles(a, b)),
+        // Their pageGroup: by decade or, like PinballY's default, by first letter.
+        pageGroup: game => (isByYear() ? pageGroupByYear(game) : pageGroupByLetter(game)),
     };
 }
 
@@ -241,4 +303,7 @@ export function getWheelOrder() {
 
 // For the pack's own filters' createFilter: reads the shared Wheel Order
 // each time PinballY sorts, so the Add-ons' init order does not matter.
-export const compareInWheelOrder = (a, b) => getWheelOrder().compareForSort(a, b);
+const compareInWheelOrder = (a, b) => getWheelOrder().compareForSort(a, b);
+const pageGroupInWheelOrder = game => getWheelOrder().pageGroup(game);
+// What the pack's own unranked filters sort and page with.
+export const WHEEL_ORDER_SORT = Object.freeze({ compareForSort: compareInWheelOrder, pageGroup: pageGroupInWheelOrder });
