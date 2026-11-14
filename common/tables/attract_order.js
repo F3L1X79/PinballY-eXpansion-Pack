@@ -5,7 +5,8 @@
 // interval, from an unprevented "attractmodestart" to "attractmodeend", the
 // next table or a fast jump through a new shuffle. Logs the cabinet checks.
 // - saveAttractOrderSwitches (from the Settings) writes PinballY's option: PinballY reads it only at its start.
-// - The pack switches only while that option holds the long value, else PinballY switches too.
+// - The pack switches only while that option holds the long value; at startup another value is the owner's new one.
+// - Never write the option from an unreadable kept value: logged, the option left as it is.
 // - Never calls optionSettings.save(): PinballY saves its dirty settings before quitting.
 // ============================================================
 
@@ -13,6 +14,7 @@ import config from "../core/config.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { safeHandler } from "../core/safe_handler.js";
 import { logInfo } from "../core/info_log.js";
+import { logError } from "../core/error_log.js";
 import { getProfileStore } from "../profiles/profile_store.js";
 
 const SCRIPT_NAME = "AttractOrder";
@@ -42,12 +44,12 @@ function shuffle(host, items) {
     return shuffled;
 }
 
-// The wheel's tables by configId in a new order for Whole Wheel. The table on
-// screen is left out of a new attract mode's first shuffle (already shown),
-// and never first in the next ones.
 // The wheel's tables by configId, the one on screen first.
 const wheelConfigIds = host => host.getWheelTables().map(game => game.configId);
 
+// The wheel's tables by configId in a new order for Whole Wheel. The table on
+// screen is left out of a new attract mode's first shuffle (already shown),
+// and never first in the next ones.
 function shuffleWheel(host, { includeOnScreen }) {
     const [onScreen, ...others] = wheelConfigIds(host);
     const shuffled = shuffle(host, others);
@@ -56,26 +58,41 @@ function shuffleWheel(host, { includeOnScreen }) {
     return [...shuffled.slice(0, at), onScreen, ...shuffled.slice(at)];
 }
 
-// Called once the Settings saved the Attract Order from one value to the
-// other: PinballY's own interval is kept in cabinet.json and the long value
-// written in its place, or the kept one given back.
-export function saveAttractOrderSwitches(host, profileStore, from, to) {
-    const kept = profileStore.getCabinetData()[KEPT_SWITCH_TIME_KEY];
-    if (!isPackSwitching(to)) {
-        if (kept === undefined) return;
-        host.settings.set(SWITCH_TIME_KEY, kept);
-        profileStore.updateCabinetData(cabinet => { delete cabinet[KEPT_SWITCH_TIME_KEY]; });
-        host.log(`[${SCRIPT_NAME}] ${SWITCH_TIME_KEY} given back to PinballY: ${kept}.`);
+const readSwitchTime = host => host.settings.getInt(SWITCH_TIME_KEY, PINBALLY_DEFAULT_SWITCH_TIME);
+const readKept = profileStore => profileStore.getCabinetData()[KEPT_SWITCH_TIME_KEY];
+
+const logUnreadableKept = (host, kept) => logError(SCRIPT_NAME, `ERROR ${KEPT_SWITCH_TIME_KEY} ${kept === undefined ? "missing" : `unreadable (${JSON.stringify(kept)})`} in cabinet.json; ${SWITCH_TIME_KEY} left as it is.`, host);
+
+// The kept value back in PinballY's option, then forgotten; an unreadable one
+// is logged and the option left as it is. Also for the Wheel Order Add-on saved off.
+export function giveAttractSwitchesBack(host, profileStore) {
+    const kept = readKept(profileStore);
+    if (kept === undefined) return;
+    if (!isSwitchTime(kept)) {
+        logUnreadableKept(host, kept);
         return;
     }
-    if (isPackSwitching(from)) return;
-    const current = host.settings.getInt(SWITCH_TIME_KEY, PINBALLY_DEFAULT_SWITCH_TIME);
+    host.settings.set(SWITCH_TIME_KEY, kept);
+    profileStore.updateCabinetData(cabinet => { delete cabinet[KEPT_SWITCH_TIME_KEY]; });
+    host.log(`[${SCRIPT_NAME}] ${SWITCH_TIME_KEY} given back to PinballY: ${kept}.`);
+}
+
+// PinballY's current interval kept in cabinet.json and the long value written
+// in its place, for the next start.
+function takeSwitchesOver(host, profileStore) {
+    const current = readSwitchTime(host);
     // The long value already there is the pack's own, never PinballY's interval.
     if (isSwitchTime(current) && current !== LONG_SWITCH_TIME) {
         profileStore.updateCabinetData(cabinet => { cabinet[KEPT_SWITCH_TIME_KEY] = current; });
     }
     host.settings.set(SWITCH_TIME_KEY, LONG_SWITCH_TIME);
     host.log(`[${SCRIPT_NAME}] ${SWITCH_TIME_KEY} kept (${current}), ${LONG_SWITCH_TIME} written for the next start.`);
+}
+
+// Called once the Settings saved the Attract Order from one value to the other.
+export function saveAttractOrderSwitches(host, profileStore, from, to) {
+    if (!isPackSwitching(to)) giveAttractSwitchesBack(host, profileStore);
+    else if (!isPackSwitching(from)) takeSwitchesOver(host, profileStore);
 }
 
 // order: the Attract Order this session runs with.
@@ -139,16 +156,33 @@ export function createAttractOrder(host, profileStore, { order }) {
         }));
     }
 
-    // Once, by the Wheel Order Add-on: As PinballY does nothing at all.
+    // Once, by the Wheel Order Add-on, or by main.js with that Add-on off. The
+    // backstop for a hand-edited .env.local or the owner's own change in PinballY.
     function start() {
         if (isStarted) return;
         isStarted = true;
-        const switchTime = host.settings.getInt(SWITCH_TIME_KEY, PINBALLY_DEFAULT_SWITCH_TIME);
+        const kept = readKept(profileStore);
+        // As PinballY with nothing kept: the pack does nothing at all.
+        if (!isPackSwitching(order) && kept === undefined) return;
+        const switchTime = readSwitchTime(host);
         // Cabinet check: the key PinballY's option is read under, and its value.
         logInfo(SCRIPT_NAME, `${SWITCH_TIME_KEY} read at startup: ${host.settings.getString(SWITCH_TIME_KEY)}, Attract Order ${order}.`, host);
-        if (!isPackSwitching(order) || switchTime !== LONG_SWITCH_TIME) return;
-        const kept = profileStore.getCabinetData()[KEPT_SWITCH_TIME_KEY];
-        if (!isSwitchTime(kept)) return;
+        // Only while the option holds the long value is the kept one needed.
+        const holdsLongValue = switchTime === LONG_SWITCH_TIME;
+        if (holdsLongValue && !isSwitchTime(kept)) {
+            logUnreadableKept(host, kept);
+            return;
+        }
+        if (!isPackSwitching(order)) {
+            giveAttractSwitchesBack(host, profileStore);
+            return;
+        }
+        if (!holdsLongValue) {
+            // PinballY loaded that value: it switches this session, the pack from the next start.
+            host.log(`[${SCRIPT_NAME}] Attract Order ${order}: ${SWITCH_TIME_KEY} holds ${switchTime}, the owner's new interval; PinballY switches this session.`);
+            takeSwitchesOver(host, profileStore);
+            return;
+        }
         host.log(`[${SCRIPT_NAME}] Attract Order ${order}: the pack switches every ${kept} s.`);
         listenToAttractMode(kept);
     }
@@ -160,7 +194,9 @@ let sharedAttractOrder = null;
 
 export function getAttractOrder() {
     if (!sharedAttractOrder) {
-        sharedAttractOrder = createAttractOrder(createPinballYHost(), getProfileStore(), { order: config.attractOrder });
+        // With the Wheel Order Add-on off, As PinballY whatever .env.local says.
+        const order = config.addOns.wheelOrder === false ? ATTRACT_ORDERS.PINBALLY : config.attractOrder;
+        sharedAttractOrder = createAttractOrder(createPinballYHost(), getProfileStore(), { order });
     }
     return sharedAttractOrder;
 }

@@ -33,7 +33,7 @@ import { getScriptReaderInstaller, scriptReaderDialogText } from "../table_roms/
 import { getScriptReaderState } from "../table_roms/script_reader_state.js";
 import { ADD_ON_GROUPS } from "./add_on_catalogue.js";
 import { saveEnvSetting } from "./env_local_rewrite.js";
-import { saveAttractOrderSwitches } from "../tables/attract_order.js";
+import { saveAttractOrderSwitches, giveAttractSwitchesBack } from "../tables/attract_order.js";
 
 const SCRIPT_NAME = "ExpansionPackSettings";
 const OPERATOR_MENU_ID = "operator";
@@ -356,9 +356,12 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         onSaved();
     }
 
+    // The Attract Order belongs to the Wheel Order Add-on: saved off, it gives
+    // PinballY's interval back, never leaving attract mode frozen.
     function saveAddOn() {
         const { key, value } = page;
-        save(`addOns.${key}`, value, { onSaved: () => backToCategory(key), reopen: () => openPage(key) });
+        const alsoWrite = key === "wheelOrder" && !value ? () => giveAttractSwitchesBack(host, profileStore) : null;
+        save(`addOns.${key}`, value, { onSaved: () => backToCategory(key), reopen: () => openPage(key), alsoWrite });
     }
 
     // What Discord Rich Presence makes public, the cursor on Cancel so that

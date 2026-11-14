@@ -1,7 +1,8 @@
 // ============================================================
 // The Attract Order In Order through main.js with the Wheel Order Add-on
-// off: the Attract Order is As PinballY, so the pack never moves the wheel
-// in attract mode nor writes PinballY's "Switch games every".
+// off: the Attract Order is As PinballY, so the kept value goes back to
+// PinballY's "Switch games every" at startup and the pack never moves the
+// wheel in attract mode.
 // ============================================================
 
 import { test } from "node:test";
@@ -32,6 +33,7 @@ test("with the Wheel Order Add-on off, In Order is As PinballY", async () => {
     fake.advanceTime(60000);
 
     assert.deepEqual(fake.wheelMoves(), []);
-    assert.equal(fake.writtenSettingsKeys().has(SWITCH_TIME_KEY), false);
+    assert.equal(fake.storedSettings()[SWITCH_TIME_KEY], "10");
+    assert.equal(JSON.parse(fake.readFile(CABINET_FILE)).attractOrderSwitchTime, undefined);
     assertNoErrorLogged(fake);
 });

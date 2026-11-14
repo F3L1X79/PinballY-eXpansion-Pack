@@ -3,7 +3,7 @@
 // after the language, only while the Wheel Order Add-on is saved on; its
 // page lists As PinballY, In Order and Whole Wheel. Saving one of the last two
 // keeps PinballY's "Switch games every" and writes the long value (the other
-// leaves it alone); As PinballY gives it back. All apply on restart.
+// leaves it alone); As PinballY or the Wheel Order Add-on off gives it back.
 // ============================================================
 
 import { test } from "node:test";
@@ -92,6 +92,26 @@ test("saving As PinballY gives the kept value back and forgets it", () => {
 
     assert.equal(fake.readFile(ENV_LOCAL), "ATTRACT_ORDER=pinballY\r\n");
     assert.equal(highlightedEntry(fake), "Attract Order: As PinballY");
+    assert.equal(keptSwitchTime(), undefined);
+    assert.equal(switchTime(), "7");
+});
+
+test("saving the Wheel Order Add-on off gives the kept value back and forgets it", () => {
+    choose("Attract Order: As PinballY");
+    choose("Whole Wheel");
+    assert.equal(keptSwitchTime(), 7);
+
+    choose("Menus and filters");
+    for (let guard = 0; highlightedEntry(fake) !== "Wheel Order: On"; guard++) {
+        if (guard > 100) throw new Error("No Wheel Order line in the category.");
+        press(fake, "Next");
+    }
+    press(fake, "Select");
+    fake.advanceTime(OPEN_OVER_MS);
+    press(fake, "Select");
+    choose("Save");
+
+    assert.match(fake.readFile(ENV_LOCAL), /ADD_ON_WHEEL_ORDER=false/);
     assert.equal(keptSwitchTime(), undefined);
     assert.equal(switchTime(), "7");
 });
