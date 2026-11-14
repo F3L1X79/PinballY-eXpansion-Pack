@@ -1,6 +1,6 @@
 // ============================================================
 // Adds a "Tables to Discover" filter to the main menu, before the Hall of
-// Fame: the tables the active Profile can see and never played, by title.
+// Fame: the tables the active Profile can see and never played, in the Wheel Order.
 // Recomputed when the filter is activated, and on a Profile switch or Reset
 // while the filter is on the wheel.
 // ============================================================
@@ -13,6 +13,7 @@ import { getActiveProfileTables } from "../common/tables/visible_tables.js";
 import {
     getTablesToDiscover, TABLES_TO_DISCOVER_FILTER_ID, TABLES_TO_DISCOVER_FULL_FILTER_ID,
 } from "../common/tables/tables_to_discover.js";
+import { compareInWheelOrder } from "../common/tables/wheel_order.js";
 
 const SCRIPT_NAME = "TablesToDiscover";
 
@@ -25,9 +26,8 @@ export default function init() {
     const profileStore = getProfileStore();
     const host = createPinballYHost();
 
-    // Position of each table in the selection, by game id. Kept after the
-    // scan: PinballY sorts the wheel with it once select() is done.
-    let positions = new Map();
+    // The ids of the tables to discover, kept after the scan for select().
+    let gameIds = new Set();
 
     // Through the host, which keeps compareForSort for the status line.
     host.createFilter({
@@ -37,11 +37,10 @@ export default function init() {
         sortKey: BEFORE_HALL_OF_FAME_SORT_KEY,
         // Fires each time the filter is activated, before PinballY scans the tables.
         before: safeHandler(SCRIPT_NAME, () => {
-            const tables = getTablesToDiscover(getActiveProfileTables(), profileStore);
-            positions = new Map(tables.map((game, index) => [game.id, index]));
+            gameIds = new Set(getTablesToDiscover(getActiveProfileTables(), profileStore).map(game => game.id));
         }),
-        select: game => positions.has(game.id),
-        compareForSort: (a, b) => positions.get(a.id) - positions.get(b.id),
+        select: game => gameIds.has(game.id),
+        compareForSort: compareInWheelOrder,
     });
 
     // refreshFilter() runs the filter again, so its before() reads the new

@@ -8,7 +8,10 @@ import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getMainMenu } from "../common/menus/main_menu.js";
 import { createHiddenTables } from "../common/tables/hidden_tables.js";
+import { compareInWheelOrder } from "../common/tables/wheel_order.js";
 
 export default function init() {
-    createHiddenTables(createPinballYHost(), { profileStore: getProfileStore(), mainMenu: getMainMenu() });
+    createHiddenTables(createPinballYHost(), {
+        profileStore: getProfileStore(), mainMenu: getMainMenu(), compareForSort: compareInWheelOrder,
+    });
 }

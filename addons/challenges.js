@@ -12,11 +12,12 @@ import { getChallenges } from "../common/challenges/challenge.js";
 import { createChallengeCard } from "../common/challenges/challenge_card.js";
 import { createChallengeTables } from "../common/challenges/challenge_tables.js";
 import { getMainMenu } from "../common/menus/main_menu.js";
+import { compareInWheelOrder } from "../common/tables/wheel_order.js";
 import config from "../common/core/config.js";
 
 export default function init() {
     const host = createPinballYHost();
     const underBadge = config.addOns.profilePicker !== false;
     createChallengeCard(host, getChallenges(), getProfileStore(), { underBadge });
-    createChallengeTables(host, getChallenges(), getMainMenu());
+    createChallengeTables(host, getChallenges(), getMainMenu(), { compareForSort: compareInWheelOrder });
 }

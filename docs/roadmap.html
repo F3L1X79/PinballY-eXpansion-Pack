@@ -196,7 +196,7 @@
         <span class="recap" id="recap" aria-label="Chantiers par effort"></span>
       </div>
       <div class="gauge" aria-hidden="true"><i id="hero-gauge" style="width:0"></i></div>
-      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 13.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
+      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 14.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
     </div>
   </header>
 
@@ -225,6 +225,7 @@
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
+          <a class="chip tr-share" href="#script-conflicts"><b></b>Conflits de scripts</a>
         </div>
         <div class="cell">
           <a class="chip tr-profiles" href="#year-in-pinball"><b></b>Year in Pinball</a>
@@ -391,6 +392,30 @@
               <li>Le coût d'un calque permanent redessiné à chaque changement de table, sans gêner le défilement rapide de la roue : dessiner seulement à l'arrêt, via <code>getDrawingAhead()</code> ? Caché pendant une partie, les menus et les Drawn Screens ; aucune animation sans fin.</li>
             </ul>
             <p class="ctx">Idée de Félix du 14/11/2026, pendant l'implémentation de la roue triée par année.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-share" id="script-conflicts" data-track="share" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Prévenir quand un autre script entre en conflit avec le pack</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen</span></div>
+          </div>
+          <p>Le pack repère les scripts de <code>Scripts</code> qui se disputent avec un de ses Add-ons le même écran ou le même événement de PinballY (un script de vidéo de lancement contre Seamless Launch Overlay, par exemple), le dit au propriétaire de la borne et lui propose quoi faire, au lieu de le laisser croire à un bug du pack.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>research</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/research</code> (ce que PinballY laisse voir des autres scripts, les scripts répandus sur VPForums et ce qu'ils touchent) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code></div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Comment repérer un conflit : PinballY ne donne sans doute pas la liste des gestionnaires d'un événement. Lire au démarrage les <code>.js</code> de <code>Scripts</code> et y chercher les événements et objets que nos Add-ons prennent (<code>launchoverlayshow</code> + <code>preventDefault</code>, <code>launchOverlay.bg</code>, <code>backglassWindow</code>…) ? Ou une liste de scripts connus (LaunchVideo de RichardL64…) ? Ou voir l'effet (l'overlay déjà chargé par quelqu'un d'autre) ?</li>
+              <li>Que faire d'un conflit : une ligne dans <code>errors.log</code>, un toast « Problem » pour l'Admin Profile, l'Add-on du pack qui cède la place de lui-même, ou un choix proposé (« garder le vôtre / garder celui du pack ») ?</li>
+              <li>Une fausse alerte (un script qui écoute le même événement sans rien gêner) coûte cher en confiance : où mettre le seuil ?</li>
+              <li>Le guide : une page « Avec vos autres scripts » qui liste les conflits connus et leur réglage ?</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 14/11/2026, après le départ de FD (VPForums), qui faisait tourner LaunchVideo.js à côté du pack : les deux prenaient l'overlay de lancement.</p>
           </details>
         </div>
       </li>

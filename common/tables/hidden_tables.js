@@ -14,7 +14,8 @@ const SCRIPT_NAME = "HiddenTables";
 // PinballY's "Favorites" filter has sort key "7000" in the [Top] group.
 const UNDER_FAVORITES_SORT_KEY = "7500";
 
-export function createHiddenTables(host, { profileStore, mainMenu }) {
+// compareForSort: how the wheel lists them, the Wheel Order's in the Add-on.
+export function createHiddenTables(host, { profileStore, mainMenu, compareForSort }) {
     // The child wheel metafilter already keeps the Adult Tables off the
     // wheel; left out here too, so that the entry follows what the wheel shows.
     const selectConfigIds = () => host.getAllTables()
@@ -29,6 +30,7 @@ export function createHiddenTables(host, { profileStore, mainMenu }) {
         // Otherwise PinballY never passes a hidden table to select() (FilterInfo).
         includeHidden: true,
         selectConfigIds,
+        compareForSort,
     });
     mainMenu.showFilterWhen(filterId, () => selectConfigIds().length > 0);
 }

@@ -1,9 +1,11 @@
 // ============================================================
 // Wheel Order module: the single place that knows the order the wheel lists
 // the Active Filter's tables in, alphabetical or by year. Reads and writes
-// it in cabinet.json, gives the year compare and the chosen filter (the one
-// the player picked). start() creates the sorted copy and listens to "filterselect".
+// it in cabinet.json, gives the compare the pack's own filters sort with and
+// the chosen filter (the one the player picked). start() creates the sorted
+// copy, listens to "filterselect" and logs the alphabetical order check.
 // - By year, a PinballY or other script's filter choice is cancelled and its sorted copy shown instead.
+// - The pack's own filters are never copied: switching the order runs the active one again.
 // - With the Wheel Order Add-on off, the order is always alphabetical.
 // - An unknown value in cabinet.json is logged and read as alphabetical.
 // ============================================================
@@ -24,6 +26,8 @@ const COPY_ID = "project.WheelOrder";
 const COPY_FULL_ID = `User.${COPY_ID}`;
 const PACK_FILTER_PREFIX = "User.project.";
 const UNCOPIED_FILTERS = ["Hidden", "Unconfigured"];
+// The titles the alphabetical order check logs from each list.
+const ALPHABETICAL_CHECK_TITLES = 12;
 
 // A table's release year, null when it has none (missing or not a positive number).
 function yearOf(game) {
@@ -72,7 +76,8 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
     // PinballY's filters and other scripts' are replaced by the copy; the
     // pack's own sort themselves (spec #513), and PinballY's Hidden and
     // Unconfigured filters show tables the copy never tests.
-    const isCopied = filterId => filterId !== COPY_FULL_ID && !filterId.startsWith(PACK_FILTER_PREFIX)
+    const isSelfSorting = filterId => filterId !== COPY_FULL_ID && filterId.startsWith(PACK_FILTER_PREFIX);
+    const isCopied = filterId => filterId !== COPY_FULL_ID && !isSelfSorting(filterId)
         && !UNCOPIED_FILTERS.includes(filterId);
 
     // Cabinet check: whether testGame of All leaves the Hidden tables out, as
@@ -95,10 +100,27 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
         logInfo(SCRIPT_NAME, `a listener registered after the cancelling one ${received ? "received" : "did NOT receive"} the cancelled filterselect.`, host);
     }
 
-    // Runs the copy again for its new source, then selects the table that
-    // was, when the copy has it: the help does not say where refreshFilter
+    // Cabinet check, once a start while alphabetical: whether PinballY's
+    // default order is localeCompare on the title. All Tables as the wheel
+    // shows it when it is the Active Filter (rotated to the pack's first
+    // table), as its getGames() gives it otherwise.
+    function checkAlphabeticalOrder() {
+        if (isByYear()) return;
+        const onWheel = host.getCurrentFilterId() === ALL_TABLES_FILTER;
+        const pinballY = onWheel ? host.getWheelTables() : host.getFilterInfo(ALL_TABLES_FILTER).getGames();
+        const pack = [...pinballY].sort(compareTitles);
+        const start = onWheel && pack.length > 0 ? pinballY.findIndex(game => game.configId === pack[0].configId) : 0;
+        const listed = [...pinballY.slice(start), ...pinballY.slice(0, start)];
+        const differ = listed.filter((game, index) => game.configId !== pack[index].configId).length;
+        const firstTitles = games => games.slice(0, ALPHABETICAL_CHECK_TITLES).map(game => game.title).join(", ");
+        logInfo(SCRIPT_NAME, `alphabetical order check, All Tables from ${onWheel ? "the wheel" : "getGames()"}: `
+            + `PinballY: ${firstTitles(listed)}; pack: ${firstTitles(pack)}; ${differ} of ${listed.length} places differ.`, host);
+    }
+
+    // Runs the Active Filter again, then selects the table that was, when
+    // the filter still has it: the help does not say where refreshFilter
     // leaves the wheel.
-    function refreshCopyKeepingTable() {
+    function refreshKeepingTable() {
         const current = host.getCurrentTable();
         host.refreshFilter();
         if (!current) return;
@@ -110,12 +132,13 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
     // selected when the copy has it (setCurrentFilter keeps it).
     function showCopyOf(filterId) {
         sourceId = filterId;
-        if (host.getCurrentFilterId() === COPY_FULL_ID) refreshCopyKeepingTable();
+        if (host.getCurrentFilterId() === COPY_FULL_ID) refreshKeepingTable();
         else host.setCurrentFilter(COPY_FULL_ID);
         checkHiddenTables();
     }
 
-    // Puts the Wheel Order on the Active Filter.
+    // Puts the Wheel Order on the Active Filter. A pack filter reads it each
+    // time it sorts, so it is already in that order at start.
     function applyToActiveFilter() {
         const activeId = host.getCurrentFilterId();
         if (isByYear()) {
@@ -164,6 +187,7 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
             if (cancelledFilterId !== null && ev.id === cancelledFilterId) reportLaterListener(true);
         }));
         applyToActiveFilter();
+        checkAlphabeticalOrder();
     }
 
     const isCopyActive = () => isStarted && host.getCurrentFilterId() === COPY_FULL_ID;
@@ -196,8 +220,13 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
             order = isByYear() ? WHEEL_ORDERS.ALPHABETICAL : WHEEL_ORDERS.BY_YEAR;
             profileStore.updateCabinetData(cabinet => { cabinet[CABINET_KEY] = order; });
             host.log(`[${SCRIPT_NAME}] Wheel Order: ${order}.`);
-            if (isStarted) applyToActiveFilter();
+            // A pack filter sorts itself: running it again sorts it anew.
+            if (isSelfSorting(host.getCurrentFilterId())) refreshKeepingTable();
+            else if (isStarted) applyToActiveFilter();
         },
+        // The compareForSort of the pack's own filters (spec #513): by year
+        // or, like PinballY's default, by title.
+        compareForSort: (a, b) => (isByYear() ? compareByYear(a, b) : compareTitles(a, b)),
     };
 }
 
@@ -209,3 +238,7 @@ export function getWheelOrder() {
     }
     return sharedWheelOrder;
 }
+
+// For the pack's own filters' createFilter: reads the shared Wheel Order
+// each time PinballY sorts, so the Add-ons' init order does not matter.
+export const compareInWheelOrder = (a, b) => getWheelOrder().compareForSort(a, b);

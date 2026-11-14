@@ -71,7 +71,8 @@ test("a Child Profile never sees an Adult Table on the wheel, in the Random Game
     assert.ok(wheel(fake).includes("Night Club (VPX 2022)"), "another letter case is not the adult category");
     const [originalTables] = fake.scriptFilters();
     fake.selectFilter(`User.${originalTables.id}`);
-    assert.deepEqual(wheel(fake), [MEDIEVAL, MARS], "a script filter");
+    // Original Tables lists its tables in the Wheel Order, alphabetical here.
+    assert.deepEqual(wheel(fake), [MARS, MEDIEVAL], "a script filter");
     fake.setWheelTables([ADULT, MARS], { filterId: "Favorites" });
     assert.deepEqual(wheel(fake), [MARS], "one of PinballY's own filters");
 
