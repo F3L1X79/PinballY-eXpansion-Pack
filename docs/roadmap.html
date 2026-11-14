@@ -295,7 +295,7 @@
             <summary>Questions ouvertes (5)</summary>
             <ul>
               <li>Le sélecteur : toute la barre A–Z (ou les décennies) avec la lettre en cours en surbrillance, ou seulement la lettre ? Les lettres sans table sont-elles grisées ou absentes ? Il reprend les sauts de page de PinballY (par lettre, par décennie avec le Wheel Order par année).</li>
-              <li>« x/xx » se calcule avec <code>gameList.getWheelCount()</code> et <code>getAllWheelGames()</code>, mis à jour sur <code>gameselect</code> et <code>filterselect</code>. Mais <code>setWheelGame</code> ne déclenche pas <code>gameselect</code> : à couvrir (mode attract, sauts du pack).</li>
+              <li>« x/xx » se calcule avec <code>gameList.getWheelCount()</code> et <code>getAllWheelGames()</code>, mis à jour sur <code>gameselect</code> et <code>filterselect</code>. Mais <code>setWheelGame</code> ne déclenche pas <code>gameselect</code> : les sauts de l'Attract Order arrivent par <code>getAttractOrder().onMove</code>, comme pour la Rating Plate ; les autres sauts du pack restent à couvrir.</li>
               <li>Le cœur suit les Favorite Tables du Profile actif (celles du pack, une liste par Profile), pas le <code>isFavorite</code> de PinballY : à confirmer, et que montrer avec Invité ?</li>
               <li>Quelles autres marques : note du Profile, record de la maison, table jamais jouée, Table of the Day ? Lesquelles restent lisibles sans surcharger la roue, et sont-elles réglables une à une ?</li>
               <li>Le coût d'un calque permanent redessiné à chaque changement de table, sans gêner le défilement rapide de la roue : dessiner seulement à l'arrêt, via <code>getDrawingAhead()</code> ? Caché pendant une partie, les menus et les Drawn Screens ; aucune animation sans fin.</li>
@@ -315,7 +315,7 @@
           </div>
           <p>En mode attract, PinballY avance d'un nombre de tables tiré entre 1 et 10. L'Attract Order laisse choisir : comme PinballY, dans l'ordre de la roue, ou toute la roue sans remise.</p>
           <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : spec #521, tickets #522 à #526 (#526 sur la borne) → <code>/implement</code>. À accorder avec le mode attract de <code>common/core/drawn_screen_controls.js</code> (un écran ouvert peut l'annuler)</div>
+          <div class="links">Flow Matt : spec #521, tickets #522 à #525 livrés ; reste <a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/526">#526</a>, à vérifier sur la borne. À accorder avec le mode attract de <code>common/core/drawn_screen_controls.js</code> (un écran ouvert peut l'annuler)</div>
           <details>
             <summary>Décisions du grill du 14/11/2026</summary>
             <ul>
