@@ -1,7 +1,8 @@
 // ============================================================
 // Filter Picker: the submenu that takes the wheel selections and filter
-// groups out of the main menu, with Add-ons' entries before Back. Created
-// by the main menu module; its entry names the chosen filter. Listens to
+// groups out of the main menu, with Add-ons' entries before Back, run at once
+// or opening a page of their own. Created by the main menu module; its entry
+// names the chosen filter. Listens to
 // "menuopen", "menuclose", "command", "attractmodestart" and "filterselect".
 // - Shown by turning a main menu opening into it, not with showMenu (no "menuopen").
 // - Back and Exit go up one level at a time (see docs/adr/0013).
@@ -11,6 +12,7 @@ import { safeHandler } from "../core/safe_handler.js";
 import lang from "../core/i18n.js";
 import { SEPARATOR_CMD } from "./menu_separator.js";
 import { translateMenuTitle } from "./menu_title_translation.js";
+import { createNativeMenus } from "../drawn_menu/drawn_menu.js";
 
 const SCRIPT_NAME = "FilterPicker";
 
@@ -33,7 +35,8 @@ export const FILTER_GROUPS = Object.freeze([
 // returns its command;
 // reopenMainMenuOn(name) opens the main menu with the cursor on an entry;
 // chosenFilter() is the Wheel Order module's getChosenFilter.
-export function createFilterPicker(host, { addMainMenuEntry, position, reopenMainMenuOn, chosenFilter }) {
+// getMenus() returns what shows an entry's page (the Drawn Menu module's).
+export function createFilterPicker(host, { addMainMenuEntry, position, reopenMainMenuOn, chosenFilter, getMenus = null }) {
     const groupCmds = FILTER_GROUPS.map(group => host.getBuiltInCommand(group.command));
     const groupCmdOfMenu = id => {
         const index = FILTER_GROUPS.findIndex(group => group.menuId === id);
@@ -42,8 +45,18 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
     const isGroupItem = item => groupCmds.includes(item.cmd);
     const backCmd = host.allocateCommand("filterPickerBack");
     const menuReturnCmd = host.getBuiltInCommand("MenuReturn");
-    // The Add-ons' entries just before Back, in the order added: { label(), cmd, action }.
+    // The Add-ons' entries just before Back, in the order added:
+    // { label(), cmd, action, page }.
     const extraEntries = [];
+    // The choices of the pages, each with its command: { cmd, isCurrent(), action }.
+    const pageChoices = [];
+    // What shows the pages, resolved on the first one shown: the Drawn Menus
+    // are created after the main menu (common/drawn_menu/drawn_menu.js).
+    let pageMenus = null;
+    const menusForPages = () => {
+        if (!pageMenus) pageMenus = getMenus ? getMenus() : createNativeMenus(host);
+        return pageMenus;
+    };
     // Set when the next main menu opening shows the Filter Picker instead:
     // { selectedCmd }, the item the cursor goes to (null for the first).
     let opening = null;
@@ -90,7 +103,7 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
             groups.map(item => Object.assign({}, item, { radio: item.cmd === chosen.groupCmd })),
         ].filter(items => items.length > 0);
         const extraItems = extraEntries
-            .map(entry => ({ title: entry.label(), cmd: entry.cmd }))
+            .map(entry => Object.assign({ title: entry.label(), cmd: entry.cmd }, entry.page ? { hasSubmenu: true } : {}))
             .filter(item => item.title !== undefined);
         ev.id = FILTER_PICKER_MENU_ID;
         ev.items = [
@@ -141,16 +154,57 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
     host.on("command", safeHandler(SCRIPT_NAME, ev => {
         if (shownLevel && ev.id !== menuReturnCmd) shownLevel.chosen = true;
         const extraEntry = extraEntries.find(entry => entry.cmd === ev.id);
+        const pageChoice = pageChoices.find(choice => choice.cmd === ev.id);
         if (ev.id === backCmd) back();
         else if (groupCmds.includes(ev.id)) openedGroupCmd = ev.id;
+        else if (extraEntry && extraEntry.page) showPage(extraEntry);
         else if (extraEntry) extraEntry.action();
+        else if (pageChoice && !pageChoice.isCurrent()) pageChoice.action();
     }));
+
+    // An entry's page, the cursor on its current choice. A native one goes
+    // up through its "menuclose" (shownLevel), a Drawn one through onBack;
+    // shownLevel is set before the Filter Picker's own "menuclose" follows.
+    function showPage(entry) {
+        const { id, title, choices } = entry.page;
+        const up = () => open(entry.cmd);
+        const choiceItems = choices.map(choice => {
+            const current = choice.isCurrent();
+            return { title: choice.label, cmd: choice.cmd, radio: current, selected: current };
+        });
+        shownLevel = { id, up, chosen: false };
+        menusForPages().show(id, [
+            { title, cmd: SEPARATOR_CMD },
+            { cmd: SEPARATOR_CMD },
+            ...choiceItems,
+            { cmd: SEPARATOR_CMD },
+            { title: lang.customMenuLabels.filterPickerBack, cmd: menuReturnCmd },
+        ], { onBack: up });
+    }
 
     // An Add-on's entry, just before Back; label: a function returning its
     // text on each opening (undefined leaves it out), action: run when
-    // chosen, the menus then closing as for a filter.
-    function addEntry({ name, label, action }) {
-        extraEntries.push({ label: safeHandler(SCRIPT_NAME, label), cmd: host.allocateCommand(name), action });
+    // chosen, the menus then closing as for a filter. Or, with page, the
+    // entry opens a page of its own: { title, choices: [{ name, label,
+    // isCurrent(), action }] }, a choice's action run only when it is not
+    // the current one, the menus then closing as for a filter.
+    function addEntry({ name, label, action = null, page = null }) {
+        const cmd = host.allocateCommand(name);
+        const shownPage = page && {
+            id: `${FILTER_PICKER_MENU_ID} ${name}`,
+            title: page.title,
+            choices: page.choices.map(choice => {
+                const pageChoice = {
+                    label: choice.label,
+                    cmd: host.allocateCommand(choice.name),
+                    isCurrent: safeHandler(SCRIPT_NAME, choice.isCurrent),
+                    action: choice.action,
+                };
+                pageChoices.push(pageChoice);
+                return pageChoice;
+            }),
+        };
+        extraEntries.push({ label: safeHandler(SCRIPT_NAME, label), cmd, action, page: shownPage });
     }
 
     // Fires when any menu closes, after the "menuopen" of a menu shown in

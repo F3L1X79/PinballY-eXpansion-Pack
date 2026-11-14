@@ -15,6 +15,7 @@ import { createFilterPicker } from "./filter_picker.js";
 import { SEPARATOR_CMD, isSeparator } from "./menu_separator.js";
 import { ratingOf } from "../profiles/profile_ratings.js";
 import { getWheelOrder } from "../tables/wheel_order.js";
+import { getDrawnMenus } from "../drawn_menu/drawn_menu.js";
 
 const SCRIPT_NAME = "MainMenu";
 
@@ -60,7 +61,8 @@ const activeFilterOf = host => () => ({
 });
 
 // chosenFilter(): the filter the Filter Picker names and marks.
-export function createMainMenu(host, { chosenFilter = activeFilterOf(host) } = {}) {
+// getMenus: what shows the Filter Picker's pages (createFilterPicker).
+export function createMainMenu(host, { chosenFilter = activeFilterOf(host), getMenus = null } = {}) {
     // Sorted by position.
     const entries = [];
     // One per conditioned filter: its item's command when it is left out this time.
@@ -104,6 +106,7 @@ export function createMainMenu(host, { chosenFilter = activeFilterOf(host) } = {
         position: MAIN_MENU_POSITION.FILTER_PICKER,
         reopenMainMenuOn: reopenOn,
         chosenFilter,
+        getMenus,
     });
 
     // The position of one of PinballY's items, by its command.
@@ -192,7 +195,10 @@ let sharedMainMenu = null;
 // One main menu for every Add-on, so their entries are ordered together.
 export function getMainMenu() {
     if (!sharedMainMenu) {
-        sharedMainMenu = createMainMenu(createPinballYHost(), { chosenFilter: () => getWheelOrder().getChosenFilter() });
+        sharedMainMenu = createMainMenu(createPinballYHost(), {
+            chosenFilter: () => getWheelOrder().getChosenFilter(),
+            getMenus: getDrawnMenus,
+        });
     }
     return sharedMainMenu;
 }

@@ -301,6 +301,10 @@ export default {
         // The Filter Picker's entry before Back, naming the current Wheel Order.
         wheelOrderAlphabetical: "Ordem: alfabética",
         wheelOrderByYear: "Ordem: por ano",
+        // The Wheel Order page that entry opens: its title and its two orders.
+        wheelOrderPage: "Ordem da roda",
+        wheelOrderPageAlphabetical: "Alfabética",
+        wheelOrderPageByYear: "Por ano",
         // The Drawn main menu's "Change Filter" entry, and its footer's label before the Active Filter.
         changeFilter: "Trocar filtro",
         activeFilterLabel: "Filtro ativo:",

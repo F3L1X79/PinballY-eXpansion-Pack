@@ -92,6 +92,7 @@ test("by year: Tables to Discover pages by decade, the tables without a year las
     fake.openMainMenu();
     fake.selectMenuItem(fake.currentMenu().items.find(item => item.cmd === fake.commandId("filterPicker")).title);
     fake.selectMenuItem(lang.customMenuLabels.wheelOrderAlphabetical);
+    fake.selectMenuItem(lang.customMenuLabels.wheelOrderPageByYear);
     await chooseFilter(TABLES_TO_DISCOVER);
     assert.equal(fake.currentFilterId(), TABLES_TO_DISCOVER);
     selectTable("Eight Ball");
@@ -118,6 +119,7 @@ test("a page press that leaves the wheel in place logs nothing, even after a fil
     fake.openMainMenu();
     fake.selectMenuItem(fake.currentMenu().items.find(item => item.cmd === fake.commandId("filterPicker")).title);
     fake.selectMenuItem(lang.customMenuLabels.wheelOrderByYear);
+    fake.selectMenuItem(lang.customMenuLabels.wheelOrderPageAlphabetical);
     // Only tables starting with B: Original Tables has a single page group.
     fake.setTables(TABLES.filter(game => game.title.startsWith("B")));
     await chooseFilter(ORIGINAL_TABLES);

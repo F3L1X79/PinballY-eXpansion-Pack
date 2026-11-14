@@ -57,6 +57,9 @@ const switchWheelOrder = async (label) => {
     fake.openMainMenu();
     fake.selectMenuItem(fake.currentMenu().items.find(item => item.cmd === fake.commandId("filterPicker")).title);
     fake.selectMenuItem(label);
+    // On the Wheel Order page, the order not marked.
+    const { wheelOrderPageAlphabetical, wheelOrderPageByYear } = lang.customMenuLabels;
+    fake.selectMenuItem(fake.currentMenu().items.find(item => !item.radio && [wheelOrderPageAlphabetical, wheelOrderPageByYear].includes(item.title)).title);
     await settle();
 };
 const chooseFilter = async (filterId) => {

@@ -50,6 +50,7 @@ test("setup", async () => {
     fake.openMainMenu();
     fake.selectMenuItem(fake.currentMenu().items.find(item => item.cmd === fake.commandId("filterPicker")).title);
     fake.selectMenuItem(lang.customMenuLabels.wheelOrderAlphabetical);
+    fake.selectMenuItem(lang.customMenuLabels.wheelOrderPageByYear);
     await settle();
     const titles = fake.getWheelTables().map(game => game.title);
     fake.moveWheel(titles.indexOf("Eight Ball"));

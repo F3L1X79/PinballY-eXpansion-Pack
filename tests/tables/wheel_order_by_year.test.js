@@ -1,8 +1,9 @@
 // ============================================================
-// The Wheel Order through main.js with native menus: the Filter Picker's
-// entry before Back switches the wheel to by year (oldest first, ties by
-// title, no year last) on All Tables, Favorites and an Era, keeps it when
-// another filter is picked, and switches back, the same table selected.
+// The Wheel Order through main.js with native menus: its page, opened from
+// the Filter Picker's entry before Back, switches the wheel to by year
+// (oldest first, ties by title, no year last) on All Tables, Favorites and
+// an Era, keeps it when another filter is picked, and switches back, the
+// same table selected.
 // ============================================================
 
 import { test } from "node:test";
@@ -53,6 +54,12 @@ const chooseInFilterPicker = async (title) => {
     fake.selectMenuItem(title);
     await settle();
 };
+const chooseWheelOrder = async (entryLabel, orderLabel) => {
+    openFilterPicker();
+    fake.selectMenuItem(entryLabel);
+    fake.selectMenuItem(orderLabel);
+    await settle();
+};
 // The wheel read from a known first table: the order, whatever the selection.
 const orderFrom = (first) => {
     const titles = wheelTitles();
@@ -96,11 +103,11 @@ test("the Filter Picker shows the Wheel Order entry just before Back, alphabetic
     closeMenus();
 });
 
-test("choosing it lists All Tables by year, closes the menus, keeps the table and saves the order", async () => {
+test("choosing By year lists All Tables by year, closes the menus, keeps the table and saves the order", async () => {
     fake.moveWheel(3);
     assert.equal(currentTitle(), "Dracula");
 
-    await chooseInFilterPicker(lang.customMenuLabels.wheelOrderAlphabetical);
+    await chooseWheelOrder(lang.customMenuLabels.wheelOrderAlphabetical, lang.customMenuLabels.wheelOrderPageByYear);
 
     assert.equal(fake.currentMenu(), null);
     assert.equal(currentTitle(), "Dracula");
@@ -145,7 +152,7 @@ test("the Info Log answers the cabinet checks", () => {
 });
 
 test("switching back shows All Tables in PinballY's order, the same table selected, and saves it", async () => {
-    await chooseInFilterPicker(lang.customMenuLabels.wheelOrderByYear);
+    await chooseWheelOrder(lang.customMenuLabels.wheelOrderByYear, lang.customMenuLabels.wheelOrderPageAlphabetical);
 
     assert.equal(fake.currentMenu(), null);
     assert.equal(fake.currentFilterId(), "All");

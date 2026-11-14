@@ -49,6 +49,7 @@ test("the status line counts the selected table in the wheel's order", async () 
     fake.openMainMenu();
     fake.selectMenuItem(lang.customMenuLabels.activeFilter("All Tables"));
     fake.selectMenuItem(lang.customMenuLabels.wheelOrderAlphabetical);
+    fake.selectMenuItem(lang.customMenuLabels.wheelOrderPageByYear);
     await settle();
     fake.moveWheel(-1);
     assert.equal(fake.getCurrentTable().title, "Addams Family");

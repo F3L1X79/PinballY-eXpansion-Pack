@@ -133,7 +133,7 @@ The screens, reached from the Operator Menu, where the owner turns each Add-on o
 _Avoid_: Theme Settings (a theme is a palette), options menu, Pack Settings
 
 **Filter Picker**:
-The submenu, opened from the main menu's "Change Filter" entry, that lists the wheel selections, then PinballY's filter groups. Shown as "Changer de filtre" in French.
+The submenu, opened from the main menu's "Change Filter" entry, that lists the wheel selections, then PinballY's filter groups, then the Add-ons' entries, such as the one opening the Wheel Order page. Shown as "Changer de filtre" in French.
 _Avoid_: Filter Tables, filter menu (each group's own list is a filter menu too), filter groups (the groups are what it lists)
 
 **Active Filter**:

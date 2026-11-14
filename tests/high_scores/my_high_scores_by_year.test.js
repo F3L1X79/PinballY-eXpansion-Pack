@@ -61,6 +61,7 @@ test("My High Scores keeps its ranking whatever the Wheel Order", async () => {
     fake.openMainMenu();
     fake.selectMenuItem(fake.currentMenu().items.find(item => item.cmd === fake.commandId("filterPicker")).title);
     fake.selectMenuItem(lang.customMenuLabels.wheelOrderByYear);
+    fake.selectMenuItem(lang.customMenuLabels.wheelOrderPageAlphabetical);
     await settle();
 
     assert.equal(fake.currentFilterId(), FILTER_ID);

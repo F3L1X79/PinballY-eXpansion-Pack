@@ -51,6 +51,7 @@ test("setup", async () => {
 test("by year on All Tables, the entry names All Tables and the Filter Picker marks it", async () => {
     openFilterPicker();
     fake.selectMenuItem(lang.customMenuLabels.wheelOrderAlphabetical);
+    fake.selectMenuItem(lang.customMenuLabels.wheelOrderPageByYear);
     await settle();
     assert.equal(fake.currentFilterId(), "User.project.WheelOrder");
 
