@@ -236,7 +236,6 @@
         <div class="cell">
           <a class="chip tr-share" href="#pinbally-release-day"><b></b>Nouvelle version de PinballY</a>
           <a class="chip tr-play" href="#play-scores-final-only"><b></b>Play Scores Stern M-200</a>
-          <a class="chip tr-play" href="#attract-random-range"><b></b>Hasard du mode attract</a>
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#best-play-score"><b></b>Meilleure partie du lancement</a>
@@ -301,32 +300,6 @@
               <li>Le coût d'un calque permanent redessiné à chaque changement de table, sans gêner le défilement rapide de la roue : dessiner seulement à l'arrêt, via <code>getDrawingAhead()</code> ? Caché pendant une partie, les menus et les Drawn Screens ; aucune animation sans fin.</li>
             </ul>
             <p class="ctx">Idée de Félix du 14/11/2026, pendant l'implémentation de la roue triée par année. Le Wheel Order existe désormais (spec #513) : le sélecteur suit ses sauts de page, par lettre ou par décennie.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="attract-random-range" data-track="play" data-rank="bronze">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Choisir le hasard du mode attract</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span></div>
-          </div>
-          <p>En mode attract, PinballY avance d'un nombre de tables tiré entre 1 et 10. L'Attract Order laisse choisir : comme PinballY, dans l'ordre de la roue, ou toute la roue sans remise.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : spec #521, tickets #522 à #525 livrés ; reste <a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/526">#526</a>, à vérifier sur la borne. À accorder avec le mode attract de <code>common/core/drawn_screen_controls.js</code> (un écran ouvert peut l'annuler)</div>
-          <details>
-            <summary>Décisions du grill du 14/11/2026</summary>
-            <ul>
-              <li>Le pack pilote : il écrit lui-même « Switch games every » très long dans <code>optionSettings</code>, garde la valeur d'origine et la rend en revenant à « Comme PinballY ». Il fait un seul saut par intervalle entre <code>attractmodestart</code> et <code>attractmodeend</code>. Le <code>/prototype</code> n'a plus lieu d'être : pas de double mouvement.</li>
-              <li>L'intervalle est la valeur d'origine de PinballY. Changée par le propriétaire pendant que le pack pilote, elle devient la nouvelle valeur gardée, et la valeur longue est réécrite.</li>
-              <li>Trois choix nommés dans les Expansion Pack Settings : « Comme PinballY » (défaut : le pack ne fait rien, c'est l'interrupteur), « Dans l'ordre » (+1, animé), « Toute la roue » (sans remise, remélangée à chaque session depuis la table affichée, animée en <code>fast</code>).</li>
-              <li>Les sauts du pack ne déclenchent pas <code>gameselect</code> : ce qui affiche la table (Profile Ratings, Table Mastery, ligne d'état) suit, ce qui compte les déplacements du joueur (World Tour, Maneki-neko) les ignore.</li>
-              <li>Pas d'Add-on à part : l'Attract Order fait partie de l'Add-on Wheel Order. Le guide (réglages, en et fr) prévient de revenir à « Comme PinballY » avant de désactiver l'Add-on ou de retirer le pack.</li>
-              <li>À vérifier sur la borne : la clé d'<code>optionSettings</code> de « Switch games every », et si PinballY la relit sans redémarrer (sinon « Redémarrer maintenant / Plus tard », jamais en mode attract).</li>
-            </ul>
-            <p class="ctx">Idée externe de Dave du 13/11/2026 ; il l'avait demandée à Mike Roberts il y a trois ans, sans suite. L'aide de PinballY n'expose ni ce tirage ni sa plage.</p>
           </details>
         </div>
       </li>
