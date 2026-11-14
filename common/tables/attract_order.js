@@ -1,9 +1,9 @@
 // ============================================================
 // Attract Order module: how attract mode moves through the tables (As PinballY,
 // In Order, Whole Wheel), started by the Wheel Order Add-on. In Order and Whole
-// Wheel, the pack takes PinballY's switches over: one animated move per kept
-// interval, from an unprevented "attractmodestart" to "attractmodeend", the
-// next table or a fast jump through a new shuffle. Logs the cabinet checks.
+// Wheel take PinballY's switches over: one animated move per kept interval, from
+// an unprevented "attractmodestart" to "attractmodeend", told to onMove listeners
+// (setWheelGame fires no "gameselect"). Logs the cabinet checks.
 // - saveAttractOrderSwitches (from the Settings) writes PinballY's option: PinballY reads it only at its start.
 // - The pack switches only while that option holds the long value; at startup another value is the owner's new one.
 // - Never write the option from an unreadable kept value: logged, the option left as it is.
@@ -104,6 +104,14 @@ export function createAttractOrder(host, profileStore, { order }) {
     let hasReportedPinballYSwitch = false;
     // Whole Wheel: the configIds of this attract mode's shuffle not shown yet.
     let stillToShow = [];
+    const moveListeners = [];
+
+    // setWheelGame fires no "gameselect": the Rating Plate and the Mastery Bar hear of the move here.
+    function moveWheel(offset, options) {
+        host.setWheelGame(offset, options);
+        const game = host.getCurrentTable();
+        for (const listener of moveListeners) listener(game);
+    }
 
     function stopSwitching() {
         if (startTimer !== null) host.clearTimeout(startTimer);
@@ -117,7 +125,7 @@ export function createAttractOrder(host, profileStore, { order }) {
         const configIds = wheelConfigIds(host);
         if (configIds.length < 2) return;
         if (order !== ATTRACT_ORDERS.WHOLE_WHEEL) {
-            host.setWheelGame(1, { animate: true });
+            moveWheel(1, { animate: true });
             return;
         }
         // A table the wheel no longer shows (a filter changed), or the one on
@@ -129,7 +137,7 @@ export function createAttractOrder(host, profileStore, { order }) {
             offset = configIds.indexOf(stillToShow.shift());
         }
         if (offset <= 0) offset = 1;
-        host.setWheelGame(offset, { animate: true, fast: true });
+        moveWheel(offset, { animate: true, fast: true });
     }
 
     function listenToAttractMode(intervalSeconds) {
@@ -187,7 +195,11 @@ export function createAttractOrder(host, profileStore, { order }) {
         listenToAttractMode(kept);
     }
 
-    return { start };
+    return {
+        start,
+        // listener(game): after each of the pack's attract moves, with the table on screen.
+        onMove: listener => { moveListeners.push(listener); },
+    };
 }
 
 let sharedAttractOrder = null;

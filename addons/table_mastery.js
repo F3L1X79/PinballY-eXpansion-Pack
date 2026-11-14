@@ -1,9 +1,9 @@
 // ============================================================
-// Table Mastery: shows the selected table's Mastery Bar for the active
-// Profile (under the Challenge Card or the badge), from the Profile store's
-// totals. After a Play, lights the bar up and submits a Mastery Toast for a
-// new Mastery Level or Collection Tier, kept in profile.json ("collectionTier").
-// Follows "gameselect", hides on "gamestarted", comes back on "wheelmode".
+// Table Mastery: shows the selected table's Mastery Bar for the active Profile
+// (under the Challenge Card or the badge), following "gameselect" and the
+// Attract Order's moves, hidden from "gamestarted" to "wheelmode". After a Play,
+// lights the bar up and submits a Mastery Toast for a new Mastery Level or
+// Collection Tier, kept in profile.json ("collectionTier").
 // - Plays come from onPlay (ADR 0008).
 // - A Collection Tier toast names the Avatar Frames it unlocks, then the Reward Prompt for a first frame.
 // ============================================================
@@ -21,6 +21,7 @@ import { tablesVisibleTo } from "../common/tables/visible_tables.js";
 import { getAchievementToasts, TOAST_KIND } from "../common/achievements/achievement_toast.js";
 import { getProfileRewards } from "../common/avatar_frames/profile_rewards.js";
 import lang from "../common/core/i18n.js";
+import { getAttractOrder } from "../common/tables/attract_order.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import config from "../common/core/config.js";
 
@@ -142,8 +143,10 @@ export default function init() {
         raiseCollectionTier(profileName, level !== MAX_MASTERY_LEVEL);
     }));
 
-    // Fires on every wheel move, the player's and attract mode's alike.
+    // Fires on the player's moves and PinballY's own attract switches; the
+    // Attract Order's moves fire none and come through onMove.
     host.onGameListEvent("gameselect", safeHandler(SCRIPT_NAME, ev => showTable(ev.game)));
+    getAttractOrder().onMove(safeHandler(SCRIPT_NAME, showTable));
     // Never over a game, like the Challenge Card.
     host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
         gameRunning = true;

@@ -2,8 +2,8 @@
 // Profile Ratings: each Profile keeps its own Ratings and Favorite Tables
 // (see common/profiles/profile_ratings.js and docs/adr/0024), and the Rating
 // Plate shows the active Profile's Rating of the selected table. The plate
-// follows "gameselect", "rate game" closing and Change Player, hides on
-// "gamestarted", comes back on "wheelmode".
+// follows "gameselect", the Attract Order's moves, "rate game" closing and
+// Change Player, hides on "gamestarted", comes back on "wheelmode".
 // - Starts after Challenges and Table Mastery: the plate's place is under their card and bar.
 // - The plate's Change Player listener comes after start()'s, which puts the next Profile's Ratings on PinballY.
 // ============================================================
@@ -16,6 +16,7 @@ import { getDrawingAhead } from "../common/core/drawing_ahead.js";
 import { getChallenges } from "../common/challenges/challenge.js";
 import { challengeCardBottom } from "../common/challenges/challenge_card.js";
 import { MASTERY_BAR_HEIGHT } from "../common/mastery/mastery_bar.js";
+import { getAttractOrder } from "../common/tables/attract_order.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import config from "../common/core/config.js";
 
@@ -41,8 +42,10 @@ export default function init() {
     }
     const showCurrent = () => showTable(host.getCurrentTable());
 
-    // Fires on every wheel move, the player's and attract mode's alike.
+    // Fires on the player's moves and PinballY's own attract switches; the
+    // Attract Order's moves fire none and come through onMove.
     host.onGameListEvent("gameselect", safeHandler(SCRIPT_NAME, ev => showTable(ev.game)));
+    getAttractOrder().onMove(safeHandler(SCRIPT_NAME, showTable));
     onRatingDialogClosed(host, safeHandler(SCRIPT_NAME, showCurrent));
     host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
         gameRunning = true;
