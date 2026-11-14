@@ -8,6 +8,7 @@
 import lang from "../common/core/i18n.js";
 import { getHallOfFame, HALL_OF_FAME_FILTER_ID, HALL_OF_FAME_FULL_FILTER_ID } from "../common/stats/hall_of_fame.js";
 import { safeHandler } from "../common/core/safe_handler.js";
+import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getActiveProfileTables } from "../common/tables/visible_tables.js";
 
@@ -20,12 +21,14 @@ const BEFORE_FAVORITES_SORT_KEY = "6000";
 export default function init() {
     const { hallOfFameFilter: FILTER_TITLE } = lang.customMenuLabels;
     const profileStore = getProfileStore();
+    const host = createPinballYHost();
 
     // Rank (from 1) of each Hall of Fame table, by game id. Kept after the
     // scan: PinballY sorts and pages the wheel with it once select() is done.
     let ranks = new Map();
 
-    gameList.createFilter({
+    // Through the host, which keeps compareForSort for the status line.
+    host.createFilter({
         id: HALL_OF_FAME_FILTER_ID,
         title: FILTER_TITLE,
         group: "[Top]",
@@ -44,7 +47,8 @@ export default function init() {
     // refreshFilter() runs the filter again, so its before() ranks the new
     // Profile's tables.
     const refreshIfOnWheel = () => {
-        if (gameList.getCurFilter().id === HALL_OF_FAME_FULL_FILTER_ID) gameList.refreshFilter();
+        // The Active Filter is the chosen one here: the Wheel Order's sorted copy never stands in for a pack filter.
+        if (host.getCurrentFilterId() === HALL_OF_FAME_FULL_FILTER_ID) host.refreshFilter();
     };
     profileStore.onSwitch(safeHandler(SCRIPT_NAME, refreshIfOnWheel));
     // Fires after any change of a Profile's data: only the active Profile's

@@ -17,14 +17,16 @@ const MIN_TOUR_TABLES = 2;
 // Equal for the same tables to tour, whatever the current one.
 const signatureOf = tourTables => tourTables.map(table => table.configId).sort().join("\n");
 
-export function createWorldTour(host, profileStore, { onCompleted }) {
+// chosenFilterId(): the Wheel Order module's; the Active Filter's id without one.
+export function createWorldTour(host, profileStore, { onCompleted, chosenFilterId = () => host.getCurrentFilterId() }) {
     const seenConfigIds = new Set();
     // The signature of the tables to tour when the tour started; null while
     // the tour waits for its starting table.
     let tourTablesSignature = null;
     let isCompleted = false;
 
-    const isOnAllTablesWheel = () => host.getCurrentFilterId() === ALL_TABLES_FILTER && host.getUIMode() === "wheel";
+    // The chosen filter: by year, the Wheel Order's sorted copy stands in for All Tables.
+    const isOnAllTablesWheel = () => chosenFilterId() === ALL_TABLES_FILTER && host.getUIMode() === "wheel";
 
     function startOver() {
         seenConfigIds.clear();

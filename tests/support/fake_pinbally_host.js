@@ -1495,10 +1495,10 @@ export function createFakePinballYHost({
     }
 
     // Like FilterInfo.groupCmd: the command of the main menu item opening
-    // the current filter's group; undefined for a top-level filter.
-    function currentFilterGroupCmd() {
-        const filter = filters.get(currentFilterId);
-        const groupName = filter ? SYSTEM_GROUP_COMMANDS[filter.group] : nativeGroupOf(currentFilterId);
+    // the filter's group; undefined for a top-level filter.
+    function groupCmdOf(filterId) {
+        const filter = filters.get(filterId);
+        const groupName = filter ? SYSTEM_GROUP_COMMANDS[filter.group] : nativeGroupOf(filterId);
         return groupName ? BUILT_IN_COMMANDS[groupName] : undefined;
     }
 
@@ -1548,7 +1548,7 @@ export function createFakePinballYHost({
         const cmd = commandOf(filterId);
         const testGame = gameTestOf(filterId);
         if (cmd === undefined && !testGame) throw new Error(`The fake host knows no filter ${filterId}.`);
-        const info = { id: filterId, cmd, title: filterTitleOf(filterId) };
+        const info = { id: filterId, cmd, title: filterTitleOf(filterId), groupCmd: groupCmdOf(filterId) };
         if (testGame) {
             info.testGame = testGame;
             // Hidden tables left out, All's included (seen on the cabinet, #515).
@@ -1585,7 +1585,8 @@ export function createFakePinballYHost({
         getFilterInfo,
         getCurrentFilterId: () => currentFilterId,
         getCurrentFilterTitle: () => filterTitleOf(currentFilterId),
-        getCurrentFilterGroupCmd: currentFilterGroupCmd,
+        getCurrentFilterGroupCmd: () => groupCmdOf(currentFilterId),
+        getFilterCompare: (filterId) => (filters.has(filterId) ? filters.get(filterId).compareForSort ?? null : null),
         refreshFilter,
         createMetaFilter,
         setWheelGame,
@@ -2114,7 +2115,7 @@ export function createFakePinballYHost({
                     getWheelGame: (offset) => host.getWheelTables()[offset] || null,
                     getWheelCount: () => host.getWheelTables().length,
                     createFilter,
-                    getCurFilter: () => ({ id: currentFilterId, title: filterTitleOf(currentFilterId), groupCmd: currentFilterGroupCmd() }),
+                    getCurFilter: () => ({ id: currentFilterId, title: filterTitleOf(currentFilterId), groupCmd: groupCmdOf(currentFilterId) }),
                     getFilterInfo,
                     setCurFilter: setCurrentFilter,
                     setWheelGame: (offset) => { setWheelGame(offset); },

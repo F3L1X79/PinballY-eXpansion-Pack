@@ -137,7 +137,7 @@ The submenu, opened from the main menu's "Change Filter" entry, that lists the w
 _Avoid_: Filter Tables, filter menu (each group's own list is a filter menu too), filter groups (the groups are what it lists)
 
 **Active Filter**:
-The filter the wheel applies right now, a wheel selection or a filter from one of PinballY's groups. Shown as "Filtre actif" in French.
+The filter the wheel applies right now, a wheel selection or a filter from one of PinballY's groups. Shown as "Filtre actif" in French. By year, the Wheel Order may put a sorted copy in its place: what the pack shows and counts is then the chosen filter, the one the player picked.
 _Avoid_: current filter, current selection
 
 **Wheel Order**:

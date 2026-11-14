@@ -16,7 +16,7 @@ Les menus de PinballY et ceux des autres scripts sont dessinés dans le style St
 - Dans la pause, Exit et « Annuler » reprennent la partie.
 - Sur tous les menus et écrans dessinés, Select, Launch ou Exit gardé enfoncé ne compte qu'une fois, alors qu'un flipper gardé enfoncé continue de défiler.
 - Les menus et écrans dessinés jouent les sons des boutons de PinballY, comme la roue : les vôtres s'ils sont dans `Media\Button Sounds`, au volume des boutons de PinballY. **Mute Buttons** dans le menu opérateur les coupe tous ; un `Silence.wav` (dans le dossier `Assets` de PinballY) copié sous le nom d'un son en coupe un seul, par exemple `Next.wav` et `Prev.wav` pour les déplacements.
-- Un menu principal plus court range toutes les sélections de la roue et les groupes de filtres derrière une seule entrée « Changer de filtre », et nomme sous sa liste le filtre affiché par la roue (« Filtre actif : Toutes les tables »). Juste avant son Retour, « Ordre : alphabétique » passe la roue à « Ordre : par année », et inversement (voir [Ordre de la roue](choosing_a_table.md#ordre-de-la-roue)).
+- Un menu principal plus court range toutes les sélections de la roue et les groupes de filtres derrière une seule entrée « Changer de filtre », et nomme sous sa liste le filtre que vous avez choisi (« Filtre actif : Toutes les tables »), quel que soit l'ordre. Juste avant son Retour, « Ordre : alphabétique » passe la roue à « Ordre : par année », et inversement (voir [Ordre de la roue](choosing_a_table.md#ordre-de-la-roue)).
 
 ## Nettoyage des menus
 
@@ -36,6 +36,7 @@ Elle est **désactivée par défaut**, comme l'horloge du backglass : activez-la
 - Le badge du Profil actif et son niveau, la carte du Défi de la semaine et la barre de maîtrise.
 - Sous la barre de maîtrise, en haut à droite, cinq étoiles : la note du Profil actif pour la table sélectionnée, demi-étoiles comprises. Elles prennent la place de la barre quand la maîtrise des tables est désactivée, et n'apparaissent pas sur une table que vous n'avez pas notée ni quand **Notes par Profil** est désactivé.
 - La ligne d'état du bas finit par la note de la maison pour la table sélectionnée (« Table 3/120 - note de la maison : 3,5 sur 5 (4 avis). »), ou votre propre note quand moins de deux d'entre vous l'ont notée (« votre note : 4 sur 5. »), sinon « aucune note pour cette table. ». Elle suit une notation tout de suite, et n'apparaît pas quand **Notes par Profil** est désactivé (voir [Notes et tables favorites](profiles.md#notes-et-tables-favorites)).
+- Dans la ligne d'état du bas, « Table 3/120 » compte les tables dans l'ordre de la roue : par année quand l'[ordre de la roue](choosing_a_table.md#ordre-de-la-roue) est par année, meilleure place d'abord sur Mes meilleurs scores.
 
 ## Icônes d'état
 

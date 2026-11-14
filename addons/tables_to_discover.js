@@ -7,6 +7,7 @@
 
 import lang from "../common/core/i18n.js";
 import { safeHandler } from "../common/core/safe_handler.js";
+import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getActiveProfileTables } from "../common/tables/visible_tables.js";
 import {
@@ -22,12 +23,14 @@ const BEFORE_HALL_OF_FAME_SORT_KEY = "5500";
 export default function init() {
     const { tablesToDiscoverFilter: FILTER_TITLE } = lang.customMenuLabels;
     const profileStore = getProfileStore();
+    const host = createPinballYHost();
 
     // Position of each table in the selection, by game id. Kept after the
     // scan: PinballY sorts the wheel with it once select() is done.
     let positions = new Map();
 
-    gameList.createFilter({
+    // Through the host, which keeps compareForSort for the status line.
+    host.createFilter({
         id: TABLES_TO_DISCOVER_FILTER_ID,
         title: FILTER_TITLE,
         group: "[Top]",
@@ -44,7 +47,8 @@ export default function init() {
     // refreshFilter() runs the filter again, so its before() reads the new
     // Profile's plays.
     const refreshIfOnWheel = () => {
-        if (gameList.getCurFilter().id === TABLES_TO_DISCOVER_FULL_FILTER_ID) gameList.refreshFilter();
+        // The Active Filter is the chosen one here: the Wheel Order's sorted copy never stands in for a pack filter.
+        if (host.getCurrentFilterId() === TABLES_TO_DISCOVER_FULL_FILTER_ID) host.refreshFilter();
     };
     profileStore.onSwitch(safeHandler(SCRIPT_NAME, refreshIfOnWheel));
     // Fires after any change of a Profile's data: only the active Profile's

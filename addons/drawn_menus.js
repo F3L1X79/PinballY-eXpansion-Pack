@@ -70,7 +70,7 @@ export default function init() {
             mainMenuSelectedCmd = null;
             const labels = lang.customMenuLabels;
             items = items.map(item => (item.cmd === filterPicker.entryCmd ? Object.assign({}, item, { title: labels.changeFilter }) : item));
-            drawOptions.footer = { label: labels.activeFilterLabel, name: filterPicker.activeFilterName() };
+            drawOptions.footer = { label: labels.activeFilterLabel, name: filterPicker.chosenFilterName() };
         }
         if (ev.id === PAUSE_MENU_ID) {
             // A capture opens it on its own (docs/adr/0013): native, so that

@@ -6,10 +6,9 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { startScenario, lastLowerMessage, select, MEDIEVAL, MARS, TABLES } from "./household_rating_scenario.js";
+import { startScenario, lastLowerMessage, select, MEDIEVAL, MARS, THEATRE } from "./household_rating_scenario.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 
-const THEATRE = TABLES[2];
 
 test("the Household Rating reads in French with a decimal comma", async () => {
     const { fake } = await startScenario({

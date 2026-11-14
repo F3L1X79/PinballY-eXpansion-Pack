@@ -15,13 +15,14 @@ const table = (id, title, manufacturer, year) => ({
     id, configId: `${title} (${manufacturer} ${year})`, title, manufacturer, year, categories: [],
     playCount: 0, playTime: 0, lastPlayed: null, rating: -1, isFavorite: false, isHidden: false,
 });
-// Medieval Madness is selected at startup: second alphabetically, after Attack from Mars.
+// Medieval Madness is selected at startup: second alphabetically, after
+// Attack from Mars. Listed as PinballY's wheel reads from it, wrapping around.
 export const TABLES = [
     table(1, "Medieval Madness", "Williams", 1997),
-    table(2, "Attack from Mars", "Bally", 1995),
     table(3, "Theatre of Magic", "Bally", 1995),
+    table(2, "Attack from Mars", "Bally", 1995),
 ];
-export const [MEDIEVAL, MARS] = TABLES;
+export const [MEDIEVAL, THEATRE, MARS] = TABLES;
 export const MEDIEVAL_POSITION = 2;
 
 // ratings: { profileName: { configId: rating } }, the active Profile's put on

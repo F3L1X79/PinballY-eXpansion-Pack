@@ -481,6 +481,8 @@ let randomSource = Math.random;
 // True during a playGame() call of the pack: PinballY fires "prelaunch"
 // synchronously inside it (pinbally-help.md §3, Timing).
 let isPackLaunching = false;
+// The compareForSort of each filter created through a host, by full id: shared, like PinballY's filters.
+const scriptFilterCompares = new Map();
 
 // Only for the tests' fake host: Math is no PinballY global it could replace,
 // and every module making its own host would otherwise really draw.
@@ -566,7 +568,14 @@ export function createPinballYHost() {
         setCurrentFilter: (filterId) => { gameList.setCurFilter(filterId); },
         // PinballY prefixes the id with "User."; a filter without a group is
         // listed in no filter menu. Returns its command ID.
-        createFilter: (desc) => gameList.createFilter(desc),
+        createFilter: (desc) => {
+            scriptFilterCompares.set(`User.${desc.id}`, desc.compareForSort ?? null);
+            return gameList.createFilter(desc);
+        },
+        // The compareForSort a pack filter was created with; null for
+        // another filter, which PinballY lists by title (FilterInfo has no
+        // compareForSort to read).
+        getFilterCompare: (filterId) => scriptFilterCompares.get(filterId) ?? null,
         // The filter by its id ("All", "User.<id>"...); its cmd is its main
         // menu item's command, for this session only.
         getFilterInfo: (filterId) => gameList.getFilterInfo(filterId),

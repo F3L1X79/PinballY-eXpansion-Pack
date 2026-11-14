@@ -1,8 +1,8 @@
 // ============================================================
 // Wheel Order module: the single place that knows the order the wheel lists
 // the Active Filter's tables in, alphabetical or by year. Reads and writes
-// it in cabinet.json through the Profile store, and gives the year compare.
-// start() creates the sorted copy (User.project.WheelOrder) and listens to "filterselect".
+// it in cabinet.json, gives the year compare and the chosen filter (the one
+// the player picked). start() creates the sorted copy and listens to "filterselect".
 // - By year, a PinballY or other script's filter choice is cancelled and its sorted copy shown instead.
 // - With the Wheel Order Add-on off, the order is always alphabetical.
 // - An unknown value in cabinet.json is logged and read as alphabetical.
@@ -166,10 +166,30 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
         applyToActiveFilter();
     }
 
+    const isCopyActive = () => isStarted && host.getCurrentFilterId() === COPY_FULL_ID;
+
+    // The filter the player picked: the copy's source while the copy stands
+    // in for it, the Active Filter otherwise. isStandIn: the copy is active,
+    // so PinballY's own marks name the copy, not this filter.
+    function getChosenFilter() {
+        if (!isCopyActive()) {
+            return {
+                id: host.getCurrentFilterId(),
+                title: host.getCurrentFilterTitle(),
+                groupCmd: host.getCurrentFilterGroupCmd(),
+                isStandIn: false,
+            };
+        }
+        const source = host.getFilterInfo(sourceId);
+        return { id: sourceId, title: source.title, groupCmd: source.groupCmd, cmd: source.cmd, isStandIn: true };
+    }
+
     return {
         get,
         isByYear,
         start,
+        getChosenFilter,
+        getChosenFilterId: () => (isCopyActive() ? sourceId : host.getCurrentFilterId()),
         // Switches between alphabetical and by year, saved in cabinet.json at
         // once, and puts it on the Active Filter, the same table selected.
         toggle() {

@@ -45,7 +45,7 @@ const currentTitle = () => fake.getCurrentTable().title;
 const savedWheelOrder = () => JSON.parse(fake.readFile(CABINET_FILE)).wheelOrder;
 const openFilterPicker = () => {
     fake.openMainMenu();
-    fake.selectMenuItem(lang.customMenuLabels.activeFilter(fake.getCurrentFilterTitle()));
+    fake.selectMenuItem(fake.currentMenu().items.find(item => item.cmd === fake.commandId("filterPicker")).title);
 };
 const closeMenus = () => { while (fake.currentMenu()) fake.pressExitInMenu(); };
 const chooseInFilterPicker = async (title) => {

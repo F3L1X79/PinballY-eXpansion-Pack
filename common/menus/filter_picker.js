@@ -1,7 +1,7 @@
 // ============================================================
 // Filter Picker: the submenu that takes the wheel selections and filter
 // groups out of the main menu, with Add-ons' entries before Back. Created
-// by the main menu module; its entry names the Active Filter. Listens to
+// by the main menu module; its entry names the chosen filter. Listens to
 // "menuopen", "menuclose", "command", "attractmodestart" and "filterselect".
 // - Shown by turning a main menu opening into it, not with showMenu (no "menuopen").
 // - Back and Exit go up one level at a time (see docs/adr/0013).
@@ -31,8 +31,9 @@ export const FILTER_GROUPS = Object.freeze([
 
 // The main menu module's: addMainMenuEntry adds the entry at position and
 // returns its command;
-// reopenMainMenuOn(name) opens the main menu with the cursor on an entry.
-export function createFilterPicker(host, { addMainMenuEntry, position, reopenMainMenuOn }) {
+// reopenMainMenuOn(name) opens the main menu with the cursor on an entry;
+// chosenFilter() is the Wheel Order module's getChosenFilter.
+export function createFilterPicker(host, { addMainMenuEntry, position, reopenMainMenuOn, chosenFilter }) {
     const groupCmds = FILTER_GROUPS.map(group => host.getBuiltInCommand(group.command));
     const groupCmdOfMenu = id => {
         const index = FILTER_GROUPS.findIndex(group => group.menuId === id);
@@ -68,21 +69,25 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
         reopenMainMenuOn(FILTER_PICKER_ENTRY);
     }
 
-    // The Active Filter as the menus show it: PinballY's English titles
+    // The chosen filter as the menus show it: PinballY's English titles
     // through the pack's menu translation, a pack filter's as it is.
-    function activeFilterName() {
-        const title = host.getCurrentFilterTitle();
+    function chosenFilterName() {
+        const { title } = chosenFilter();
         return translateMenuTitle(title) ?? title;
     }
 
     // Turns this main menu opening into the Filter Picker. The group holding
-    // the Active Filter is marked, set on each group so a mark PinballY may
-    // put on them itself is never doubled; the selections keep PinballY's.
+    // the chosen filter is marked, set on each group so a mark PinballY may
+    // put on them itself is never doubled; the selections keep PinballY's,
+    // except while the Wheel Order's copy stands in: PinballY then marks none.
     function show(ev, selections, groups, selectedCmd) {
-        const activeGroupCmd = host.getCurrentFilterGroupCmd();
+        const chosen = chosenFilter();
+        const markedSelections = chosen.isStandIn
+            ? selections.map(item => Object.assign({}, item, { radio: item.cmd === chosen.cmd }))
+            : selections;
         const sections = [
-            selections,
-            groups.map(item => Object.assign({}, item, { radio: item.cmd === activeGroupCmd })),
+            markedSelections,
+            groups.map(item => Object.assign({}, item, { radio: item.cmd === chosen.groupCmd })),
         ].filter(items => items.length > 0);
         const extraItems = extraEntries
             .map(entry => ({ title: entry.label(), cmd: entry.cmd }))
@@ -124,7 +129,7 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
 
     const entryCmd = addMainMenuEntry({
         name: FILTER_PICKER_ENTRY,
-        label: () => lang.customMenuLabels.activeFilter(activeFilterName()),
+        label: () => lang.customMenuLabels.activeFilter(chosenFilterName()),
         position,
         action: () => open(null),
         shownWhen: () => hasItems,
@@ -174,5 +179,5 @@ export function createFilterPicker(host, { addMainMenuEntry, position, reopenMai
         openedGroupCmd = null;
     }));
 
-    return { isGroupItem, mainMenuOpened, back, entryCmd, activeFilterName, addEntry };
+    return { isGroupItem, mainMenuOpened, back, entryCmd, chosenFilterName, addEntry };
 }

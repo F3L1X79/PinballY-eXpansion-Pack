@@ -29,7 +29,8 @@ test("saved by year, the wheel starts by year and the entry reads it in French",
     // The table PinballY restored stays selected, the oldest first after it wraps around.
     assert.deepEqual(fake.getWheelTables().map(game => game.title), ["Attack from Mars", "Eight Ball", "Black Knight"]);
     fake.openMainMenu();
-    fake.selectMenuItem(lang.customMenuLabels.activeFilter(lang.customMenuLabels.wheelOrderByYear));
+    // The entry names the filter PinballY restored, not the sorted copy.
+    fake.selectMenuItem(lang.customMenuLabels.activeFilter("Toutes les tables"));
     const titles = fake.currentMenu().items.map(item => item.title);
 
     assert.equal(lang.customMenuLabels.wheelOrderByYear, "Ordre : par année");

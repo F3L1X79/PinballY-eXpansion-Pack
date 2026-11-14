@@ -16,7 +16,7 @@ PinballY's menus and other scripts' menus are drawn in the pack's Steamball look
 - In the pause, Exit and "Cancel" resume the game.
 - On every drawn menu and screen, a held Select, Launch or Exit counts once, while a held flipper keeps going.
 - Drawn menus and screens play PinballY's button sounds, like the wheel: your own if they are in `Media\Button Sounds`, at PinballY's button volume. **Mute Buttons** in the Operator Menu silences them all; a copy of `Silence.wav` (in PinballY's `Assets` folder) named after one sound silences only that one, such as `Next.wav` and `Prev.wav` for moves.
-- A shorter main menu gathers every wheel selection and filter group behind one "Change Filter" entry, and names the filter the wheel shows under its list ("Active filter: All Tables"). Just before its Back, "Order: alphabetical" switches the wheel to "Order: by year" and back (see [Wheel Order](choosing_a_table.md#wheel-order)).
+- A shorter main menu gathers every wheel selection and filter group behind one "Change Filter" entry, and names the filter you chose under its list ("Active filter: All Tables"), whatever the order. Just before its Back, "Order: alphabetical" switches the wheel to "Order: by year" and back (see [Wheel Order](choosing_a_table.md#wheel-order)).
 
 ## Menu Cleanup
 
@@ -36,6 +36,7 @@ It is **off by default**, like the Backglass Clock: turn it on with `ADD_ON_MENU
 - The active Profile's badge with its Player Level, the week's Challenge Card and the Mastery Bar.
 - Under the Mastery Bar, in the top right corner, five stars: the active Profile's Rating of the selected table, half stars included. They take the bar's place when Table Mastery is off, and are absent on a table you have not rated or when **Ratings per Profile** is off.
 - The lower status line ends with the selected table's Household Rating ("Table 3/120 - household rating: 3.5 out of 5 (4 ratings)."), or your own Rating when fewer than two of you rated it ("your rating: 4 out of 5."), otherwise "no rating for this table." It follows a rating at once, and is absent when **Ratings per Profile** is off (see [Ratings and Favorite Tables](profiles.md#ratings-and-favorite-tables)).
+- In the lower status line, "Table 3/120" counts the tables in the wheel's order: by year when the [Wheel Order](choosing_a_table.md#wheel-order) is by year, best place first on My High Scores.
 
 ## Status Icons
 

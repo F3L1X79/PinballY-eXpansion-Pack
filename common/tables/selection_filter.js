@@ -35,6 +35,7 @@ export function createSelectionFilter(host, { scriptName, selectConfigIds, ranke
     });
 
     const runAgainIfCurrent = () => {
+        // The Active Filter is the chosen one here: the Wheel Order's sorted copy never stands in for a pack filter.
         if (host.getCurrentFilterId() !== filterId) return;
         const tables = selectConfigIds();
         if (tables.length === 0) host.setCurrentFilter(ALL_TABLES_FILTER);

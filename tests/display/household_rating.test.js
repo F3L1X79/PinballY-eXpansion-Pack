@@ -7,10 +7,9 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { startScenario, lastLowerMessage, select, MEDIEVAL, MARS, TABLES, MEDIEVAL_POSITION } from "./household_rating_scenario.js";
+import { startScenario, lastLowerMessage, select, MEDIEVAL, MARS, THEATRE, MEDIEVAL_POSITION } from "./household_rating_scenario.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 
-const THEATRE = TABLES[2];
 
 test("the lower status line ends with the selected table's Household Rating", async () => {
     const { fake, TEXT } = await startScenario({

@@ -14,6 +14,7 @@ import { createPinballYHost } from "../core/pinbally_host.js";
 import { createFilterPicker } from "./filter_picker.js";
 import { SEPARATOR_CMD, isSeparator } from "./menu_separator.js";
 import { ratingOf } from "../profiles/profile_ratings.js";
+import { getWheelOrder } from "../tables/wheel_order.js";
 
 const SCRIPT_NAME = "MainMenu";
 
@@ -53,7 +54,13 @@ const comparePositions = (a, b) => a.section - b.section || a.order - b.order;
 // Every filter's command: the [Top] filters, the only ones in the main menu.
 const isFilterItem = (item, host) => item.cmd >= host.getBuiltInCommand("FilterFirst") && item.cmd <= host.getBuiltInCommand("FilterLast");
 
-export function createMainMenu(host) {
+// The Active Filter, for a main menu with no Wheel Order (the tests building one).
+const activeFilterOf = host => () => ({
+    title: host.getCurrentFilterTitle(), groupCmd: host.getCurrentFilterGroupCmd(), isStandIn: false,
+});
+
+// chosenFilter(): the filter the Filter Picker names and marks.
+export function createMainMenu(host, { chosenFilter = activeFilterOf(host) } = {}) {
     // Sorted by position.
     const entries = [];
     // One per conditioned filter: its item's command when it is left out this time.
@@ -96,6 +103,7 @@ export function createMainMenu(host) {
         addMainMenuEntry: add,
         position: MAIN_MENU_POSITION.FILTER_PICKER,
         reopenMainMenuOn: reopenOn,
+        chosenFilter,
     });
 
     // The position of one of PinballY's items, by its command.
@@ -175,7 +183,7 @@ export function createMainMenu(host) {
     }));
 
     // filterPicker: back() out of the Filter Picker, for a Drawn one's Exit;
-    // entryCmd and activeFilterName(), for the Drawn main menu's footer.
+    // entryCmd and chosenFilterName(), for the Drawn main menu's footer.
     return { add, showFilterWhen, reopenOn, filterPicker };
 }
 
@@ -183,6 +191,8 @@ let sharedMainMenu = null;
 
 // One main menu for every Add-on, so their entries are ordered together.
 export function getMainMenu() {
-    if (!sharedMainMenu) sharedMainMenu = createMainMenu(createPinballYHost());
+    if (!sharedMainMenu) {
+        sharedMainMenu = createMainMenu(createPinballYHost(), { chosenFilter: () => getWheelOrder().getChosenFilter() });
+    }
     return sharedMainMenu;
 }
