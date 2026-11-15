@@ -3,33 +3,24 @@
 // (17/100) in the very bottom right corner of the wheel screen, bold
 // shadowed text on its own layer, redrawn only when the text changes.
 // Also says whether it is on, which takes "Table n/total" off the status line.
-// - Hidden, it is a point (Placed layers), never a transparent full-window layer.
 // ============================================================
 
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
-import { RATING_PLATE_Z_INDEX } from "../profiles/rating_plate.js";
 import { drawShadowedText } from "../drawing/shadowed_text.js";
-import { createHiddenLayer, hideLayer, placeAligned, POINT_SPAN } from "../drawing/placed_layers.js";
+import { hideLayer } from "../drawing/placed_layers.js";
+import { createGuideLayer, isGuideOn, showGuideLayer } from "./guide_layers.js";
 
-// Above the Rating Plate, under popups and menus.
-export const WHEEL_GUIDES_Z_INDEX = RATING_PLATE_Z_INDEX + 1;
-// Prototype values, validated on the cabinet, in px of a 1920 px high window;
-// right: a share of the window's width, off its right edge.
-export const REFERENCE_HEIGHT = 1920;
+// Prototype values, in reference px; right: a share of the window's width, off its right edge.
 const CANVAS = Object.freeze({ width: 200, height: 44 });
 const TEXT = Object.freeze({ size: 24, weight: 700, top: 2 });
 const MARGIN = Object.freeze({ bottom: 4, right: 0.008 });
 
-// Whether the Wheel Position shows: its Add-on and its own setting on.
-export const isWheelPositionOn = config => config.addOns.wheelGuides !== false && config.wheelPosition !== false;
+export const isWheelPositionOn = config => isGuideOn(config, "wheelPosition");
 
 export const wheelPositionText = (place, count) => `${place}/${count}`;
 
 export function createWheelPosition(host) {
-    const layer = createHiddenLayer(host, WHEEL_GUIDES_Z_INDEX);
-    // Placed, still a point, before its first draw: on the cabinet, a layer
-    // drawn before it was placed never showed.
-    placeAligned(layer, POINT_SPAN, 0, 0);
+    const layer = createGuideLayer(host);
     let drawnText = null;
     let isShown = false;
 
@@ -47,8 +38,7 @@ export function createWheelPosition(host) {
             drawnText = text;
         }
         if (isShown) return;
-        placeAligned(layer, { ySpan: CANVAS.height / REFERENCE_HEIGHT }, -MARGIN.right, MARGIN.bottom / REFERENCE_HEIGHT, "bottom right");
-        layer.alpha = 1;
+        showGuideLayer(layer, { height: CANVAS.height, x: -MARGIN.right, y: MARGIN.bottom, align: "bottom right" });
         isShown = true;
     }
 

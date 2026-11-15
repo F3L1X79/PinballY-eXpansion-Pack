@@ -6,7 +6,7 @@
 // ============================================================
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
-import { WHEEL_GUIDES_Z_INDEX } from "../../common/wheel_guides/wheel_position.js";
+import { WHEEL_GUIDES_Z_INDEX } from "../../common/wheel_guides/guide_layers.js";
 import config from "../../common/core/config.js";
 
 export const NOW = new Date(2026, 10, 15, 20, 0, 0);

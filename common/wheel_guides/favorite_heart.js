@@ -3,15 +3,13 @@
 // the selected table is a Favorite Table, grey otherwise. It reads the table's
 // favourite flag, which holds the active Profile's under Ratings per Profile.
 // Two image layers, each drawn once, the first time it shows; a move only shows the right one.
-// - Hidden, a layer is a point (Placed layers), never a transparent full-window layer.
 // ============================================================
 
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
-import { createHiddenLayer, hideLayer, placeAligned, POINT_SPAN } from "../drawing/placed_layers.js";
-import { REFERENCE_HEIGHT, WHEEL_GUIDES_Z_INDEX } from "./wheel_position.js";
+import { hideLayer } from "../drawing/placed_layers.js";
+import { createGuideLayer, isGuideOn, showGuideLayer } from "./guide_layers.js";
 
-// Prototype values, validated on the cabinet, in px of a 1920 px high window;
-// left: a share of the window's width, off its left edge.
+// Prototype values, in reference px; left: a share of the window's width, off its left edge.
 const HEART = Object.freeze({ width: 72, height: 64 });
 const MARGIN = Object.freeze({ bottom: 6, left: 0.008 });
 const HEART_FILES = Object.freeze({
@@ -19,17 +17,14 @@ const HEART_FILES = Object.freeze({
     other: "assets\\images\\favorite_heart_off.png",
 });
 
-// Whether the Favorite Heart shows: its Add-on and its own setting on.
-export const isFavoriteHeartOn = config => config.addOns.wheelGuides !== false && config.favoriteHeart !== false;
+export const isFavoriteHeartOn = config => isGuideOn(config, "favoriteHeart");
 
 export function createFavoriteHeart(host) {
     // Each heart's layer, drawn the first time it shows.
     const hearts = {};
     function heartLayer(state) {
         if (hearts[state]) return hearts[state];
-        const layer = createHiddenLayer(host, WHEEL_GUIDES_Z_INDEX);
-        // Placed, still a point, before its draw, as the Wheel Position's.
-        placeAligned(layer, POINT_SPAN, 0, 0);
+        const layer = createGuideLayer(host);
         layer.clear(STEAMBALL_COLORS.transparent);
         // By absolute path: drawImage resolves a relative one from PinballY's folder.
         layer.draw(dc => dc.drawImage(`${host.getProjectFolder()}\\${HEART_FILES[state]}`, 0, 0, HEART.width, HEART.height),
@@ -48,8 +43,7 @@ export function createFavoriteHeart(host) {
         const layer = heartLayer(isFavorite ? "favorite" : "other");
         if (layer === shownLayer) return;
         hide();
-        placeAligned(layer, { ySpan: HEART.height / REFERENCE_HEIGHT }, MARGIN.left, MARGIN.bottom / REFERENCE_HEIGHT, "bottom left");
-        layer.alpha = 1;
+        showGuideLayer(layer, { height: HEART.height, x: MARGIN.left, y: MARGIN.bottom, align: "bottom left" });
         shownLayer = layer;
     }
 
