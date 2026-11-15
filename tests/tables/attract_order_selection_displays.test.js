@@ -1,7 +1,7 @@
 // ============================================================
 // The Attract Order In Order through main.js, with Profile Ratings and Table
-// Mastery on: the pack's moves fire no "gameselect", yet after each of them
-// the Rating Plate and the Mastery Bar show the table attract mode moved to.
+// Mastery on: the Rating Plate and the Mastery Bar hide in attract mode, stay
+// hidden through its moves, and come back on the table it ended on.
 // ============================================================
 
 import { test } from "node:test";
@@ -49,23 +49,21 @@ test("setup", async () => {
     fake.advanceTime(DRAWN_AHEAD_MS);
 });
 
-test("the Rating Plate and the Mastery Bar follow each move of the Attract Order", async () => {
+test("the Rating Plate and the Mastery Bar hide through attract mode and come back on the table it ended on", async () => {
     assert.equal(shownRating(fake), 4, "the table on screen before attract mode");
     assert.equal(shownMastery(fake).head, "To discover");
 
     fake.enterAttractMode();
     await settle();
+    assert.equal(shownRating(fake), null);
+    assert.equal(shownMastery(fake), null);
     fake.advanceTime(STEP_MS);
     assert.equal(fake.getCurrentTable().title, "Black Knight");
+    assert.equal(shownRating(fake), null, "still hidden after a move");
+    assert.equal(shownMastery(fake), null);
+
+    fake.exitAttractMode();
     assert.equal(shownRating(fake), 2.5);
     assert.deepEqual(shownMastery(fake), { head: "Pinball Wizard", number: "10", fill: 1 });
-
-    fake.advanceTime(STEP_MS);
-    assert.equal(fake.getCurrentTable().title, "Cirqus Voltaire");
-    assert.equal(shownRating(fake), 0, "five empty stars on an unrated table");
-    assert.equal(shownMastery(fake).head, "To discover");
-
-    fake.advanceTime(STEP_MS);
-    assert.equal(shownRating(fake), 4, "back on the first table");
     assertNoErrorLogged(fake);
 });

@@ -1,6 +1,6 @@
 // ============================================================
-// The Wheel Position through main.js with the Attract Order In Order: the
-// pack's attract moves fire no "gameselect", yet the position follows each.
+// The Wheel Position through main.js with the Attract Order In Order: hidden
+// through attract mode and its moves, back on the table it ended on.
 // ============================================================
 
 import { test } from "node:test";
@@ -12,7 +12,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 const KEPT_SECONDS = 10;
 const STEP_MS = KEPT_SECONDS * 1000;
 
-test("the Wheel Position follows each move of the Attract Order", async () => {
+test("the Wheel Position hides through attract mode and comes back on the table it ended on", async () => {
     const { fake } = await startWheelGuides({
         settings: { attractOrder: "inOrder" }, cabinet: { attractOrderSwitchTime: KEPT_SECONDS },
         pinballYSettings: { "AttractMode.SwitchTime": 86400 },
@@ -21,11 +21,12 @@ test("the Wheel Position follows each move of the Attract Order", async () => {
 
     fake.enterAttractMode();
     await settle();
+    assert.equal(shownPosition(fake), null);
     fake.advanceTime(STEP_MS);
     assert.equal(fake.getCurrentTable().title, "Black Knight");
-    assert.equal(shownPosition(fake), "2/5", "shown in attract mode, on the table moved to");
+    assert.equal(shownPosition(fake), null, "still hidden after a move");
 
-    fake.advanceTime(STEP_MS);
-    assert.equal(shownPosition(fake), "3/5");
+    fake.exitAttractMode();
+    assert.equal(shownPosition(fake), "2/5");
     assertNoErrorLogged(fake);
 });

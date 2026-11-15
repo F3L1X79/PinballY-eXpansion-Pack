@@ -281,6 +281,19 @@ test("the card hides while a game runs and comes back on the wheel", () => {
     assert.ok(cardShown(fake));
 });
 
+test("the card hides in attract mode and comes back on the wheel", () => {
+    const { fake } = setUp({ randoms: [0, 0, 0.99] });
+
+    fake.enterAttractMode();
+    // The fake host's own zero-delay timer, for the check on the next tick.
+    fake.advanceTime(1);
+    assert.equal(card(fake).alpha, 0);
+    fake.advanceTime(30 * 1000);
+    assert.equal(card(fake).alpha, 0, "no highlight brings it back");
+    fake.exitAttractMode();
+    assert.ok(cardShown(fake));
+});
+
 test("the card lights up once on a new Challenge, a Profile switch and progress after a game", () => {
     const { fake, store } = setUp({ randoms: [0, 0, 0.99] });
     const lit = card(fake).frames().length;

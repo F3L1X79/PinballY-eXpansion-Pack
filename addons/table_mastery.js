@@ -1,7 +1,7 @@
 // ============================================================
 // Table Mastery: shows the selected table's Mastery Bar for the active Profile
 // (last of the top right stack), following "gameselect" and the
-// Attract Order's moves, hidden from "gamestarted" to "wheelmode". After a Play,
+// Attract Order's moves, hidden from "gamestarted" or attract mode to "wheelmode". After a Play,
 // lights the bar up and submits a Mastery Toast for a new Mastery Level or
 // Collection Tier, kept in profile.json ("collectionTier").
 // - Plays come from onPlay (ADR 0008).
@@ -22,6 +22,7 @@ import { getProfileRewards } from "../common/avatar_frames/profile_rewards.js";
 import lang from "../common/core/i18n.js";
 import { getAttractOrder } from "../common/tables/attract_order.js";
 import { safeHandler } from "../common/core/safe_handler.js";
+import { isInAttractMode, onAttractModeStarted } from "../common/core/attract_mode.js";
 
 const SCRIPT_NAME = "TableMastery";
 
@@ -40,7 +41,7 @@ export default function init() {
     let movedTable = null;
 
     function showTable(game) {
-        if (gameRunning || !game) {
+        if (gameRunning || !game || isInAttractMode(host)) {
             bar.hide();
             return;
         }
@@ -146,7 +147,8 @@ export default function init() {
         gameRunning = true;
         bar.hide();
     }));
-    // Back on the wheel after a game, a menu or a dialog.
+    onAttractModeStarted(host, SCRIPT_NAME, () => bar.hide());
+    // Back on the wheel after a game, a menu, a dialog or attract mode.
     host.on("wheelmode", safeHandler(SCRIPT_NAME, () => {
         gameRunning = false;
         showOnReturn();

@@ -32,10 +32,11 @@ test("the Favorite Heart is red on a Favorite Table, grey otherwise", async () =
 
     fake.enterAttractMode();
     await settle();
+    assert.equal(shownHeart(fake), null, "hidden in attract mode");
     fake.advanceTime(STEP_MS);
     assert.equal(fake.getCurrentTable().title, "Dracula");
-    assert.equal(shownHeart(fake), "grey", "shown in attract mode, on the table moved to");
-    fake.advanceTime(STEP_MS);
-    assert.equal(shownHeart(fake), "red");
+    assert.equal(shownHeart(fake), null, "still hidden after a move");
+    fake.exitAttractMode();
+    assert.equal(shownHeart(fake), "grey", "back on the table attract mode ended on");
     assertNoErrorLogged(fake);
 });

@@ -3,11 +3,12 @@
 // the top right of the wheel screen, on its own layer (see docs/adr/0003).
 // Lights up once on something new; shows last week's verdict first in a new
 // week. Redrawn at startup, on a Profile switch and on "wheelmode".
-// - Hidden, a point, with no Challenge and while a game runs.
+// - Hidden, a point, with no Challenge, while a game runs and in attract mode.
 // ============================================================
 
 import lang from "../core/i18n.js";
 import { safeHandler } from "../core/safe_handler.js";
+import { onAttractModeStarted } from "../core/attract_mode.js";
 import { STEAMBALL_COLORS, STEAMBALL_FONTS } from "../drawing/steamball_palette.js";
 import { createHiddenLayer, hideLayer, placeAligned } from "../drawing/placed_layers.js";
 import { challengeTitleOf } from "./challenge.js";
@@ -200,12 +201,14 @@ export function createChallengeCard(host, challenges, profileStore, { topOf }) {
         }
     }
 
-    // Never over a game.
-    host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
+    // Never over a game nor in attract mode.
+    const hide = () => {
         stopTimer();
         hideLayer(layer);
-    }));
-    // Fires back on the wheel, after a game, a menu or a dialog.
+    };
+    host.on("gamestarted", safeHandler(SCRIPT_NAME, hide));
+    onAttractModeStarted(host, SCRIPT_NAME, hide);
+    // Fires back on the wheel, after a game, a menu, a dialog or attract mode.
     host.on("wheelmode", safeHandler(SCRIPT_NAME, () => refresh()));
     profileStore.onSwitch(safeHandler(SCRIPT_NAME, () => refresh({ switched: true })));
 

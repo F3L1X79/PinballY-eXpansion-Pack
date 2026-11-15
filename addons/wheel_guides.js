@@ -4,13 +4,14 @@
 // They follow "gameselect" and the Attract Order's moves; the wheel is read again
 // after a filter choice, a menu, a Wheel Order toggle, a Profile switch and "wheelmode".
 // - "filterselect" fires before the filter applies, and "menuclose" before a table leaves Favorite Tables: read at 0 and 300 ms.
-// - Hidden from "gamestarted" to "wheelmode"; shown under menus, drawn screens and in attract mode.
+// - Hidden from "gamestarted" or attract mode to "wheelmode"; shown under menus and drawn screens.
 // ============================================================
 
 import config from "../common/core/config.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { logInfo } from "../common/core/info_log.js";
+import { isInAttractMode, onAttractModeStarted } from "../common/core/attract_mode.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getAttractOrder } from "../common/tables/attract_order.js";
 import { getWheelOrder } from "../common/tables/wheel_order.js";
@@ -55,7 +56,7 @@ export default function init() {
         else rail.show(rows, railRows.keyOf(game));
     }
     function showTable(game) {
-        if (!game || gameRunning) {
+        if (!game || gameRunning || isInAttractMode(host)) {
             hideAll();
             return;
         }
@@ -146,6 +147,7 @@ export default function init() {
         gameRunning = true;
         hideAll();
     }));
+    onAttractModeStarted(host, SCRIPT_NAME, hideAll);
     host.on("wheelmode", safeHandler(SCRIPT_NAME, () => {
         gameRunning = false;
         readAgain();

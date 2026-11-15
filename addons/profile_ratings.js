@@ -3,7 +3,7 @@
 // (see common/profiles/profile_ratings.js and docs/adr/0024), and the Rating
 // Plate shows the active Profile's Rating of the selected table (empty stars
 // unrated), following "gameselect", the Attract Order, "rate game" closing and
-// Change Player; hidden from "gamestarted" to "wheelmode".
+// Change Player; hidden from "gamestarted" or attract mode to "wheelmode".
 // - The plate's Change Player listener comes after start()'s, which puts the next Profile's Ratings on PinballY.
 // ============================================================
 
@@ -15,6 +15,7 @@ import { getDrawingAhead } from "../common/core/drawing_ahead.js";
 import { createTopRightStack } from "../common/drawing/top_right_stack.js";
 import { getAttractOrder } from "../common/tables/attract_order.js";
 import { safeHandler } from "../common/core/safe_handler.js";
+import { isInAttractMode, onAttractModeStarted } from "../common/core/attract_mode.js";
 
 const SCRIPT_NAME = "ProfileRatings";
 
@@ -27,7 +28,7 @@ export default function init() {
     let gameRunning = false;
 
     function showTable(game) {
-        if (gameRunning || !game) plate.hide();
+        if (gameRunning || !game || isInAttractMode(host)) plate.hide();
         else plate.show(ratingOf(game));
     }
     const showCurrent = () => showTable(host.getCurrentTable());
@@ -45,6 +46,7 @@ export default function init() {
         gameRunning = false;
         showCurrent();
     }));
+    onAttractModeStarted(host, SCRIPT_NAME, () => plate.hide());
     store.onSwitch(safeHandler(SCRIPT_NAME, showCurrent));
 
     showCurrent();
