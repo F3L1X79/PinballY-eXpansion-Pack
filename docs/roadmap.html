@@ -220,7 +220,6 @@
         <div class="cell sweet">
         </div>
         <div class="cell">
-          <a class="chip tr-play" href="#wheel-position-markers"><b></b>Repères sur la roue</a>
           <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
@@ -278,25 +277,6 @@
     </div>
 
     <ol class="queue">
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="wheel-position-markers" data-track="play" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Des repères de position sur la roue</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
-          </div>
-          <p>Sur la roue, un petit calque permanent dit où l'on en est : un mini-sélecteur sur l'alphabet qui montre la lettre en cours (ou l'année, ou la décennie, quand la roue est triée par année), la position dans la roue (« 12/87 »), un cœur quand la table fait partie des Favorite Tables du Profile actif, et d'autres marques du même genre.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">prototype</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/527">#527</a> (Wheel Guides), tickets #528 à #533. Prototype validé sur la borne le 15/11/2026 : branche locale <code>prototype/wheel-position-markers</code>, verdict dans son commit.</div>
-          <details>
-            <summary>Décidé au grill (15/11/2026)</summary>
-            <p class="ctx">Les Wheel Guides : le Wheel Rail (lettres, # en tête ; par année les décennies, « ? » en bas comme dans la roue), sa Rail Pill, la Wheel Position en bas à droite et le Favorite Heart en bas à gauche. Le rail suit les pages du filtre affiché (lettres sur Hidden et Unconfigured, aucun rail sur une sélection classée) ; relu à <code>filterselect</code>, au nouvel <code>onChange</code> de la Wheel Order, à <code>menuclose</code>, au changement de Profile. Caché pendant une partie, présent en attract, rien sur une roue vide. La Rating Plate toujours affichée, en tête de la pile en haut à droite. Un Add-on, trois interrupteurs et les années dans le fichier de réglages ; la vitesse du bouton tenu reste le réglage « Auto-repeat rate » de PinballY (180ms conseillé).</p>
-            <p class="ctx">Idée de Félix du 14/11/2026, pendant l'implémentation de la roue triée par année. Le Wheel Order existe désormais (spec #513) : le sélecteur suit ses sauts de page, par lettre ou par décennie.</p>
-          </details>
-        </div>
-      </li>
 
       <li draggable="true" tabindex="0" class="item tr-play" id="household-mission" data-track="play" data-rank="platinum">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
