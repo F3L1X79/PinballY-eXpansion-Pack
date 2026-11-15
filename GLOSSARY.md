@@ -175,11 +175,11 @@ The small marks always in view on the wheel screen that say where the player is 
 _Avoid_: markers (the Selection Marker is the glow of a drawn screen), indicators, Status Icon
 
 **Wheel Rail**:
-The thin column along the right edge of the wheel screen that lists every page of the wheel, letters or decades, in the wheel's order, dimming those with no table. Shown as "rail de la roue" in French.
+The thin column along the right edge of the wheel screen that lists every page of the wheel, letters or decades (each decade's years under it as an option), in the wheel's order, dimming those with no table. Shown as "rail de la roue" in French.
 _Avoid_: alphabet bar, scrollbar, index, jump list
 
 **Rail Pill**:
-The gold pill on the Wheel Rail that sits on the page of the selected table.
+The gold pill on the Wheel Rail that sits on the page of the selected table, or on its year when the years show.
 _Avoid_: cursor, Selection Marker, highlight
 
 **Wheel Position**:

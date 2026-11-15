@@ -14,11 +14,12 @@ import { logInfo } from "../common/core/info_log.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getAttractOrder } from "../common/tables/attract_order.js";
 import { getWheelOrder } from "../common/tables/wheel_order.js";
-import { getWheelPlaces, WHEEL_PAGINGS } from "../common/tables/wheel_places.js";
+import { getWheelPlaces } from "../common/tables/wheel_places.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
 import { createWheelPosition, isWheelPositionOn } from "../common/wheel_guides/wheel_position.js";
 import { createFavoriteHeart, isFavoriteHeartOn } from "../common/wheel_guides/favorite_heart.js";
-import { createWheelRail, isWheelRailOn, LETTER_ROWS } from "../common/wheel_guides/wheel_rail.js";
+import { createWheelRail, isWheelRailOn } from "../common/wheel_guides/wheel_rail.js";
+import { createRailRows, isWheelRailYearsOn } from "../common/wheel_guides/rail_rows.js";
 
 const SCRIPT_NAME = "WheelGuides";
 const REREAD_DELAYS_MS = [0, 300];
@@ -46,10 +47,12 @@ export default function init() {
         if (heart) heart.hide();
         if (rail) rail.hide();
     }
-    // Only a wheel paging by letter has a rail here: none on a ranked selection.
+    const railRows = rail ? createRailRows(wheelPlaces, { withYears: isWheelRailYearsOn(config) }) : null;
+    // No rail on a ranked selection.
     function showRail(game) {
-        if (wheelPlaces.getPaging() === WHEEL_PAGINGS.BY_LETTER) rail.show(LETTER_ROWS, wheelPlaces.getPages(), wheelPlaces.pageOf(game));
-        else rail.hide();
+        const rows = railRows.getRows();
+        if (rows === null) rail.hide();
+        else rail.show(rows, railRows.keyOf(game));
     }
     function showTable(game) {
         if (!game || gameRunning) {

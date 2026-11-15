@@ -946,7 +946,7 @@ export default {
             },
             wheelGuides: {
                 name: "Wheel-Wegweiser",
-                whenOn: "Eine Buchstabenleiste am rechten Rand, die Position des gewählten Tisches im Wheel (17/100) unten rechts, unten links ein Herz, rot bei deinen Favoriten.",
+                whenOn: "Eine Leiste mit Buchstaben oder Jahrzehnten am rechten Rand, die Position des gewählten Tisches im Wheel (17/100) unten rechts, unten links ein Herz, rot bei deinen Favoriten.",
                 whenOff: "Die Position kehrt in die untere Statuszeile zurück.",
             },
             uiTranslation: {

@@ -104,8 +104,10 @@ export const DEFAULTS = {
     // true = every launch event is written to the PinballY log with a
     // millisecond timestamp (to check their order on the cabinet).
     logLaunchEvents: false,
-    // false = no Wheel Rail of letters on the right edge (Wheel Guides Add-on).
+    // false = no Wheel Rail of letters or decades on the right edge (Wheel Guides Add-on).
     wheelRail: true,
+    // true = each decade's years under it on the Wheel Rail, as two digits (84).
+    wheelRailYears: false,
     // false = no Wheel Position in the bottom right corner (Wheel Guides
     // Add-on): "Table n/total" comes back to the lower status line.
     wheelPosition: true,

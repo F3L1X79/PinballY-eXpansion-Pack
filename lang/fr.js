@@ -951,7 +951,7 @@ export default {
             },
             wheelGuides: {
                 name: "Repères de la roue",
-                whenOn: "Un rail de lettres sur le bord droit, la position dans la roue de la table choisie (17/100), dans le coin en bas à droite, un cœur rouge sur vos favoris dans celui en bas à gauche.",
+                whenOn: "Un rail de lettres ou de décennies sur le bord droit, la position dans la roue de la table choisie (17/100), dans le coin en bas à droite, un cœur rouge sur vos favoris dans celui en bas à gauche.",
                 whenOff: "La position revient dans la ligne d'état du bas.",
             },
             uiTranslation: {

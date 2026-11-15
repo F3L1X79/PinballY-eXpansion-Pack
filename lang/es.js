@@ -947,7 +947,7 @@ export default {
             },
             wheelGuides: {
                 name: "Guías de la rueda",
-                whenOn: "Un riel de letras en el borde derecho, el puesto de la mesa elegida en la rueda (17/100) en la esquina inferior derecha, un corazón rojo en tus favoritos en la inferior izquierda.",
+                whenOn: "Un riel de letras o décadas en el borde derecho, el puesto de la mesa elegida en la rueda (17/100) en la esquina inferior derecha, un corazón rojo en tus favoritos en la inferior izquierda.",
                 whenOff: "El puesto vuelve a la línea de estado inferior.",
             },
             uiTranslation: {

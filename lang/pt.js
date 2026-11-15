@@ -946,7 +946,7 @@ export default {
             },
             wheelGuides: {
                 name: "Guias da roleta",
-                whenOn: "Um trilho de letras na borda direita, a posição da mesa escolhida na roleta (17/100) no canto inferior direito, um coração vermelho nos seus favoritos no inferior esquerdo.",
+                whenOn: "Um trilho de letras ou décadas na borda direita, a posição da mesa escolhida na roleta (17/100) no canto inferior direito, um coração vermelho nos seus favoritos no inferior esquerdo.",
                 whenOff: "A posição volta à linha de status inferior.",
             },
             uiTranslation: {
