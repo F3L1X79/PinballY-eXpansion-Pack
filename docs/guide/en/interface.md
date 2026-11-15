@@ -46,7 +46,7 @@ It is **off by default**, like the Backglass Clock: turn it on with `ADD_ON_MENU
 
 Small icons sit right of the wheel's clock, on its line, as tall as its digits. Each one shows only while what it stands for lasts:
 
-- Discord's white symbol, to everyone, Guest and Child Profiles included: Discord is showing the cabinet publicly right now (see [Discord Rich Presence](settings.md#discord-rich-presence)). No symbol means nothing is public: Discord Rich Presence is off, Discord has not answered yet or cannot be reached, or attract mode is running.
+- Discord's white symbol, to everyone, Guest and Child Profiles included: Discord is showing the cabinet publicly right now (see [Discord Rich Presence](settings.md#discord-rich-presence)). No symbol means nothing is public: Discord Rich Presence is off, or Discord has not answered yet or cannot be reached.
 - A gold arrow pointing down, only to whoever sees the setup entries (an [Admin Profile](settings.md#admin-profile), or anyone while no Profile is marked): a newer version of the pack is waiting (see [Updates](updates.md)).
 - A white circular arrow, crossed out, only to whoever sees the setup entries: the pack update check is turned off.
 

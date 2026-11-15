@@ -1,7 +1,7 @@
 // ============================================================
-// Discord Rich Presence through main.js, attract mode: its start clears the
-// status, its end brings "Choosing a table" back, and a game launched from
-// it shows the table as usual.
+// Discord Rich Presence through main.js, attract mode: its start shows
+// "Attract mode", its end brings "Choosing a table" back, and a game launched
+// from it shows the table as usual.
 // ============================================================
 
 import { test } from "node:test";
@@ -10,21 +10,20 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { LOGO_URL, MARS, POLL_MS, activitiesSent, startDiscordScenario } from "./discord_scenario.js";
 
 const CHOOSING = { details: "Choosing a table", assets: { large_image: LOGO_URL } };
+const ATTRACT = { details: "Attract mode", assets: { large_image: LOGO_URL } };
 
 const { fake, discord } = await startDiscordScenario();
 fake.advanceTime(POLL_MS);
 
-test("attract mode's start clears the status", () => {
+test("attract mode's start shows Attract mode, in one update", () => {
+    const sentBefore = activitiesSent(discord).length;
     fake.enterAttractMode();
     fake.advanceTime(POLL_MS);
 
-    const command = discord.commands().at(-1);
-    assert.equal(command.cmd, "SET_ACTIVITY");
-    assert.equal("activity" in command.args, false);
-    assert.equal(typeof command.args.pid, "number");
+    assert.deepEqual(activitiesSent(discord).slice(sentBefore), [ATTRACT]);
 });
 
-test("the status stays cleared for as long as attract mode lasts", () => {
+test("the status stays unchanged for as long as attract mode lasts", () => {
     const sentBefore = activitiesSent(discord).length;
     fake.advanceTime(60 * 60 * 1000);
 

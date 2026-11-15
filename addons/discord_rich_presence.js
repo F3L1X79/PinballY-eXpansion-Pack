@@ -1,6 +1,6 @@
 // ============================================================
 // Discord Rich Presence: the cabinet's Discord account shows "Choosing a table"
-// on the wheel, nothing during attract mode, and during a game the table with
+// on the wheel, "Attract mode" during attract mode, and during a game the table with
 // its elapsed time and, if it is one, "Table of the Day" or "Table of the Week",
 // under the "Virtual Pinball" name and the pack's logo (docs/adr/0022). Off by
 // default; three tries at startup, then one Warning Toast until PinballY restarts.
@@ -30,6 +30,7 @@ const TRY_GAP_MS = 15000;
 const LOGO_URL = "https://raw.githubusercontent.com/F3L1X79/PinballY-Expansion-Pack/main/docs/images/logo.png";
 
 const choosingTableActivity = () => ({ details: lang.discordRichPresence.choosingTable, assets: { large_image: LOGO_URL } });
+const attractModeActivity = () => ({ details: lang.discordRichPresence.attractMode, assets: { large_image: LOGO_URL } });
 
 // An Adult Table's name too, as the owner chose (spec #379): only an adult
 // can launch one, since a Child Profile's wheel never shows them.
@@ -88,8 +89,8 @@ export default function init() {
         isPlaying = false;
         client.setActivity(choosingTableActivity());
     }));
-    // Fires when the idle cabinet starts attract mode: nothing shown overnight.
-    host.on("attractmodestart", safeHandler(SCRIPT_NAME, () => client.setActivity(null)));
+    // Fires when the idle cabinet starts attract mode.
+    host.on("attractmodestart", safeHandler(SCRIPT_NAME, () => client.setActivity(attractModeActivity())));
     // Fires on the button press that ends attract mode, back to the wheel.
     host.on("attractmodeend", safeHandler(SCRIPT_NAME, () => client.setActivity(choosingTableActivity())));
 }

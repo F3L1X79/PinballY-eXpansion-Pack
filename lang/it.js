@@ -704,6 +704,7 @@ export default {
     // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).
     discordRichPresence: {
         choosingTable: "Sceglie un tavolo",
+        attractMode: "Modalità attrazione",
         tableOfTheDay: "Tavolo del giorno",
         tableOfTheWeek: "Tavolo della settimana",
         warningTitle: "Discord Rich Presence",
