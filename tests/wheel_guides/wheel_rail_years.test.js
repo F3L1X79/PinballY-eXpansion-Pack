@@ -27,7 +27,7 @@ test("with WHEEL_RAIL_YEARS, each decade's years show under it and the pill sits
     rows.push("?");
     const rail = shownRail(fake);
     assert.deepEqual(rail.rows, rows);
-    assert.deepEqual(rail.dimmed, []);
+    assert.deepEqual(rail.dimmed, rows.filter(label => label.endsWith("s")), "decades dimmed: the pill never sits on them");
     assert.equal(fake.getCurrentTable().title, "Homebrew");
     assert.equal(rail.pill, "?", "a table without a year");
 
@@ -35,8 +35,8 @@ test("with WHEEL_RAIL_YEARS, each decade's years show under it and the pill sits
     assert.ok(base.canvasSize().height <= 1100, `the rail is ${base.canvasSize().height} px high`);
     const labels = base.strokes().filter(stroke => "text" in stroke);
     const sizeOf = label => labels.find(stroke => stroke.text === label).size;
-    assert.equal(sizeOf("80s"), 12, "decades 12 pt");
-    assert.equal(sizeOf("84"), 10, "years 10 pt");
+    assert.equal(sizeOf("80s"), 14, "decades 14 pt, above the years");
+    assert.equal(sizeOf("84"), 12, "years 12 pt");
     const topOf = label => labels.find(stroke => stroke.text === label).rect.y;
     const yearHeight = topOf("85") - topOf("84");
     // (1100 - 2 × 7 px of margin - 8 decade rows × 30 px) / 66 years: 12.8.

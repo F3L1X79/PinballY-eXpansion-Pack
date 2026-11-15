@@ -58,6 +58,8 @@ ACHIEVEMENT_SOUND_FILE=assets\sounds\local\trophee.mp3
 ADD_ON_CLOCK=false
 ```
 
+Les réglages de l'eXpansion Pack écrivent aussi dans ce fichier. Une clé qu'ils enregistrent et qui n'y est pas encore est ajoutée à la fin, avec au-dessus son commentaire tiré de `.env.example` : vous lisez ce qu'elle fait sans ouvrir ce fichier.
+
 | Réglage | Par défaut | Rôle |
 |---|---|---|
 | `LANGUAGE` | `en` | Langue : `en`, `fr`, `de`, `es`, `it` ou `pt`. |

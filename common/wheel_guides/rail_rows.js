@@ -1,9 +1,10 @@
 // ============================================================
 // Wheel Rail rows: what the rail lists for the wheel shown, top to bottom:
 // # then A to Z, or every decade from the oldest to the newest present then
-// ? (each decade's years under it with WHEEL_RAIL_YEARS), which hold a table,
+// ? (each decade's years under it with WHEEL_RAIL_YEARS), which are lit,
 // and the row of a table. Built once per reading of the wheel (see wheel_places.js).
-// - Year rows shrink from 18 to 13 px, lower only when needed, so that the rail stays within 1100 px.
+// - Year rows shrink from 22 to 13 px, lower only when needed, so that the rail stays within 1100 px.
+// - With the years, decades are never lit: the pill sits on a year, never on its decade.
 // - A row is known by its key: two-digit labels repeat a century apart (1984 and 2084).
 // ============================================================
 
@@ -13,9 +14,11 @@ import { decadeOf, yearOf } from "../tables/wheel_order.js";
 // Prototype values, in reference px; pad: the panel's margin above and below the rows.
 export const RAIL_ROWS = Object.freeze({ pad: 7, maxHeight: 1100 });
 const LETTER = Object.freeze({ height: 30, size: 14, weight: 600 });
-const DECADE = Object.freeze({ height: 30, size: 12, weight: 600 });
-const YEAR = Object.freeze({ size: 10, weight: 400 });
-const YEAR_HEIGHT = Object.freeze({ max: 18, min: 13 });
+// Larger than the prototype's 12 pt semibold, to stand out above the years.
+const DECADE = Object.freeze({ height: 30, size: 14, weight: 700 });
+// Larger than the prototype's 10 pt on 18 px rows, too small on the cabinet.
+const YEAR = Object.freeze({ size: 12, weight: 400 });
+const YEAR_HEIGHT = Object.freeze({ max: 22, min: 13 });
 const LETTERS = Object.freeze([OTHER_LETTER_PAGE, ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"]);
 
 const twoDigits = number => String(number % 100).padStart(2, "0");
@@ -32,7 +35,7 @@ function letterRows(pages) {
     return LETTERS.map(letter => Object.freeze({ key: letterKey(letter), label: letter, isLit: pages.has(letter), ...LETTER }));
 }
 
-// As high as fits, 18 px at most, 13 px at least unless 13 px would not fit.
+// As high as fits, 22 px at most, 13 px at least unless 13 px would not fit.
 function yearHeightFor(room, yearCount) {
     if (yearCount === 0) return YEAR_HEIGHT.max;
     const fitting = Math.floor(room / yearCount);
@@ -59,7 +62,8 @@ function decadeRows(pages, tables, withYears) {
     const yearHeight = yearHeightFor(RAIL_ROWS.maxHeight - 2 * RAIL_ROWS.pad - pagesTopDown.length * DECADE.height, yearCount);
     const rows = [];
     for (const page of pagesTopDown) {
-        rows.push(Object.freeze({ key: decadeKey(page), label: decadeLabel(page), isLit: pages.has(page), ...DECADE }));
+        const isDecade = page !== NO_YEAR_PAGE;
+        rows.push(Object.freeze({ key: decadeKey(page), label: decadeLabel(page), isLit: pages.has(page) && !(withYears && isDecade), ...DECADE }));
         const years = yearsByDecade.get(page);
         if (!years) continue;
         for (const year of [...years].sort((a, b) => a - b)) {

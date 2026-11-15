@@ -58,6 +58,8 @@ ACHIEVEMENT_SOUND_FILE=assets\sounds\local\trophy.mp3
 ADD_ON_CLOCK=false
 ```
 
+The eXpansion Pack Settings write to this file too. A key they save that is not in it yet is added at the end, with its comment from `.env.example` above it, so you can read what it does without opening that file.
+
 | Setting | Default | What it does |
 |---|---|---|
 | `LANGUAGE` | `en` | Interface language: `en`, `fr`, `de`, `es`, `it` or `pt`. |
