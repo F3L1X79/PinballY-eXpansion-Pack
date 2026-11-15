@@ -159,6 +159,17 @@ export default {
         yourRating: (position, rating) => `Table ${position}/[Filter.Count] - your rating: ${rating} out of 5.`,
         noRating: (position) => `Table ${position}/[Filter.Count] - no rating for this table.`,
     },
+    // The same messages while the Wheel Position shows the table's place: no position, a capital first.
+    tableInfoStatusLinesNoPosition: {
+        manufacturer: () => "Made by [Game.Manuf].",
+        manufacturerFictional: () => "Fictional pinball table.",
+        playCount: (count) => `Launched ${count} times.`,
+        playTime: (hours, minutes) => `Played for ${formatPlayTime(hours, minutes)}.`,
+        year: () => "Released in [Game.Year].",
+        householdRating: (rating, count) => `Household rating: ${rating} out of 5 (${count} ratings).`,
+        yourRating: (rating) => `Your rating: ${rating} out of 5.`,
+        noRating: () => "No rating for this table.",
+    },
 
     // Upper status line messages, after the player's own from PinballY's options.
     // [Filter.Count] is a PinballY placeholder — keep it as-is.
@@ -863,6 +874,11 @@ export default {
                 name: "Wheel Arc",
                 whenOn: "A gold arc under the wheel, unless you use your own underlay.",
                 whenOff: "Nothing else changes.",
+            },
+            wheelGuides: {
+                name: "Wheel Guides",
+                whenOn: "The selected table's place on the wheel (17/100) in the bottom right corner.",
+                whenOff: "The place comes back to the lower status line.",
             },
             uiTranslation: {
                 name: "PinballY translation",

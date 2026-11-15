@@ -5,7 +5,7 @@
 // on "gameselect", "filterselect", "wheelmode", a Profile switch and a rating.
 // - The slot count is fixed at startup: adding or removing messages later made PinballY unstable.
 // - No slot is ever empty: PinballY shows an empty message as a blank line (#469).
-// - "Table n/total" comes from the shared Wheel places, marked changed on each event that may change the wheel.
+// - "Table n/total" comes from the shared Wheel places; left out while the Wheel Position shows it.
 // ============================================================
 
 import lang from "../common/core/i18n.js";
@@ -17,13 +17,22 @@ import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { createHouseholdRatings } from "../common/profiles/household_ratings.js";
 import { ratingOf, onRatingDialogClosed } from "../common/profiles/profile_ratings.js";
 import { getWheelPlaces } from "../common/tables/wheel_places.js";
+import { isWheelPositionOn } from "../common/wheel_guides/wheel_position.js";
 
 const SCRIPT_NAME = "StatusLineInfo";
 const SECONDS_PER_MINUTE = 60;
 const MINUTES_PER_HOUR = 60;
 
+// Each lower status line message as (position, ...values), without its
+// position while the Wheel Position shows it.
+function lowerStatusLineTexts() {
+    if (!isWheelPositionOn(config)) return lang.tableInfoStatusLines;
+    return Object.fromEntries(Object.entries(lang.tableInfoStatusLinesNoPosition)
+        .map(([key, message]) => [key, (_position, ...values) => message(...values)]));
+}
+
 export default function init() {
-    const LOWER_STATUS_LINE_TEXT = lang.tableInfoStatusLines;
+    const LOWER_STATUS_LINE_TEXT = lowerStatusLineTexts();
     const UPPER_STATUS_LINE_TEXT = lang.upperStatusLines;
     const COMMUNITY_MANUFACTURER_NAME = config.communityTablesManufacturer;
     const profileStore = getProfileStore();

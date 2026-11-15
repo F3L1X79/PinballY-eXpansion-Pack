@@ -272,6 +272,17 @@ export default {
         yourRating: (position, rating) => `Tisch ${position}/[Filter.Count] - Ihre Bewertung: ${String(rating).replace(".", ",")} von 5.`,
         noRating: (position) => `Tisch ${position}/[Filter.Count] - keine Bewertung für diesen Tisch.`,
     },
+    // The same messages while the Wheel Position shows the table's place: no position, a capital first.
+    tableInfoStatusLinesNoPosition: {
+        manufacturer: () => "Hergestellt von [Game.Manuf].",
+        manufacturerFictional: () => "Fiktiver Flipper.",
+        playCount: (count) => `${count}-mal gestartet.`,
+        playTime: (hours, minutes) => `${formatPlayTime(hours, minutes)} lang gespielt.`,
+        year: () => "Veröffentlicht im Jahr [Game.Year].",
+        householdRating: (rating, count) => `Familienbewertung: ${String(rating).replace(".", ",")} von 5 (${count} Bewertungen).`,
+        yourRating: (rating) => `Ihre Bewertung: ${String(rating).replace(".", ",")} von 5.`,
+        noRating: () => "Keine Bewertung für diesen Tisch.",
+    },
 
     // Upper status line messages, after the player's own from PinballY's options.
     // [Filter.Count] is a PinballY placeholder — keep it as-is.
@@ -932,6 +943,11 @@ export default {
                 name: "Wheel-Bogen",
                 whenOn: "Ein goldener Bogen unter dem Wheel, außer Sie verwenden ein eigenes Underlay.",
                 whenOff: "Sonst ändert sich nichts.",
+            },
+            wheelGuides: {
+                name: "Wheel-Wegweiser",
+                whenOn: "Die Position des gewählten Tisches im Wheel (17/100) unten rechts.",
+                whenOff: "Die Position kehrt in die untere Statuszeile zurück.",
             },
             uiTranslation: {
                 name: "PinballY-Übersetzung",

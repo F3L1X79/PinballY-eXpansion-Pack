@@ -104,6 +104,9 @@ export const DEFAULTS = {
     // true = every launch event is written to the PinballY log with a
     // millisecond timestamp (to check their order on the cabinet).
     logLaunchEvents: false,
+    // false = no Wheel Position in the bottom right corner (Wheel Guides
+    // Add-on): "Table n/total" comes back to the lower status line.
+    wheelPosition: true,
 
     // --- Add-ons ---
 
@@ -145,6 +148,8 @@ export const DEFAULTS = {
         // Icons beside the clock: a Pack Update waiting, the Update Check off.
         statusIcons: true,
         wheelArc: true,
+        // Marks on the wheel screen saying where the player is on the wheel.
+        wheelGuides: true,
         challenges: true,
         tableMastery: true,
         // Fills each table's empty ROM field from its script (vpxtool in the pack's tools folder).

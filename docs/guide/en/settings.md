@@ -24,6 +24,8 @@ Under "Players and progress", **Ratings per Profile** gives each Profile its own
 
 Under "Menus and filters", **Hidden Games** is on by default: some surprises unlock menu entries, so do not be puzzled when one appears in a player's main menu. Turned off, those entries never show (`ADD_ON_ROCKET_GAME=false`). **Wheel Order** is on too, its wheel alphabetical until a player switches it to by year; turned off, "Change Filter" loses its order entry and the wheel stays alphabetical (`ADD_ON_WHEEL_ORDER=false`, see [Wheel Order](choosing_a_table.md#wheel-order)). The Attract Order line below belongs to it: it shows only while Wheel Order is on, and with Wheel Order off, attract mode is PinballY's own.
 
+Under "Wheel screen", **Wheel Guides** shows where you are on the wheel: the Wheel Position, the selected table's place out of the wheel's tables, in the bottom right corner (see [Interface](interface.md#on-the-wheel-screen)). Turned off, "Table n/total" comes back to the lower status line (`ADD_ON_WHEEL_GUIDES=false`; `WHEEL_POSITION=false` in `.env.local` removes the Wheel Position alone). For a held flipper button to scroll the wheel at the pace the cabinet was tuned for, set PinballY's own "Auto-repeat rate" (Options, Game Wheel) to `180ms`: the pack never changes it.
+
 The **Attract Order** line, after the language, chooses how attract mode moves through the tables once the cabinet sits idle:
 
 - **As PinballY** (the default): PinballY jumps a few tables at random at each switch, as without the pack.
@@ -81,6 +83,7 @@ ADD_ON_CLOCK=false
 | `ASK_TO_RATE_AFTER_MINUTES_PLAYED` | `60` | Minutes played on a table before you are asked to rate it. |
 | `LOG_UNTRANSLATED_MENU_TITLES` | `false` | `true` writes each untranslated PinballY menu title to `PinballY.log`. |
 | `LOG_LAUNCH_EVENTS` | `false` | `true` writes each launch event to `PinballY.log` with a millisecond timestamp, to check their order on the cabinet. |
+| `WHEEL_POSITION` | `true` | `false` removes the Wheel Position (`17/100`, bottom right of the wheel screen) and gives "Table n/total" back to the lower status line (see [Interface](interface.md#on-the-wheel-screen)). |
 
 Every feature can also be turned off with its `ADD_ON_*` key, for example `ADD_ON_CLOCK=false` or `ADD_ON_CHALLENGES=false`. Only Menu Cleanup, the Backglass Clock (`ADD_ON_BACKGLASS_CLOCK`, the time on the backglass screen during a game, see [Interface](interface.md#backglass-clock)) and Discord Rich Presence (`ADD_ON_DISCORD_RICH_PRESENCE`, see [above](#discord-rich-presence)) are off by default. Each key is described in [.env.example](../../../.env.example).
 

@@ -271,6 +271,17 @@ export default {
         yourRating: (position, rating) => `Tavolo ${position}/[Filter.Count] - la tua valutazione: ${String(rating).replace(".", ",")} su 5.`,
         noRating: (position) => `Tavolo ${position}/[Filter.Count] - nessuna valutazione per questo tavolo.`,
     },
+    // The same messages while the Wheel Position shows the table's place: no position, a capital first.
+    tableInfoStatusLinesNoPosition: {
+        manufacturer: () => "Prodotto da [Game.Manuf].",
+        manufacturerFictional: () => "Flipper fittizio.",
+        playCount: (count) => `Avviato ${count} volte.`,
+        playTime: (hours, minutes) => `Giocato per ${formatPlayTime(hours, minutes)}.`,
+        year: () => "Pubblicato nel [Game.Year].",
+        householdRating: (rating, count) => `Valutazione di casa: ${String(rating).replace(".", ",")} su 5 (${count} valutazioni).`,
+        yourRating: (rating) => `La tua valutazione: ${String(rating).replace(".", ",")} su 5.`,
+        noRating: () => "Nessuna valutazione per questo tavolo.",
+    },
 
     // Upper status line messages, after the player's own from PinballY's options.
     // [Filter.Count] is a PinballY placeholder — keep it as-is.
@@ -931,6 +942,11 @@ export default {
                 name: "Arco dorato",
                 whenOn: "Un arco dorato sotto la ruota, a meno che tu non usi un tuo sfondo.",
                 whenOff: "Nient'altro cambia.",
+            },
+            wheelGuides: {
+                name: "Guide della ruota",
+                whenOn: "La posizione del tavolo scelto sulla ruota (17/100) nell'angolo in basso a destra.",
+                whenOff: "La posizione torna nella riga di stato inferiore.",
             },
             uiTranslation: {
                 name: "Traduzione di PinballY",

@@ -273,6 +273,17 @@ export default {
         yourRating: (position, rating) => `Table ${position}/[Filter.Count] - votre note : ${String(rating).replace(".", ",")} sur 5.`,
         noRating: (position) => `Table ${position}/[Filter.Count] - aucune note pour cette table.`,
     },
+    // The same messages while the Wheel Position shows the table's place: no position, a capital first.
+    tableInfoStatusLinesNoPosition: {
+        manufacturer: () => "Fabriqué par [Game.Manuf].",
+        manufacturerFictional: () => "Flipper fictif.",
+        playCount: (count) => `Lancé ${count} fois.`,
+        playTime: (hours, minutes) => `Joué pendant ${formatPlayTime(hours, minutes)}.`,
+        year: () => "Sorti en [Game.Year].",
+        householdRating: (rating, count) => `Note de la maison : ${String(rating).replace(".", ",")} sur 5 (${count} avis).`,
+        yourRating: (rating) => `Votre note : ${String(rating).replace(".", ",")} sur 5.`,
+        noRating: () => "Aucune note pour cette table.",
+    },
 
     // Upper status line messages, after the player's own from PinballY's options.
     // [Filter.Count] is a PinballY placeholder — keep it as-is.
@@ -937,6 +948,11 @@ export default {
                 name: "Arc de la roue",
                 whenOn: "Un arc doré sous la roue, sauf si tu as ton propre fond.",
                 whenOff: "Rien d'autre ne change.",
+            },
+            wheelGuides: {
+                name: "Repères de la roue",
+                whenOn: "La position dans la roue de la table choisie (17/100), dans le coin en bas à droite.",
+                whenOff: "La position revient dans la ligne d'état du bas.",
             },
             uiTranslation: {
                 name: "Traduction de PinballY",
