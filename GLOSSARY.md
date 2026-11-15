@@ -170,6 +170,26 @@ _Avoid_: spinner, loading screen, splash screen (it is not a screen, only a come
 The gold arc drawn under the wheel's icons and following its curve. Shown as "arc de la roue" in French.
 _Avoid_: underlay (PinballY's name for the image layer that carries it), wheel colour
 
+**Wheel Guides**:
+The small marks always in view on the wheel screen that say where the player is on the wheel: the Wheel Rail, the Wheel Position and the Favorite Heart. Shown as "repères de la roue" in French.
+_Avoid_: markers (the Selection Marker is the glow of a drawn screen), indicators, Status Icon
+
+**Wheel Rail**:
+The thin column along the right edge of the wheel screen that lists every page of the wheel, letters or decades, in the wheel's order, dimming those with no table. Shown as "rail de la roue" in French.
+_Avoid_: alphabet bar, scrollbar, index, jump list
+
+**Rail Pill**:
+The gold pill on the Wheel Rail that sits on the page of the selected table.
+_Avoid_: cursor, Selection Marker, highlight
+
+**Wheel Position**:
+The selected table's place on the wheel out of the wheel's tables, such as 17/100, in the bottom right corner of the wheel screen. Shown as "position dans la roue" in French.
+_Avoid_: table counter, Table n/total (the status line's former entry)
+
+**Favorite Heart**:
+The heart in the bottom left corner of the wheel screen, red when the selected table is one of the active Profile's Favorite Tables, grey otherwise. Shown as "cœur des favoris" in French.
+_Avoid_: favourite icon, Status Icon (a Status Icon is absent when its state is off)
+
 ### Time
 
 **Backglass Clock**:
