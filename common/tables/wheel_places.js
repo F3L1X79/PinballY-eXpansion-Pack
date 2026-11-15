@@ -25,6 +25,12 @@ function decadePageOf(game) {
     return year === null ? NO_YEAR_PAGE : decadeOf(year);
 }
 
+function pageUnder(paging, game) {
+    if (paging === WHEEL_PAGINGS.BY_LETTER) return letterOf(game);
+    if (paging === WHEEL_PAGINGS.BY_DECADE) return decadePageOf(game);
+    return null;
+}
+
 export function createWheelPlaces(host, wheelOrder) {
     // The last reading of the wheel, null until read or once told it may have changed.
     let reading = null;
@@ -52,7 +58,8 @@ export function createWheelPlaces(host, wheelOrder) {
         const sort = compare ?? compareTitles;
         const first = Math.max(0, games.findIndex((game, index) => index > 0 && sort(games[index - 1], game) > 0));
         const tables = Object.freeze([...games.slice(first), ...games.slice(0, first)]);
-        return { tables, places: new Map(tables.map((game, index) => [game.configId, index])), paging: pagingOf(compare) };
+        // pages: taken from the tables the first time asked.
+        return { tables, places: new Map(tables.map((game, index) => [game.configId, index])), paging: pagingOf(compare), pages: null };
     }
 
     // Whether the selected table and the next one are where the reading has them.
@@ -87,11 +94,15 @@ export function createWheelPlaces(host, wheelOrder) {
         // WHEEL_PAGINGS' value for the wheel shown, null on a ranked selection.
         getPaging: () => current().paging,
         // The letter, the decade (1980) or NO_YEAR_PAGE; null on a ranked selection.
-        pageOf(game) {
-            const { paging } = current();
-            if (paging === WHEEL_PAGINGS.BY_LETTER) return letterOf(game);
-            if (paging === WHEEL_PAGINGS.BY_DECADE) return decadePageOf(game);
-            return null;
+        pageOf: game => pageUnder(current().paging, game),
+        // The pages holding a table, as pageOf gives them; the same Set
+        // until the wheel is read again. Empty on a ranked selection.
+        getPages() {
+            const reading = current();
+            if (reading.pages === null) {
+                reading.pages = reading.paging === null ? new Set() : new Set(reading.tables.map(game => pageUnder(reading.paging, game)));
+            }
+            return reading.pages;
         },
     };
 }

@@ -1,6 +1,6 @@
 // ============================================================
-// Wheel Guides: marks on the wheel screen saying where the player is on the
-// wheel: the Wheel Position (WHEEL_POSITION) and the Favorite Heart (FAVORITE_HEART).
+// Wheel Guides: marks on the wheel screen saying where the player is on the wheel: the
+// Wheel Rail (WHEEL_RAIL), the Wheel Position (WHEEL_POSITION), the Favorite Heart (FAVORITE_HEART).
 // They follow "gameselect" and the Attract Order's moves; the wheel is read again
 // after a filter choice, a menu, a Wheel Order toggle, a Profile switch and "wheelmode".
 // - "filterselect" fires before the filter applies, and "menuclose" before a table leaves Favorite Tables: read at 0 and 300 ms.
@@ -14,9 +14,11 @@ import { logInfo } from "../common/core/info_log.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getAttractOrder } from "../common/tables/attract_order.js";
 import { getWheelOrder } from "../common/tables/wheel_order.js";
-import { getWheelPlaces } from "../common/tables/wheel_places.js";
+import { getWheelPlaces, WHEEL_PAGINGS } from "../common/tables/wheel_places.js";
+import { getDrawingAhead } from "../common/core/drawing_ahead.js";
 import { createWheelPosition, isWheelPositionOn } from "../common/wheel_guides/wheel_position.js";
 import { createFavoriteHeart, isFavoriteHeartOn } from "../common/wheel_guides/favorite_heart.js";
+import { createWheelRail, isWheelRailOn, LETTER_ROWS } from "../common/wheel_guides/wheel_rail.js";
 
 const SCRIPT_NAME = "WheelGuides";
 const REREAD_DELAYS_MS = [0, 300];
@@ -34,13 +36,20 @@ export default function init() {
     const host = createPinballYHost();
     const position = isWheelPositionOn(config) ? createWheelPosition(host) : null;
     const heart = isFavoriteHeartOn(config) ? createFavoriteHeart(host) : null;
-    if (!position && !heart) return;
+    const rail = isWheelRailOn(config) ? createWheelRail(host, getDrawingAhead()) : null;
+    if (!position && !heart && !rail) return;
     const wheelPlaces = getWheelPlaces();
     let gameRunning = false;
 
     function hideAll() {
         if (position) position.hide();
         if (heart) heart.hide();
+        if (rail) rail.hide();
+    }
+    // Only a wheel paging by letter has a rail here: none on a ranked selection.
+    function showRail(game) {
+        if (wheelPlaces.getPaging() === WHEEL_PAGINGS.BY_LETTER) rail.show(LETTER_ROWS, wheelPlaces.getPages(), wheelPlaces.pageOf(game));
+        else rail.hide();
     }
     function showTable(game) {
         if (!game || gameRunning) {
@@ -53,6 +62,7 @@ export default function init() {
             else position.show(place, wheelPlaces.getTables().length);
         }
         if (heart) heart.show(game.isFavorite === true);
+        if (rail) showRail(game);
     }
     const showCurrent = () => showTable(host.getCurrentTable());
     const readAgain = () => {

@@ -78,7 +78,7 @@ To read the boards of about 300 more ROMs, update PINemHi (see [Install](install
 - The menus close, and the table you were on stays selected.
 - The order is the same for every Profile, and stays when you pick another of PinballY's filters: All Tables, Favorite Tables, an era, a manufacturer... It also stays after PinballY restarts, on the filter you had chosen.
 - The pack's wheel selections follow it too: "Tables to Discover", "Hidden Tables", "Challenge Tables" and "Original Tables". "Most Played Tables" (the most played first) and "My High Scores" (your best place first) keep their own ranking, whatever the order.
-- By year, the Next Page and Previous Page buttons jump from one decade to the next: the 1980s, the 1990s, the 2000s, the 2010s, the 2020s, then the tables without a year. Alphabetically, they jump from one letter to the next, as usual. On "Most Played Tables" and "My High Scores" they go one table at a time.
+- By year, the Next Page and Previous Page buttons jump from one decade to the next: the 1980s, the 1990s, the 2000s, the 2010s, the 2020s, then the tables without a year. Alphabetically, they jump from one letter to the next, as usual, and the gold pill of the Wheel Rail, on the right edge, jumps with them (see [Interface](interface.md#on-the-wheel-screen)). A title starting with an accented letter makes a stop of its own just after its plain letter: from "Eight Ball", Next Page stops on "Élan Vital", the pill still on E. On "Most Played Tables" and "My High Scores" they go one table at a time.
 - Turned off in the eXpansion Pack Settings (**Wheel Order**, `ADD_ON_WHEEL_ORDER=false`), the entry is gone and the wheel stays alphabetical.
 
 ---

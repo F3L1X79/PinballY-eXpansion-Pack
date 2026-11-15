@@ -6,7 +6,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { startWheelGuides, guideLayers, positionedMessages } from "./wheel_guides_scenario.js";
+import { startWheelGuides, guideLayers, positionedMessages, railBaseLayers, railPillLayers } from "./wheel_guides_scenario.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 
 test("with the Wheel Guides off, nothing of them shows and the status line keeps its position", async () => {
@@ -15,6 +15,7 @@ test("with the Wheel Guides off, nothing of them shows and the status line keeps
     fake.fire("wheelmode");
 
     assert.deepEqual(guideLayers(fake), []);
+    assert.deepEqual([...railBaseLayers(fake), ...railPillLayers(fake)], [], "no Wheel Rail");
     assert.ok(positionedMessages(fake).includes("Table 2/[Filter.Count] - released in [Game.Year]."));
     assert.equal(positionedMessages(fake).length, fake.lowerStatusLine().length, "every message gives the position");
     assertNoErrorLogged(fake);

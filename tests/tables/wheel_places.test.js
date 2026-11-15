@@ -75,6 +75,8 @@ test("the wheel's places, pages and reads", async (t) => {
         assert.equal(places.placeOf(fake.getCurrentTable()), 3);
         assert.equal(places.getPaging(), WHEEL_PAGINGS.BY_LETTER);
         assert.deepEqual(pages(), ["#", "A", "B", "C", "E", "H"]);
+        assert.deepEqual([...places.getPages()], ["#", "A", "B", "C", "E", "H"], "the pages holding a table");
+        assert.equal(places.getPages(), places.getPages(), "the same Set until read again");
     });
 
     await t.test("moves never read the wheel again; being told, or out of step, does", () => {
@@ -124,6 +126,7 @@ test("the wheel's places, pages and reads", async (t) => {
         assert.deepEqual(titles(places.getTables()), ["Cyclone", "24"]);
         assert.equal(places.getPaging(), null);
         assert.deepEqual(pages(), [null, null]);
+        assert.equal(places.getPages().size, 0, "no pages");
 
         await chooseFilter("User.project.MyHighScores");
         assert.deepEqual(titles(places.getTables()), ["Cyclone"]);
