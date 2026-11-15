@@ -70,6 +70,10 @@ export function notifyStartupScreenClosed() {
     for (const listener of screenClosedListeners) listener();
 }
 
+// False on the bare wheel with no Profile Greeting to wait for: nothing will
+// close, and onStartupScreenClosed never runs.
+export const willStartupScreenClose = () => getStartupScreen() !== STARTUP_SCREEN.WHEEL || config.addOns.profilePicker !== false;
+
 let sharedStartupScreen = null;
 
 // Resolved on the first call, after main.js restored the active Profile.

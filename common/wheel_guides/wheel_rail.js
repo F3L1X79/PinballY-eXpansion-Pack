@@ -7,6 +7,7 @@
 // - A move only places and shows a pill: drawing the whole rail per move (82 ms) made scrolls stutter.
 // - A pill missing at a move is drawn on the spot, the only draw a move may make.
 // - The slide and fades only move the layers and set their alpha, frame by frame; hide() leaves no timer pending.
+// - hold() keeps it in place, no rest running, until release(): under the startup Welcome Screen.
 // ============================================================
 
 import { STEAMBALL_COLORS, STEAMBALL_FONTS } from "../drawing/steamball_palette.js";
@@ -193,6 +194,13 @@ export function createWheelRail(host, drawingAhead, { restSeconds }) {
         restTimer = null;
     }
 
+    // Held: shown in place with no rest running, until release().
+    let isHeld = false;
+    function startRestTimer() {
+        stopRestTimer();
+        if (restMs > 0 && !isHeld) restTimer = host.setTimeout(safeHandler(SCRIPT_NAME, startLeaving), restMs);
+    }
+
     function startLeaving() {
         restTimer = null;
         enterPhase(PHASE.LEAVING);
@@ -218,13 +226,10 @@ export function createWheelRail(host, drawingAhead, { restSeconds }) {
             shownTableId = tableId;
             slide = 0;
             enterPhase(PHASE.SHOWN);
-            stopRestTimer();
             // An always shown rail never fades either.
             if (restMs === 0) alpha = 1;
-            else {
-                updateMotion();
-                restTimer = host.setTimeout(safeHandler(SCRIPT_NAME, startLeaving), restMs);
-            }
+            else updateMotion();
+            startRestTimer();
             if (alpha < 1) startFrames();
             else stopFrames();
         }
@@ -250,5 +255,16 @@ export function createWheelRail(host, drawingAhead, { restSeconds }) {
         applyMotion();
     }
 
-    return { show, hide };
+    // The rest runs again from release(), for a rail still in place.
+    function hold() {
+        isHeld = true;
+        stopRestTimer();
+    }
+    function release() {
+        if (!isHeld) return;
+        isHeld = false;
+        if (phase === PHASE.SHOWN) startRestTimer();
+    }
+
+    return { show, hide, hold, release };
 }

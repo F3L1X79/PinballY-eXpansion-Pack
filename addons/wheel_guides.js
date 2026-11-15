@@ -5,6 +5,7 @@
 // after a filter choice, a menu, a Wheel Order toggle, a Profile switch and "wheelmode".
 // - "filterselect" fires before the filter applies, and "menuclose" before a table leaves Favorite Tables: read at 0 and 300 ms.
 // - Hidden from "gamestarted" or attract mode to "wheelmode"; shown under menus and drawn screens.
+// - The Wheel Rail's rest waits for the Startup Screen to close (or a game, or attract mode).
 // ============================================================
 
 import config from "../common/core/config.js";
@@ -12,6 +13,7 @@ import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { logInfo } from "../common/core/info_log.js";
 import { isInAttractMode, onAttractModeStarted } from "../common/core/attract_mode.js";
+import { onStartupScreenClosed, willStartupScreenClose } from "../common/core/startup_screen.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getAttractOrder } from "../common/tables/attract_order.js";
 import { getWheelOrder } from "../common/tables/wheel_order.js";
@@ -143,11 +145,24 @@ export default function init() {
         readAgain();
         readAgainSoon();
     }));
+    // The rail's rest starts once the player has the wheel: the Startup
+    // Screen closed, or a game or attract mode dropping it, which closes nothing.
+    if (rail && willStartupScreenClose()) {
+        rail.hold();
+        onStartupScreenClosed(safeHandler(SCRIPT_NAME, rail.release));
+    }
+    const releaseRail = () => {
+        if (rail) rail.release();
+    };
     host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
         gameRunning = true;
+        releaseRail();
         hideAll();
     }));
-    onAttractModeStarted(host, SCRIPT_NAME, hideAll);
+    onAttractModeStarted(host, SCRIPT_NAME, () => {
+        releaseRail();
+        hideAll();
+    });
     host.on("wheelmode", safeHandler(SCRIPT_NAME, () => {
         gameRunning = false;
         readAgain();

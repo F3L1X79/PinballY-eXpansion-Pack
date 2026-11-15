@@ -12,7 +12,7 @@
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { getQuietWheel } from "../common/core/quiet_wheel.js";
-import { getStartupScreen, onStartupScreenClosed, STARTUP_SCREEN } from "../common/core/startup_screen.js";
+import { onStartupScreenClosed, willStartupScreenClose } from "../common/core/startup_screen.js";
 import { getWindowLayout } from "../common/core/window_layout.js";
 import config from "../common/core/config.js";
 import { getDrawnMenus } from "../common/drawn_menu/drawn_menu.js";
@@ -76,7 +76,7 @@ export default function init() {
     onStartupScreenClosed(safeHandler(SCRIPT_NAME, () => host.setTimeout(tryFly, 0)));
 
     // The bare wheel with no Profile Greeting to wait for: nothing will close.
-    if (getStartupScreen() === STARTUP_SCREEN.WHEEL && config.addOns.profilePicker === false) {
+    if (!willStartupScreenClose()) {
         // A tick later, so what the other Add-ons submit at startup counts as busy.
         host.setTimeout(safeHandler(SCRIPT_NAME, () => getWindowLayout().whenLaidOut(tryFly)), 0);
     }
