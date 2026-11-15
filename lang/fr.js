@@ -951,7 +951,7 @@ export default {
             },
             wheelGuides: {
                 name: "Repères de la roue",
-                whenOn: "La position dans la roue de la table choisie (17/100), dans le coin en bas à droite.",
+                whenOn: "La position dans la roue de la table choisie (17/100), dans le coin en bas à droite, un cœur rouge sur vos favoris dans celui en bas à gauche.",
                 whenOff: "La position revient dans la ligne d'état du bas.",
             },
             uiTranslation: {

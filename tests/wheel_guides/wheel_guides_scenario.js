@@ -2,7 +2,7 @@
 // Wheel Guides tests' scenario: main.js on the fake globals with the Wheel
 // Guides, the status line and the Wheel Order's Filter Picker on, PinballY's
 // main menu and filter commands answered as PinballY does. Reads the Wheel
-// Position shown and the lower status line. Never loaded by PinballY.
+// Position and Favorite Heart shown, and the lower status line. Never loaded by PinballY.
 // ============================================================
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
@@ -30,12 +30,14 @@ export const TABLES = [
 
 // addOns: the Add-ons on; profiles: { name: { isChild } }; active: the
 // Profile in cabinet.json; settings: config values set before startup;
-// cabinet: more of cabinet.json; pinballYSettings: PinballY's own settings.
+// cabinet: more of cabinet.json; pinballYSettings: PinballY's own settings;
+// files: more files by path, such as a Profile's ratings.json.
 export async function startWheelGuides({
-    addOns = DEFAULT_ADD_ONS, tables = TABLES, profiles = {}, active = "guest", settings = {}, cabinet = {}, pinballYSettings = {},
+    addOns = DEFAULT_ADD_ONS, tables = TABLES, profiles = {}, active = "guest", settings = {}, cabinet = {}, pinballYSettings = {}, files = {},
 } = {}) {
     const fake = createFakePinballYHost({ now: NOW, tables });
     fake.seedSettings(pinballYSettings);
+    for (const [path, content] of Object.entries(files)) fake.addFile(path, content);
     for (const [name, { isChild = false } = {}] of Object.entries(profiles)) {
         fake.addFile(`${PROFILES_FOLDER}\\${name}\\profile.json`, JSON.stringify({ version: 1, plays: {}, notified: [], ...(isChild ? { isChild } : {}) }));
     }
@@ -88,7 +90,28 @@ export async function startWheelGuides({
     };
 }
 
-export const positionLayers = fake => fake.drawingLayers().filter(layer => layer.zIndex === WHEEL_GUIDES_Z_INDEX);
+// The Favorite Heart's image for each state.
+const HEART_IMAGES = Object.freeze({
+    red: `${PACK}\\assets\\images\\favorite_heart.png`,
+    grey: `${PACK}\\assets\\images\\favorite_heart_off.png`,
+});
+const heartOf = layer => Object.keys(HEART_IMAGES).find(state => layer.images().includes(HEART_IMAGES[state]));
+
+// Every layer of the Wheel Guides, shown or hidden.
+export const guideLayers = fake => fake.drawingLayers().filter(layer => layer.zIndex === WHEEL_GUIDES_Z_INDEX);
+export const positionLayers = fake => guideLayers(fake).filter(layer => heartOf(layer) === undefined);
+export const heartLayers = fake => guideLayers(fake).filter(layer => heartOf(layer) !== undefined);
+
+// The Favorite Heart shown: "red", "grey", or null when none shows. Throws
+// when more than one shows, or one shows anywhere but the bottom left corner.
+export function shownHeart(fake) {
+    const shown = heartLayers(fake).filter(layer => layer.alpha > 0);
+    if (shown.length === 0) return null;
+    if (shown.length > 1) throw new Error(`${shown.length} Favorite Hearts show at once.`);
+    const [layer] = shown;
+    if (layer.position().align !== "bottom left") throw new Error(`The Favorite Heart shows at ${JSON.stringify(layer.position())}.`);
+    return heartOf(layer);
+}
 
 // The Wheel Position's text, such as "4/5"; null when none shows. Throws
 // when more than one shows, or one shows anywhere but the bottom right corner.

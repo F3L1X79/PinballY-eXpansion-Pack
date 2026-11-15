@@ -946,7 +946,7 @@ export default {
             },
             wheelGuides: {
                 name: "Guias da roleta",
-                whenOn: "A posição da mesa escolhida na roleta (17/100) no canto inferior direito.",
+                whenOn: "A posição da mesa escolhida na roleta (17/100) no canto inferior direito, um coração vermelho nos seus favoritos no inferior esquerdo.",
                 whenOff: "A posição volta à linha de status inferior.",
             },
             uiTranslation: {

@@ -945,7 +945,7 @@ export default {
             },
             wheelGuides: {
                 name: "Guide della ruota",
-                whenOn: "La posizione del tavolo scelto sulla ruota (17/100) nell'angolo in basso a destra.",
+                whenOn: "La posizione del tavolo scelto sulla ruota (17/100) nell'angolo in basso a destra, un cuore rosso sui tuoi preferiti in quello in basso a sinistra.",
                 whenOff: "La posizione torna nella riga di stato inferiore.",
             },
             uiTranslation: {

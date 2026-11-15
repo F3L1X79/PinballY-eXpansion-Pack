@@ -24,6 +24,7 @@ Chaque Profil a ses propres notes en étoiles et ses propres favoris. Tant que v
 
 - Un nouveau Profil commence sans aucune note ni aucun favori.
 - Sur la roue, votre note de la table sélectionnée s'affiche en cinq étoiles en haut à droite, au-dessus de la carte du Défi ; elles restent vides sur une table que vous n'avez pas encore notée.
+- Sur la roue, le cœur des favoris en bas à gauche est rouge sur vos tables favorites, gris sur les autres ; Invité voit les siennes, et après Changer de joueur il montre aussitôt celles du nouveau Profil. Sans **Notes par Profil**, il montre les favoris de PinballY, communs à la borne.
 - Faire repartir un Profil de zéro garde ses notes et ses favoris.
 - La première fois que le pack tourne avec cette fonction, les notes et les favoris déjà présents sur la borne sont donnés à tous les Profils, Invité compris : personne ne perd un favori, et chacun fait ensuite son propre tri.
 - Une note que vous donnez est gardée même si PinballY se ferme ou plante avant que vous changiez de Profil.

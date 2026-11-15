@@ -107,6 +107,8 @@ export const DEFAULTS = {
     // false = no Wheel Position in the bottom right corner (Wheel Guides
     // Add-on): "Table n/total" comes back to the lower status line.
     wheelPosition: true,
+    // false = no Favorite Heart in the bottom left corner (Wheel Guides Add-on).
+    favoriteHeart: true,
 
     // --- Add-ons ---
 

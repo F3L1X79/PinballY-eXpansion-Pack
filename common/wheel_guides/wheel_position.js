@@ -15,7 +15,7 @@ import { createHiddenLayer, hideLayer, placeAligned, POINT_SPAN } from "../drawi
 export const WHEEL_GUIDES_Z_INDEX = RATING_PLATE_Z_INDEX + 1;
 // Prototype values, validated on the cabinet, in px of a 1920 px high window;
 // right: a share of the window's width, off its right edge.
-const REFERENCE_HEIGHT = 1920;
+export const REFERENCE_HEIGHT = 1920;
 const CANVAS = Object.freeze({ width: 200, height: 44 });
 const TEXT = Object.freeze({ size: 24, weight: 700, top: 2 });
 const MARGIN = Object.freeze({ bottom: 4, right: 0.008 });

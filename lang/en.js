@@ -877,7 +877,7 @@ export default {
             },
             wheelGuides: {
                 name: "Wheel Guides",
-                whenOn: "The selected table's place on the wheel (17/100) in the bottom right corner.",
+                whenOn: "The selected table's place on the wheel (17/100) in the bottom right corner, a heart red on your favourites in the bottom left one.",
                 whenOff: "The place comes back to the lower status line.",
             },
             uiTranslation: {

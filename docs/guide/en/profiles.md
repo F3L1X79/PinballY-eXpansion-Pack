@@ -24,6 +24,7 @@ Each Profile has its own star ratings and its own favourites. While your Profile
 
 - A new Profile starts with no rating and no favourite.
 - On the wheel, your Rating of the selected table shows as five stars at the top right, above the Challenge Card; they stay empty on a table you have not rated yet.
+- On the wheel, the Favorite Heart in the bottom left corner is red on your Favorite Tables, grey on the others; Guest sees its own, and after Change Player it shows the new Profile's at once. With **Ratings per Profile** off, it shows PinballY's favourites, shared by the cabinet.
 - A Profile Reset keeps the Profile's ratings and favourites.
 - The first time the pack runs with this, the ratings and favourites already on the cabinet are given to every Profile, Guest included: nobody loses a favourite, and each of you then sorts your own.
 - A rating you give is kept even if PinballY closes or crashes before you change Profile.
