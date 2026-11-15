@@ -171,11 +171,11 @@ The gold arc drawn under the wheel's icons and following its curve. Shown as "ar
 _Avoid_: underlay (PinballY's name for the image layer that carries it), wheel colour
 
 **Wheel Guides**:
-The small marks always in view on the wheel screen that say where the player is on the wheel: the Wheel Rail, the Wheel Position and the Favorite Heart. Shown as "repères de la roue" in French.
+The small marks on the wheel screen that say where the player is on the wheel: the Wheel Rail, the Wheel Position and the Favorite Heart. Shown as "repères de la roue" in French.
 _Avoid_: markers (the Selection Marker is the glow of a drawn screen), indicators, Status Icon
 
 **Wheel Rail**:
-The thin column along the right edge of the wheel screen that lists every page of the wheel, letters or decades (each decade's years under it as an option), in the wheel's order, dimming those with no table. Shown as "rail de la roue" in French.
+The thin column along the right edge of the wheel screen that lists every page of the wheel, letters or decades (each decade's years under it as an option), in the wheel's order, dimming those with no table. It slides away when the player stops moving and comes back on the next move. Shown as "rail de la roue" in French.
 _Avoid_: alphabet bar, scrollbar, index, jump list
 
 **Rail Pill**:

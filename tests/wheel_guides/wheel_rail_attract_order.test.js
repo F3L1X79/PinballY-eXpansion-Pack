@@ -28,5 +28,9 @@ test("the Wheel Rail hides through attract mode and comes back on the table it e
 
     fake.exitAttractMode();
     assert.equal(shownRail(fake).pill, "B");
+    fake.advanceTime(2900);
+    assert.equal(shownRail(fake).pill, "B", "a full 3 s after attract mode");
+    fake.advanceTime(1000);
+    assert.equal(shownRail(fake), null, "then gone");
     assertNoErrorLogged(fake);
 });

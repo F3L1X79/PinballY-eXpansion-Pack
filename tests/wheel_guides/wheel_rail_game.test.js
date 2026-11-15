@@ -6,12 +6,10 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { startWheelGuides, shownRail, railBaseLayers, railPillLayers } from "./wheel_guides_scenario.js";
+import { startWheelGuides, shownRail, railBaseLayers, railLayers } from "./wheel_guides_scenario.js";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import { layersBreakingTheRule } from "../support/hidden_layer_rule.js";
-
-const railLayers = fake => [...railBaseLayers(fake), ...railPillLayers(fake)];
 
 test("the Wheel Rail hides during a game and on an empty wheel", async () => {
     const { fake, chooseInFilterPicker } = await startWheelGuides();
@@ -30,10 +28,15 @@ test("the Wheel Rail hides during a game and on an empty wheel", async () => {
     fake.advanceTime(300);
     await settle();
     assert.equal(shownRail(fake), null, "still hidden after the delayed reads");
+    fake.advanceTime(3500);
+    assert.equal(shownRail(fake), null, "no slide-out left pending during the game");
+    assert.deepEqual(layersBreakingTheRule(fake, railLayers(fake)), []);
 
     fake.gameOver(game);
     await settle();
     assert.equal(shownRail(fake).pill, "B", "back on the wheel");
+    fake.advanceTime(2900);
+    assert.equal(railBaseLayers(fake).find(layer => layer.alpha > 0).alpha, 1, "a full 3 s again after the game");
 
     for (const favorite of ["Addams Family", "Cyclone", "Eight Ball"]) fake.getGameInfo(favorite).update({ isFavorite: false });
     await chooseInFilterPicker("Favorites");

@@ -41,6 +41,8 @@ test("no Wheel Rail on a ranked selection, the other guides still shown", async 
     assert.equal(shownHeart(fake), "grey");
     fake.moveWheel(1);
     assert.equal(shownRail(fake), null);
+    fake.advanceTime(3500);
+    assert.equal(shownRail(fake), null, "no slide-out left pending on a ranked selection");
     assert.equal(shownHeart(fake), "red", "Cyclone, a Favorite Table");
 
     await choose("User.project.MyHighScores");

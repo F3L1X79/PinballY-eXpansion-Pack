@@ -6,7 +6,7 @@
 // ============================================================
 
 import { RATING_PLATE_Z_INDEX } from "../profiles/rating_plate.js";
-import { createHiddenLayer, placeAligned, POINT_SPAN } from "../drawing/placed_layers.js";
+import { createHiddenLayer, moveAligned, placeAligned, POINT_SPAN } from "../drawing/placed_layers.js";
 
 // Above the Rating Plate, under popups and menus.
 export const WHEEL_GUIDES_Z_INDEX = RATING_PLATE_Z_INDEX + 1;
@@ -29,4 +29,9 @@ export function createGuideLayer(host, zIndex = WHEEL_GUIDES_Z_INDEX) {
 export function showGuideLayer(layer, { height, x, y, align }) {
     placeAligned(layer, { ySpan: height / REFERENCE_HEIGHT }, x, y / REFERENCE_HEIGHT, align);
     layer.alpha = 1;
+}
+
+// A shown guide layer moved, its size and opacity kept; same units as showGuideLayer.
+export function moveGuideLayer(layer, { x, y, align }) {
+    moveAligned(layer, x, y / REFERENCE_HEIGHT, align);
 }

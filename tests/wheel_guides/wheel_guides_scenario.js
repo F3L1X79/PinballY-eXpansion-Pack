@@ -129,6 +129,7 @@ export function shownPosition(fake) {
 
 export const railBaseLayers = fake => fake.drawingLayers().filter(layer => layer.zIndex === WHEEL_RAIL_Z_INDEX.base);
 export const railPillLayers = fake => fake.drawingLayers().filter(layer => layer.zIndex === WHEEL_RAIL_Z_INDEX.pill);
+export const railLayers = fake => [...railBaseLayers(fake), ...railPillLayers(fake)];
 // How many draws the rail's base and pills made so far.
 export const railDraws = fake => ({
     base: fake.drawings().filter(drawing => drawing.zIndex === WHEEL_RAIL_Z_INDEX.base).length,

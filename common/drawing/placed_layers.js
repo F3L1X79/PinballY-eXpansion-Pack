@@ -20,6 +20,11 @@ export function hideLayer(layer) {
 // centre) back at its span, then at its place: the alignment is on its size.
 export function placeAligned(layer, span, x, y, align) {
     layer.setScale(span);
+    moveAligned(layer, x, y, align);
+}
+
+// Only moved, at its span: what a glide's frame needs.
+export function moveAligned(layer, x, y, align) {
     // No undefined handed to PinballY: the help documents only an omitted align.
     if (align === undefined) layer.setPos(x, y);
     else layer.setPos(x, y, align);

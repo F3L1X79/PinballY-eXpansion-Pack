@@ -3,15 +3,19 @@
 // wheel's pages (letters, or decades and their years, see rail_rows.js),
 // those with no table dimmed, and the Rail Pill, a gold pill on the selected
 // table's row. The base is drawn once per wheel content; each row's pill is its own small layer, drawn ahead.
+// 3 s after the last change of selected table it slides right and fades out; the next change brings it back, fading in.
 // - A move only places and shows a pill: drawing the whole rail per move (82 ms) made scrolls stutter.
 // - A pill missing at a move is drawn on the spot, the only draw a move may make.
+// - The slide and fades only move the layers and set their alpha, frame by frame; hide() leaves no timer pending.
 // ============================================================
 
 import { STEAMBALL_COLORS, STEAMBALL_FONTS } from "../drawing/steamball_palette.js";
 import { fillRounded, oneLine } from "../drawing/steamball_drawing.js";
 import { hideLayer } from "../drawing/placed_layers.js";
+import { FRAME_MS } from "../drawing/screen_opening.js";
+import { safeHandler } from "../core/safe_handler.js";
 import { RAIL_ROWS } from "./rail_rows.js";
-import { createGuideLayer, isGuideOn, REFERENCE_HEIGHT, showGuideLayer, WHEEL_GUIDES_Z_INDEX } from "./guide_layers.js";
+import { createGuideLayer, isGuideOn, moveGuideLayer, REFERENCE_HEIGHT, showGuideLayer, WHEEL_GUIDES_Z_INDEX } from "./guide_layers.js";
 
 // The pills over the base, both over the other guides.
 export const WHEEL_RAIL_Z_INDEX = Object.freeze({ base: WHEEL_GUIDES_Z_INDEX + 1, pill: WHEEL_GUIDES_Z_INDEX + 2 });
@@ -20,6 +24,14 @@ export const WHEEL_RAIL_Z_INDEX = Object.freeze({ base: WHEEL_GUIDES_Z_INDEX + 1
 const RAIL = Object.freeze({ width: 40, centerY: 960, right: 0.008, radius: 10 });
 // The pill's inset is 1 px on the rows lower than a letter's.
 const PILL = Object.freeze({ side: 5, inset: 2, smallInset: 1, fullRow: 30, radius: 7, weight: 700 });
+// Leaves after restMs without a change of selected table, sliding right by
+// slideSpan of the window's width (past its edge, the rail's right margin
+// included), easing in, while fading out; comes back in place, fading in.
+// slideSpan clears the edge up to a window about four times as tall as wide.
+const MOTION = Object.freeze({ restMs: 3000, leaveMs: 450, fadeInMs: 80, slideSpan: 0.1 });
+// HIDDEN: by hide(); SHOWN: in place, maybe still fading in; GONE: left after the rest.
+const PHASE = Object.freeze({ HIDDEN: "hidden", SHOWN: "shown", LEAVING: "leaving", GONE: "gone" });
+const SCRIPT_NAME = "WheelRail";
 
 export const isWheelRailOn = config => isGuideOn(config, "wheelRail");
 
@@ -88,23 +100,124 @@ export function createWheelRail(host, drawingAhead) {
         wakePills();
     }
 
+    // The motion: the table the rail was last shown for (null once hidden),
+    // its phase, since when and from which opacity, its opacity and how far
+    // it slid (0 in place, 1 off the screen).
+    let shownTableId = null;
+    let phase = PHASE.HIDDEN;
+    let phaseStartMs = 0;
+    let startAlpha = 0;
+    let alpha = 0;
+    let slide = 0;
+    let restTimer = null;
+    let frameTimer = null;
+    // Each shown layer's y, in reference px, kept for the frames' moves.
+    const placedY = new Map();
+
     function hidePill() {
         if (shownPill) hideLayer(shownPill);
         shownPill = null;
     }
 
-    function hide() {
+    function hideLayers() {
         hidePill();
         if (isBaseShown) hideLayer(base);
         isBaseShown = false;
     }
 
-    // rows: as rail_rows.js gives them; selected: the key of the selected table's row.
-    function show(rows, selected) {
+    // Only moves the shown layers and sets their opacity: a frame draws nothing.
+    function applyMotion() {
+        const x = -RAIL.right + MOTION.slideSpan * slide * slide;
+        for (const layer of [isBaseShown ? base : null, shownPill]) {
+            if (layer === null) continue;
+            moveGuideLayer(layer, { x, y: placedY.get(layer), align: "right" });
+            layer.alpha = alpha;
+        }
+    }
+
+    function stopFrames() {
+        if (frameTimer !== null) host.clearInterval(frameTimer);
+        frameTimer = null;
+    }
+
+    function enterPhase(next) {
+        phase = next;
+        phaseStartMs = host.now().getTime();
+        startAlpha = alpha;
+    }
+
+    // Timed on the clock, since Windows timers fire late. A fade-in counts
+    // one frame ahead, so the rail shows the moment the table changes.
+    function updateMotion() {
+        const elapsedMs = host.now().getTime() - phaseStartMs;
+        if (phase === PHASE.LEAVING) {
+            slide = Math.min(1, elapsedMs / MOTION.leaveMs);
+            alpha = startAlpha * (1 - slide);
+        } else {
+            alpha = Math.min(1, startAlpha + (elapsedMs + FRAME_MS) / MOTION.fadeInMs);
+        }
+    }
+
+    // Runs every frame while the rail fades in or leaves, then stops.
+    function step() {
+        updateMotion();
+        if (phase === PHASE.LEAVING && slide === 1) {
+            phase = PHASE.GONE;
+            hideLayers();
+            stopFrames();
+            return;
+        }
+        applyMotion();
+        if (phase === PHASE.SHOWN && alpha === 1) stopFrames();
+    }
+
+    function startFrames() {
+        if (frameTimer === null) frameTimer = host.setInterval(safeHandler(SCRIPT_NAME, step), FRAME_MS);
+    }
+
+    function stopRestTimer() {
+        if (restTimer !== null) host.clearTimeout(restTimer);
+        restTimer = null;
+    }
+
+    function startLeaving() {
+        restTimer = null;
+        enterPhase(PHASE.LEAVING);
+        startFrames();
+    }
+
+    // Nothing left pending: a hidden rail never starts leaving.
+    function hide() {
+        stopRestTimer();
+        stopFrames();
+        hideLayers();
+        shownTableId = null;
+        phase = PHASE.HIDDEN;
+        alpha = 0;
+        slide = 0;
+    }
+
+    // rows: as rail_rows.js gives them; selected: the key of the selected
+    // table's row; tableId: the selected table's, whose change brings the rail back.
+    function show(rows, selected, tableId) {
         updateBase(rows);
+        if (tableId !== shownTableId) {
+            shownTableId = tableId;
+            slide = 0;
+            enterPhase(PHASE.SHOWN);
+            updateMotion();
+            stopRestTimer();
+            restTimer = host.setTimeout(safeHandler(SCRIPT_NAME, startLeaving), MOTION.restMs);
+            if (alpha < 1) startFrames();
+            else stopFrames();
+        }
+        if (phase === PHASE.GONE) return;
         // A centre given from the top, as setPos takes it: up from the window's centre.
-        const showCentredAt = (layer, height, centreFromTop) =>
-            showGuideLayer(layer, { height, x: -RAIL.right, y: REFERENCE_HEIGHT / 2 - centreFromTop, align: "right" });
+        const showCentredAt = (layer, height, centreFromTop) => {
+            const y = REFERENCE_HEIGHT / 2 - centreFromTop;
+            showGuideLayer(layer, { height, x: -RAIL.right, y, align: "right" });
+            placedY.set(layer, y);
+        };
         if (!isBaseShown) {
             showCentredAt(base, baseHeight, RAIL.centerY);
             isBaseShown = true;
@@ -113,9 +226,11 @@ export function createWheelRail(host, drawingAhead) {
         const row = index < 0 ? null : rows[index];
         const pill = row === null ? null : pills.get(pillKey(row)) || drawPill(row);
         if (pill !== shownPill) hidePill();
-        if (pill === null) return;
-        showCentredAt(pill, row.height, RAIL.centerY - baseHeight / 2 + rowTops[index] + row.height / 2);
-        shownPill = pill;
+        if (pill !== null) {
+            showCentredAt(pill, row.height, RAIL.centerY - baseHeight / 2 + rowTops[index] + row.height / 2);
+            shownPill = pill;
+        }
+        applyMotion();
     }
 
     return { show, hide };

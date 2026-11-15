@@ -53,7 +53,7 @@ export default function init() {
     function showRail(game) {
         const rows = railRows.getRows();
         if (rows === null) rail.hide();
-        else rail.show(rows, railRows.keyOf(game));
+        else rail.show(rows, railRows.keyOf(game), game.id);
     }
     function showTable(game) {
         if (!game || gameRunning || isInAttractMode(host)) {
