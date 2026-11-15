@@ -196,7 +196,7 @@
         <span class="recap" id="recap" aria-label="Chantiers par effort"></span>
       </div>
       <div class="gauge" aria-hidden="true"><i id="hero-gauge" style="width:0"></i></div>
-      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 14.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
+      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 15.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
     </div>
   </header>
 
@@ -288,16 +288,18 @@
             <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
           </div>
           <p>Sur la roue, un petit calque permanent dit où l'on en est : un mini-sélecteur sur l'alphabet qui montre la lettre en cours (ou l'année, ou la décennie, quand la roue est triée par année), la position dans la roue (« 12/87 »), un cœur quand la table fait partie des Favorite Tables du Profile actif, et d'autres marques du même genre.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>prototype</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/prototype</code> (le calque sur la borne, pour juger la place et la lisibilité) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>.</div>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">prototype</span><i>›</i><span class="here">grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Prototype validé sur la borne le 15/11/2026 : branche locale <code>prototype/wheel-position-markers</code>, verdict dans son commit (<code>git log main..prototype/wheel-position-markers</code>).</div>
           <details>
-            <summary>Questions ouvertes (5)</summary>
+            <summary>Questions ouvertes (6)</summary>
+            <p class="ctx">Décidé au prototype : un rail fin au bord droit (toutes les lettres, # en tête, les vides grisés, une pastille dorée sur la lettre en cours) ; par année, les décennies « 80s », « ? » en tête, et leurs années en plus petit (« 84 », option désactivée par défaut). La position « 17/100 » tout en bas à droite, retirée de la ligne de statut. Le cœur des Favorite Tables en bas à gauche, rouge ou gris (image générée par IA). La Rating Plate toujours affichée (étoiles vides sans note), au-dessus de la Challenge Card. Fluidité : le fond du rail dessiné une fois, seule la pastille bouge ; bouton tenu à 180 ms par table.</p>
             <ul>
-              <li>Le sélecteur : toute la barre A–Z (ou les décennies) avec la lettre en cours en surbrillance, ou seulement la lettre ? Les lettres sans table sont-elles grisées ou absentes ? Il reprend les sauts de page de PinballY (par lettre, par décennie avec le Wheel Order par année).</li>
-              <li>« x/xx » se calcule avec <code>gameList.getWheelCount()</code> et <code>getAllWheelGames()</code>, mis à jour sur <code>gameselect</code> et <code>filterselect</code>. Mais <code>setWheelGame</code> ne déclenche pas <code>gameselect</code> : les sauts de l'Attract Order arrivent par <code>getAttractOrder().onMove</code>, comme pour la Rating Plate ; les autres sauts du pack restent à couvrir.</li>
-              <li>Le cœur suit les Favorite Tables du Profile actif (celles du pack, une liste par Profile), pas le <code>isFavorite</code> de PinballY : à confirmer, et que montrer avec Invité ?</li>
-              <li>Quelles autres marques : note du Profile, record de la maison, table jamais jouée, Table of the Day ? Lesquelles restent lisibles sans surcharger la roue, et sont-elles réglables une à une ?</li>
-              <li>Le coût d'un calque permanent redessiné à chaque changement de table, sans gêner le défilement rapide de la roue : dessiner seulement à l'arrêt, via <code>getDrawingAhead()</code> ? Caché pendant une partie, les menus et les Drawn Screens ; aucune animation sans fin.</li>
+              <li>Les tables sans année sont à la fin de la roue mais « ? » est en tête du rail : les mettre aussi en tête de la roue (tri et Next Page de la Wheel Order) ?</li>
+              <li>La Wheel Order ne prévient pas d'un changement d'ordre (ni <code>filterselect</code> ni <code>menuclose</code>) : lui ajouter un <code>onChange</code>. Et <code>filterselect</code> part avant le filtre : relire la roue après.</li>
+              <li>Les sauts du pack par <code>setWheelGame</code> (sans <code>gameselect</code>) autres que l'Attract Order : lesquels doivent déplacer la pastille ?</li>
+              <li>Le cœur et la Rating Plate avec Invité, et quand Profile Ratings ou le Profile Picker est désactivé (la plaque garde alors son ancienne place).</li>
+              <li>Ce qui devient réglable : les repères un à un, les années, la vitesse du bouton tenu (réglage de PinballY ou du pack ?).</li>
+              <li>« Table n/total » retiré des six langues de la ligne de statut, et les pages du guide (roue, Rating Plate) à revoir.</li>
             </ul>
             <p class="ctx">Idée de Félix du 14/11/2026, pendant l'implémentation de la roue triée par année. Le Wheel Order existe désormais (spec #513) : le sélecteur suit ses sauts de page, par lettre ou par décennie.</p>
           </details>
