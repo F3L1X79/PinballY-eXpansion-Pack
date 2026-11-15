@@ -38,7 +38,7 @@ export default function init() {
     const host = createPinballYHost();
     const position = isWheelPositionOn(config) ? createWheelPosition(host) : null;
     const heart = isFavoriteHeartOn(config) ? createFavoriteHeart(host) : null;
-    const rail = isWheelRailOn(config) ? createWheelRail(host, getDrawingAhead()) : null;
+    const rail = isWheelRailOn(config) ? createWheelRail(host, getDrawingAhead(), { restSeconds: config.wheelRailSeconds }) : null;
     if (!position && !heart && !rail) return;
     const wheelPlaces = getWheelPlaces();
     let gameRunning = false;

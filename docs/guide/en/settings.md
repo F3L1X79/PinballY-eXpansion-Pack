@@ -87,6 +87,7 @@ The eXpansion Pack Settings write to this file too. A key they save that is not 
 | `LOG_LAUNCH_EVENTS` | `false` | `true` writes each launch event to `PinballY.log` with a millisecond timestamp, to check their order on the cabinet. |
 | `WHEEL_RAIL` | `true` | `false` removes the Wheel Rail (`#` and A to Z along the right edge of the wheel screen, or decades with the Wheel Order by year, a gold pill on the selected table's; see [Interface](interface.md#on-the-wheel-screen)). |
 | `WHEEL_RAIL_YEARS` | `false` | `true` shows, by year, each decade's years under it on the Wheel Rail, smaller, as two digits (`84`), the pill on the selected table's year (see [Choosing a table](choosing_a_table.md#wheel-order)). |
+| `WHEEL_RAIL_SECONDS` | `3` | Seconds the Wheel Rail stays without a move before sliding away; the next move brings it back. A whole number; `0` keeps it always shown. Needs `WHEEL_RAIL=true` (see [Interface](interface.md#on-the-wheel-screen)). |
 | `WHEEL_POSITION` | `true` | `false` removes the Wheel Position (`17/100`, bottom right of the wheel screen) and gives "Table n/total" back to the lower status line (see [Interface](interface.md#on-the-wheel-screen)). |
 | `FAVORITE_HEART` | `true` | `false` removes the Favorite Heart (bottom left of the wheel screen, red on a Favorite Table; see [Interface](interface.md#on-the-wheel-screen)). |
 

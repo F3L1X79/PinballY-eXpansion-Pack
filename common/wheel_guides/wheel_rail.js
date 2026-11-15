@@ -3,7 +3,7 @@
 // wheel's pages (letters, or decades and their years, see rail_rows.js),
 // those with no table dimmed, and the Rail Pill, a gold pill on the selected
 // table's row. The base is drawn once per wheel content; each row's pill is its own small layer, drawn ahead.
-// 3 s after the last change of selected table or rows it slides right and fades out; the next change brings it back, fading in.
+// WHEEL_RAIL_SECONDS (3 s; 0: always shown) after the last change of selected table or rows it slides right and fades out; the next change brings it back.
 // - A move only places and shows a pill: drawing the whole rail per move (82 ms) made scrolls stutter.
 // - A pill missing at a move is drawn on the spot, the only draw a move may make.
 // - The slide and fades only move the layers and set their alpha, frame by frame; hide() leaves no timer pending.
@@ -24,11 +24,12 @@ export const WHEEL_RAIL_Z_INDEX = Object.freeze({ base: WHEEL_GUIDES_Z_INDEX + 1
 const RAIL = Object.freeze({ width: 40, centerY: 960, right: 0.008, radius: 10 });
 // The pill's inset is 1 px on the rows lower than a letter's.
 const PILL = Object.freeze({ side: 5, inset: 2, smallInset: 1, fullRow: 30, radius: 7, weight: 700 });
-// Leaves after restMs without a change of selected table, sliding right by
+// Leaves after the rest without a change of selected table, sliding right by
 // slideSpan of the window's width (past its edge, the rail's right margin
 // included), easing in, while fading out; comes back in place, fading in.
 // slideSpan clears the edge up to a window about four times as tall as wide.
-const MOTION = Object.freeze({ restMs: 3000, leaveMs: 450, fadeInMs: 80, slideSpan: 0.1 });
+const MOTION = Object.freeze({ leaveMs: 450, fadeInMs: 80, slideSpan: 0.1 });
+const DEFAULT_REST_SECONDS = 3;
 // HIDDEN: by hide(); SHOWN: in place, maybe still fading in; GONE: left after the rest.
 const PHASE = Object.freeze({ HIDDEN: "hidden", SHOWN: "shown", LEAVING: "leaving", GONE: "gone" });
 const SCRIPT_NAME = "WheelRail";
@@ -38,7 +39,18 @@ export const isWheelRailOn = config => isGuideOn(config, "wheelRail");
 // A year row's height can change with the years shown, and its pill with it.
 const pillKey = row => `${row.key}|${row.height}`;
 
-export function createWheelRail(host, drawingAhead) {
+// The rest before leaving, in ms (0: never leaves); a value that is not a
+// whole number of seconds of 0 or more falls back to the default.
+function toRestMs(host, restSeconds) {
+    if (Number.isInteger(restSeconds) && restSeconds >= 0) return restSeconds * 1000;
+    host.log(`[${SCRIPT_NAME}] wheelRailSeconds must be a whole number of seconds of 0 or more, `
+        + `not ${restSeconds}; using ${DEFAULT_REST_SECONDS}.`);
+    return DEFAULT_REST_SECONDS * 1000;
+}
+
+// restSeconds: WHEEL_RAIL_SECONDS.
+export function createWheelRail(host, drawingAhead, { restSeconds }) {
+    const restMs = toRestMs(host, restSeconds);
     let base = null;
     // The rows the base shows, and where each starts down the base.
     let baseRows = null;
@@ -206,9 +218,13 @@ export function createWheelRail(host, drawingAhead) {
             shownTableId = tableId;
             slide = 0;
             enterPhase(PHASE.SHOWN);
-            updateMotion();
             stopRestTimer();
-            restTimer = host.setTimeout(safeHandler(SCRIPT_NAME, startLeaving), MOTION.restMs);
+            // An always shown rail never fades either.
+            if (restMs === 0) alpha = 1;
+            else {
+                updateMotion();
+                restTimer = host.setTimeout(safeHandler(SCRIPT_NAME, startLeaving), restMs);
+            }
             if (alpha < 1) startFrames();
             else stopFrames();
         }

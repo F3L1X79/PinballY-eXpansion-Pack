@@ -108,6 +108,9 @@ export const DEFAULTS = {
     wheelRail: true,
     // true = each decade's years under it on the Wheel Rail, as two digits (84).
     wheelRailYears: false,
+    // Seconds the Wheel Rail stays without a move before sliding away (a
+    // whole number); 0 = always shown.
+    wheelRailSeconds: 3,
     // false = no Wheel Position in the bottom right corner (Wheel Guides
     // Add-on): "Table n/total" comes back to the lower status line.
     wheelPosition: true,

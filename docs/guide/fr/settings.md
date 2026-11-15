@@ -87,6 +87,7 @@ Les réglages de l'eXpansion Pack écrivent aussi dans ce fichier. Une clé qu'i
 | `LOG_LAUNCH_EVENTS` | `false` | `true` écrit chaque événement de lancement dans `PinballY.log`, horodaté à la milliseconde, pour vérifier leur ordre sur la borne. |
 | `WHEEL_RAIL` | `true` | `false` retire le rail de la roue (`#` et A à Z le long du bord droit de l'écran de la roue, ou les décennies avec l'ordre de la roue par année, une pastille dorée sur celle de la table sélectionnée ; voir [Interface](interface.md#sur-lécran-de-la-roue)). |
 | `WHEEL_RAIL_YEARS` | `false` | `true` affiche, par année, les années de chaque décennie dessous sur le rail de la roue, plus petites, sur deux chiffres (`84`), la pastille sur l'année de la table sélectionnée (voir [Choisir une table](choosing_a_table.md#ordre-de-la-roue)). |
+| `WHEEL_RAIL_SECONDS` | `3` | Secondes pendant lesquelles le rail de la roue reste sans mouvement avant de glisser hors de l'écran ; le mouvement suivant le ramène. Un nombre entier ; `0` le garde toujours affiché. Demande `WHEEL_RAIL=true` (voir [Interface](interface.md#sur-lécran-de-la-roue)). |
 | `WHEEL_POSITION` | `true` | `false` retire la position dans la roue (`17/100`, en bas à droite de l'écran de la roue) et rend « Table n/total » à la ligne d'état du bas (voir [Interface](interface.md#sur-lécran-de-la-roue)). |
 | `FAVORITE_HEART` | `true` | `false` retire le cœur des favoris (en bas à gauche de l'écran de la roue, rouge sur une table favorite ; voir [Interface](interface.md#sur-lécran-de-la-roue)). |
 
