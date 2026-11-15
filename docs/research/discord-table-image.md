@@ -4,8 +4,7 @@ Date: 2026-11-15. Roadmap item "Image de la table dans Discord Rich Presence" (`
 - Discord's developer docs, read from their source repo `github.com/discord/discord-api-docs` (`main`, 2026-11-15), cited as `api-docs:<path>` (`developers/events/gateway-events.mdx`, "Activity Assets" / "Activity Asset Image"; `developers/discord-social-sdk/development-guides/setting-rich-presence.mdx`; `developers/change-log.mdx`). Line numbers are not given: the file was read through WebFetch, which does not show them.
 - Dolphin: `github.com/dolphin-emu/dolphin`, `master`, `Source/Core/UICommon/DiscordPresence.cpp`, and its pull request #11751.
 - Virtual Pinball Spreadsheet: `github.com/VirtualPinballSpreadsheet/vps-db` (`main`), read through `api.github.com` and `raw.githubusercontent.com`, cited as `vps-db:<path>`.
-- IPDB: **ipdb.org refused every connection from the sandbox**; its footer and FAQ are known only through search-engine extracts, flagged as such in §3.1.
-- OPDB: **opdb.org refused the connection** (ECONNREFUSED); only secondary sources, flagged in §3.3.
+- IPDB and OPDB block the sandbox (proxy 502); Félix saved the pages from his browser on 2026-11-15, cited as `ipdb:faq.html` (`ipdb.org/faq.html`), `ipdb:machine.cgi?id=495` (Recel "Check"), `opdb:home` (`opdb.org`) and `matchplay:opdb-and-pintips-api` (`docs.matchplay.events/opdb-and-pintips-api`). Copies were kept out of the repo.
 - PinballY: `docs/pinbally/Help/GameInfo.html`, the digest `docs/pinbally/pinbally-help.md`, `docs/research/system-scripts.md`.
 - Our code: `addons/discord_rich_presence.js`, `common/discord/discord_client.js`, `common/core/pinbally_host.js`, `common/updates/update_check.js`.
 
@@ -46,9 +45,10 @@ Date: 2026-11-15. Roadmap item "Image de la table dans Discord Rich Presence" (`
 ### 3.1 IPDB (ipdb.org)
 
 - **Fact (PinballY):** `ipdbId` is "the database key that IPDB uses"; the game page is `https://www.ipdb.org/machine.cgi?id=ipdbId` (`docs/pinbally/Help/GameInfo.html:315-321`).
-- **Image URLs (search extracts, site unreachable):** images have global numbers ("Image # 17578"), shown at `showpic.pl?id={gameId}&picno={n}`; the home page mentions `GID/##` and `IMG/##` shortcuts. The direct file path could not be read. **Inference:** the ID gives the machine page, not "the" image: the first photo of a machine is not predictable from its ID without scraping the page, and may be a cabinet, a flyer or a detail.
-- **Terms (search extracts of the footer and `ipdb.org/faq.html`, not read directly):** "All photographs licensed from original photographers, who retain their copyright. Do not use without permission!"; FAQ: "The pictures on the site remain the property and copyright of the original photographers. We only get permission (license) to use them on the site, therefore we cannot give you permission to use them."
-- **Inference:** asking IPDB is pointless by its own FAQ; each photographer would have to agree. Hotlinking also sends every Discord viewer's media-proxy fetch to IPDB. **Ruled out** as an image source; `ipdbId` stays useful as a *matching key* (§3.2).
+- **Fact, image URLs:** the machine page lists thumbnails linking to `showpic.pl?id=495&picno=16253` ("Image # 16253: Check Backglass") and `picno=16254` ("Check Playfield") (`ipdb:machine.cgi?id=495`). `showpic.pl` is an HTML viewer page, not the image file. `picno` is a site-wide image number, unrelated to the machine ID (495 → 16253). **Inference:** no image URL can be built from `ipdbId`; finding the backglass means scraping the machine page and reading the captions.
+- **Fact, terms:** footer of every page: "All photographs licensed from original photographers, who retain their copyright. Do not use without permission!" (`ipdb:machine.cgi?id=495`). FAQ #1, "Can I use pictures from your web site?": "The pictures on the site remain the property and copyright of the original photographers. We only get permission (license) to use them on the site, therefore we cannot give you permission to use them." The same answer warns against linking directly to the pictures, "or you may find we've replaced them with a less than flattering image" (`ipdb:faq.html`).
+- **Fact, automated access:** "attempts to download the site in any automated way may result in your being banned from the site", because bandwidth for the images matters to them (`ipdb:faq.html`, mirroring question).
+- **Conclusion:** asking IPDB is pointless by its own FAQ, hotlinking is explicitly unwelcome, and scraping risks a ban. **Ruled out** as an image source; `ipdbId` stays useful as a *matching key* (§3.2).
 
 ### 3.2 Virtual Pinball Spreadsheet (VPS)
 
@@ -66,7 +66,11 @@ Date: 2026-11-15. Roadmap item "Image de la table dans Discord Rich Presence" (`
 
 ### 3.3 Other options
 
-- **OPDB (opdb.org):** unreachable from the sandbox; secondary sources only. API needs a free account token; machine lookup by IPDB ID exists (`/api/machines/ipdb/{id}`); a full export is rate limited to once an hour; images exist (OPDB supplies Pinball Map's backglass pictures) (`docs.matchplay.events/opdb-and-pintips-api`, `programmableweb.com/api/open-pinball-database`, PyPI `open-pinball-db`, search extracts). A token is a credential: shipping it in the repo raises the same issue as the Discord ID (`discord-rich-presence.md` §3). Real machines only, no originals. Terms not read. **Not recommended** without reading opdb.org.
+- **OPDB (opdb.org):**
+  - **Fact:** a free, volunteer-run database (editorial work by Pinball Map, hosting by Match Play Events) whose goal is "to facilitate data sharing between pinball software providers". It covers flipper machines only, "in practice … machines produced after 1948", and no originals are mentioned (`opdb:home`).
+  - **Fact, API:** the Match Play docs list `/api/opdb/entry/{opdbId}` with an optional `includeImages` ("Include image data for entry") and `/api/opdb/changelog`, and recommend downloading the full data export over fetching machines one by one (`matchplay:opdb-and-pintips-api`). The page lists no lookup by IPDB ID. The `/api/machines/ipdb/{id}` endpoint quoted by older secondary sources is not in the current docs.
+  - **Not read:** the token requirement, the export's rate limit and format, whether entries carry an IPDB ID, and the terms and license of the images (the "Data exports" page was not saved). Matching our tables would go through the export, by IPDB ID if present, else by name.
+  - **Inference:** possible for real machines only, with more steps than VPS. **Not recommended** until the data-exports page and the image terms are read.
 - **Our own hosting (a folder in the pack's repo, or a separate `…-images` repo, served by `raw.githubusercontent.com` like the logo):** fully under our control, URL known in advance, no external terms. Cost: someone uploads one image per table; the images themselves (wheel logos, backglass art) are fan art of trademarked machines, copyright of their authors and the manufacturers, so republishing them is less clean than linking VPS. **Inference:** fits a cabinet owner who wants exact images for their own tables, as a per-cabinet setting (a base URL + table file name), not as pack content.
 - **Uploaded Discord assets in the shared "Virtual Pinball" app:** up to 300 keys, uploaded by hand by Félix on the Developer Portal (`setting-rich-presence.mdx`). Same rights question, a manual step per table, and only Félix's tables. **Not recommended.**
 - **Local wheel images:** cannot be shown: Discord fetches by public URL only (§1). Uploading them from the cabinet to a host would need a credential on the cabinet. Ruled out.
@@ -92,8 +96,8 @@ Date: 2026-11-15. Roadmap item "Image de la table dans Discord Rich Presence" (`
 |---|---|---|---|---|
 | VPS `vpsdb.json`, matched by `ipdbId` then name/maker/year | Most real machines and many originals, as long as VPS lists them | No license; to ask VPS | Download, cache, index, matching | 8 MB parse on UI thread; wrong match on ambiguous names |
 | VPS index built by a maintainer script, hosted in the pack's repo | Same, refreshed when Félix runs it | Same, plus redistribution of derived data | Script + small runtime | Stale between refreshes |
-| IPDB photos | Machines with an `ipdbId` | "Do not use without permission", IPDB cannot grant it | Scraping | Ruled out |
-| OPDB | Real machines only | Terms not read; token = credential | Account, token | Not read in primary sources |
+| IPDB photos | Machines with an `ipdbId` | "Do not use without permission", IPDB cannot grant it; hotlinking unwelcome | Scraping (ban risk) | Ruled out |
+| OPDB | Flipper machines after 1948, no originals | Image terms not read | Data export, matching | Data-exports page not read |
 | Own hosting (per-cabinet base URL) | Exactly the owner's tables | Owner's responsibility | Manual upload per table | Effort per table |
 | Discord uploaded assets | ≤ 300, Félix's choice | Same as own hosting | Manual portal upload | Only Félix's tables |
 
