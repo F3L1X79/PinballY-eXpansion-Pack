@@ -23,7 +23,7 @@ function railLook(fake) {
 }
 
 test("the Wheel Rail slides away after 3 s without a move and comes back on the next one", async () => {
-    const { fake } = await startWheelGuides();
+    const { fake, lang, chooseWheelOrder } = await startWheelGuides();
     // Every pill drawn ahead, so that nothing below needs a draw.
     fake.advanceTime(10000);
     const draws = railDraws(fake);
@@ -76,5 +76,15 @@ test("the Wheel Rail slides away after 3 s without a move and comes back on the 
     assert.equal(shownRail(fake), null, "gone after the menu, the table unchanged");
 
     assert.deepEqual(railDraws(fake), draws, "the motion draws nothing");
+
+    // New rows on the same table bring it back for 3 s too.
+    await chooseWheelOrder(lang.customMenuLabels.wheelOrderAlphabetical, lang.customMenuLabels.wheelOrderPageByYear);
+    assert.equal(fake.getCurrentTable().title, "Cyclone");
+    assert.equal(shownRail(fake).pill, "80s", "back with the decades");
+    assert.equal(railLook(fake).base.x, IN_PLACE_X, "in place, no slide");
+    fake.advanceTime(2900);
+    assert.equal(railLook(fake).base.alpha, 1, "a full 3 s again");
+    fake.advanceTime(1000);
+    assert.equal(shownRail(fake), null, "then gone");
     assertNoErrorLogged(fake);
 });

@@ -3,7 +3,7 @@
 // wheel's pages (letters, or decades and their years, see rail_rows.js),
 // those with no table dimmed, and the Rail Pill, a gold pill on the selected
 // table's row. The base is drawn once per wheel content; each row's pill is its own small layer, drawn ahead.
-// 3 s after the last change of selected table it slides right and fades out; the next change brings it back, fading in.
+// 3 s after the last change of selected table or rows it slides right and fades out; the next change brings it back, fading in.
 // - A move only places and shows a pill: drawing the whole rail per move (82 ms) made scrolls stutter.
 // - A pill missing at a move is drawn on the spot, the only draw a move may make.
 // - The slide and fades only move the layers and set their alpha, frame by frame; hide() leaves no timer pending.
@@ -74,12 +74,12 @@ export function createWheelRail(host, drawingAhead) {
         return true;
     });
 
-    // Drawn again only when the rows, their heights or the lit ones changed.
+    // Drawn again only when the rows, their heights or the lit ones changed; true then.
     function updateBase(rows) {
-        if (rows === baseRows) return;
+        if (rows === baseRows) return false;
         baseRows = rows;
         const key = rows.map(row => `${pillKey(row)}|${row.isLit}`).join(",");
-        if (key === baseKey) return;
+        if (key === baseKey) return false;
         baseKey = key;
         if (base === null) base = createGuideLayer(host, WHEEL_RAIL_Z_INDEX.base);
         rowTops = [];
@@ -98,6 +98,7 @@ export function createWheelRail(host, drawingAhead) {
         // Shown again at its new height.
         isBaseShown = false;
         wakePills();
+        return true;
     }
 
     // The motion: the table the rail was last shown for (null once hidden),
@@ -198,10 +199,10 @@ export function createWheelRail(host, drawingAhead) {
     }
 
     // rows: as rail_rows.js gives them; selected: the key of the selected
-    // table's row; tableId: the selected table's, whose change brings the rail back.
+    // table's row; tableId: the selected table's. A new table or new rows bring the rail back.
     function show(rows, selected, tableId) {
-        updateBase(rows);
-        if (tableId !== shownTableId) {
+        const hasNewRows = updateBase(rows);
+        if (tableId !== shownTableId || hasNewRows) {
             shownTableId = tableId;
             slide = 0;
             enterPhase(PHASE.SHOWN);
