@@ -34,7 +34,7 @@ Elle est **désactivée par défaut**, comme l'horloge du backglass : activez-la
 
 - Une horloge, l'arc doré de la roue et une ligne d'état enrichie.
 - Le badge du Profil actif et son niveau, la carte du Défi de la semaine et la barre de maîtrise.
-- En haut à droite, sous le badge et au-dessus de la carte du Défi (ou à sa place quand les Défis sont désactivés), cinq étoiles : la note du Profil actif pour la table sélectionnée, demi-étoiles comprises, vides sur une table que vous n'avez pas notée. Elles sont toujours là, pour que le coin ne saute pas d'une table à l'autre ; seul **Notes par Profil** désactivé les retire.
+- En haut à droite, à côté du badge et au-dessus de la carte du Défi (ou à la place de la carte quand les Défis sont désactivés), cinq étoiles : la note du Profil actif pour la table sélectionnée, demi-étoiles comprises, vides sur une table que vous n'avez pas notée. Elles sont toujours là, pour que le coin ne saute pas d'une table à l'autre ; seul **Notes par Profil** désactivé les retire.
 - La ligne d'état du bas finit par la note de la maison pour la table sélectionnée (« Table 3/120 - note de la maison : 3,5 sur 5 (4 avis). »), ou votre propre note quand moins de deux d'entre vous l'ont notée (« votre note : 4 sur 5. »), sinon « aucune note pour cette table. ». Elle suit une notation tout de suite, et n'apparaît pas quand **Notes par Profil** est désactivé (voir [Notes et tables favorites](profiles.md#notes-et-tables-favorites)).
 - Dans la ligne d'état du bas, « Table 3/120 » compte les tables dans l'ordre de la roue : par année quand l'[ordre de la roue](choosing_a_table.md#ordre-de-la-roue) est par année, meilleure place d'abord sur Mes meilleurs scores.
 

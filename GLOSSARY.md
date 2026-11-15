@@ -408,7 +408,7 @@ The small panel at the top right of the wheel screen that keeps in view the acti
 _Avoid_: level bar, progress bar (alone), mastery widget, Mastery Card
 
 **Rating Plate**:
-The small plate of five stars at the top right of the wheel screen, above the Challenge Card (or in its place) and the Mastery Bar, that shows the active Profile's own Rating of the selected table; its stars are empty on a table it has not rated.
+The small plate of five stars at the top right of the wheel screen, above the Challenge Card (beside the Profile badge, or in the card's place) and the Mastery Bar, that shows the active Profile's own Rating of the selected table; its stars are empty on a table it has not rated.
 _Avoid_: rating bar, star widget
 
 **Mastery Toast**:

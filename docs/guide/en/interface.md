@@ -34,7 +34,7 @@ It is **off by default**, like the Backglass Clock: turn it on with `ADD_ON_MENU
 
 - A clock, a gold arc under the wheel (the Wheel Arc) and a richer status line.
 - The active Profile's badge with its Player Level, the week's Challenge Card and the Mastery Bar.
-- In the top right corner, under the badge and above the Challenge Card (or in its place when Challenges are off), five stars: the active Profile's Rating of the selected table, half stars included, empty on a table you have not rated. They are always there, so the corner never jumps from one table to the next; absent only when **Ratings per Profile** is off.
+- In the top right corner, beside the badge and above the Challenge Card (or in the card's place when Challenges are off), five stars: the active Profile's Rating of the selected table, half stars included, empty on a table you have not rated. They are always there, so the corner never jumps from one table to the next; absent only when **Ratings per Profile** is off.
 - The lower status line ends with the selected table's Household Rating ("Table 3/120 - household rating: 3.5 out of 5 (4 ratings)."), or your own Rating when fewer than two of you rated it ("your rating: 4 out of 5."), otherwise "no rating for this table." It follows a rating at once, and is absent when **Ratings per Profile** is off (see [Ratings and Favorite Tables](profiles.md#ratings-and-favorite-tables)).
 - In the lower status line, "Table 3/120" counts the tables in the wheel's order: by year when the [Wheel Order](choosing_a_table.md#wheel-order) is by year, best place first on My High Scores.
 
