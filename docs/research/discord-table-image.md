@@ -12,7 +12,9 @@ Date: 2026-11-15. Roadmap item "Image de la table dans Discord Rich Presence" (`
 
 ## Verdict
 
-**Feasible, with the Virtual Pinball Spreadsheet as the source.** Discord takes any public `https` image URL in `large_image` (§1), so the pack needs a public URL per table, and a way to know before sending that the URL exists (Discord gives no feedback; §1.1). The VPS database is a single public 8 MB JSON on GitHub, with a `https://virtualpinballspreadsheet.github.io/vps-db/img/…webp` image per table file and backglass, an `ipdbUrl` for most real machines, and a 13-byte `lastUpdated.json` to poll (§3.2). IPDB photos are ruled out: the photographers keep the copyright and IPDB says it cannot grant reuse (§3.1). Main open points: VPS has no license (§3.2), and parsing 8 MB of JSON on PinballY's UI thread needs care (§5).
+**Leading option (Félix, 2026-11-15): images hosted in the pack's repo, named by `mediaName`, Félix's ~100 tables first, others added by pull request (§3.4).** VPS stays the fallback idea if coverage matters more than control; OPDB was dropped as too much effort for the gain.
+
+Original research verdict: **feasible, with the Virtual Pinball Spreadsheet as the source.** Discord takes any public `https` image URL in `large_image` (§1), so the pack needs a public URL per table, and a way to know before sending that the URL exists (Discord gives no feedback; §1.1). The VPS database is a single public 8 MB JSON on GitHub, with a `https://virtualpinballspreadsheet.github.io/vps-db/img/…webp` image per table file and backglass, an `ipdbUrl` for most real machines, and a 13-byte `lastUpdated.json` to poll (§3.2). IPDB photos are ruled out: the photographers keep the copyright and IPDB says it cannot grant reuse (§3.1). Main open points: VPS has no license (§3.2), and parsing 8 MB of JSON on PinballY's UI thread needs care (§5).
 
 ## 1. What Discord accepts in `assets.large_image` / `small_image`
 
@@ -75,6 +77,15 @@ Date: 2026-11-15. Roadmap item "Image de la table dans Discord Rich Presence" (`
 - **Uploaded Discord assets in the shared "Virtual Pinball" app:** up to 300 keys, uploaded by hand by Félix on the Developer Portal (`setting-rich-presence.mdx`). Same rights question, a manual step per table, and only Félix's tables. **Not recommended.**
 - **Local wheel images:** cannot be shown: Discord fetches by public URL only (§1). Uploading them from the cabinet to a host would need a credential on the cabinet. Ruled out.
 
+### 3.4 Images in the pack's repo, by `mediaName` (leading option)
+
+- **Fact, the host already works:** the pack sends its logo as `https://raw.githubusercontent.com/F3L1X79/PinballY-Expansion-Pack/main/docs/images/logo.png` (`addons/discord_rich_presence.js:30`), so a folder next to it (e.g. `docs/images/tables/`) is served the same way.
+- **Fact, the key:** `mediaName` is "the root filename (without path or extension) used for all of the game's media files"; its default pattern is "Title (Manufacturer Year)" (`docs/pinbally/Help/GameInfo.html:364-367`, `:773-775`). **Inference:** the wheel image of a table already carries this name, so Félix can copy his wheel folder as is, and a contributor with default names gets matches without any mapping. A cabinet that renamed its media matches nothing and keeps the logo.
+- **Inference, the URL:** base + `encodeURIComponent(mediaName)` + extension. Names contain spaces, parentheses, apostrophes and accents: to verify on the cabinet that Discord's media proxy fetches such an encoded URL.
+- **Knowing the image exists** (Discord gives no feedback, §1.1): a list of the hosted names. Either shipped with the pack (new images reach players at the next release), or a small index file fetched from the repo (new images as soon as the PR is merged, one request at startup). A maintainer script in `maintainer/` can rebuild the list from the folder, and a test can check that the list matches the folder.
+- **Rights (inference, to settle in the grilling):** wheel logos are usually community media-pack art of trademarked machines; republishing them in a public repo is the same grey zone as every frontend media pack. The PR template could ask contributors to send only images they may share.
+- **Size:** wheel images are often large transparent PNGs; Discord shows the large image small. To decide: a size cap or a resize by the maintainer script, and how a transparent logo looks on Discord's card in light and dark themes (to verify on the cabinet).
+
 ## 4. The pack today
 
 - **Fact, transport:** raw IPC over `\\?\pipe\discord-ipc-n` from PinballY's UI thread, no library (`docs/adr/0022-discord-rich-presence-speaks-discord-s-ipc-pipe-from-pinbally-s-ui-thread.md`; `common/discord/discord_client.js`). Shared application ID `1566536566082506823` (`addons/discord_rich_presence.js:25`).
@@ -98,15 +109,16 @@ Date: 2026-11-15. Roadmap item "Image de la table dans Discord Rich Presence" (`
 | VPS index built by a maintainer script, hosted in the pack's repo | Same, refreshed when Félix runs it | Same, plus redistribution of derived data | Script + small runtime | Stale between refreshes |
 | IPDB photos | Machines with an `ipdbId` | "Do not use without permission", IPDB cannot grant it; hotlinking unwelcome | Scraping (ban risk) | Ruled out |
 | OPDB | Flipper machines after 1948, no originals | Image terms not read | Data export, matching | Data-exports page not read |
+| **Pack repo, by `mediaName`, PRs welcome (leading)** | Félix's ~100 tables, then contributors' | Media-pack grey zone; contributors vouch | Copy the wheel folder, a name list, a maintainer script | Renamed media don't match |
 | Own hosting (per-cabinet base URL) | Exactly the owner's tables | Owner's responsibility | Manual upload per table | Effort per table |
 | Discord uploaded assets | ≤ 300, Félix's choice | Same as own hosting | Manual portal upload | Only Félix's tables |
 
 ## Open questions for the grilling
 
-1. VPS as the source: ask the VPS maintainers first (no license on `vps-db`), or ship and ask in parallel?
-2. Download `vpsdb.json` on the cabinet (always current, 8 MB parse) or a maintainer-built index from the pack's repo (small, stale between refreshes)?
-3. Which VPS image: game-level, backglass (`b2sFiles`) or table screenshot (`tableFiles`)? Needs a look at a few images in Discord's square crop.
-4. Matching without `ipdbId`: name+maker+year only, or also the "Name (Maker Year)" form of `filename`/`mediaName`? What counts as ambiguous?
+1. Repo hosting (§3.4): which images (wheel logos, backglasses), which folder, size cap or resize?
+2. The list of hosted names: shipped with each release, or an index fetched from the repo at startup?
+3. Contributions: what a PR must contain (image named by default `mediaName`, rights), and who checks it?
+4. Keep VPS as a later fallback for tables nobody has sent, or never?
 5. The logo as `small_image` during a game (Dolphin's layout), and `large_text` content.
 6. A per-cabinet override (base URL for own images) now or never?
 7. **On the cabinet:** what Discord shows for a 404 URL; `JSON.parse` time of the 8 MB file; share of tables with `ipdbId` filled; WebP display in the profile card.
