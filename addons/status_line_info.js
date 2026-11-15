@@ -5,7 +5,7 @@
 // on "gameselect", "filterselect", "wheelmode", a Profile switch and a rating.
 // - The slot count is fixed at startup: adding or removing messages later made PinballY unstable.
 // - No slot is ever empty: PinballY shows an empty message as a blank line (#469).
-// - "Table n/total" counts in the wheel's order, read through the Active Filter's compareForSort.
+// - "Table n/total" comes from the shared Wheel places, marked changed on each event that may change the wheel.
 // ============================================================
 
 import lang from "../common/core/i18n.js";
@@ -16,11 +16,11 @@ import { displayNameOf } from "../common/profiles/profile_name.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { createHouseholdRatings } from "../common/profiles/household_ratings.js";
 import { ratingOf, onRatingDialogClosed } from "../common/profiles/profile_ratings.js";
+import { getWheelPlaces } from "../common/tables/wheel_places.js";
 
 const SCRIPT_NAME = "StatusLineInfo";
 const SECONDS_PER_MINUTE = 60;
 const MINUTES_PER_HOUR = 60;
-const compareTitles = (a, b) => String(a.title ?? "").localeCompare(String(b.title ?? ""));
 
 export default function init() {
     const LOWER_STATUS_LINE_TEXT = lang.tableInfoStatusLines;
@@ -28,6 +28,7 @@ export default function init() {
     const COMMUNITY_MANUFACTURER_NAME = config.communityTablesManufacturer;
     const profileStore = getProfileStore();
     const host = createPinballYHost();
+    const wheelPlaces = getWheelPlaces();
     // PinballY's ratings are the active Profile's only while Profile Ratings is on.
     const householdRatings = config.addOns.profileRatings !== false
         ? createHouseholdRatings(host, { profileStore })
@@ -67,45 +68,13 @@ export default function init() {
         UPPER_STATUS_LINE_TEXT.signOff,
     ];
 
-    // The wheel's place (from 0) of each of its tables, by config ID, from
-    // its first table; null until read. Read again when a filter change, a
-    // Profile switch or a rating may have changed the wheel, or when the
-    // selected table and the next one are not where it has them.
-    let wheelPlaces = null;
-
-    // The wheel lists its tables from the current one on, wrapping around:
-    // its first table follows the one place where the Active Filter's sort
-    // goes backwards (PinballY's is by title unless a pack filter has its own).
-    function readWheelPlaces() {
-        const games = host.getWheelTables();
-        const compare = host.getFilterCompare(host.getCurrentFilterId()) ?? compareTitles;
-        const first = Math.max(0, games.findIndex((game, index) => index > 0 && compare(games[index - 1], game) > 0));
-        const ordered = [...games.slice(first), ...games.slice(0, first)];
-        return new Map(ordered.map((game, index) => [game.configId, index]));
-    }
-
-    const areWheelPlacesCurrent = (current, count) => {
-        if (wheelPlaces === null || wheelPlaces.size !== count || !wheelPlaces.has(current.configId)) return false;
-        const next = gameList.getWheelGame(1);
-        return Boolean(next) && wheelPlaces.get(next.configId) === (wheelPlaces.get(current.configId) + 1) % count;
-    };
-
-    // The 1-based place of the selected table in the wheel's order.
-    function getCurrentTablePosition(currentGame) {
-        const count = gameList.getWheelCount();
-        if (count === 0 || !currentGame) return 0;
-        if (!areWheelPlacesCurrent(currentGame, count)) wheelPlaces = readWheelPlaces();
-        const place = wheelPlaces.get(currentGame.configId);
-        return place === undefined ? 0 : place + 1;
-    }
-
     const upperSlots = createSlots(mainWindow.statusLines.upper,
         buildUpperStatusLineTexts(profileStore.getActiveProfile()).length);
     const lowerSlots = createSlots(mainWindow.statusLines.lower, LOWER_STATUS_LINE_BUILDERS.length);
 
     function refreshLowerStatusLine() {
         const currentGame = gameList.getWheelGame(0);
-        const position = getCurrentTablePosition(currentGame);
+        const position = wheelPlaces.placeOf(currentGame);
         const play = profileStore.getPlay(currentGame ? currentGame.configId : "");
 
         lowerSlots.setTexts(LOWER_STATUS_LINE_BUILDERS.map(buildText => buildText(position, currentGame, play)));
@@ -124,7 +93,7 @@ export default function init() {
     // guarded separately from the listener itself.
     function rebuildLowerStatusLineNextTick() {
         setTimeout(safeHandler(SCRIPT_NAME, () => {
-            wheelPlaces = null;
+            wheelPlaces.markChanged();
             refreshLowerStatusLine();
         }), 0);
     }

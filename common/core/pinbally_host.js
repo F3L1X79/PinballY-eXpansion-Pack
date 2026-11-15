@@ -557,6 +557,10 @@ export function createPinballYHost() {
         // The current table alone, without listing the whole selection; null
         // when the wheel selection is empty.
         getCurrentTable: () => gameList.getWheelGame(0) || null,
+        // The table at this wheel offset from the current one, and the
+        // wheel's table count, without listing the whole selection.
+        getWheelTableAt: (offset) => gameList.getWheelGame(offset) || null,
+        getWheelCount: () => gameList.getWheelCount(),
         getGameInfo: (configId) => gameList.getGameInfo(configId),
         // The table's wheel logo file, null when it has none.
         getWheelImage: (game) => {

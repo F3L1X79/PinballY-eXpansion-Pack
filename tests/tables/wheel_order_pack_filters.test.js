@@ -2,7 +2,8 @@
 // The Wheel Order on the pack's own filters through main.js: Tables to
 // Discover, Hidden Tables and Original Tables list their tables by title,
 // then by year once switched (oldest first, ties by title, no year last),
-// each staying the Active Filter, the table kept; Most Played Tables keeps its ranking.
+// each staying the Active Filter, the table kept, onChange called once re-sorted;
+// Most Played Tables keeps its ranking.
 // ============================================================
 
 import { test } from "node:test";
@@ -48,11 +49,13 @@ let lang;
 const wheelTitles = () => fake.getWheelTables().map(game => game.title);
 const currentTitle = () => fake.getCurrentTable().title;
 // The wheel read from a known first table: the order, whatever the selection.
-const orderFrom = (first) => {
-    const titles = wheelTitles();
+const rotatedTo = (titles, first) => {
     const start = titles.indexOf(first);
     return [...titles.slice(start), ...titles.slice(0, start)];
 };
+const orderFrom = first => rotatedTo(wheelTitles(), first);
+// What each Wheel Order onChange listener call found on the wheel.
+const changes = [];
 const switchWheelOrder = async (label) => {
     fake.openMainMenu();
     fake.selectMenuItem(fake.currentMenu().items.find(item => item.cmd === fake.commandId("filterPicker")).title);
@@ -76,6 +79,8 @@ test("setup", async () => {
     ({ default: lang } = await import("../../common/core/i18n.js"));
     await import("../../main.js");
     await settle();
+    const { getWheelOrder } = await import("../../common/tables/wheel_order.js");
+    getWheelOrder().onChange(() => changes.push({ current: currentTitle(), wheel: wheelTitles() }));
     fake.setNativeCommand(globalThis.command.ShowMainMenu, () => fake.openMainMenu());
 });
 
@@ -116,6 +121,11 @@ test("switching to by year re-sorts Original Tables at once, the table kept", as
     assert.deepEqual(orderFrom("Eight Ball"), [
         "Eight Ball", "Black Knight", "Attack from Mars", "Cirqus Voltaire", "Medieval Madness", "Space Trip",
     ]);
+    assert.equal(changes.length, 1, "onChange called once");
+    assert.equal(changes[0].current, "Cirqus Voltaire");
+    assert.deepEqual(rotatedTo(changes[0].wheel, "Eight Ball"), [
+        "Eight Ball", "Black Knight", "Attack from Mars", "Cirqus Voltaire", "Medieval Madness", "Space Trip",
+    ], "called once Original Tables is sorted again");
 });
 
 test("by year: the wheel selections list their tables oldest first, no year last", async () => {

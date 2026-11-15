@@ -3,7 +3,7 @@
 // the Filter Picker's entry before Back, switches the wheel to by year
 // (oldest first, ties by title, no year last) on All Tables, Favorites and
 // an Era, keeps it when another filter is picked, and switches back, the
-// same table selected.
+// same table selected; onChange is called once per switch, once applied.
 // ============================================================
 
 import { test } from "node:test";
@@ -61,11 +61,14 @@ const chooseWheelOrder = async (entryLabel, orderLabel) => {
     await settle();
 };
 // The wheel read from a known first table: the order, whatever the selection.
-const orderFrom = (first) => {
-    const titles = wheelTitles();
+const rotatedTo = (titles, first) => {
     const start = titles.indexOf(first);
     return [...titles.slice(start), ...titles.slice(0, start)];
 };
+const orderFrom = first => rotatedTo(wheelTitles(), first);
+
+// What each Wheel Order onChange listener call found on the wheel.
+const changes = [];
 
 const BY_YEAR_ALL = [
     "Eight Ball", "Black Knight", "Funhouse", "Dracula", "Attack from Mars", "Cirqus Voltaire", "Medieval Madness",
@@ -80,6 +83,10 @@ test("setup", async () => {
     ({ default: lang } = await import("../../common/core/i18n.js"));
     await import("../../main.js");
     await settle();
+    const { getWheelOrder } = await import("../../common/tables/wheel_order.js");
+    getWheelOrder().onChange(() => changes.push({
+        filterId: fake.currentFilterId(), current: currentTitle(), wheel: wheelTitles(),
+    }));
     COMMAND = globalThis.command;
     // What PinballY does itself on these commands: a filter's command fires
     // "filterselect" before the filter is applied.
@@ -113,6 +120,10 @@ test("choosing By year lists All Tables by year, closes the menus, keeps the tab
     assert.equal(currentTitle(), "Dracula");
     assert.deepEqual(orderFrom("Eight Ball"), BY_YEAR_ALL);
     assert.equal(savedWheelOrder(), "byYear");
+    assert.equal(changes.length, 1, "onChange called once");
+    assert.equal(changes[0].filterId, "User.project.WheelOrder", "called once the sorted copy is shown");
+    assert.equal(changes[0].current, "Dracula");
+    assert.deepEqual(rotatedTo(changes[0].wheel, "Eight Ball"), BY_YEAR_ALL, "called once the order is applied");
     openFilterPicker();
     assert.ok(titlesOf(fake.currentMenu().items).includes(lang.customMenuLabels.wheelOrderByYear));
     closeMenus();
@@ -159,5 +170,8 @@ test("switching back shows All Tables in PinballY's order, the same table select
     assert.equal(currentTitle(), "Dracula");
     assert.deepEqual(orderFrom("Attack from Mars"), TABLES.filter(game => !game.isHidden).map(game => game.title));
     assert.equal(savedWheelOrder(), "alphabetical");
+    assert.equal(changes.length, 2, "onChange called once per toggle, not on a filter choice");
+    assert.equal(changes[1].filterId, "All", "called once All Tables is back");
+    assert.equal(changes[1].current, "Dracula");
     assertNoErrorLogged(fake);
 });

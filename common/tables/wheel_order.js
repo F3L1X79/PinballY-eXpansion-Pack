@@ -32,12 +32,12 @@ const UNCOPIED_FILTERS = ["Hidden", "Unconfigured"];
 const ALPHABETICAL_CHECK_TITLES = 12;
 
 // A table's release year, null when it has none (missing or not a positive number).
-function yearOf(game) {
+export function yearOf(game) {
     const year = Number(game.year);
     return Number.isInteger(year) && year > 0 ? year : null;
 }
 
-const compareTitles = (a, b) => String(a.title ?? "").localeCompare(String(b.title ?? ""));
+export const compareTitles = (a, b) => String(a.title ?? "").localeCompare(String(b.title ?? ""));
 
 // Oldest first, the same year by title; the tables without a year last, by title.
 export function compareByYear(a, b) {
@@ -55,7 +55,7 @@ export function compareByYear(a, b) {
 // none is 0: a decade is its first year, the tables without a year one last
 // group after every decade.
 const NO_YEAR_PAGE_GROUP = 100000;
-const decadeOf = year => Math.floor(year / 10) * 10;
+export const decadeOf = year => Math.floor(year / 10) * 10;
 
 export function pageGroupByYear(game) {
     const year = yearOf(game);
@@ -125,6 +125,7 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
     let hasCheckedLaterListener = false;
     // The id of a "filterselect" just cancelled, until a later listener hears it.
     let cancelledFilterId = null;
+    const changeListeners = [];
 
     const get = () => (isEnabled ? order : WHEEL_ORDERS.ALPHABETICAL);
     const isByYear = () => get() === WHEEL_ORDERS.BY_YEAR;
@@ -336,6 +337,13 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
             // A pack filter sorts itself: running it again sorts it anew.
             if (isSelfSorting(host.getCurrentFilterId())) refreshKeepingTable();
             else if (isStarted) applyToActiveFilter();
+            for (const listener of changeListeners) listener();
+        },
+        // Called after each toggle, once the new order is on the Active
+        // Filter: the switch fires no "filterselect" (setCurFilter) and the
+        // Wheel Order page no "menuclose".
+        onChange(listener) {
+            changeListeners.push(safeHandler(SCRIPT_NAME, listener));
         },
         // The compareForSort of the pack's own filters (spec #513): by year
         // or, like PinballY's default, by title.

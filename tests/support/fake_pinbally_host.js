@@ -1612,6 +1612,8 @@ export function createFakePinballYHost({
             .filter(configId => !ruledOutConfigIds.has(configId))
             .map(getGameInfo),
         getCurrentTable: () => host.getWheelTables()[0] || null,
+        getWheelTableAt: (offset) => host.getWheelTables()[offset] || null,
+        getWheelCount: () => host.getWheelTables().length,
         getGameInfo,
         getWheelImage: wheelImageOf,
         setCurrentFilter,
