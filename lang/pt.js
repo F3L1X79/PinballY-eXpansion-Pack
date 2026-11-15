@@ -1125,6 +1125,11 @@ export default {
         restarting: "A reiniciar",
     },
     releaseHighlights: {
+        "1.6.0": [
+            "Trocar filtro pode agora ordenar a roda por ano, e Página seguinte e Página anterior saltam então de uma década para outra.",
+            "Na roda, um trilho de letras, a posição da mesa e um coração para as suas mesas favoritas ajudam você a se orientar.",
+            "Nas Configurações do pack, a linha Modo de atração escolhe como a máquina em repouso passa de uma mesa para outra.",
+        ],
         "1.5.1": [
             "Os menus e ecrãs desenhados seguem agora os sons dos botões do PinballY: Mute Buttons, volume dos botões e os seus próprios sons.",
             "O backglass já não fica escondido ao arrancar, e as categorias de uma mesa já não passam para a mesa seguinte.",

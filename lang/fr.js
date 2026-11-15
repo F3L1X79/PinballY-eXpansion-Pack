@@ -1130,6 +1130,11 @@ export default {
         restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
+        "1.6.0": [
+            "Changer de filtre peut maintenant classer la roue par année, et Page suivante et Page précédente sautent alors d'une décennie à l'autre.",
+            "Sur la roue, un rail de lettres, la position de la table et un cœur pour vos tables favorites vous aident à vous repérer.",
+            "Dans les Réglages de l'eXpansion pack, la ligne Mode attraction choisit comment la borne au repos passe d'une table à l'autre.",
+        ],
         "1.5.1": [
             "Les menus et écrans dessinés suivent maintenant les sons des boutons de PinballY : Mute Buttons, volume des boutons et vos propres sons.",
             "Le backglass ne reste plus caché au démarrage, et les catégories d'une table ne passent plus à la table suivante.",

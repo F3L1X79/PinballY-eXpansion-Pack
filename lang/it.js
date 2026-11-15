@@ -1124,6 +1124,11 @@ export default {
         restarting: "Riavvio in corso",
     },
     releaseHighlights: {
+        "1.6.0": [
+            "Cambia filtro ora può ordinare la ruota per anno, e Pagina successiva e Pagina precedente saltano allora da un decennio all'altro.",
+            "Sulla ruota, una guida di lettere, la posizione del tavolo e un cuore per i tuoi tavoli preferiti ti aiutano a orientarti.",
+            "Nelle Impostazioni del pack, la riga Modalità attrazione sceglie come il cabinato a riposo passa da un tavolo all'altro.",
+        ],
         "1.5.1": [
             "I menu e le schermate disegnati ora seguono i suoni dei pulsanti di PinballY: Mute Buttons, volume dei pulsanti e i tuoi suoni.",
             "Il backglass non resta più nascosto all'avvio, e le categorie di un tavolo non passano più al tavolo successivo.",

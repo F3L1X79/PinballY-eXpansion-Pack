@@ -2,6 +2,15 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.6.0 (2026-11-15)
+
+- **Wheel Order**: "Order: alphabetical", at the end of "Change Filter", switches the wheel to **By year**, oldest table first, on every filter and wheel selection of the pack. By year, Next and Previous Page jump by decade. The order and the chosen filter are kept after a restart, and the main menu names the order under the Active Filter. Turned off with **Wheel Order** in the eXpansion Pack Settings.
+- **Attract Order**: a new line in the eXpansion Pack Settings chooses how the idle cabinet moves through the tables: **As PinballY**, **In Order** (the next table of the wheel) or **Whole Wheel** (every table once, shuffled). Set it back to As PinballY before removing the pack.
+- **Wheel Guides**: on the wheel screen, the **Wheel Rail** along the right edge (`#` and A to Z, or decades by year, a gold pill on the selected table's) slides away after 3 seconds without a move (`WHEEL_RAIL_SECONDS`, `0` keeps it shown; `WHEEL_RAIL_YEARS` adds each decade's years); the **Wheel Position** (`17/100`) sits in the bottom right corner instead of the status line; the **Favorite Heart** in the bottom left corner turns red on one of your Favorite Tables. The Rating Plate is now always shown, at the top of the right-hand stack. Each guide has its own key in `.env.local`.
+- **Attract mode**: the Challenge Card, Rating Plate, Mastery Bar and the Wheel Guides hide while the cabinet runs attract mode, and Discord shows "Attract mode".
+- **Info Log**: every line the pack writes to the PinballY log, plus a few cabinet checks, now also goes to `logs\info.log` in the pack folder, kept across restarts: attach it to a problem report. The Error Log and the Play Score anomaly log move to the same `logs` folder by themselves.
+- **Small touches**: the Welcome Screen says "Welcome back" after a week away and "Long time no see" after more than 30 days; a key the eXpansion Pack Settings add to `.env.local` comes with its comment from `.env.example`.
+
 ## v1.5.1 (2026-11-11)
 
 - **Button sounds**: the drawn menus and screens now follow PinballY's own button sound settings: **Mute Buttons** in the Operator Menu silences them, they play at PinballY's button volume, and your own sounds in `Media\Button Sounds` replace the pack's (a copy of `Silence.wav` silences one). Moving back plays `Prev.wav`, as on the wheel.

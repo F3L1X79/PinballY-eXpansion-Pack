@@ -1125,6 +1125,11 @@ export default {
         restarting: "Neustart läuft",
     },
     releaseHighlights: {
+        "1.6.0": [
+            "Filter wechseln kann das Rad jetzt nach Jahr ordnen, und Nächste und Vorherige Seite springen dann von Jahrzehnt zu Jahrzehnt.",
+            "Auf dem Rad helfen dir eine Buchstabenleiste, die Position des Tisches und ein Herz für deine Lieblingstische bei der Orientierung.",
+            "In den Expansion-Pack-Einstellungen wählt die Zeile Attraktionsmodus, wie der ruhende Automat von Tisch zu Tisch wechselt.",
+        ],
         "1.5.1": [
             "Die gezeichneten Menüs und Bildschirme folgen jetzt den Tastenklängen von PinballY: Mute Buttons, Tastenlautstärke und deine eigenen Klänge.",
             "Das Backglass bleibt beim Start nicht mehr verborgen, und die Kategorien eines Tisches gehen nicht mehr auf den nächsten Tisch über.",

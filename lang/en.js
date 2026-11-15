@@ -1073,6 +1073,11 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.6.0": [
+            "Change Filter can now list the wheel by year, and Next and Previous Page then jump by decade.",
+            "On the wheel, a rail of letters, the table's position and a heart for your Favorite Tables help you find your way.",
+            "In the eXpansion Pack Settings, the Attract Order chooses how the idle cabinet moves through the tables.",
+        ],
         "1.5.1": [
             "The drawn menus and screens now follow PinballY's button sounds: Mute Buttons, button volume and your own sounds.",
             "The backglass no longer stays hidden at startup, and a table's categories no longer carry over to the next table.",
