@@ -10,6 +10,18 @@ Unofficial add-ons for the PinballY virtual pinball front end, built on its Java
 A self-contained feature that `main.js` starts at launch and that the player can turn off in the configuration, except the Easter Eggs, which cannot be turned off.
 _Avoid_: plugin, script (a script is just a `.js` file)
 
+**External Add-on**:
+A script the owner runs in PinballY alongside the eXpansion Pack, written by someone else or by the owner, such as a launch video script. The pack can neither turn it on nor off. Shown as "Add-on externe" in French.
+_Avoid_: Add-on (alone: one of the pack's own), third-party script, plugin, mod
+
+**Conflict**:
+An External Add-on that has already taken, before the pack, a PinballY screen or event that one of the pack's Add-ons needs, such as the launch screen. Only what the pack sees happen counts, never a guess from the files present.
+_Avoid_: incompatibility, clash, bug
+
+**Conflict Notice**:
+The Dialog that tells an Admin Profile about a Conflict and offers to turn the pack's Add-on off or keep both, asked once per Conflict. It also says when the pack's line is not the last import of the owner's own start script. Shown as "Avis de conflit" in French.
+_Avoid_: Error Toast (not a failure of the pack), conflict warning, compatibility check
+
 **Easter Egg**:
 A rare, unannounced event of the cabinet, each tied to its own moment: at most one a day for the whole cabinet, and never twice the same for a Profile. Described nowhere for the player. Each one gives the active Profile a Secret Achievement of the Surprises family.
 _Avoid_: Surprise (Surprises is only the Achievement family), hidden event, glitch
