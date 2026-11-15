@@ -13,11 +13,10 @@ import { createChallengeCard } from "../common/challenges/challenge_card.js";
 import { createChallengeTables } from "../common/challenges/challenge_tables.js";
 import { getMainMenu } from "../common/menus/main_menu.js";
 import { WHEEL_ORDER_SORT } from "../common/tables/wheel_order.js";
-import config from "../common/core/config.js";
+import { createTopRightStack } from "../common/drawing/top_right_stack.js";
 
 export default function init() {
     const host = createPinballYHost();
-    const underBadge = config.addOns.profilePicker !== false;
-    createChallengeCard(host, getChallenges(), getProfileStore(), { underBadge });
+    createChallengeCard(host, getChallenges(), getProfileStore(), { topOf: createTopRightStack(host).cardTop });
     createChallengeTables(host, getChallenges(), getMainMenu(), { sortFields: WHEEL_ORDER_SORT });
 }

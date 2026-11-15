@@ -1,10 +1,9 @@
 // ============================================================
 // Profile Ratings: each Profile keeps its own Ratings and Favorite Tables
 // (see common/profiles/profile_ratings.js and docs/adr/0024), and the Rating
-// Plate shows the active Profile's Rating of the selected table. The plate
-// follows "gameselect", the Attract Order's moves, "rate game" closing and
-// Change Player, hides on "gamestarted", comes back on "wheelmode".
-// - Starts after Challenges and Table Mastery: the plate's place is under their card and bar.
+// Plate shows the active Profile's Rating of the selected table (empty stars
+// unrated), following "gameselect", the Attract Order, "rate game" closing and
+// Change Player; hidden from "gamestarted" to "wheelmode".
 // - The plate's Change Player listener comes after start()'s, which puts the next Profile's Ratings on PinballY.
 // ============================================================
 
@@ -13,12 +12,9 @@ import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getProfileRatings, ratingOf, onRatingDialogClosed } from "../common/profiles/profile_ratings.js";
 import { createRatingPlate } from "../common/profiles/rating_plate.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
-import { getChallenges } from "../common/challenges/challenge.js";
-import { challengeCardBottom } from "../common/challenges/challenge_card.js";
-import { MASTERY_BAR_HEIGHT } from "../common/mastery/mastery_bar.js";
+import { createTopRightStack } from "../common/drawing/top_right_stack.js";
 import { getAttractOrder } from "../common/tables/attract_order.js";
 import { safeHandler } from "../common/core/safe_handler.js";
-import config from "../common/core/config.js";
 
 const SCRIPT_NAME = "ProfileRatings";
 
@@ -27,13 +23,7 @@ export default function init() {
     const store = getProfileStore();
     getProfileRatings().start();
 
-    const underBadge = config.addOns.profilePicker !== false;
-    const challenges = config.addOns.challenges !== false ? getChallenges() : null;
-    // The Mastery Bar shows for every selected table while Table Mastery is on.
-    const barHeight = config.addOns.tableMastery !== false ? MASTERY_BAR_HEIGHT : 0;
-    const plate = createRatingPlate(host, getDrawingAhead(), {
-        topOf: () => challengeCardBottom(host, challenges, { underBadge }) + barHeight,
-    });
+    const plate = createRatingPlate(host, getDrawingAhead(), { topOf: createTopRightStack(host).plateTop });
     let gameRunning = false;
 
     function showTable(game) {

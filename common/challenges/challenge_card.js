@@ -16,18 +16,20 @@ const SCRIPT_NAME = "ChallengeCard";
 
 // Like the badge: above the wheel and the game info box, under popups and menus.
 export const CHALLENGE_CARD_Z_INDEX = 4500;
-// Its own canvas pinned to the top right corner, right under the badge's
-// canvas when there is one, for the same reason as the badge: a canvas
-// drawn at startup, before the window is laid out, would be stretched out
-// of shape. Sizes are on the cabinet's 1920 px high playfield; the card's
-// right edge lines up with the badge's Avatar, and the canvas leaves room
-// for the glow. The Mastery Bar lines up under it with the same sizes.
+// Its own canvas pinned to the top right corner, where the top right stack
+// puts it, for the same reason as the badge: a canvas drawn at startup,
+// before the window is laid out, would be stretched out of shape. Sizes
+// are on the cabinet's 1920 px high playfield; the card's right edge lines
+// up with the badge's Avatar, and the canvas leaves room for the glow. The
+// Rating Plate and the Mastery Bar line up with the same sizes.
 // Heights are for a one-line title: everything under the title moves down
 // by the extra lines of a title that wraps.
 export const CARD_REFERENCE_HEIGHT = 1920;
 export const BADGE_HEIGHT = 170;
 const CANVAS = Object.freeze({ width: 400, height: 124 });
 const CARD = Object.freeze({ x: 10, y: 8, width: 360, height: 106, padding: 14, border: 1, accentHeight: 3 });
+// The canvas's room around the card, which the top right stack keeps.
+export const CHALLENGE_CARD_MARGINS = Object.freeze({ top: CARD.y, bottom: CANVAS.height - CARD.y - CARD.height });
 const HEADER = Object.freeze({ y: 14, size: 11 });
 const TITLE = Object.freeze({ y: 34, size: 16 });
 const BAR = Object.freeze({ y: 66, height: 6 });
@@ -69,16 +71,9 @@ function titleExtraHeight(host, challenge) {
 }
 
 // The card's canvas height for this Challenge, in reference px: the Mastery
-// Bar sits right under it.
+// Bar sits under it.
 export function challengeCardCanvasHeight(host, challenge) {
     return CANVAS.height + titleExtraHeight(host, challenge);
-}
-
-// How far below the window's top the badge and the Challenge Card end, in
-// reference px, as they show now; challenges is null with the Challenges off.
-export function challengeCardBottom(host, challenges, { underBadge }) {
-    const view = challenges && challenges.getActiveView();
-    return (underBadge ? BADGE_HEIGHT : 0) + (view ? challengeCardCanvasHeight(host, view.challenge) : 0);
 }
 
 // Fading one-pixel frames around the card, widening outwards.
@@ -130,10 +125,9 @@ function drawCard(host, dc, face, lit, extra) {
         { ...PROGRESS, y: PROGRESS.y + extra, weight: completed ? 600 : 400, color: completed ? COLORS.accent : COLORS.text });
 }
 
-// underBadge: false when there is no Profile badge to leave room for.
-export function createChallengeCard(host, challenges, profileStore, { underBadge = true } = {}) {
+// topOf: how far below the window's top the card sits, in reference px.
+export function createChallengeCard(host, challenges, profileStore, { topOf }) {
     const layer = createHiddenLayer(host, CHALLENGE_CARD_Z_INDEX);
-    const yOffset = underBadge ? -BADGE_HEIGHT / CARD_REFERENCE_HEIGHT : 0;
     let timer = null;
 
     function stopTimer() {
@@ -161,7 +155,8 @@ export function createChallengeCard(host, challenges, profileStore, { underBadge
         const view = challenges.getActiveView();
         const extra = Math.max(titleExtraHeight(host, face.challenge), view ? titleExtraHeight(host, view.challenge) : 0);
         // The span follows the canvas height, so a taller card keeps its proportions.
-        placeAligned(layer, { ySpan: (CANVAS.height + extra) / CARD_REFERENCE_HEIGHT }, 0, yOffset, "top right");
+        // 0 - top: a card at the very top is placed at 0, not -0.
+        placeAligned(layer, { ySpan: (CANVAS.height + extra) / CARD_REFERENCE_HEIGHT }, 0, (0 - topOf()) / CARD_REFERENCE_HEIGHT, "top right");
         layer.draw(dc => drawCard(host, dc, face, lit, extra), CANVAS.width, CANVAS.height + extra);
     }
 

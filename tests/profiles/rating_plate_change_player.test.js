@@ -1,7 +1,7 @@
 // ============================================================
 // The Rating Plate follows Change Player, through main.js on the fake
-// PinballY globals: the next Profile's Rating of the selected table, no
-// plate when it has not rated it, and the first one's back again.
+// PinballY globals: the next Profile's Rating of the selected table, empty
+// stars when it has not rated it, and the first one's back again.
 // ============================================================
 
 import { test } from "node:test";
@@ -26,7 +26,7 @@ test("Change Player shows the next Profile's Rating on the plate", async () => {
     assert.equal(shownRating(fake), 1.5, "Bob's Rating");
     getProfileStore().switchTo("Carol");
     await settle();
-    assert.equal(shownRating(fake), null, "Carol has not rated it");
+    assert.equal(shownRating(fake), 0, "Carol has not rated it: empty stars");
     getProfileStore().switchTo("Alice");
     await settle();
     assert.equal(shownRating(fake), 5);

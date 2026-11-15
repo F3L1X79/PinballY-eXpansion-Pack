@@ -3,7 +3,7 @@
 // wheel screen (level name, bar, level square). Lights up on demand. Also
 // gives the Collection Mastery's texts to the screens that show it.
 // - Every state is drawn ahead on its own layer (ADR 0010), then only shown or hidden (a point).
-// - Its place (under the Challenge Card or in its place) is asked on each show.
+// - Its place (last of the top right stack) is asked on each show.
 // ============================================================
 
 import lang from "../core/i18n.js";
@@ -28,9 +28,9 @@ export const MASTERY_BAR_Z_INDEX = Object.freeze({
 // On the Challenge Card's 1920 px reference, with its width and right
 // edge; the canvas leaves room for the widest halo.
 const CANVAS = Object.freeze({ width: 400, height: 96 });
-// What sits under the bar starts this far below its top, in reference px.
-export const MASTERY_BAR_HEIGHT = CANVAS.height;
 const PANEL = Object.freeze({ x: 10, y: 14, width: 360, height: 64, border: 1 });
+// The canvas's room around the panel, which the top right stack keeps.
+export const MASTERY_BAR_MARGINS = Object.freeze({ top: PANEL.y, bottom: CANVAS.height - PANEL.y - PANEL.height });
 const HEAD = Object.freeze({ y: 24, size: 13, weight: 600 });
 const BAR = Object.freeze({ x: 24, y: 48, width: 262, height: 10 });
 // Where the square sits; its look is common/mastery/mastery_square.js's.
@@ -137,7 +137,8 @@ export function createMasteryBar(host, drawingAhead, { topOf }) {
     let litTimer = null;
 
     // At span (the bar's, or a point's while hidden) and in place.
-    const place = (layer, span) => placeAligned(layer, span, 0, -topOf() / CARD_REFERENCE_HEIGHT, "top right");
+    // 0 - top: a bar at the very top is placed at 0, not -0.
+    const place = (layer, span) => placeAligned(layer, span, 0, (0 - topOf()) / CARD_REFERENCE_HEIGHT, "top right");
 
     function showLayer(layer) {
         place(layer, { ySpan: CANVAS.height / CARD_REFERENCE_HEIGHT });

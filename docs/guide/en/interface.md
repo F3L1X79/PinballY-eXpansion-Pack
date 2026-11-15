@@ -12,7 +12,7 @@ PinballY's own menus and messages in French, German, Spanish, Italian or Portugu
 
 PinballY's menus and other scripts' menus are drawn in the pack's Steamball look, with the same entries, sorted into sections, and the same buttons: the main menu, Exit, filters, power off, table setup, the Operator Menu, a game's pause, media capture (batch capture included) and confirmations.
 
-- In the main menu, Rate Table shows the selected table's Rating when it has one: five stars after its name, half stars included, as under the Mastery Bar ("Rate Table (current: 4.5 / 5)" in PinballY's own menu). It is the active Profile's own Rating, unless **Ratings per Profile** is off (see [Ratings and Favorite Tables](profiles.md#ratings-and-favorite-tables)).
+- In the main menu, Rate Table shows the selected table's Rating when it has one: five stars after its name, half stars included, as on the wheel ("Rate Table (current: 4.5 / 5)" in PinballY's own menu). It is the active Profile's own Rating, unless **Ratings per Profile** is off (see [Ratings and Favorite Tables](profiles.md#ratings-and-favorite-tables)).
 - In the pause, Exit and "Cancel" resume the game.
 - On every drawn menu and screen, a held Select, Launch or Exit counts once, while a held flipper keeps going.
 - Drawn menus and screens play PinballY's button sounds, like the wheel: your own if they are in `Media\Button Sounds`, at PinballY's button volume. **Mute Buttons** in the Operator Menu silences them all; a copy of `Silence.wav` (in PinballY's `Assets` folder) named after one sound silences only that one, such as `Next.wav` and `Prev.wav` for moves.
@@ -34,7 +34,7 @@ It is **off by default**, like the Backglass Clock: turn it on with `ADD_ON_MENU
 
 - A clock, a gold arc under the wheel (the Wheel Arc) and a richer status line.
 - The active Profile's badge with its Player Level, the week's Challenge Card and the Mastery Bar.
-- Under the Mastery Bar, in the top right corner, five stars: the active Profile's Rating of the selected table, half stars included. They take the bar's place when Table Mastery is off, and are absent on a table you have not rated or when **Ratings per Profile** is off.
+- In the top right corner, under the badge and above the Challenge Card (or in its place when Challenges are off), five stars: the active Profile's Rating of the selected table, half stars included, empty on a table you have not rated. They are always there, so the corner never jumps from one table to the next; absent only when **Ratings per Profile** is off.
 - The lower status line ends with the selected table's Household Rating ("Table 3/120 - household rating: 3.5 out of 5 (4 ratings)."), or your own Rating when fewer than two of you rated it ("your rating: 4 out of 5."), otherwise "no rating for this table." It follows a rating at once, and is absent when **Ratings per Profile** is off (see [Ratings and Favorite Tables](profiles.md#ratings-and-favorite-tables)).
 - In the lower status line, "Table 3/120" counts the tables in the wheel's order: by year when the [Wheel Order](choosing_a_table.md#wheel-order) is by year, best place first on My High Scores.
 

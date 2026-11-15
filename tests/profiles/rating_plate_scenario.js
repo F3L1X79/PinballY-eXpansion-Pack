@@ -7,6 +7,9 @@
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import { RATING_PLATE_Z_INDEX, RATING_PLATE_STAR_COLORS } from "../../common/profiles/rating_plate.js";
+import { CHALLENGE_CARD_Z_INDEX } from "../../common/challenges/challenge_card.js";
+import { MASTERY_BAR_Z_INDEX } from "../../common/mastery/mastery_bar.js";
+import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 import config from "../../common/core/config.js";
 
 export const NOW = new Date(2026, 8, 23, 10, 0, 0);
@@ -79,6 +82,41 @@ export function shownTop(fake) {
     const { x, y, align } = shown.position();
     if (x !== 0 || align !== "top right") return null;
     return Math.round(-y * REFERENCE_HEIGHT);
+}
+
+const panelStrokeOf = layer => layer.strokes().find(stroke => stroke.fill === STEAMBALL_COLORS.panelTranslucent);
+// The Profile badge shares the card's plane, but draws no panel.
+const shownOn = (fake, zIndex) => fake.drawingLayers()
+    .filter(layer => layer.zIndex === zIndex && layer.alpha > 0 && panelStrokeOf(layer));
+const topOf = layer => {
+    const { x, y, align } = layer.position();
+    return x === 0 && align === "top right" ? Math.round((0 - y) * REFERENCE_HEIGHT) : NaN;
+};
+
+// How far below the window's top each piece of the top right stack sits,
+// in reference px: the plate's, the card's and the Mastery Bar's canvases,
+// null for a piece not shown.
+export function stackTops(fake) {
+    const [plate] = shownPlates(fake);
+    const [card] = shownOn(fake, CHALLENGE_CARD_Z_INDEX);
+    const [bar] = shownOn(fake, MASTERY_BAR_Z_INDEX.panel);
+    return { plate: plate ? topOf(plate) : null, card: card ? topOf(card) : null, bar: bar ? topOf(bar) : null };
+}
+
+// A shown piece's panel, in reference px from the window's top (the canvas
+// is drawn at reference size): its top, its bottom and its left edge's
+// distance from the window's right edge.
+function panelOf(layer) {
+    const panel = panelStrokeOf(layer);
+    const top = topOf(layer) + panel.rect.y;
+    return { top, bottom: top + panel.rect.height, left: layer.canvasSize().width - panel.rect.x };
+}
+
+// The shown panels of the stack, top to bottom: plate, card, bar.
+export function stackPanels(fake) {
+    return [shownPlates(fake), shownOn(fake, CHALLENGE_CARD_Z_INDEX), shownOn(fake, MASTERY_BAR_Z_INDEX.panel)]
+        .filter(layers => layers.length > 0)
+        .map(([layer]) => panelOf(layer));
 }
 
 // The player moves the wheel onto this table.

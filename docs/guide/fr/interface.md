@@ -12,7 +12,7 @@ Les menus et messages de PinballY enfin en français, mais aussi en allemand, es
 
 Les menus de PinballY et ceux des autres scripts sont dessinés dans le style Steamball du pack, avec les mêmes entrées, rangées en sections, et les mêmes boutons : menu principal, sortie, filtres, extinction, configuration de la table, menu opérateur, pause d'une partie, capture des médias (y compris par lot) et confirmations.
 
-- Dans le menu principal, Noter la table montre la note de la table sélectionnée quand elle en a une : cinq étoiles après son nom, demi-étoiles comprises, comme sous la barre de maîtrise (« Noter la table (actuel : 4,5 / 5) » dans le menu de PinballY). C'est la note du Profil actif, sauf si **Notes par Profil** est désactivé (voir [Notes et tables favorites](profiles.md#notes-et-tables-favorites)).
+- Dans le menu principal, Noter la table montre la note de la table sélectionnée quand elle en a une : cinq étoiles après son nom, demi-étoiles comprises, comme sur la roue (« Noter la table (actuel : 4,5 / 5) » dans le menu de PinballY). C'est la note du Profil actif, sauf si **Notes par Profil** est désactivé (voir [Notes et tables favorites](profiles.md#notes-et-tables-favorites)).
 - Dans la pause, Exit et « Annuler » reprennent la partie.
 - Sur tous les menus et écrans dessinés, Select, Launch ou Exit gardé enfoncé ne compte qu'une fois, alors qu'un flipper gardé enfoncé continue de défiler.
 - Les menus et écrans dessinés jouent les sons des boutons de PinballY, comme la roue : les vôtres s'ils sont dans `Media\Button Sounds`, au volume des boutons de PinballY. **Mute Buttons** dans le menu opérateur les coupe tous ; un `Silence.wav` (dans le dossier `Assets` de PinballY) copié sous le nom d'un son en coupe un seul, par exemple `Next.wav` et `Prev.wav` pour les déplacements.
@@ -34,7 +34,7 @@ Elle est **désactivée par défaut**, comme l'horloge du backglass : activez-la
 
 - Une horloge, l'arc doré de la roue et une ligne d'état enrichie.
 - Le badge du Profil actif et son niveau, la carte du Défi de la semaine et la barre de maîtrise.
-- Sous la barre de maîtrise, en haut à droite, cinq étoiles : la note du Profil actif pour la table sélectionnée, demi-étoiles comprises. Elles prennent la place de la barre quand la maîtrise des tables est désactivée, et n'apparaissent pas sur une table que vous n'avez pas notée ni quand **Notes par Profil** est désactivé.
+- En haut à droite, sous le badge et au-dessus de la carte du Défi (ou à sa place quand les Défis sont désactivés), cinq étoiles : la note du Profil actif pour la table sélectionnée, demi-étoiles comprises, vides sur une table que vous n'avez pas notée. Elles sont toujours là, pour que le coin ne saute pas d'une table à l'autre ; seul **Notes par Profil** désactivé les retire.
 - La ligne d'état du bas finit par la note de la maison pour la table sélectionnée (« Table 3/120 - note de la maison : 3,5 sur 5 (4 avis). »), ou votre propre note quand moins de deux d'entre vous l'ont notée (« votre note : 4 sur 5. »), sinon « aucune note pour cette table. ». Elle suit une notation tout de suite, et n'apparaît pas quand **Notes par Profil** est désactivé (voir [Notes et tables favorites](profiles.md#notes-et-tables-favorites)).
 - Dans la ligne d'état du bas, « Table 3/120 » compte les tables dans l'ordre de la roue : par année quand l'[ordre de la roue](choosing_a_table.md#ordre-de-la-roue) est par année, meilleure place d'abord sur Mes meilleurs scores.
 

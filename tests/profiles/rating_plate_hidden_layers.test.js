@@ -26,7 +26,7 @@ test("the Rating Plate's layers are drawn ahead, one per Rating, and the hidden 
     assertRuleHeld(fake, "drawn ahead, shown");
 
     select(fake, MARS);
-    assert.equal(shownRating(fake), null);
+    assert.equal(shownRating(fake), 0);
     assertRuleHeld(fake, "unrated table");
 
     select(fake, MEDIEVAL);

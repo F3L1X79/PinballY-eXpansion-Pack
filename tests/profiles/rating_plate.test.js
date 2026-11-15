@@ -1,7 +1,7 @@
 // ============================================================
 // The Rating Plate shows the active Profile's Rating of the selected
 // table, through main.js on the fake PinballY globals: whole and half
-// stars, five empty stars for a zero, no plate on an unrated table or an
+// stars, five empty stars for a zero or an unrated table, no plate on an
 // empty wheel.
 // ============================================================
 
@@ -12,7 +12,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 
 const [MEDIEVAL, MARS, THEATRE, TWILIGHT] = TABLES;
 
-test("the Rating Plate shows the selected table's Rating, half stars included, and nothing unrated", async () => {
+test("the Rating Plate shows the selected table's Rating, half stars included, and empty stars unrated", async () => {
     const fake = await startScenario({
         ratings: { guest: { [MEDIEVAL.configId]: 4, [MARS.configId]: 3.5, [THEATRE.configId]: 0 } },
     });
@@ -23,7 +23,7 @@ test("the Rating Plate shows the selected table's Rating, half stars included, a
     select(fake, THEATRE);
     assert.equal(shownRating(fake), 0, "five empty stars for a zero");
     select(fake, TWILIGHT);
-    assert.equal(shownRating(fake), null, "no plate on an unrated table");
+    assert.equal(shownRating(fake), 0, "five empty stars on an unrated table");
     select(fake, MEDIEVAL);
     assert.equal(shownRating(fake), 4);
 

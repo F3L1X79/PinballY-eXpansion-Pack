@@ -1,7 +1,7 @@
 // ============================================================
 // The Rating Plate follows a rating at once, through main.js on the fake
 // PinballY globals: the "rate game" dialog closing shows the new Rating,
-// with no other "gameselect"; a first Rating brings the plate, and another
+// with no other "gameselect"; a first Rating fills the stars, and another
 // popup closing changes nothing.
 // ============================================================
 
@@ -14,10 +14,10 @@ const [MEDIEVAL] = TABLES;
 
 test("rating the selected table changes the Rating Plate as soon as PinballY's dialog closes", async () => {
     const fake = await startScenario();
-    assert.equal(shownRating(fake), null, "not rated yet");
+    assert.equal(shownRating(fake), 0, "not rated yet: empty stars");
 
     rate(fake, MEDIEVAL, 4.5);
-    assert.equal(shownRating(fake), 4.5, "a first Rating brings the plate");
+    assert.equal(shownRating(fake), 4.5, "a first Rating fills the stars");
     rate(fake, MEDIEVAL, 1);
     assert.equal(shownRating(fake), 1);
 

@@ -62,7 +62,7 @@ test("the Rating Plate and the Mastery Bar follow each move of the Attract Order
 
     fake.advanceTime(STEP_MS);
     assert.equal(fake.getCurrentTable().title, "Cirqus Voltaire");
-    assert.equal(shownRating(fake), null, "no plate on an unrated table");
+    assert.equal(shownRating(fake), 0, "five empty stars on an unrated table");
     assert.equal(shownMastery(fake).head, "To discover");
 
     fake.advanceTime(STEP_MS);

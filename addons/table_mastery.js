@@ -1,6 +1,6 @@
 // ============================================================
 // Table Mastery: shows the selected table's Mastery Bar for the active Profile
-// (under the Challenge Card or the badge), following "gameselect" and the
+// (last of the top right stack), following "gameselect" and the
 // Attract Order's moves, hidden from "gamestarted" to "wheelmode". After a Play,
 // lights the bar up and submits a Mastery Toast for a new Mastery Level or
 // Collection Tier, kept in profile.json ("collectionTier").
@@ -11,8 +11,7 @@
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
-import { getChallenges } from "../common/challenges/challenge.js";
-import { challengeCardBottom } from "../common/challenges/challenge_card.js";
+import { createTopRightStack } from "../common/drawing/top_right_stack.js";
 import { createMasteryBar } from "../common/mastery/mastery_bar.js";
 import {
     masteryOf, movedByPlay, levelReachedByPlay, metalOf, collectionMasteryOfProfile, MAX_MASTERY_LEVEL,
@@ -23,20 +22,15 @@ import { getProfileRewards } from "../common/avatar_frames/profile_rewards.js";
 import lang from "../common/core/i18n.js";
 import { getAttractOrder } from "../common/tables/attract_order.js";
 import { safeHandler } from "../common/core/safe_handler.js";
-import config from "../common/core/config.js";
 
 const SCRIPT_NAME = "TableMastery";
 
 export default function init() {
     const host = createPinballYHost();
     const store = getProfileStore();
-    const underBadge = config.addOns.profilePicker !== false;
-    const challenges = config.addOns.challenges !== false ? getChallenges() : null;
-
     // The card has already followed the same events, since the Challenges
     // Add-on starts before this one.
-    const topOf = () => challengeCardBottom(host, challenges, { underBadge });
-    const bar = createMasteryBar(host, getDrawingAhead(), { topOf });
+    const bar = createMasteryBar(host, getDrawingAhead(), { topOf: createTopRightStack(host).barTop });
     // Got at startup, so the Confetti Shower its toasts start is drawn
     // ahead by then.
     const toasts = getAchievementToasts();

@@ -1,9 +1,9 @@
 // ============================================================
 // Rating Plate: the active Profile's Rating of the selected table at the top
-// right of the wheel screen, five stars (half stars included) on a small
-// plate, under the Mastery Bar or in its place. No text, no lit state.
+// right of the wheel screen, five stars (half stars included, empty when not
+// rated) on a small plate, on top of the top right stack. No text, no lit state.
 // - Every value is drawn ahead on its own layer (ADR 0010), then only shown or hidden (a point).
-// - Its place is asked on each show, like the Mastery Bar's.
+// - Its place is asked on each show, like the Mastery Bar's (common/drawing/top_right_stack.js).
 // ============================================================
 
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
@@ -14,10 +14,13 @@ import { createHiddenLayer, hideLayer, placeAligned, POINT_SPAN } from "../drawi
 // Above the Mastery Bar's planes, under popups and menus.
 export const RATING_PLATE_Z_INDEX = CHALLENGE_CARD_Z_INDEX + 5;
 export const RATING_PLATE_STAR_COLORS = Object.freeze({ filled: STEAMBALL_COLORS.gold, empty: STEAMBALL_COLORS.track });
-// On the Challenge Card's 1920 px reference; the panel's right edge lines up
-// with the Mastery Bar's and the Challenge Card's, 30 px from the canvas's.
-const CANVAS = Object.freeze({ width: 190, height: 56 });
-const PANEL = Object.freeze({ x: 2, y: 6, width: 158, height: 40, border: 1 });
+// On the Challenge Card's 1920 px reference and canvas width: the panel's
+// left edge lines up with the card's (validated on the cabinet).
+const CANVAS = Object.freeze({ width: 400, height: 56 });
+const PANEL = Object.freeze({ x: 10, y: 6, width: 158, height: 40, border: 1 });
+export const RATING_PLATE_HEIGHT = CANVAS.height;
+// The canvas's room around the panel, which the top right stack keeps.
+export const RATING_PLATE_MARGINS = Object.freeze({ top: PANEL.y, bottom: CANVAS.height - PANEL.y - PANEL.height });
 const STAR = Object.freeze({ radius: 11, gap: 6 });
 const STAR_COUNT = 5;
 // 0 to 5 in half steps, as PinballY's rating takes them.
@@ -45,7 +48,8 @@ export function createRatingPlate(host, drawingAhead, { topOf }) {
     let shown = null;
 
     // At span (the plate's, or a point's while hidden) and in place.
-    const place = (layer, span) => placeAligned(layer, span, 0, -topOf() / CARD_REFERENCE_HEIGHT, "top right");
+    // 0 - top: a plate at the very top is placed at 0, not -0.
+    const place = (layer, span) => placeAligned(layer, span, 0, (0 - topOf()) / CARD_REFERENCE_HEIGHT, "top right");
 
     function drawValue(rating) {
         const layer = createHiddenLayer(host, RATING_PLATE_Z_INDEX);
@@ -70,11 +74,11 @@ export function createRatingPlate(host, drawingAhead, { topOf }) {
         shown = null;
     }
 
-    // rating: from 0 to 5, shown to the nearest half star; null for no plate.
+    // rating: from 0 to 5, shown to the nearest half star; null (not rated)
+    // shows empty stars, so the plate never comes and goes.
     function show(rating) {
         hide();
-        if (rating === null) return;
-        const value = Math.min(STAR_COUNT, Math.round(rating * 2) / 2);
+        const value = Math.min(STAR_COUNT, Math.round((rating ?? 0) * 2) / 2);
         shown = layers.get(value) || drawValue(value);
         place(shown, { ySpan: CANVAS.height / CARD_REFERENCE_HEIGHT });
         shown.alpha = 1;

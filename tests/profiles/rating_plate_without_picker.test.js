@@ -1,20 +1,26 @@
 // ============================================================
-// Without the Profile Picker, the Rating Plate moves up with the Mastery
-// Bar, through main.js on the fake PinballY globals: the bar at the top
-// of the window, the plate right under it.
+// Without the Profile Picker, the same stack starts at the top of the
+// window, through main.js on the fake PinballY globals: the Rating Plate,
+// then the Challenge Card, then the Mastery Bar, their panels 24 px apart.
 // ============================================================
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { startScenario, shownTop, shownRating, TABLES } from "./rating_plate_scenario.js";
+import { startScenario, stackTops, stackPanels, shownRating, TABLES } from "./rating_plate_scenario.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 
-const MASTERY_BAR = 96;
+const GAP = 24;
 const [MEDIEVAL] = TABLES;
 
-test("the Rating Plate sits under the Mastery Bar at the top without the Profile Picker", async () => {
-    const fake = await startScenario({ addOns: ["tableMastery", "profileRatings"], ratings: { guest: { [MEDIEVAL.configId]: 5 } } });
+test("without the Profile Picker, the Rating Plate tops the stack at the top of the window", async () => {
+    const fake = await startScenario({
+        addOns: ["challenges", "tableMastery", "profileRatings"], ratings: { guest: { [MEDIEVAL.configId]: 5 } },
+    });
     assert.equal(shownRating(fake), 5);
-    assert.equal(shownTop(fake), MASTERY_BAR);
+    assert.equal(stackTops(fake).plate, 0);
+    const panels = stackPanels(fake);
+    assert.equal(panels.length, 3, "plate, card and bar");
+    assert.deepEqual(panels.slice(1).map((panel, i) => panel.top - panels[i].bottom), [GAP, GAP]);
+    assert.equal(panels[0].left, panels[1].left, "the plate's left edge on the card's");
     assertNoErrorLogged(fake);
 });
