@@ -78,7 +78,7 @@ export function createMainMenu(host, { chosenFilter = activeFilterOf(host), getM
     // opens a submenu (the arrow). givesWayToTitles: when not empty, the
     // entry is left out when an item already in the menu (an External
     // Add-on's) has one of these titles, or the entry's own label, in any
-    // case. Returns the entry's command.
+    // case; that item takes the entry's place. Returns the entry's command.
     function add({ name, label, position, action, shownWhen = () => true, radioWhen = () => false, hasSubmenu = false, givesWayToTitles = [] }) {
         const entry = {
             name, position, action, hasSubmenu, givesWayToTitles,
@@ -152,14 +152,19 @@ export function createMainMenu(host, { chosenFilter = activeFilterOf(host), getM
             entryToSelect = null;
             return;
         }
-        const receivedTitles = ev.items.filter(item => typeof item.title === "string").map(item => item.title.toLowerCase());
-        const givesWay = (entry, title) => entry.givesWayToTitles.length > 0
-            && [title, ...entry.givesWayToTitles].some(known => receivedTitles.includes(known.toLowerCase()));
-        const labeled = entries
+        // The received item an entry gives way to, which takes its place.
+        const itemReplacing = (entry, title) => {
+            if (entry.givesWayToTitles.length === 0) return undefined;
+            const known = [title, ...entry.givesWayToTitles].map(text => text.toLowerCase());
+            return ev.items.find(item => typeof item.title === "string" && known.includes(item.title.toLowerCase()));
+        };
+        const shown = entries
             .filter(entry => entry.shownWhen())
             .map(entry => ({ entry, title: entry.label() }))
             .filter(({ title }) => title !== undefined)
-            .filter(({ entry, title }) => !givesWay(entry, title));
+            .map(({ entry, title }) => ({ entry, title, replacedBy: itemReplacing(entry, title) }));
+        const labeled = shown.filter(({ replacedBy }) => !replacedBy);
+        const replacedPositions = new Map(shown.filter(({ replacedBy }) => replacedBy).map(({ entry, replacedBy }) => [replacedBy, entry.position]));
         const selected = labeled.find(({ entry }) => entry.name === entryToSelect);
         entryToSelect = null;
         // Array sort is stable: items sharing a slot keep their order.
@@ -172,7 +177,7 @@ export function createMainMenu(host, { chosenFilter = activeFilterOf(host), getM
             }),
             ...ev.items
                 .filter(item => !isSeparator(item) && !isFilterItem(item, host) && !filterPicker.isGroupItem(item))
-                .map(item => ({ item: withMainMenuTitle(item), position: nativePositionOf(item.cmd) })),
+                .map(item => ({ item: withMainMenuTitle(item), position: replacedPositions.get(item) ?? nativePositionOf(item.cmd) })),
         ].sort((a, b) => comparePositions(a.position, b.position));
         const items = [];
         placed.forEach(({ item, position }, index) => {
