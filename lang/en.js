@@ -805,14 +805,6 @@ export default {
         // Before Discord Rich Presence is saved on, each time.
         discordConsentMessage: "Your Discord account open on this PC will publicly show the table being played, for how long, and when the wheel is open. No Profile name nor any other personal data from this PC is sent by the PinballY Expansion Pack.",
         discordConsentTurnOn: "Turn on",
-        notSaved: "Setting not saved",
-        ok: "OK",
-        // On leaving the list while a saved setting differs from the running one.
-        restartQuestion: "The saved settings apply when PinballY restarts.",
-        restartNow: "Restart now",
-        later: "Later",
-        restartFailedTitle: "Restart not possible",
-        restartFailed: "The settings will apply at the next start.",
         // Each Add-on by its config.addOns key: its name, what it does, and
         // what is lost elsewhere when it is off (the "false also" lines of .env.example).
         addOns: {
@@ -989,6 +981,17 @@ export default {
         },
     },
 
+    // A setting saved, then Restart now or Later (see common/settings/save_and_restart.js).
+    saveAndRestart: {
+        notSaved: "Setting not saved",
+        ok: "OK",
+        // While a saved setting differs from the running one.
+        restartQuestion: "The saved settings apply when PinballY restarts.",
+        restartNow: "Restart now",
+        later: "Later",
+        restartFailedTitle: "Restart not possible",
+        restartFailed: "The settings will apply at the next start.",
+    },
     // The Update Prompt at startup, and a Pack Update that cannot start (see common/updates/).
     packUpdates: {
         promptTitle: "Update available",

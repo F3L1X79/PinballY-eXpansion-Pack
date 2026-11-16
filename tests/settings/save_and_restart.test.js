@@ -8,7 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createFakePinballYHost } from "../support/fake_pinbally_host.js";
-import { createAddOnSwitch } from "../../common/settings/add_on_switch.js";
+import { createSaveAndRestart } from "../../common/settings/save_and_restart.js";
 
 const ENV_LOCAL = "C:\\PinballY\\Scripts\\ExpansionPack\\.env.local";
 
@@ -17,19 +17,19 @@ function start() {
     const fake = createFakePinballYHost();
     const shown = [];
     const menus = { show: (id, items, options) => shown.push({ id, items, options }) };
-    const addOnSwitch = createAddOnSwitch(fake, null, () => menus, { scriptName: "Caller", idPrefix: "caller" });
+    const saveAndRestart = createSaveAndRestart(fake, null, () => menus, { scriptName: "Caller", idPrefix: "caller" });
     const titles = () => shown[shown.length - 1].items.filter(item => item.title).map(item => item.title);
     const choose = title => fake.fire("command", { id: shown[shown.length - 1].items.find(item => item.title === title).cmd });
-    return { fake, shown, addOnSwitch, titles, choose };
+    return { fake, shown, saveAndRestart, titles, choose };
 }
 
 test("an Add-on saved off is written under the caller's name, then Restart now restarts PinballY", () => {
-    const { fake, shown, addOnSwitch, titles, choose } = start();
+    const { fake, shown, saveAndRestart, titles, choose } = start();
     fake.addFile(ENV_LOCAL, "ADD_ON_CLOCK=true\r\n");
     let later = 0;
 
-    addOnSwitch.saveAddOn("clock", false, {
-        onSaved: () => addOnSwitch.askRestart(() => { later++; }),
+    saveAndRestart.saveAddOn("clock", false, {
+        onSaved: () => saveAndRestart.askRestart(() => { later++; }),
         reopen: () => assert.fail("the save did not fail"),
     });
 
@@ -45,10 +45,10 @@ test("an Add-on saved off is written under the caller's name, then Restart now r
 });
 
 test("Later and Exit both run what the caller gave", () => {
-    const { fake, shown, addOnSwitch } = start();
+    const { fake, shown, saveAndRestart } = start();
     let later = 0;
 
-    addOnSwitch.askRestart(() => { later++; });
+    saveAndRestart.askRestart(() => { later++; });
     shown[0].options.onBack();
 
     assert.equal(later, 1);
@@ -56,12 +56,12 @@ test("Later and Exit both run what the caller gave", () => {
 });
 
 test("a write that fails shows \"Setting not saved\", then what the caller reopens, never the restart question", () => {
-    const { fake, shown, addOnSwitch, titles } = start();
+    const { fake, shown, saveAndRestart, titles } = start();
     fake.addFile(ENV_LOCAL, "ADD_ON_CLOCK=true\r\n");
     fake.lockFile(ENV_LOCAL);
     let reopened = 0;
 
-    addOnSwitch.saveAddOn("clock", false, {
+    saveAndRestart.saveAddOn("clock", false, {
         onSaved: () => assert.fail("nothing was saved"),
         reopen: () => { reopened++; },
     });

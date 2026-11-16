@@ -3,7 +3,7 @@
 // sees the setup entries, opens the list of Add-on categories (their Add-ons as saved in .env.local,
 // read again on each opening, one page per Add-on whose Save rewrites its one line), the Startup screen,
 // Language and Attract Order pages, the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
-// Listens to "menuopen" and "command"; saves and restarts through add_on_switch.js, and writes PinballY's attract switch time for the Attract Order.
+// Listens to "menuopen" and "command"; saves and restarts through save_and_restart.js, and writes PinballY's attract switch time for the Attract Order.
 // - Started by main.js whatever config.addOns says, its "menuopen" listener before the Drawn Menus Add-on's.
 // - Always drawn (getPackMenus), even with the Drawn Menus Add-on off.
 // - Nothing applies before PinballY restarts but the Script Reader Prompt's No thanks: "on restart" marks a saved value that differs from the running one.
@@ -28,7 +28,7 @@ import { SCRIPT_READER_VERSION } from "../table_roms/script_reader_version.js";
 import { getScriptReaderInstaller, scriptReaderDialogText } from "../table_roms/script_reader_install.js";
 import { getScriptReaderState } from "../table_roms/script_reader_state.js";
 import { ADD_ON_GROUPS } from "./add_on_catalogue.js";
-import { createAddOnSwitch } from "./add_on_switch.js";
+import { createSaveAndRestart } from "./save_and_restart.js";
 import { saveAttractOrderSwitches } from "../tables/attract_order.js";
 
 const SCRIPT_NAME = "ExpansionPackSettings";
@@ -46,7 +46,7 @@ const DISCORD_RICH_PRESENCE_MENU_ID = "expansionPackSettingsDiscordRichPresence"
 const SCRIPT_READER_MENU_ID = "expansionPackSettingsScriptReader";
 const DISCORD_CONSENT_MENU_ID = "expansionPackSettingsDiscordConsent";
 // Starts the menu ids and the command name of the save and restart step.
-const ADD_ON_SWITCH_ID_PREFIX = "expansionPackSettings";
+const SAVE_AND_RESTART_ID_PREFIX = "expansionPackSettings";
 const SEPARATOR = { cmd: -1 };
 const BOLD_WEIGHT = 700;
 
@@ -119,7 +119,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     const saveCommand = host.allocateCommand("expansionPackSettings_save");
     const discordConsentCommand = host.allocateCommand("expansionPackSettings_discordConsent");
     // Saves each value, and asks Restart now or Later on leaving the list.
-    const addOnSwitch = createAddOnSwitch(host, profileStore, getMenus, { scriptName: SCRIPT_NAME, idPrefix: ADD_ON_SWITCH_ID_PREFIX });
+    const saveAndRestart = createSaveAndRestart(host, profileStore, getMenus, { scriptName: SCRIPT_NAME, idPrefix: SAVE_AND_RESTART_ID_PREFIX });
     const updateCommand = host.allocateCommand("expansionPackSettings_update");
     const scriptReaderLineCommand = host.allocateCommand("expansionPackSettings_installVpxtool");
     const scriptReaderInstallCommand = host.allocateCommand("expansionPackSettings_scriptReaderInstall");
@@ -240,7 +240,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
             returnToOperatorMenu();
             return;
         }
-        addOnSwitch.askRestart(returnToOperatorMenu);
+        saveAndRestart.askRestart(returnToOperatorMenu);
     }
 
     // Back, Exit, Cancel and Save all return to the category on the page's line.
@@ -287,7 +287,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     // A failed save shows the page again on the choice saved before.
     function saveAddOn() {
         const { key, value } = page;
-        addOnSwitch.saveAddOn(key, value, { onSaved: () => backToCategory(key), reopen: () => openPage(key) });
+        saveAndRestart.saveAddOn(key, value, { onSaved: () => backToCategory(key), reopen: () => openPage(key) });
     }
 
     // What Discord Rich Presence makes public, the cursor on Cancel so that
@@ -315,7 +315,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     function saveChoice({ setting, value }) {
         const from = setting.normalize(setting.read(readSaved()));
         const alsoWrite = setting.afterSave ? () => setting.afterSave(from, value) : null;
-        const saveValue = () => addOnSwitch.saveSetting(setting.keyPath, value, { onSaved: () => backToLine(setting), reopen: () => openChoicePage(setting), alsoWrite });
+        const saveValue = () => saveAndRestart.saveSetting(setting.keyPath, value, { onSaved: () => backToLine(setting), reopen: () => openChoicePage(setting), alsoWrite });
         const turnsOn = value === "true" && from !== "true";
         if (setting.asksConsent && turnsOn) openDiscordConsent(saveValue, () => openChoicePage(setting));
         else saveValue();

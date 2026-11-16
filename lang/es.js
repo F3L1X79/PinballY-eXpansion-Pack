@@ -878,13 +878,6 @@ export default {
         cancel: "Cancelar",
         discordConsentMessage: "Tu cuenta de Discord abierta en este PC mostrará públicamente la mesa jugada, durante cuánto tiempo, y cuándo está abierta la rueda. El PinballY Expansion Pack no envía ningún nombre de perfil ni ningún otro dato personal de este PC.",
         discordConsentTurnOn: "Activar",
-        notSaved: "Ajuste no guardado",
-        ok: "OK",
-        restartQuestion: "Los ajustes guardados se aplican al reiniciar PinballY.",
-        restartNow: "Reiniciar ya",
-        later: "Más tarde",
-        restartFailedTitle: "No se puede reiniciar",
-        restartFailed: "Los ajustes se aplicarán en el próximo inicio.",
         addOns: {
             profilePicker: {
                 name: "Selector de perfil",
@@ -1057,6 +1050,16 @@ export default {
         },
     },
 
+    // A setting saved, then Restart now or Later (see common/settings/save_and_restart.js).
+    saveAndRestart: {
+        notSaved: "Ajuste no guardado",
+        ok: "OK",
+        restartQuestion: "Los ajustes guardados se aplican al reiniciar PinballY.",
+        restartNow: "Reiniciar ya",
+        later: "Más tarde",
+        restartFailedTitle: "No se puede reiniciar",
+        restartFailed: "Los ajustes se aplicarán en el próximo inicio.",
+    },
     // The Update Prompt at startup, and a Pack Update that cannot start (see common/updates/).
     packUpdates: {
         // Names the newer Pack Version the Update Check found.

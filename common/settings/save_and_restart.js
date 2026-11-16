@@ -24,8 +24,8 @@ const RESTART_LOADER_Z_INDEX = DRAWN_MENU_Z_INDEX.backdrop - 1;
 
 // getMenus: what shows the Dialogs, asked on each one; scriptName: the log
 // lines' prefix; idPrefix: starts the caller's own menu ids and command name.
-export function createAddOnSwitch(host, profileStore, getMenus, { scriptName, idPrefix }) {
-    const { expansionPackSettings: TEXT } = lang;
+export function createSaveAndRestart(host, profileStore, getMenus, { scriptName, idPrefix }) {
+    const { saveAndRestart: TEXT } = lang;
     const menuReturnCommand = host.getBuiltInCommand("MenuReturn");
     const restartCommand = host.allocateCommand(`${idPrefix}_restart`);
 
