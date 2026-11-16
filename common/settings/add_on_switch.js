@@ -1,6 +1,6 @@
 // ============================================================
-// Add-on switch: saves an Add-on's on/off value (or any other setting) in .env.local, then asks
-// "Restart now / Later"; one instance per caller, the eXpansion Pack Settings being the first.
+// Saves an Add-on's on/off value (or any other setting) in .env.local, then asks "Restart now / Later":
+// the one save and restart path of the pack. One instance per caller, under the caller's own name and ids.
 // Listens to "command" and "commandbuttondown"; writes .env.local; draws the restart veil and its Loader.
 // - A failed read or write is caught here, not by safeHandler, for the owner to see "Setting not saved".
 // - Wheel Order saved off gives PinballY's attract interval back, never leaving attract mode frozen.

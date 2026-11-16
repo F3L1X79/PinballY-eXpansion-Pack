@@ -3,7 +3,7 @@
 // sees the setup entries, opens the list of Add-on categories (their Add-ons as saved in .env.local,
 // read again on each opening, one page per Add-on whose Save rewrites its one line), the Startup screen,
 // Language and Attract Order pages, the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
-// Listens to "menuopen" and "command"; saves and restarts through the Add-on switch (add_on_switch.js), and writes PinballY's attract switch time for the Attract Order.
+// Listens to "menuopen" and "command"; saves and restarts through add_on_switch.js, and writes PinballY's attract switch time for the Attract Order.
 // - Started by main.js whatever config.addOns says, its "menuopen" listener before the Drawn Menus Add-on's.
 // - Always drawn (getPackMenus), even with the Drawn Menus Add-on off.
 // - Nothing applies before PinballY restarts but the Script Reader Prompt's No thanks: "on restart" marks a saved value that differs from the running one.
@@ -45,7 +45,7 @@ const OFFER_VPXTOOL_MENU_ID = "expansionPackSettingsOfferVpxtool";
 const DISCORD_RICH_PRESENCE_MENU_ID = "expansionPackSettingsDiscordRichPresence";
 const SCRIPT_READER_MENU_ID = "expansionPackSettingsScriptReader";
 const DISCORD_CONSENT_MENU_ID = "expansionPackSettingsDiscordConsent";
-// Starts the Add-on switch's menu ids and its command name.
+// Starts the menu ids and the command name of the save and restart step.
 const ADD_ON_SWITCH_ID_PREFIX = "expansionPackSettings";
 const SEPARATOR = { cmd: -1 };
 const BOLD_WEIGHT = 700;

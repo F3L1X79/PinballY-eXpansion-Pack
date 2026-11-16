@@ -1,6 +1,6 @@
 // ============================================================
-// The Add-on switch on the fake host, as a caller other than the eXpansion
-// Pack Settings uses it: an Add-on saved off under the caller's own name,
+// The shared save and restart step on the fake host, as a caller other than
+// the eXpansion Pack Settings uses it: an Add-on saved off under its own name,
 // then "Restart now / Later"; a failed write shows "Setting not saved" and
 // never reaches the restart question.
 // ============================================================
