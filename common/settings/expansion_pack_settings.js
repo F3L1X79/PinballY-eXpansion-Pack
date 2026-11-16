@@ -3,28 +3,24 @@
 // sees the setup entries, opens the list of Add-on categories (their Add-ons as saved in .env.local,
 // read again on each opening, one page per Add-on whose Save rewrites its one line), the Startup screen,
 // Language and Attract Order pages, the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
-// Listens to "menuopen", "command" and "commandbuttondown"; writes .env.local, and PinballY's attract switch time for the Attract Order.
+// Listens to "menuopen" and "command"; saves and restarts through the Add-on switch (add_on_switch.js), and writes PinballY's attract switch time for the Attract Order.
 // - Started by main.js whatever config.addOns says, its "menuopen" listener before the Drawn Menus Add-on's.
 // - Always drawn (getPackMenus), even with the Drawn Menus Add-on off.
 // - Nothing applies before PinballY restarts but the Script Reader Prompt's No thanks: "on restart" marks a saved value that differs from the running one.
-// - Leaving the list with such a value asks Restart now (host.restartPinballY) or Later; attract mode never asks.
+// - Leaving the list with such a value asks Restart now or Later; attract mode never asks.
 // - Saving Discord Rich Presence on from off asks for consent every time, the cursor on Cancel; a hand-edited .env.local never asks.
 // ============================================================
 
 import lang from "../core/i18n.js";
 import config, { DEFAULTS } from "../core/config.js";
 import { applyEnvOverrides } from "../core/env_overrides.js";
-import { logHandlerError, safeHandler } from "../core/safe_handler.js";
-import { logError } from "../core/error_log.js";
+import { safeHandler } from "../core/safe_handler.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { getProfileStore } from "../profiles/profile_store.js";
 import { seesSetupEntries } from "../profiles/setup_entries.js";
 import { SEPARATOR_CMD } from "../menus/menu_separator.js";
 import { getDrawnMenus, getPackMenus } from "../drawn_menu/drawn_menu.js";
-import { DRAWN_MENU_Z_INDEX } from "../drawn_menu/drawn_menu_painter.js";
-import { createLoader } from "../drawing/loader.js";
-import { DIMMED_WHEEL } from "../drawing/steamball_drawing.js";
-import { DIALOG_PRIORITY, getWheelDialogs } from "../core/wheel_dialog.js";
+import { getWheelDialogs } from "../core/wheel_dialog.js";
 import { installableRelease } from "../updates/update_check.js";
 import { getUpdateState } from "../updates/update_state.js";
 import { getPackUpdater } from "../updates/pack_update.js";
@@ -32,8 +28,8 @@ import { SCRIPT_READER_VERSION } from "../table_roms/script_reader_version.js";
 import { getScriptReaderInstaller, scriptReaderDialogText } from "../table_roms/script_reader_install.js";
 import { getScriptReaderState } from "../table_roms/script_reader_state.js";
 import { ADD_ON_GROUPS } from "./add_on_catalogue.js";
-import { saveEnvSetting } from "./env_local_rewrite.js";
-import { saveAttractOrderSwitches, giveAttractSwitchesBack } from "../tables/attract_order.js";
+import { createAddOnSwitch } from "./add_on_switch.js";
+import { saveAttractOrderSwitches } from "../tables/attract_order.js";
 
 const SCRIPT_NAME = "ExpansionPackSettings";
 const OPERATOR_MENU_ID = "operator";
@@ -49,13 +45,9 @@ const OFFER_VPXTOOL_MENU_ID = "expansionPackSettingsOfferVpxtool";
 const DISCORD_RICH_PRESENCE_MENU_ID = "expansionPackSettingsDiscordRichPresence";
 const SCRIPT_READER_MENU_ID = "expansionPackSettingsScriptReader";
 const DISCORD_CONSENT_MENU_ID = "expansionPackSettingsDiscordConsent";
-const NOT_SAVED_MENU_ID = "expansionPackSettingsNotSaved";
-const RESTART_MENU_ID = "expansionPackSettingsRestart";
-const RESTART_FAILED_MENU_ID = "expansionPackSettingsRestartFailed";
+// Starts the Add-on switch's menu ids and its command name.
+const ADD_ON_SWITCH_ID_PREFIX = "expansionPackSettings";
 const SEPARATOR = { cmd: -1 };
-// Just under the Drawn Menus, which the failure message may show over them.
-const RESTART_VEIL_Z_INDEX = DRAWN_MENU_Z_INDEX.backdrop - 2;
-const RESTART_LOADER_Z_INDEX = DRAWN_MENU_Z_INDEX.backdrop - 1;
 const BOLD_WEIGHT = 700;
 
 // getMenus: what shows the screens, asked on each opening
@@ -126,7 +118,8 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     const switchCommand = host.allocateCommand("expansionPackSettings_switch");
     const saveCommand = host.allocateCommand("expansionPackSettings_save");
     const discordConsentCommand = host.allocateCommand("expansionPackSettings_discordConsent");
-    const restartCommand = host.allocateCommand("expansionPackSettings_restart");
+    // Saves each value, and asks Restart now or Later on leaving the list.
+    const addOnSwitch = createAddOnSwitch(host, profileStore, getMenus, { scriptName: SCRIPT_NAME, idPrefix: ADD_ON_SWITCH_ID_PREFIX });
     const updateCommand = host.allocateCommand("expansionPackSettings_update");
     const scriptReaderLineCommand = host.allocateCommand("expansionPackSettings_installVpxtool");
     const scriptReaderInstallCommand = host.allocateCommand("expansionPackSettings_scriptReaderInstall");
@@ -247,53 +240,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
             returnToOperatorMenu();
             return;
         }
-        getMenus().show(RESTART_MENU_ID, [
-            { title: TEXT.restartQuestion, cmd: -1 },
-            SEPARATOR,
-            { title: TEXT.restartNow, cmd: restartCommand },
-            { title: TEXT.later, cmd: menuReturnCommand },
-        ], { dialogStyle: true, onBack: returnToOperatorMenu });
-    }
-
-    // From Restart now until PinballY quits: the wheel dimmed as a drawn
-    // screen's backdrop dims it, with the Loader turning over it.
-    let restartVeil = null;
-    const restartLoader = createLoader(host, { zIndex: RESTART_LOADER_Z_INDEX });
-
-    function showRestartVeil() {
-        restartVeil = host.createDrawingLayer(RESTART_VEIL_Z_INDEX);
-        restartVeil.clear(DIMMED_WHEEL);
-        restartLoader.show();
-    }
-
-    function hideRestartVeil() {
-        restartLoader.hide();
-        if (!restartVeil) return;
-        host.removeDrawingLayer(restartVeil);
-        restartVeil = null;
-    }
-
-    // Shown once the wheel is free: the failure comes up to 15 s after the
-    // screens closed.
-    const restartFailed = safeHandler(SCRIPT_NAME, error => {
-        hideRestartVeil();
-        logError(SCRIPT_NAME, `ERROR Restart not possible: ${error.message}`, host, error);
-        getWheelDialogs().submit({
-            id: RESTART_FAILED_MENU_ID, title: TEXT.restartFailedTitle, message: TEXT.restartFailed, buttons: [{ label: TEXT.ok }], priority: DIALOG_PRIORITY.RESTART_FAILED,
-        });
-    });
-
-    function restart() {
-        host.log(`[${SCRIPT_NAME}] Restart asked.`);
-        showRestartVeil();
-        try {
-            host.restartPinballY({
-                onQuitting: safeHandler(SCRIPT_NAME, () => host.log(`[${SCRIPT_NAME}] Restart helper ready, quitting.`)),
-                onFailed: restartFailed,
-            });
-        } catch (error) {
-            restartFailed(error);
-        }
+        addOnSwitch.askRestart(returnToOperatorMenu);
     }
 
     // Back, Exit, Cancel and Save all return to the category on the page's line.
@@ -337,31 +284,10 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         ], { selectedCmd: setting.choiceCommands.get(saved) ?? null, onBack: () => backToLine(setting) });
     }
 
-    // A failed read or write is caught here, not by safeHandler, for the
-    // owner to see it; reopen then shows the page on the choice saved before.
-    // alsoWrite: what else the choice writes once .env.local is saved.
-    function save(keyPath, value, { onSaved, reopen, alsoWrite = null }) {
-        try {
-            saveEnvSetting(host, keyPath, value, SCRIPT_NAME);
-            if (alsoWrite) alsoWrite();
-        } catch (error) {
-            logHandlerError(SCRIPT_NAME, error);
-            getMenus().show(NOT_SAVED_MENU_ID, [
-                { title: TEXT.notSaved, cmd: -1 },
-                SEPARATOR,
-                { title: TEXT.ok, cmd: menuReturnCommand },
-            ], { dialogStyle: true, onBack: reopen });
-            return;
-        }
-        onSaved();
-    }
-
-    // The Attract Order belongs to the Wheel Order Add-on: saved off, it gives
-    // PinballY's interval back, never leaving attract mode frozen.
+    // A failed save shows the page again on the choice saved before.
     function saveAddOn() {
         const { key, value } = page;
-        const alsoWrite = key === "wheelOrder" && !value ? () => giveAttractSwitchesBack(host, profileStore) : null;
-        save(`addOns.${key}`, value, { onSaved: () => backToCategory(key), reopen: () => openPage(key), alsoWrite });
+        addOnSwitch.saveAddOn(key, value, { onSaved: () => backToCategory(key), reopen: () => openPage(key) });
     }
 
     // What Discord Rich Presence makes public, the cursor on Cancel so that
@@ -389,7 +315,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     function saveChoice({ setting, value }) {
         const from = setting.normalize(setting.read(readSaved()));
         const alsoWrite = setting.afterSave ? () => setting.afterSave(from, value) : null;
-        const saveValue = () => save(setting.keyPath, value, { onSaved: () => backToLine(setting), reopen: () => openChoicePage(setting), alsoWrite });
+        const saveValue = () => addOnSwitch.saveSetting(setting.keyPath, value, { onSaved: () => backToLine(setting), reopen: () => openChoicePage(setting), alsoWrite });
         const turnsOn = value === "true" && from !== "true";
         if (setting.asksConsent && turnsOn) openDiscordConsent(saveValue, () => openChoicePage(setting));
         else saveValue();
@@ -403,12 +329,6 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         // Before "Manage profiles", which the Custom Menu Commands Add-on put
         // right after Batch Capture earlier; PinballY's separator follows both.
         ev.addMenuItem({ after: batchCaptureCommand }, [{ cmd: SEPARATOR_CMD }, { title: TEXT.menuEntry, cmd: entryCommand }]);
-    }));
-
-    // Fires on every mapped button press: while PinballY gets ready to quit,
-    // no button moves the wheel or launches a table.
-    host.on("commandbuttondown", safeHandler(SCRIPT_NAME, ev => {
-        if (restartVeil) ev.preventDefault();
     }));
 
     // Fires on every command: the entry opens the list, a line its page, the
@@ -430,8 +350,6 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
             savePage();
         } else if (ev.id === discordConsentCommand && onConsent) {
             onConsent();
-        } else if (ev.id === restartCommand) {
-            restart();
         } else if (ev.id === updateCommand) {
             const release = releaseToInstall();
             if (release) getPackUpdater().start(release);
