@@ -53,6 +53,9 @@ export default function init() {
     // Fires for each launch-overlay status message: replaces it with the
     // translation keyed by its language-independent id.
     mainWindow.on("launchoverlaymessage", safeHandler(SCRIPT_NAME, ev => {
+        // PinballY's own message is a text or null: an empty one was
+        // blanked by an External Add-on's earlier listener, and stays blank.
+        if (ev.message === "") return;
         if (hasOwn(LAUNCH_OVERLAY_MESSAGES, ev.id)) {
             ev.message = LAUNCH_OVERLAY_MESSAGES[ev.id];
         }

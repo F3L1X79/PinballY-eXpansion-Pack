@@ -75,10 +75,13 @@ export function createMainMenu(host, { chosenFilter = activeFilterOf(host), getM
     // radioWhen: optional, the entry is marked radio when it returns true.
     // Each function is guarded on its own, so a failing one only touches
     // its own entry (a failing label leaves it out). hasSubmenu: the entry
-    // opens a submenu (the arrow). Returns the entry's command.
-    function add({ name, label, position, action, shownWhen = () => true, radioWhen = () => false, hasSubmenu = false }) {
+    // opens a submenu (the arrow). givesWayToTitles: when not empty, the
+    // entry is left out when an item already in the menu (an External
+    // Add-on's) has one of these titles, or the entry's own label, in any
+    // case. Returns the entry's command.
+    function add({ name, label, position, action, shownWhen = () => true, radioWhen = () => false, hasSubmenu = false, givesWayToTitles = [] }) {
         const entry = {
-            name, position, action, hasSubmenu,
+            name, position, action, hasSubmenu, givesWayToTitles,
             label: typeof label === "function" ? safeHandler(SCRIPT_NAME, label) : () => label,
             shownWhen: safeHandler(SCRIPT_NAME, shownWhen),
             radioWhen: safeHandler(SCRIPT_NAME, radioWhen),
@@ -149,10 +152,14 @@ export function createMainMenu(host, { chosenFilter = activeFilterOf(host), getM
             entryToSelect = null;
             return;
         }
+        const receivedTitles = ev.items.filter(item => typeof item.title === "string").map(item => item.title.toLowerCase());
+        const givesWay = (entry, title) => entry.givesWayToTitles.length > 0
+            && [title, ...entry.givesWayToTitles].some(known => receivedTitles.includes(known.toLowerCase()));
         const labeled = entries
             .filter(entry => entry.shownWhen())
             .map(entry => ({ entry, title: entry.label() }))
-            .filter(({ title }) => title !== undefined);
+            .filter(({ title }) => title !== undefined)
+            .filter(({ entry, title }) => !givesWay(entry, title));
         const selected = labeled.find(({ entry }) => entry.name === entryToSelect);
         entryToSelect = null;
         // Array sort is stable: items sharing a slot keep their order.

@@ -5,6 +5,7 @@
 // - With an Admin Profile, only Admins see "Table Setup", "Operator Menu" and "Manage profiles".
 // - With none, "Manage profiles" offers "Become admin" to all but Guest and Child Profiles.
 // - The coin door service button still opens the Operator Menu for anyone.
+// - "Table Setup" gives way to an External Add-on's entry of that title, already in the menu.
 // ============================================================
 
 import { safeHandler } from "../common/core/safe_handler.js";
@@ -18,6 +19,8 @@ import { createPinballYHost } from "../common/core/pinbally_host.js";
 import lang from "../common/core/i18n.js";
 
 const SCRIPT_NAME = "CustomMenuCommands";
+// The entry the official command_example adds to the main menu: matched, never shown.
+const EXTERNAL_TABLE_SETUP_TITLE = "Table setup";
 
 export default function init() {
     const { customMenuLabels: MENU_LABELS } = lang;
@@ -31,6 +34,7 @@ export default function init() {
             position: MAIN_MENU_POSITION.TABLE_SETUP,
             action: () => { mainWindow.doCommand(command.ShowGameSetupMenu); },
             shownWhen: showsSetupEntries,
+            givesWayToTitles: [EXTERNAL_TABLE_SETUP_TITLE],
         },
     ];
 
