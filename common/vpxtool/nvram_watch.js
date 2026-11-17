@@ -1,14 +1,15 @@
 // ============================================================
-// Shared NVRAM watch: notes the .nv files' dates at a VPX launch
-// ("prelaunch") and tells each watching Add-on, in "postlaunch", the ROMs
+// Shared NVRAM watch: notes the .nv files' dates when a VPX launch begins
+// and tells each watching Add-on, when it ends (Launch Bracket), the ROMs
 // whose .nv file changed during the game. Used by the Table ROMs .nv
-// confirmation.
-// - Watchers hear the game in the order they watch, all within "postlaunch".
+// confirmation and High Scores.
+// - Watchers hear the game in the order they watch, all at the launch's end.
 // - The NVRAM folder is found as PinballY finds it; not found, each watcher hears it once.
 // ============================================================
 
 import { safeHandler } from "../core/safe_handler.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
+import { createLaunchBracket, getLaunchBracket } from "../core/launch_bracket.js";
 
 const WATCH_NAME = "NvramWatch";
 const NVRAM_DIRECTORY_KEY = "Software\\Freeware\\Visual PinMame\\globals\\nvram_directory";
@@ -26,7 +27,7 @@ export function nvramFolderOf(host, game) {
     return null;
 }
 
-export function createNvramWatch(host) {
+export function createNvramWatch(host, launchBracket = createLaunchBracket(host)) {
     // Each: { onGameEnded({ configId, folder, changed (ROM names) }),
     // onFolderMissing(where), missingHeard }, its handlers guarded.
     const watchers = [];
@@ -45,10 +46,9 @@ export function createNvramWatch(host) {
         return dates;
     }
 
-    // Fires as a table launches: any earlier launch never reached "postlaunch".
-    host.on("prelaunch", safeHandler(WATCH_NAME, (ev) => {
+    // Before the game: VPX has not written any .nv yet.
+    function onBegan({ game }) {
         launched = null;
-        const game = ev.game;
         if (!game) return;
         const gameFile = game.resolveGameFile();
         if (!gameFile.exists || !/\.vpx$/i.test(gameFile.path)) return;
@@ -63,18 +63,20 @@ export function createNvramWatch(host) {
             return;
         }
         launched = { configId: game.configId, folder, dates };
-    }));
+    }
 
-    // Fires after the game, back on the wheel.
-    host.on("postlaunch", safeHandler(WATCH_NAME, () => {
+    // After the game; a launch another script cancelled ran no game.
+    function onEnded({ cancelled }) {
         const before = launched;
         launched = null;
-        if (!before) return;
+        if (!before || cancelled) return;
         const after = nvDatesIn(before.folder);
         if (after === null) return;
         const changed = [...after].filter(([name, modified]) => before.dates.get(name) !== modified).map(([name]) => name);
         for (const watcher of watchers) watcher.onGameEnded({ configId: before.configId, folder: before.folder, changed: [...changed] });
-    }));
+    }
+
+    launchBracket.subscribe(WATCH_NAME, { onBegan, onEnded });
 
     return {
         // Errors in the handlers are logged under scriptName.
@@ -89,6 +91,6 @@ export function createNvramWatch(host) {
 let sharedWatch = null;
 
 export function getNvramWatch() {
-    if (!sharedWatch) sharedWatch = createNvramWatch(createPinballYHost());
+    if (!sharedWatch) sharedWatch = createNvramWatch(createPinballYHost(), getLaunchBracket());
     return sharedWatch;
 }

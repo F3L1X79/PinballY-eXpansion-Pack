@@ -4,7 +4,7 @@
 // Script Reader install; the .nv file each game changed confirms it. Writes table_roms.json next to cabinet.json, and logfile.log.
 // vpxtool missing or older brings the Script Reader Prompt; its version is read again first.
 // - Never overwrites a ROM typed by hand.
-// - The confirmation is written in "postlaunch" so later Add-ons see it.
+// - The confirmation is written at the launch's end (Launch Bracket), before any "postlaunch" listener.
 // ============================================================
 
 import { createPinballYHost } from "../common/core/pinbally_host.js";

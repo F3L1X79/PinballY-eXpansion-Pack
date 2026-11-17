@@ -2,7 +2,7 @@
 // Backglass Clock: the time in a small borderless window in front of VPX's
 // backglass while a table runs, the Steamball panel's blue gradient in a thin gold frame, the time drawn
 // like the wheel Clock's (drop shadow, gold underline), redrawn when the minute changes.
-// Shown on "prelaunch", gone on "gameover" or a failed launch's "postlaunch";
+// Shown when a launch begins, gone on "gameover" or when the launch ends (Launch Bracket);
 // never during a media capture or on a single screen. Off by default.
 // - Never shown while a game runs: that activates PinballY, which opens the pause menu (#386).
 // - Every raise keeps the window's place and never takes VPX's focus.
@@ -13,6 +13,7 @@
 import lang from "../common/core/i18n.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
+import { getLaunchBracket } from "../common/core/launch_bracket.js";
 import { UNBOUNDED, fillGradient } from "../common/drawing/steamball_drawing.js";
 import { STEAMBALL_COLORS } from "../common/drawing/steamball_palette.js";
 import { drawShadowedText, measureShadowedText } from "../common/drawing/shadowed_text.js";
@@ -60,7 +61,6 @@ export default function init() {
     const layer = clockWindow.createDrawingLayer(LAYER_Z_INDEX);
     let raiseTimer = null;
     let shown = false;
-    let launchGoingAhead = false;
 
     const timeStyle = size => ({ size, weight: TIME_TEXT.weight });
     const measureTime = (text, size) => measureShadowedText(host, timeStyle(size), text, UNBOUNDED);
@@ -146,16 +146,10 @@ export default function init() {
         clockWindow.setTopmost(false);
     }
 
-    // "launchoverlayshow" fires in the same playGame() call as "prelaunch",
-    // unless a later listener cancelled the launch or its thread never started.
-    host.on("launchoverlayshow", safeHandler(SCRIPT_NAME, () => { launchGoingAhead = true; }));
-
-    // Shown here, while no game runs yet (see the header). Monitors are
-    // counted at each launch, since a screen can be plugged in or out.
-    host.on("prelaunch", safeHandler(SCRIPT_NAME, (ev) => {
-        hide();
-        launchGoingAhead = false;
-        if (host.countMonitors() <= 1 || ev.command === host.getBuiltInCommand("CaptureGo")) return;
+    // Shown at "prelaunch", while no game runs yet (see the header). Monitors
+    // are counted at each launch, since a screen can be plugged in or out.
+    function onLaunchBegan({ command }) {
+        if (host.countMonitors() <= 1 || command === host.getBuiltInCommand("CaptureGo")) return;
         // Again at each game: its title bar was seen back on the cabinet.
         // Before placing it, as a borderless window's height differs.
         clockWindow.setBorderless(true);
@@ -164,8 +158,9 @@ export default function init() {
         minuteTick.start();
         clockWindow.showWindow(true);
         shown = true;
-        host.setTimeout(safeHandler(SCRIPT_NAME, () => { if (!launchGoingAhead) hide(); }), 0);
-    }));
+    }
+    // A launch that failed or that a later script cancelled ends before "gameover".
+    getLaunchBracket().subscribe(SCRIPT_NAME, { onBegan: onLaunchBegan, onEnded: hide });
 
     // Only raised from here on, which never activates PinballY.
     host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
@@ -178,10 +173,8 @@ export default function init() {
         clockWindow.setTopmost(true);
         raiseTimer = host.setInterval(safeHandler(SCRIPT_NAME, () => clockWindow.setTopmost(true)), RAISE_INTERVAL_MS);
     }));
-    // "gameover" also fires after Exit Game; "postlaunch" ends a launch that
-    // failed or was cancelled before "gamestarted".
+    // Also fires after Exit Game.
     host.on("gameover", safeHandler(SCRIPT_NAME, hide));
-    host.on("postlaunch", safeHandler(SCRIPT_NAME, hide));
 
     // Deferred until main.js has finished, like Force Backglass, so the hide
     // wins over PinballY's saved Visible setting for the window.

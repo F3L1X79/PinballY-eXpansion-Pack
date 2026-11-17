@@ -24,6 +24,7 @@ import { getConflictNotice } from "./common/conflicts/conflict_notice.js";
 import { logError } from "./common/core/error_log.js";
 import { startPlayErrorToasts } from "./common/achievements/play_error_toasts.js";
 import { getWindowLayout } from "./common/core/window_layout.js";
+import { getLaunchBracket } from "./common/core/launch_bracket.js";
 import { getAttractOrder } from "./common/tables/attract_order.js";
 
 // Logs each script's init duration (ms), to help find a slow-starting script.
@@ -149,8 +150,16 @@ const SCRIPTS = [
 
 const ENABLED_SCRIPTS = config.addOns;
 
-// Before anything listens: the Rocket cancels a launch, and no other listener
-// may hear its "prelaunch" and then wait for a "postlaunch" that never comes.
+// Before anything listens: a launch the Launch Bracket lets the Rocket take
+// over must reach no other "prelaunch" listener (see its header).
+try {
+    getLaunchBracket();
+} catch (error) {
+    logError(SCRIPT_NAME, `ERROR installing the Launch Bracket: ${error.message}`, null, error);
+}
+
+// Then the Easter Eggs' first listeners: the Rocket's takeover, and the
+// Drawn Screen controls' buttons before any other Add-on's.
 try {
     easterEggs.installFirstListeners();
 } catch (error) {

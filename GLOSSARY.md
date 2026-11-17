@@ -266,6 +266,10 @@ _Avoid_: placeholder, generic avatar, Default Score image (those portraits stand
 The short greeting, with the Avatar and the Profile's name, shown when a Profile is picked and when PinballY starts, so the player knows whose plays will count.
 _Avoid_: welcome toast, login message
 
+**Launch Bracket**:
+The pack's one owner of a launch's start and end: it decides whether a launch really goes ahead, and tells the pack's launch-bound modules "a launch began" and "that launch ended", always as a pair. A launch the Rocket takes over is told to no one.
+_Avoid_: launch in progress flag, game under way (one module's guess)
+
 **Play**:
 A launch of at least one minute of a table other than an Untracked Table, however many games are played before it closes, which counts for the Profile active when it started. A shorter launch is a launch by mistake and counts for nothing, except for the Rage Quit Achievement.
 _Avoid_: session (the session stats count only Plays, except the Rage Quit flag), launch (a launch becomes a Play only after a minute), game (one Play can hold several games)

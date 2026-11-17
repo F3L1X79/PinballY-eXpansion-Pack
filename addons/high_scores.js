@@ -4,7 +4,7 @@
 // won. With vpxtool, keeps the Play Score read from the ROM's .nv (copied to play_scores\
 // at launch), toasting a House Record or Personal Best when no place was won; the rules'
 // oddities go to play_scores_anomalies.log. Adds "High Score Boards" and "My High Scores" to the main menu.
-// - The board is read at "prelaunch" and again a little after "postlaunch".
+// - The board is read when a launch begins and again a little after it ends (Launch Bracket).
 // - Without a ROM, the board comes from VPX's User folder, never read while VPX runs.
 // - Replaces PinballY's own "High Scores": removes its entry, cancels HighScores.
 // ============================================================
@@ -29,6 +29,7 @@ import { getWheelDialogs } from "../common/core/wheel_dialog.js";
 import { displayNameOf } from "../common/profiles/profile_name.js";
 import lang from "../common/core/i18n.js";
 import { getVpxtoolRunner } from "../common/vpxtool/vpxtool_runner.js";
+import { getLaunchBracket } from "../common/core/launch_bracket.js";
 import { getNvramWatch, nvramFolderOf } from "../common/vpxtool/nvram_watch.js";
 import { readNvramAnswer, lastGameOf, playScoreOf } from "../common/high_scores/last_game_reader.js";
 import { createPlayScoreAnomalyLog, valueAnomaliesOf, ANOMALY } from "../common/high_scores/play_score_anomaly_log.js";
@@ -51,7 +52,7 @@ export default function init() {
     const highScores = getHighScoreStore();
     const toasts = getAchievementToasts();
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
-    // From "prelaunch" to "postlaunch": { configId, launchRead (a promise),
+    // From a launch's start to its end: { configId, launchRead (a promise),
     // snapshot (the User folder at launch), nvCopy, nvChanged (the ROMs
     // whose .nv the game changed, once the NVRAM watch told) }.
     let launched = null;
@@ -59,8 +60,8 @@ export default function init() {
     let announcedPlay = null;
     const vpxtool = getVpxtoolRunner();
     const anomalies = createPlayScoreAnomalyLog(host, SCRIPT_NAME);
-    // The last launch, kept past "postlaunch": the NVRAM watch tells it
-    // within "postlaunch", before or after this Add-on's own handler.
+    // The last launch, kept past its end: the NVRAM watch tells it at that
+    // end, before this Add-on's own handler (it subscribed first, below).
     let watchedLaunch = null;
     getNvramWatch().watch(SCRIPT_NAME, {
         onGameEnded: ({ configId, changed }) => {
@@ -414,17 +415,17 @@ export default function init() {
         });
     }
 
-    // Fires as a table launches: PinballY just cleared its cached board.
-    host.on("prelaunch", safeHandler(SCRIPT_NAME, (ev) => {
+    // At "prelaunch": PinballY just cleared its cached board.
+    function onLaunchBegan({ game }) {
         announcedPlay = null;
-        const { configId } = ev.game;
+        const { configId } = game;
         const launchRead = readPlaces(configId).then(safeHandler(SCRIPT_NAME, (places) => {
             if (places !== null) highScores.recordBoard(configId, places);
         }));
         // Read at once, before VPX starts and holds the file.
-        launched = { configId, launchRead, snapshot: takeSnapshot(configId), nvCopy: copyNv(ev.game), nvChanged: [] };
+        launched = { configId, launchRead, snapshot: takeSnapshot(configId), nvCopy: copyNv(game), nvChanged: [] };
         watchedLaunch = launched;
-    }));
+    }
 
     // The ROM's .nv copied before VPinMAME writes it, under the ROM's name
     // (vpxtool picks the map from it), replacing the copy of an earlier
@@ -580,14 +581,13 @@ export default function init() {
         return Boolean(best);
     }
 
-    // Fires after the game, back on the wheel, once the Table ROMs Add-on
-    // confirmed the ROM the table ran.
-    host.on("postlaunch", safeHandler(SCRIPT_NAME, () => {
+    // After the game; a launch another script cancelled ran no game.
+    function onLaunchEnded({ cancelled }) {
         const bracket = launched;
         const play = announcedPlay;
         launched = null;
         announcedPlay = null;
-        if (!bracket) return;
+        if (!bracket || cancelled) return;
         // The board stays held until the Play Score is settled too.
         const release = highScores.holdBoardForPlay(bracket.configId);
         // At most one toast per Play: a board settle that failed (logged)
@@ -596,5 +596,7 @@ export default function init() {
         safeHandler(SCRIPT_NAME, settleAfterGame)(bracket, play)
             .then(({ placeWon, places }) => settlePlayScoreSafely(placeWon, places), () => settlePlayScoreSafely(true, null))
             .then(release, release);
-    }));
+    }
+
+    getLaunchBracket().subscribe(SCRIPT_NAME, { onBegan: onLaunchBegan, onEnded: onLaunchEnded });
 }

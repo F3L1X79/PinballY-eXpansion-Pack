@@ -2,7 +2,7 @@
 // Easter Eggs: rare events tied to their own moments, part of the pack
 // and impossible to turn off, so it has no entry among config.addOns or the
 // eXpansion Pack Settings. The rules live in common/easter_eggs/easter_egg_rules.js.
-// - installFirstListeners() runs before anything else in main.js: the Rocket's "prelaunch" and buttons.
+// - installFirstListeners() runs first in main.js, after the Launch Bracket: the Rocket and its buttons.
 // - The Crow is drawn once per start, a tick after the Startup Screen has closed.
 // - The Menu Glitch is drawn at the main menu's "menuopen", after Drawn Menus' listener.
 // - The Maneki-neko is drawn at one "gameselect" of the session.
@@ -27,6 +27,7 @@ import { getRocketEngine } from "../common/rocket/rocket_engine.js";
 import { createFakeBlueScreen } from "../common/easter_eggs/fake_blue_screen.js";
 import { getHighScoreStore } from "../common/high_scores/high_score_store.js";
 import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
+import { getLaunchBracket } from "../common/core/launch_bracket.js";
 import { getWheelDialogs } from "../common/core/wheel_dialog.js";
 import lang from "../common/core/i18n.js";
 
@@ -34,12 +35,12 @@ const SCRIPT_NAME = "EasterEggs";
 
 let rocketEngine = null;
 
-// First of all: the Rocket's "prelaunch" listener and the Drawn Screen
-// controls' button and attract mode listeners come before any other of the pack.
+// First of all, right after the Launch Bracket: the Drawn Screen controls'
+// button and attract mode listeners come before any other of the pack.
 export function installFirstListeners() {
     const host = createPinballYHost();
     rocketEngine = getRocketEngine();
-    createRocket(host, { engine: rocketEngine, rules: getEasterEggRules, texts: () => lang.rocket });
+    createRocket(host, { engine: rocketEngine, rules: getEasterEggRules, texts: () => lang.rocket, launchBracket: getLaunchBracket() });
 }
 
 export default function init() {
