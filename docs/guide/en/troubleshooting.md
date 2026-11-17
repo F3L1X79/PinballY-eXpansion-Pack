@@ -52,14 +52,14 @@ The toasts never send the player to it: it is for the cabinet owner. **Attach `e
 
 ## The Info Log (`info.log`)
 
-Every line the pack writes to `PinballY.log`, errors included, also goes to its Info Log, with a few extra lines meant to check how the pack behaves on your cabinet. It needs no PinballY log setting turned on, and it survives restarts:
+Every line the pack writes to `PinballY.log`, errors included, also goes to its Info Log, with a few extra lines meant to check how the pack behaves on your cabinet. It needs no PinballY log setting turned on:
 
 - **Where**: `PinballY\Scripts\ExpansionPack\logs\info.log`.
 - **What**: one line per pack message, with its date, time and Pack Version. PinballY's own lines (tables, media, its own errors) stay in `PinballY.log` only.
-- **Size**: once over 1 MB, it becomes `info.old.log` at the next start, and a new `info.log` begins.
+- **Sessions**: it holds the current PinballY session only. At each start, the last session's `info.log` becomes `info.old.log`, so after a crash and a restart, the crashed session is in `info.old.log`.
 - It is kept through every Pack Update.
 
-**Attach `info.log` too when you report a problem**: it shows what the pack did just before.
+**Attach `info.log` too when you report a problem** (`info.old.log` if PinballY was restarted since): it shows what the pack did just before.
 
 ## `PinballY.log`
 

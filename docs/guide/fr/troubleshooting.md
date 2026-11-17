@@ -52,14 +52,14 @@ Les toasts n'y renvoient jamais le joueur : il est pour le propriétaire de la b
 
 ## Le journal d'informations (`info.log`)
 
-Chaque ligne que le pack écrit dans `PinballY.log`, erreurs comprises, va aussi dans son journal d'informations, avec quelques lignes en plus pour vérifier le comportement du pack sur votre borne. Il ne demande d'activer aucun réglage de journal de PinballY, et il survit aux redémarrages :
+Chaque ligne que le pack écrit dans `PinballY.log`, erreurs comprises, va aussi dans son journal d'informations, avec quelques lignes en plus pour vérifier le comportement du pack sur votre borne. Il ne demande d'activer aucun réglage de journal de PinballY :
 
 - **Où** : `PinballY\Scripts\ExpansionPack\logs\info.log`.
 - **Quoi** : une ligne par message du pack, avec sa date, son heure et la version du pack. Les lignes de PinballY lui-même (tables, médias, ses propres erreurs) restent seulement dans `PinballY.log`.
-- **Taille** : au-delà de 1 Mo, il devient `info.old.log` au démarrage suivant, et un nouveau `info.log` commence.
+- **Sessions** : il ne contient que la session PinballY en cours. À chaque démarrage, l'`info.log` de la session précédente devient `info.old.log` : après un plantage et un redémarrage, la session plantée se trouve dans `info.old.log`.
 - Il est conservé à chaque mise à jour du pack.
 
-**Joignez aussi `info.log` quand vous signalez un problème** : il montre ce que le pack faisait juste avant.
+**Joignez aussi `info.log` quand vous signalez un problème** (`info.old.log` si PinballY a redémarré depuis) : il montre ce que le pack faisait juste avant.
 
 ## `PinballY.log`
 

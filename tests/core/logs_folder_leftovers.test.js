@@ -44,5 +44,5 @@ test("an older version's errors.log moves into the logs folder", async () => {
     assert.ok(errorLog.startsWith(OLD_LINE), "the old lines first");
     assert.match(errorLog, /\[Startup\] ERROR initializing "clock": No layer today/);
     assert.equal(fake.readFile(`${PACK}\\info.log`), "a leftover info.log\r\n", "never over a file already in logs");
-    assert.ok(fake.readFile(`${PACK}\\logs\\info.log`).startsWith("the logs folder's info.log\r\n"));
+    assert.equal(fake.readFile(`${PACK}\\logs\\info.old.log`), "the logs folder's info.log\r\n", "the last session's, as at every start");
 });

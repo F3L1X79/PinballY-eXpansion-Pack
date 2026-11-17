@@ -492,7 +492,7 @@ export function setRandomSource(source) {
 
 // The Info Log's entries of this tick, from every host instance, written in
 // one go on the next tick: appendText reads and saves the whole info.log
-// again, up to 1 MB, which ~50 startup lines would each pay.
+// again (this session's lines), which ~50 startup lines would each pay.
 // Any host instance writes them: all reach the same pack folder.
 let pendingInfoEntries = "";
 let pendingInfoHost = null;

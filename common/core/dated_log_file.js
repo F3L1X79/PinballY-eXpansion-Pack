@@ -2,8 +2,8 @@
 // The pack's log files, in its logs folder: the Error Log's errors.log and
 // the Info Log's info.log, each entry dated with the Pack Version, and the
 // Play Score anomaly log. Once per session and file: the logs folder is made,
-// a file an older version left in the pack folder moves in, and a full file
-// becomes its ".old.log" before the session's first entry.
+// a file an older version left in the pack folder moves in, and a file over
+// its rotation size (info.log: any) becomes its ".old.log" before the session's first entry.
 // - Never throws: a failure is one line per file and session, through the caller's report.
 // ============================================================
 
@@ -11,7 +11,9 @@ import { PACK_VERSION } from "./pack_version.js";
 
 export const LOGS_FOLDER_NAME = "logs";
 export const ERROR_LOG_FILE = { name: "errors.log", oldName: "errors.old.log", scriptName: "ErrorLog", rotationBytes: 1024 * 1024 };
-export const INFO_LOG_FILE = { name: "info.log", oldName: "info.old.log", scriptName: "InfoLog", rotationBytes: 1024 * 1024 };
+// Rotated at each session, so that info.log holds this session only and
+// info.old.log the one before (a crashed one, when PinballY is restarted).
+export const INFO_LOG_FILE = { name: "info.log", oldName: "info.old.log", scriptName: "InfoLog", rotationBytes: 0 };
 
 const CONTINUATION_INDENT = "    ";
 
