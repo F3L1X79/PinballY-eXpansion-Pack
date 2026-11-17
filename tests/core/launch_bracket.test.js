@@ -1,8 +1,9 @@
 // ============================================================
 // The Launch Bracket on its own, on the fake host: each launch it lets
 // through is told as one "began" and exactly one "ended", whether the game
-// runs, fails, or another script cancels it; a launch taken over is told to
-// no subscriber, nor to any later "prelaunch" listener.
+// runs, fails, or a later script cancels it; a launch an earlier script
+// cancelled is told to no one; a launch taken over is told to no
+// subscriber, nor to any later "prelaunch" listener.
 // ============================================================
 
 import { test } from "node:test";
@@ -62,6 +63,32 @@ test("a launch a later script cancels: ended a tick later, as cancelled", async 
     fake.advanceTime(1);
     assert.deepEqual(heard, ["began afm", "ended afm (cancelled)"]);
     assert.equal(bracket.isUnderWay(), false);
+    assertNoErrorLogged(fake);
+});
+
+test("a launch an earlier script cancelled: no taker and no subscriber hears of it", async () => {
+    const fake = createFakePinballYHost({ now: new Date(2026, 10, 17, 20, 0, 0), tables: TABLES });
+    // An External Add-on registers before the pack's bracket.
+    let cancelling = true;
+    fake.on("prelaunch", ev => { if (cancelling) ev.preventDefault(); });
+    const bracket = createLaunchBracket(fake);
+    const heard = [];
+    bracket.subscribe("Test", { onBegan: launch => heard.push(`began ${launch.game.configId}`), onEnded: launch => heard.push(`ended ${launch.game.configId}`) });
+    const offered = [];
+    bracket.offerTakeover("Taker", ev => { offered.push(ev.game.configId); return () => {}; });
+    const [afm] = fake.getAllTables();
+
+    fake.playGame(afm);
+    assert.equal(bracket.isUnderWay(), false);
+    fake.advanceTime(1);
+    await settle();
+    assert.deepEqual(fake.launches(), [], "the launch stays cancelled");
+    assert.deepEqual(offered, []);
+    assert.deepEqual(heard, []);
+
+    cancelling = false;
+    fake.playGame(afm);
+    assert.deepEqual(offered, ["afm"], "the next launch is offered as usual");
     assertNoErrorLogged(fake);
 });
 

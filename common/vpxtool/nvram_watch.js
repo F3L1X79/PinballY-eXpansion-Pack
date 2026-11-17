@@ -65,7 +65,7 @@ export function createNvramWatch(host, launchBracket = createLaunchBracket(host)
         launched = { configId: game.configId, folder, dates };
     }
 
-    // After the game; a launch another script cancelled ran no game.
+    // After the game; a launch a later script cancelled ran no game.
     function onEnded({ cancelled }) {
         const before = launched;
         launched = null;

@@ -5,6 +5,7 @@
 // as a pair, in the order they subscribed. A taker (the Rocket) may take a
 // launch over: then no one hears of it.
 // - Created by main.js before anything listens: a launch taken over is cancelled with stopImmediatePropagation.
+// - A launch an External Add-on cancelled before the pack's listeners is no launch: no taker nor subscriber hears of it.
 // - Without "launchoverlayshow" in the same playGame() call, the launch never goes ahead: it ends a tick later.
 // - So "gamestarted" decides nothing: a launch that goes ahead is known before it.
 // - A failed launch ends at "launcherror", before its "postlaunch".
@@ -36,6 +37,8 @@ export function createLaunchBracket(host) {
     host.on("prelaunch", safeHandler(SCRIPT_NAME, ev => {
         // A launch that never ended ran no game the pack could settle.
         end({ cancelled: true });
+        // An External Add-on registered before the pack cancelled it: PinballY never launches it.
+        if (ev.defaultPrevented) return;
         for (const take of takers) {
             const startInstead = take(ev);
             if (!startInstead) continue;

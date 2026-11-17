@@ -581,7 +581,7 @@ export default function init() {
         return Boolean(best);
     }
 
-    // After the game; a launch another script cancelled ran no game.
+    // After the game; a launch a later script cancelled ran no game.
     function onLaunchEnded({ cancelled }) {
         const bracket = launched;
         const play = announcedPlay;
