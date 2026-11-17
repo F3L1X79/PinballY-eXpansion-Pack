@@ -76,16 +76,11 @@ export function createConflictNotice(host, { state, profileStore, dialogs, saveA
         });
     }
 
-    // The files that probably caused it, read when the Notice is submitted;
-    // none when the Scripts folder cannot be read.
+    // The files that probably caused it, read when the Notice is submitted.
     function candidatesOf(conflictId) {
-        const find = CANDIDATES[conflictId];
-        try {
-            return find(host);
-        } catch (error) {
-            logError(SCRIPT_NAME, `ERROR reading the Scripts folder, the Notice names no script: ${error.message}`, host, error);
-            return [];
-        }
+        return CANDIDATES[conflictId](host, (folder, error) => {
+            logError(SCRIPT_NAME, `ERROR reading ${folder}, skipped in the Notice's probable scripts: ${error.message}`, host, error);
+        });
     }
 
     function submit(conflictId) {

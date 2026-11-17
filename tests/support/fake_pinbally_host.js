@@ -289,7 +289,8 @@ export function createFakePinballYHost({
     let failingRestartCount = 0;
     let failingFolderCreationCount = 0;
     let failingCopyCount = 0;
-    let failingFolderListingCount = 0;
+    // Folders whose next listing throws; null for whichever folder comes next.
+    const failingFolderListings = [];
     // Every Pack Update asked, in order: { zipUrl, sha256, packVersion },
     // and how many of the next ones never get ready.
     const packUpdateList = [];
@@ -889,8 +890,9 @@ export function createFakePinballYHost({
     }
 
     function requireListable(folderPath) {
-        if (failingFolderListingCount > 0) {
-            failingFolderListingCount--;
+        const index = failingFolderListings.findIndex(path => path === null || path === withoutTrailingSlash(folderPath));
+        if (index >= 0) {
+            failingFolderListings.splice(index, 1);
             throw new Error(`Permission denied: ${folderPath}`);
         }
     }
@@ -1720,8 +1722,9 @@ export function createFakePinballYHost({
         failNextFolderCreation() { failingFolderCreationCount++; },
         // The next file copied throws, as Windows does on a denied file.
         failNextCopy() { failingCopyCount++; },
-        // The next folder listed (its files or sub-folders) throws, as Windows does on a denied folder.
-        failNextFolderListing() { failingFolderListingCount++; },
+        // The next listing (files or sub-folders) of this folder, or of any
+        // folder when none is given, throws, as Windows does on a denied folder.
+        failNextFolderListing(folderPath = null) { failingFolderListings.push(folderPath === null ? null : withoutTrailingSlash(folderPath)); },
         // Every Pack Update asked, through either host: { zipUrl, sha256, packVersion }.
         packUpdatesAsked: () => packUpdateList.map(update => ({ ...update })),
         // The next Pack Update asked never gets ready.

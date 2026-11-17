@@ -21,5 +21,5 @@ test("an unreadable Scripts folder is logged and the Conflict Notice shows witho
     assert.equal(dialog.message, NOTICE_MESSAGE);
     const errors = errorLines(start.fake);
     assert.equal(errors.length, 1);
-    assert.match(errors[0], /\[ConflictNotice\] ERROR reading the Scripts folder/);
+    assert.match(errors[0], /\[ConflictNotice\] ERROR reading .*\\Scripts,/);
 });
