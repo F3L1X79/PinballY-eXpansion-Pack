@@ -1,7 +1,7 @@
 ﻿// ============================================================
 // Pinning test: plays a scripted session through main.js and locks every
 // persisted key and Achievement ID (profile.json, cabinet.json, Challenges,
-// Play Log, World Tour, Avatar Frame, Table ROMs, High Scores, Wheel Order, Attract Order, .env.local's OFFER_VPXTOOL).
+// Play Log, World Tour, Avatar Frame, Table ROMs, High Scores, Wheel Order, Attract Order, .env.local's OFFER_VPXTOOL, Conflict answers).
 // - These strings are players' saved progress: this test must keep passing unchanged.
 // - The Surprises part's keys are in persisted_data_pinning_surprises.test.js.
 // ============================================================
@@ -26,6 +26,7 @@ import { createScriptQueue } from "../../common/table_roms/script_queue.js";
 import { createNvConfirmation } from "../../common/table_roms/nv_confirmation.js";
 import { createScriptReaderState } from "../../common/table_roms/script_reader_state.js";
 import { createHighScoreStore } from "../../common/high_scores/high_score_store.js";
+import { createUpdateState } from "../../common/updates/update_state.js";
 import { buildHighScoreAchievements } from "../../achievements/high_scores.js";
 import { WELCOME_SCREEN_FADE_IN_MS, choose, openFromMainMenu } from "../welcome_screen/welcome_screen_reader.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
@@ -713,4 +714,13 @@ test(".env.local keeps the ADD_ON_DISCORD_RICH_PRESENCE and DISCORD_APPLICATION_
     assert.equal(applyEnvOverrides(DEFAULTS, "ADD_ON_DISCORD_RICH_PRESENCE=true\n").config.addOns.discordRichPresence, true);
     assert.equal(DEFAULTS.discordApplicationId, "");
     assert.equal(applyEnvOverrides(DEFAULTS, "DISCORD_APPLICATION_ID=123\n").config.discordApplicationId, "123");
+});
+
+test("the update state keeps the Conflict Notice answers' key and values, and reads them back", () => {
+    const path = "C:\\PinballY\\Scripts\\ExpansionPack\\pack_update.json";
+    const fake = createFakePinballYHost({ now: NOW });
+
+    createUpdateState(fake).rememberConflictAnswer("launchScreen", "keepBoth");
+    assert.deepEqual(JSON.parse(fake.readFile(path)), { conflictAnswers: { launchScreen: "keepBoth" }, version: 1 });
+    assert.equal(createUpdateState(fake).conflictAnswer("launchScreen"), "keepBoth");
 });

@@ -1,8 +1,8 @@
 // ============================================================
 // Update state: the small git-ignored JSON file in the pack folder that
-// remembers the newest known release between two starts, the version last
-// offered, the one an update in progress installs, with the one it replaces
-// (docs/adr/0018), and who saw the PinballY Version Notice.
+// remembers the newest known release, the version last offered, the one an
+// update in progress installs with the one it replaces (docs/adr/0018), who
+// saw the PinballY Version Notice, and the Conflict Notices' answers.
 // Read once when created; each change writes the whole file.
 // - An unreadable file (cut by a crash) is logged, deleted, and read as empty.
 // ============================================================
@@ -56,6 +56,12 @@ export function createUpdateState(host) {
                 versionNotice: { pinballYVersion, shownTo: [...shownTo, profileName], shownWithoutAdmin: shownWithoutAdmin || withoutAdmin },
             });
         },
+        // The answer given to a Conflict Notice ("keepBoth"), or null.
+        conflictAnswer: conflictId => (saved && saved.conflictAnswers && saved.conflictAnswers[conflictId]) || null,
+        rememberConflictAnswer: (conflictId, answer) => save({
+            ...saved,
+            conflictAnswers: { ...(saved && saved.conflictAnswers), [conflictId]: answer },
+        }),
         // { packVersion, zipUrl, sha256 }, or null.
         latestRelease: () => (saved && saved.latestRelease) || null,
         rememberRelease: ({ packVersion, zipUrl, sha256 }) => save({ ...saved, latestRelease: { packVersion, zipUrl, sha256 } }),

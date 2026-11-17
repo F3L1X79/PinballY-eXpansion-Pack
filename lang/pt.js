@@ -1082,6 +1082,13 @@ export default {
         tooOld: (minimum, running) => `Este pack precisa do PinballY ${minimum} ou mais recente, e esta máquina tem o ${running}. Algumas funções podem não funcionar: instale uma versão mais recente do PinballY.`,
         gotIt: "Entendi",
     },
+    conflictNotice: {
+        launchScreen: {
+            title: "Conflito na tela de início",
+            message: "Outro script assumiu a tela de início antes do Overlay de início do pack. Para manter só o do pack, remova a linha de import desse script em Scripts\\main.js.",
+        },
+        keepBoth: "Manter ambos",
+    },
     scriptReader: {
         dialogTitle: (version) => `vpxtool v${version}`,
         dialog: "O vpxtool lê o script de cada mesa para que a sua ROM seja preenchida sozinha. Escrito por Francis De Brabandere, sob a licença Apache-2.0, baixado de github.com/francisdb/vpxtool.",

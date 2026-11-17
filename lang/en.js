@@ -1018,6 +1018,14 @@ export default {
         tooOld: (minimum, running) => `This pack needs PinballY ${minimum} or newer, and this cabinet has ${running}. Some features may not work: install a newer PinballY.`,
         gotIt: "Got it",
     },
+    // The Conflict Notice, one entry per Conflict (see common/conflicts/conflict_notice.js).
+    conflictNotice: {
+        launchScreen: {
+            title: "Launch screen conflict",
+            message: "Another script took the launch screen before the pack's Launch overlay. To keep only the pack's, remove that script's import line from Scripts\\main.js.",
+        },
+        keepBoth: "Keep both",
+    },
     // The Script Reader (vpxtool): its Dialog, its install's wait and result (see common/table_roms/).
     scriptReader: {
         dialogTitle: (version) => `vpxtool v${version}`,

@@ -19,18 +19,19 @@ import { getWindowLayout, ALWAYS_LAID_OUT } from "./window_layout.js";
 const SCRIPT_NAME = "WheelDialog";
 
 // Lower is shown first.
-// The update messages, the PinballY Version Notice and the Script Reader Prompt
-// come before the Startup Screen, so launching a table from it can't skip them
-// (docs/adr/0018).
+// The update messages, the PinballY Version Notice, the Conflict Notice and
+// the Script Reader Prompt come before the Startup Screen, so launching a
+// table from it can't skip them (docs/adr/0018).
 export const DIALOG_PRIORITY = Object.freeze({
     UPDATE_RESULT: 0,
     UPDATE_PROMPT: 1,
     VERSION_NOTICE: 2,
-    SCRIPT_READER_PROMPT: 3,
-    STARTUP_PROMPT: 4,
-    REWARD_PROMPT: 5,
-    RATING_PROMPT: 6,
-    RESTART_FAILED: 7,
+    CONFLICT_NOTICE: 3,
+    SCRIPT_READER_PROMPT: 4,
+    STARTUP_PROMPT: 5,
+    REWARD_PROMPT: 6,
+    RATING_PROMPT: 7,
+    RESTART_FAILED: 8,
 });
 
 // menus: what shows a native-style dialog (common/drawn_menu/drawn_menu.js);
@@ -91,6 +92,7 @@ export function createWheelDialogs(host, menus = createNativeMenus(host), window
             if (shown !== current) return;
             shown = null;
             scheduleShowNext();
+            if (dialog.onClosed) dialog.onClosed();
         };
 
         menus.show(
@@ -135,8 +137,9 @@ export function createWheelDialogs(host, menus = createNativeMenus(host), window
     }
 
     // dialog: either a native one { id, title, message, buttons, priority,
-    // onShown }, or a drawn one { priority, open(close) }, open drawing it and close
-    // to be called once it is gone. Either may add isReady (optional: the
+    // onShown, onClosed (optional: once it is gone, by a button, Exit or
+    // attract mode) }, or a drawn one { priority, open(close) }, open drawing
+    // it and close to be called once it is gone. Either may add isReady (optional: the
     // queue waits on it while it returns false; wake() once it may be ready)
     // and isStale (optional: dropped unshown when it returns true at its turn).
     function submit(dialog) {

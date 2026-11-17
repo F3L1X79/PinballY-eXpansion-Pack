@@ -4,6 +4,7 @@
 // a black flash before the table's own loading screen; the comet alone also
 // turns in the middle of the backglass. Listens to "launchoverlayshow",
 // "launchoverlaymessage" and "launchoverlayhide".
+// - A launch screen another script cancelled first is reported to the Conflict Notice, and drawn all the same.
 // - Never looks at Force Backglass: the backglass comet is seen whenever its window shows.
 // - The backglass comet stays off during a capture, never to land in the captured media.
 // ============================================================
@@ -12,6 +13,7 @@ import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { createLoader, LOADER_SCREEN } from "../common/drawing/loader.js";
 import lang from "../common/core/i18n.js";
+import { CONFLICT, getConflictNotice } from "../common/conflicts/conflict_notice.js";
 
 const SCRIPT_NAME = "SeamlessLaunchOverlay";
 
@@ -31,12 +33,16 @@ export default function init() {
     // Fires when the launch overlay appears: hides the wheel and replaces the
     // default overlay background (preventDefault suppresses PinballY's own).
     host.on("launchoverlayshow", safeHandler(SCRIPT_NAME, ev => {
+        // Only an External Add-on cancels it before this listener: no other one of the pack does.
+        const takenBefore = ev.defaultPrevented;
         host.showWheel(false);
         host.setUnderlay("");
         host.getLaunchOverlayBackground().clear(0x20FF00FF);
         ev.preventDefault();
         loader.show();
         backglassLoader.show();
+        // Last: a report that fails leaves the launch screen drawn.
+        if (takenBefore) getConflictNotice().report(CONFLICT.LAUNCH_SCREEN);
     }));
 
     // Fires at each step of a launch; preventDefault suppresses PinballY's
