@@ -1091,6 +1091,11 @@ export default {
         turnOff: (name) => `Desactivar «${name}»`,
         keepBoth: "Conservar ambos",
         probably: (names) => `Probablemente: ${names.join(", ")}.`,
+        importOrder: {
+            title: "La línea del pack no es la última",
+            message: "Scripts\\main.js importa otro script después del pack, así que el pack no puede ver lo que hace ese script. Mueve la línea de import del pack al final del archivo.",
+        },
+        gotIt: "Entendido",
     },
     scriptReader: {
         dialogTitle: (version) => `vpxtool v${version}`,

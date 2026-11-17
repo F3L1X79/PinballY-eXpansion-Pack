@@ -16,6 +16,8 @@ const INFO_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\logs\\info.log";
 
 test("every pack line of logfile.log is also in info.log, dated", async () => {
     const fake = createFakePinballYHost({ now: NOW });
+    // As on a cabinet: the owner's main.js loads the pack, so the import order check has nothing to log.
+    fake.addFile("C:\\PinballY\\Scripts\\main.js", "import(\"./ExpansionPack/main.js\");");
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
     for (const key of Object.keys(config.addOns)) config.addOns[key] = key === "clock";

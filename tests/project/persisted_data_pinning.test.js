@@ -724,3 +724,12 @@ test("the update state keeps the Conflict Notice answers' key and values, and re
     assert.deepEqual(JSON.parse(fake.readFile(path)), { conflictAnswers: { launchScreen: "keepBoth" }, version: 1 });
     assert.equal(createUpdateState(fake).conflictAnswer("launchScreen"), "keepBoth");
 });
+
+test("the update state keeps the import order Notice's key and value, and reads them back", () => {
+    const path = "C:\\PinballY\\Scripts\\ExpansionPack\\pack_update.json";
+    const fake = createFakePinballYHost({ now: NOW });
+
+    createUpdateState(fake).rememberConflictAnswer("importOrder", "shown");
+    assert.deepEqual(JSON.parse(fake.readFile(path)), { conflictAnswers: { importOrder: "shown" }, version: 1 });
+    assert.equal(createUpdateState(fake).conflictAnswer("importOrder"), "shown");
+});

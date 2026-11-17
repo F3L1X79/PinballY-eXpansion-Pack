@@ -53,6 +53,7 @@ Requires **Windows** and **PinballY 1.1.0 Beta 10** (plus the *Windows Media Pla
    ```js
    import("./ExpansionPack/main.js").catch(e => logfile.log("ExpansionPack: " + e.message));
    ```
+   **The pack's line must be the last line of `Scripts\main.js`**, so that the pack can see what your other scripts do.
 4. **Restart PinballY.** `PinballY.log` shows one "initialized" line per Add-on; errors are also kept in `Scripts\ExpansionPack\logs\errors.log`.
 5. **Choose your Add-ons**, the startup screen and the language in **eXpansion Pack Settings**, in the Operator Menu, then restart PinballY in one press.
 

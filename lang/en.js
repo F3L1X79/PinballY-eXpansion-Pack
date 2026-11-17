@@ -1029,6 +1029,12 @@ export default {
         keepBoth: "Keep both",
         // names: the known files found in Scripts that probably caused it, an array.
         probably: (names) => `Probably: ${names.join(", ")}.`,
+        // At startup, when Scripts\main.js imports another script after the pack's line.
+        importOrder: {
+            title: "The pack's line is not the last",
+            message: "Scripts\\main.js imports another script after the pack, so the pack cannot see what that script does. Move the pack's import line to the end of the file.",
+        },
+        gotIt: "Got it",
     },
     // The Script Reader (vpxtool): its Dialog, its install's wait and result (see common/table_roms/).
     scriptReader: {

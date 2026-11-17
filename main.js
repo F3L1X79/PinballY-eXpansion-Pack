@@ -20,6 +20,7 @@ import { startUpdateCheck } from "./common/updates/update_check.js";
 import { startUpdatePrompt } from "./common/updates/update_prompt.js";
 import { startUpdateResult } from "./common/updates/update_result.js";
 import { startVersionNotice } from "./common/updates/version_notice.js";
+import { getConflictNotice } from "./common/conflicts/conflict_notice.js";
 import { logError } from "./common/core/error_log.js";
 import { startPlayErrorToasts } from "./common/achievements/play_error_toasts.js";
 import { getWindowLayout } from "./common/core/window_layout.js";
@@ -280,10 +281,11 @@ for (const { key, module } of SCRIPTS) {
 }
 
 // Last, whatever config.addOns says: never Add-ons. The Update result and
-// Prompt read what an earlier start remembered, and the PinballY Version Notice
-// what is installed, in the same tick as the Add-ons' own startup dialogs, which
-// their priorities come before; then the Update Check's request runs in the
-// background, so no startup screen waits for GitHub.
+// Prompt read what an earlier start remembered, the PinballY Version Notice
+// what is installed, the Conflict Notice the import order of Scripts\main.js,
+// in the same tick as the Add-ons' own startup dialogs, which their priorities
+// come before; then the Update Check's request runs in the background, so no
+// startup screen waits for GitHub.
 try {
     startUpdateResult();
 } catch (error) {
@@ -298,6 +300,11 @@ try {
     startVersionNotice();
 } catch (error) {
     logError(SCRIPT_NAME, `ERROR submitting the PinballY Version Notice: ${error.message}`, null, error);
+}
+try {
+    getConflictNotice().checkImportOrder();
+} catch (error) {
+    logError(SCRIPT_NAME, `ERROR checking the import order of Scripts\\main.js: ${error.message}`, null, error);
 }
 try {
     startUpdateCheck();

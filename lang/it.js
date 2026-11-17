@@ -1089,6 +1089,11 @@ export default {
         turnOff: (name) => `Disattiva «${name}»`,
         keepBoth: "Tieni entrambi",
         probably: (names) => `Probabilmente: ${names.join(", ")}.`,
+        importOrder: {
+            title: "La riga del pack non è l'ultima",
+            message: "Scripts\\main.js importa un altro script dopo il pack, quindi il pack non può vedere cosa fa quello script. Sposta la riga di import del pack alla fine del file.",
+        },
+        gotIt: "Capito",
     },
     scriptReader: {
         dialogTitle: (version) => `vpxtool v${version}`,

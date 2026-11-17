@@ -16,6 +16,8 @@
    ```js
    import("./ExpansionPack/main.js").catch(e => logfile.log("ExpansionPack: " + e.message));
    ```
+   **The pack's line must be the last line of `Scripts\main.js`**, so that the pack can see what your other scripts do. When another `import(` line follows it, a message at startup asks an Admin Profile (or anyone while no Profile is marked) to move the pack's line to the end, once for the cabinet; a line starting with `//` doesn't count.
+
    Your own scripts keep running: nothing else in `Scripts` is touched, and they still run if the pack folder is missing or the pack fails to load (the error goes to `PinballY.log`).
 4. **Optional: create `ExpansionPack\.env.local`**, only if you want to change a setting the eXpansion Pack Settings don't cover (see [Settings](settings.md)): copy `ExpansionPack\.env.example` and keep the lines you change, one `KEY=value` per line (UTF-8). Without it, the pack runs with its defaults.
 5. **Optional: update PINemHi to 3.6.8** (see below).
