@@ -1092,6 +1092,7 @@ export default {
             title: "Conflit d'écran de lancement",
             message: "Un autre script a pris l'écran de lancement avant celui du pack. Pour ne garder que celui du pack, retirez la ligne d'import de ce script dans Scripts\\main.js.",
         },
+        turnOff: (name) => `Désactiver « ${name} »`,
         keepBoth: "Garder les deux",
     },
     scriptReader: {

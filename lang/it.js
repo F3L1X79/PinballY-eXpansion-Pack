@@ -1086,6 +1086,7 @@ export default {
             title: "Conflitto sulla schermata di avvio",
             message: "Un altro script ha preso la schermata di avvio prima dell'Overlay di avvio del pack. Per tenere solo quello del pack, rimuovi la riga di import di quello script da Scripts\\main.js.",
         },
+        turnOff: (name) => `Disattiva «${name}»`,
         keepBoth: "Tieni entrambi",
     },
     scriptReader: {

@@ -2,8 +2,9 @@
 // Conflict Notice: the pack's listeners report a Conflict they saw happen; each
 // report is one Info Log line, and a Dialog for a Profile that sees the Setup
 // Entries, through the wheel dialog module, so it waits for the wheel. Asked
-// until answered, then never again. Listens to the Profile store's switches.
-// - Answered when its Dialog closes, so Exit counts as "Keep both"; never when attract mode closed it.
+// until answered, then never again. "Turn off" saves the pack's Add-on off and
+// asks "Restart now / Later" (common/settings/save_and_restart.js).
+// - Exit counts as "Keep both"; attract mode closing it, or a failed "Turn off" save, is no answer.
 // - One submission per Conflict at a time; stale once the active Profile stops being eligible.
 // - Answers are in the update state file: per cabinet, kept through a Profile Reset and a Pack Update.
 // ============================================================
@@ -13,14 +14,17 @@ import { logError } from "../core/error_log.js";
 import { logInfo } from "../core/info_log.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { safeHandler } from "../core/safe_handler.js";
-import { DIALOG_PRIORITY, getWheelDialogs } from "../core/wheel_dialog.js";
+import { DIALOG_PRIORITY, getPackMenusForDialogs, getWheelDialogs } from "../core/wheel_dialog.js";
+import { createSaveAndRestart } from "../settings/save_and_restart.js";
 import { getProfileStore } from "../profiles/profile_store.js";
 import { seesSetupEntries } from "../profiles/setup_entries.js";
 import { getUpdateState } from "../updates/update_state.js";
 
 const SCRIPT_NAME = "ConflictNotice";
 const MENU_ID = "conflictNotice";
+// The answers, persisted.
 const KEEP_BOTH = "keepBoth";
+const TURN_OFF = "turnOff";
 
 // The Conflicts the pack can see happen; the values are persisted.
 export const CONFLICT = Object.freeze({ LAUNCH_SCREEN: "launchScreen" });
@@ -30,7 +34,11 @@ const SEEN = Object.freeze({
     [CONFLICT.LAUNCH_SCREEN]: "\"launchoverlayshow\" reached the Launch overlay already cancelled by another script",
 });
 
-export function createConflictNotice(host, { state, profileStore, dialogs }) {
+// The pack's Add-on each Conflict's "Turn off" saves off (config.addOns key).
+const ADD_ON = Object.freeze({ [CONFLICT.LAUNCH_SCREEN]: "seamlessLaunchOverlay" });
+
+// saveAndRestart: the settings' save and restart step (common/settings/save_and_restart.js).
+export function createConflictNotice(host, { state, profileStore, dialogs, saveAndRestart }) {
     // Conflict id to its submission, queued or on screen; absent once answered or found stale.
     const waiting = new Map();
     // Reported this session and not answered yet.
@@ -52,16 +60,39 @@ export function createConflictNotice(host, { state, profileStore, dialogs }) {
         }
     }
 
+    // Remembered once saved; a failed save remembers nothing and asks again
+    // after "Setting not saved". Later leaves the wheel as it was.
+    function turnOff(conflictId) {
+        saveAndRestart.saveAddOn(ADD_ON[conflictId], false, {
+            onSaved: () => {
+                remember(conflictId, TURN_OFF);
+                saveAndRestart.askRestart(() => {});
+            },
+            reopen: () => submit(conflictId),
+        });
+    }
+
     function submit(conflictId) {
         if (waiting.has(conflictId) || !isEligible(conflictId)) return;
         const submission = {};
         let onScreen = false;
+        let turnedOff = false;
         waiting.set(conflictId, submission);
+        const addOnName = lang.expansionPackSettings.addOns[ADD_ON[conflictId]].name;
         dialogs.submit({
             id: MENU_ID,
             title: lang.conflictNotice[conflictId].title,
             message: lang.conflictNotice[conflictId].message,
-            buttons: [{ label: lang.conflictNotice.keepBoth }],
+            buttons: [
+                {
+                    label: lang.conflictNotice.turnOff(addOnName),
+                    action: () => {
+                        turnedOff = true;
+                        turnOff(conflictId);
+                    },
+                },
+                { label: lang.conflictNotice.keepBoth, selected: true },
+            ],
             priority: DIALOG_PRIORITY.CONFLICT_NOTICE,
             // Final once true: the queue also asks away from its turn (isIdle) and
             // keeps the dialog, which must not come back beside a newer submission.
@@ -73,11 +104,13 @@ export function createConflictNotice(host, { state, profileStore, dialogs }) {
                 onScreen = true;
                 attractStartsWhenShown = attractStarts;
             },
-            // Fires for the button and Exit, but also when attract mode closes
+            // Fires for the buttons and Exit, but also when attract mode closes
             // it, maybe before "attractmodestart" reaches this module: decided
             // one tick later, once every listener of that event has run.
+            // "Turn off" has already run and remembers its own answer.
             onClosed: () => {
                 waiting.delete(conflictId);
+                if (turnedOff) return;
                 host.setTimeout(safeHandler(SCRIPT_NAME, () => {
                     if (attractStarts === attractStartsWhenShown) remember(conflictId, KEEP_BOTH);
                 }), 0);
@@ -108,10 +141,13 @@ let sharedConflictNotice = null;
 
 export function getConflictNotice() {
     if (!sharedConflictNotice) {
-        sharedConflictNotice = createConflictNotice(createPinballYHost(), {
+        const host = createPinballYHost();
+        const profileStore = getProfileStore();
+        sharedConflictNotice = createConflictNotice(host, {
             state: getUpdateState(),
-            profileStore: getProfileStore(),
+            profileStore,
             dialogs: getWheelDialogs(),
+            saveAndRestart: createSaveAndRestart(host, profileStore, getPackMenusForDialogs, { scriptName: SCRIPT_NAME, idPrefix: MENU_ID }),
         });
     }
     return sharedConflictNotice;

@@ -1088,6 +1088,7 @@ export default {
             title: "Conflicto en la pantalla de carga",
             message: "Otro script tomó la pantalla de carga antes que la del pack. Para conservar solo la del pack, quita la línea de import de ese script en Scripts\\main.js.",
         },
+        turnOff: (name) => `Desactivar «${name}»`,
         keepBoth: "Conservar ambos",
     },
     scriptReader: {

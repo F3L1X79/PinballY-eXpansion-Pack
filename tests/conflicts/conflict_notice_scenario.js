@@ -16,6 +16,7 @@ const INFO_LOG = PROFILES_FOLDER.replace(/profiles$/, "logs\\info.log");
 
 export { answer, shownDialog, UPDATE_STATE_FILE };
 export const NOTICE_TITLE = "Launch screen conflict";
+export const TURN_OFF = "Turn off Launch overlay";
 export const NOTICE_MESSAGE = "Another script took the launch screen before the pack's Launch overlay. "
     + "To keep only the pack's, remove that script's import line from Scripts\\main.js.";
 const TABLES = [{ configId: "afm", title: "Attack from Mars" }];

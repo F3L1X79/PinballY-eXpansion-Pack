@@ -1087,6 +1087,7 @@ export default {
             title: "Conflito na tela de início",
             message: "Outro script assumiu a tela de início antes do Overlay de início do pack. Para manter só o do pack, remova a linha de import desse script em Scripts\\main.js.",
         },
+        turnOff: (name) => `Desativar «${name}»`,
         keepBoth: "Manter ambos",
     },
     scriptReader: {

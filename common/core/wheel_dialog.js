@@ -6,6 +6,7 @@
 // Listens to "command" and "wheelmode".
 // - A dialog not ready yet holds its place and every dialog after it; a stale one is dropped.
 // - A screen drawn over the wheel keeps it busy once handed to waitFor().
+// - The pack's own screens show through getPackMenusForDialogs(), always drawn and always waited for.
 // - Nothing shows before PinballY lays its window out (common/core/window_layout.js).
 // - A message is measured and drawn by drawn_menu_painter.js (computeGeometry, drawTexts).
 // ============================================================
@@ -13,7 +14,7 @@
 import { safeHandler, logHandlerError } from "./safe_handler.js";
 import { logError } from "./error_log.js";
 import { createPinballYHost } from "./pinbally_host.js";
-import { createNativeMenus, getDrawnMenus } from "../drawn_menu/drawn_menu.js";
+import { createNativeMenus, getDrawnMenus, getPackMenus } from "../drawn_menu/drawn_menu.js";
 import { getWindowLayout, ALWAYS_LAID_OUT } from "./window_layout.js";
 
 const SCRIPT_NAME = "WheelDialog";
@@ -101,7 +102,7 @@ export function createWheelDialogs(host, menus = createNativeMenus(host), window
                 { title: dialog.title, cmd: -1 },
                 { title: dialog.message, cmd: -1 },
                 { cmd: -1 },
-                ...buttons.map(({ label, cmd }) => ({ title: label, cmd })),
+                ...buttons.map(({ label, cmd, selected }) => ({ title: label, cmd, selected })),
             ],
             { dialogStyle: true, onClose }
         );
@@ -136,10 +137,11 @@ export function createWheelDialogs(host, menus = createNativeMenus(host), window
         setTimeout(safeHandler(SCRIPT_NAME, showNext), 0);
     }
 
-    // dialog: either a native one { id, title, message, buttons, priority,
-    // onShown, onClosed (optional: once it is gone, by a button, Exit or
-    // attract mode) }, or a drawn one { priority, open(close) }, open drawing
-    // it and close to be called once it is gone. Either may add isReady (optional: the
+    // dialog: either a native one { id, title, message, buttons ({ label,
+    // action, selected: the button the cursor starts on }), priority, onShown,
+    // onClosed (optional: once it is gone, by a button, Exit or attract mode) },
+    // or a drawn one { priority, open(close) }, open drawing it and close to
+    // be called once it is gone. Either may add isReady (optional: the
     // queue waits on it while it returns false; wake() once it may be ready)
     // and isStale (optional: dropped unshown when it returns true at its turn).
     function submit(dialog) {
@@ -212,4 +214,16 @@ let sharedWheelDialogs = null;
 export function getWheelDialogs() {
     if (!sharedWheelDialogs) sharedWheelDialogs = createWheelDialogs(createPinballYHost(), getDrawnMenus(), getWindowLayout());
     return sharedWheelDialogs;
+}
+
+let packMenusWaitedFor = null;
+
+// The pack's own screens' menus (getPackMenus), which the wheel dialogs wait
+// for too: with Drawn Menus off, a drawn instance they would know nothing of.
+export function getPackMenusForDialogs() {
+    if (!packMenusWaitedFor) {
+        packMenusWaitedFor = getPackMenus();
+        if (packMenusWaitedFor !== getDrawnMenus()) getWheelDialogs().waitFor(packMenusWaitedFor);
+    }
+    return packMenusWaitedFor;
 }

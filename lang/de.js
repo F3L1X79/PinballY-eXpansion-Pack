@@ -1087,6 +1087,7 @@ export default {
             title: "Konflikt beim Startbildschirm",
             message: "Ein anderes Skript hat den Startbildschirm vor dem Start-Overlay des Packs übernommen. Um nur den des Packs zu behalten, entfernen Sie die Import-Zeile dieses Skripts aus Scripts\\main.js.",
         },
+        turnOff: (name) => `${name} ausschalten`,
         keepBoth: "Beide behalten",
     },
     scriptReader: {

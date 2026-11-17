@@ -5,7 +5,7 @@
 // Language and Attract Order pages, the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
 // Listens to "menuopen" and "command"; saves and restarts through save_and_restart.js, and writes PinballY's attract switch time for the Attract Order.
 // - Started by main.js whatever config.addOns says, its "menuopen" listener before the Drawn Menus Add-on's.
-// - Always drawn (getPackMenus), even with the Drawn Menus Add-on off.
+// - Always drawn (getPackMenusForDialogs), even with the Drawn Menus Add-on off.
 // - Nothing applies before PinballY restarts but the Script Reader Prompt's No thanks: "on restart" marks a saved value that differs from the running one.
 // - Leaving the list with such a value asks Restart now or Later; attract mode never asks.
 // - Saving Discord Rich Presence on from off asks for consent every time, the cursor on Cancel; a hand-edited .env.local never asks.
@@ -19,8 +19,7 @@ import { createPinballYHost } from "../core/pinbally_host.js";
 import { getProfileStore } from "../profiles/profile_store.js";
 import { seesSetupEntries } from "../profiles/setup_entries.js";
 import { SEPARATOR_CMD } from "../menus/menu_separator.js";
-import { getDrawnMenus, getPackMenus } from "../drawn_menu/drawn_menu.js";
-import { getWheelDialogs } from "../core/wheel_dialog.js";
+import { getPackMenusForDialogs } from "../core/wheel_dialog.js";
 import { installableRelease } from "../updates/update_check.js";
 import { getUpdateState } from "../updates/update_state.js";
 import { getPackUpdater } from "../updates/pack_update.js";
@@ -362,15 +361,5 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
 }
 
 export function startExpansionPackSettings() {
-    let menus = null;
-    const getMenus = () => {
-        if (!menus) {
-            menus = getPackMenus();
-            // With Drawn Menus off, a drawn instance of their own, which the
-            // wheel dialogs know nothing of unless they wait for it too.
-            if (menus !== getDrawnMenus()) getWheelDialogs().waitFor(menus);
-        }
-        return menus;
-    };
-    createExpansionPackSettings(createPinballYHost(), getProfileStore(), getMenus);
+    createExpansionPackSettings(createPinballYHost(), getProfileStore(), getPackMenusForDialogs);
 }
