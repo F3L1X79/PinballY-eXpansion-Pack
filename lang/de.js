@@ -1089,6 +1089,7 @@ export default {
         },
         turnOff: (name) => `${name} ausschalten`,
         keepBoth: "Beide behalten",
+        probably: (names) => `Wahrscheinlich: ${names.join(", ")}.`,
     },
     scriptReader: {
         dialogTitle: (version) => `vpxtool v${version}`,

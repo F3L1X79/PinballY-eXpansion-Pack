@@ -1027,6 +1027,8 @@ export default {
         // name: the Add-on's name in the eXpansion Pack Settings.
         turnOff: (name) => `Turn off ${name}`,
         keepBoth: "Keep both",
+        // names: the known files found in Scripts that probably caused it, an array.
+        probably: (names) => `Probably: ${names.join(", ")}.`,
     },
     // The Script Reader (vpxtool): its Dialog, its install's wait and result (see common/table_roms/).
     scriptReader: {

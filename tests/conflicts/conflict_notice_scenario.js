@@ -13,6 +13,9 @@ import { answer, shownDialog, UPDATE_STATE_FILE } from "../table_roms/script_rea
 import { PROFILES_FOLDER } from "../table_roms/table_roms_scenario.js";
 
 const INFO_LOG = PROFILES_FOLDER.replace(/profiles$/, "logs\\info.log");
+// The pack's folder, and the PinballY Scripts folder that holds it.
+export const PACK_FOLDER = PROFILES_FOLDER.replace(/\\profiles$/, "");
+export const SCRIPTS_FOLDER = PACK_FOLDER.replace(/\\[^\\]+$/, "");
 
 export { answer, shownDialog, UPDATE_STATE_FILE };
 export const NOTICE_TITLE = "Launch screen conflict";

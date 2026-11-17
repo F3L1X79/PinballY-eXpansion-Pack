@@ -1094,6 +1094,7 @@ export default {
         },
         turnOff: (name) => `Désactiver « ${name} »`,
         keepBoth: "Garder les deux",
+        probably: (names) => `Probablement : ${names.join(", ")}.`,
     },
     scriptReader: {
         dialogTitle: (version) => `vpxtool v${version}`,

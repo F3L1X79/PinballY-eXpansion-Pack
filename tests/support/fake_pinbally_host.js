@@ -289,6 +289,7 @@ export function createFakePinballYHost({
     let failingRestartCount = 0;
     let failingFolderCreationCount = 0;
     let failingCopyCount = 0;
+    let failingFolderListingCount = 0;
     // Every Pack Update asked, in order: { zipUrl, sha256, packVersion },
     // and how many of the next ones never get ready.
     const packUpdateList = [];
@@ -887,6 +888,13 @@ export function createFakePinballYHost({
         if (!files.has(path)) throw new Error(`File not found: ${path}`);
     }
 
+    function requireListable(folderPath) {
+        if (failingFolderListingCount > 0) {
+            failingFolderListingCount--;
+            throw new Error(`Permission denied: ${folderPath}`);
+        }
+    }
+
     function requireUnlocked(path) {
         if (lockedFiles.has(path)) throw new Error(`Permission denied: ${path}`);
     }
@@ -895,10 +903,12 @@ export function createFakePinballYHost({
     // needs the folder, renaming never overwrites, a missing file throws.
     const fileSystem = {
         listFolders(folderPath) {
+            requireListable(folderPath);
             const parent = withoutTrailingSlash(folderPath);
             return [...folders].filter(path => parentFolder(path) === parent).map(path => path.slice(parent.length + 1));
         },
         listFiles(folderPath) {
+            requireListable(folderPath);
             const parent = withoutTrailingSlash(folderPath);
             return [...files.keys()].filter(path => parentFolder(path) === parent).map(path => path.slice(parent.length + 1));
         },
@@ -1710,6 +1720,8 @@ export function createFakePinballYHost({
         failNextFolderCreation() { failingFolderCreationCount++; },
         // The next file copied throws, as Windows does on a denied file.
         failNextCopy() { failingCopyCount++; },
+        // The next folder listed (its files or sub-folders) throws, as Windows does on a denied folder.
+        failNextFolderListing() { failingFolderListingCount++; },
         // Every Pack Update asked, through either host: { zipUrl, sha256, packVersion }.
         packUpdatesAsked: () => packUpdateList.map(update => ({ ...update })),
         // The next Pack Update asked never gets ready.

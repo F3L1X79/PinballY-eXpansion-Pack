@@ -1,9 +1,9 @@
 // ============================================================
 // Conflict Notice: the pack's listeners report a Conflict they saw happen; each
 // report is one Info Log line, and a Dialog for a Profile that sees the Setup
-// Entries, through the wheel dialog module, so it waits for the wheel. Asked
-// until answered, then never again. "Turn off" saves the pack's Add-on off and
-// asks "Restart now / Later" (common/settings/save_and_restart.js).
+// Entries, through the wheel dialog module, so it waits for the wheel, naming
+// the known files that probably caused it. Asked until answered, then never
+// again. "Turn off" saves the pack's Add-on off, then "Restart now / Later".
 // - Exit counts as "Keep both"; attract mode closing it, or a failed "Turn off" save, is no answer.
 // - One submission per Conflict at a time; stale once the active Profile stops being eligible.
 // - Answers are in the update state file: per cabinet, kept through a Profile Reset and a Pack Update.
@@ -14,6 +14,7 @@ import { logError } from "../core/error_log.js";
 import { logInfo } from "../core/info_log.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { safeHandler } from "../core/safe_handler.js";
+import { findLaunchScriptCandidates } from "./launch_script_candidates.js";
 import { DIALOG_PRIORITY, getPackMenusForDialogs, getWheelDialogs } from "../core/wheel_dialog.js";
 import { createSaveAndRestart } from "../settings/save_and_restart.js";
 import { getProfileStore } from "../profiles/profile_store.js";
@@ -36,6 +37,9 @@ const SEEN = Object.freeze({
 
 // The pack's Add-on each Conflict's "Turn off" saves off (config.addOns key).
 const ADD_ON = Object.freeze({ [CONFLICT.LAUNCH_SCREEN]: "seamlessLaunchOverlay" });
+
+// What finds the files that probably caused each Conflict, by name.
+const CANDIDATES = Object.freeze({ [CONFLICT.LAUNCH_SCREEN]: findLaunchScriptCandidates });
 
 // saveAndRestart: the settings' save and restart step (common/settings/save_and_restart.js).
 export function createConflictNotice(host, { state, profileStore, dialogs, saveAndRestart }) {
@@ -72,6 +76,18 @@ export function createConflictNotice(host, { state, profileStore, dialogs, saveA
         });
     }
 
+    // The files that probably caused it, read when the Notice is submitted;
+    // none when the Scripts folder cannot be read.
+    function candidatesOf(conflictId) {
+        const find = CANDIDATES[conflictId];
+        try {
+            return find(host);
+        } catch (error) {
+            logError(SCRIPT_NAME, `ERROR reading the Scripts folder, the Notice names no script: ${error.message}`, host, error);
+            return [];
+        }
+    }
+
     function submit(conflictId) {
         if (waiting.has(conflictId) || !isEligible(conflictId)) return;
         const submission = {};
@@ -79,10 +95,13 @@ export function createConflictNotice(host, { state, profileStore, dialogs, saveA
         let turnedOff = false;
         waiting.set(conflictId, submission);
         const addOnName = lang.expansionPackSettings.addOns[ADD_ON[conflictId]].name;
+        const candidates = candidatesOf(conflictId);
         dialogs.submit({
             id: MENU_ID,
             title: lang.conflictNotice[conflictId].title,
-            message: lang.conflictNotice[conflictId].message,
+            message: candidates.length === 0
+                ? lang.conflictNotice[conflictId].message
+                : `${lang.conflictNotice[conflictId].message} ${lang.conflictNotice.probably(candidates)}`,
             buttons: [
                 {
                     label: lang.conflictNotice.turnOff(addOnName),
