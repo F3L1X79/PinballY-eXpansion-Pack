@@ -17,8 +17,9 @@ This guide describes the version it ships with. For an older version, read the g
 5. [Choosing a table](choosing_a_table.md): the Welcome Screen, the Table of the Day and the Table of the Week, Table Mastery, High Scores, the Random Game and the extra filters.
 6. [Interface](interface.md): PinballY in six languages, the drawn menus, Menu Cleanup, the clock, the launches and the sounds.
 7. [Settings](settings.md): eXpansion Pack Settings, `.env.local`, the Admin Profile, the Child Profile and Profile Reset.
-8. [Troubleshooting](troubleshooting.md): the Error Toast, the Error Log (`errors.log`) and common questions.
-9. [Coming next](coming_next.md): where the pack is heading.
+8. [With your External Add-ons](external_add_ons.md): the other scripts you run in PinballY next to the pack, what you see when they share a screen with it, and what to do.
+9. [Troubleshooting](troubleshooting.md): the Error Toast, the Error Log (`errors.log`) and common questions.
+10. [Coming next](coming_next.md): where the pack is heading.
 
 Module layout, conventions, tests and adding a language are in the [contributor guide](https://github.com/F3L1X79/PinballY-Expansion-Pack/blob/main/CONTRIBUTING.md), on GitHub only (it is not in the release zip).
 

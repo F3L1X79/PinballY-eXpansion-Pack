@@ -17,7 +17,7 @@ const GUIDE = join(ROOT, "docs", "guide");
 const IMAGES = join(ROOT, "docs", "images");
 const LANGUAGES = ["en", "fr"];
 const PAGES = ["index", "install", "updates", "profiles", "achievements_and_challenges", "choosing_a_table",
-    "interface", "settings", "troubleshooting", "coming_next"];
+    "interface", "settings", "external_add_ons", "troubleshooting", "coming_next"];
 
 const markdownFilesOf = folder => readdirSync(folder).filter(name => name.endsWith(".md")).sort();
 

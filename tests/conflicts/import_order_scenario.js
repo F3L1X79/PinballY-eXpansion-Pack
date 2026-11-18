@@ -14,7 +14,9 @@ const infoLogLines = (fake, start) => (fake.readFile(INFO_LOG) ?? "").split(/\r?
 export const importOrderLines = fake => infoLogLines(fake, "Import order: ");
 export const notCheckedLines = fake => infoLogLines(fake, "Import order not checked");
 export const OWNER_MAIN = `${SCRIPTS_FOLDER}\\main.js`;
-export const PACK_LINE = "import(\"./ExpansionPack/main.js\").catch(e => logfile.log(\"ExpansionPack: \" + e.message));";
+export const PACK_LINE = "import(\"./ExpansionPack/main.js\").catch(e => logfile.log(\"ExpansionPack not loaded (\" + e.message + \"): look for a script error just above in this log\"));";
+// The line the README gave before, which installed cabinets keep.
+export const OLD_PACK_LINE = "import(\"./ExpansionPack/main.js\").catch(e => logfile.log(\"ExpansionPack: \" + e.message));";
 export const IMPORT_ORDER_TITLE = "The pack's line is not the last";
 export const IMPORT_ORDER_MESSAGE = "Scripts\\main.js imports another script after the pack, "
     + "so the pack cannot see what that script does. Move the pack's import line to the end of the file.";

@@ -14,9 +14,9 @@
 2. **Extrayez-le dans `PinballY\Scripts`**. Le zip contient déjà un dossier nommé `ExpansionPack`, le nom où le pack cherche ses fichiers : vous devez obtenir `PinballY\Scripts\ExpansionPack\main.js`, et non `ExpansionPack\ExpansionPack\main.js`.
 3. **Créez `PinballY\Scripts\main.js` avec cette seule ligne** si le fichier n'existe pas, ou **ajoutez-lui cette ligne** s'il existe :
    ```js
-   import("./ExpansionPack/main.js").catch(e => logfile.log("ExpansionPack: " + e.message));
+   import("./ExpansionPack/main.js").catch(e => logfile.log("ExpansionPack not loaded (" + e.message + "): look for a script error just above in this log"));
    ```
-   **La ligne du pack doit être la dernière ligne de `Scripts\main.js`**, pour que le pack puisse voir ce que font vos autres scripts. Si une autre ligne `import(` la suit, un message au démarrage demande à un Profil admin (ou à tous tant qu'aucun Profil n'est marqué) de déplacer la ligne du pack à la fin, une seule fois pour la borne ; une ligne qui commence par `//` ne compte pas.
+   **La ligne du pack doit être la dernière ligne de `Scripts\main.js`**, pour que le pack puisse voir ce que font vos autres scripts. Si une autre ligne `import(` la suit, un message au démarrage demande à un Profil admin (ou à tous tant qu'aucun Profil n'est marqué) de déplacer la ligne du pack à la fin, une seule fois pour la borne ; une ligne qui commence par `//` ne compte pas. Voir [Avec vos Add-ons externes](external_add_ons.md) pour les scripts connus qui partagent un écran avec le pack.
 
    Vos propres scripts continuent de fonctionner : rien d'autre n'est touché dans `Scripts`, et ils tournent même si le dossier du pack manque ou si le pack échoue au chargement (l'erreur va dans `PinballY.log`).
 4. **Facultatif : créez `ExpansionPack\.env.local`**, seulement pour changer un réglage que **Réglages de l'eXpansion pack** ne propose pas (voir [Réglages](settings.md)) : copiez `ExpansionPack\.env.example` et gardez les lignes que vous changez, un `CLÉ=valeur` par ligne (UTF-8). Sans lui, le pack tourne avec ses valeurs par défaut.

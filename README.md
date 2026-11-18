@@ -51,9 +51,9 @@ Requires **Windows** and **PinballY 1.1.0 Beta 10** (plus the *Windows Media Pla
 2. **Extract it into `PinballY\Scripts`**: you should get `PinballY\Scripts\ExpansionPack\main.js`, not `ExpansionPack\ExpansionPack\main.js`.
 3. **Create `PinballY\Scripts\main.js` with only this line**, or **add this line to it** if it exists. Your own scripts keep running.
    ```js
-   import("./ExpansionPack/main.js").catch(e => logfile.log("ExpansionPack: " + e.message));
+   import("./ExpansionPack/main.js").catch(e => logfile.log("ExpansionPack not loaded (" + e.message + "): look for a script error just above in this log"));
    ```
-   **The pack's line must be the last line of `Scripts\main.js`**, so that the pack can see what your other scripts do.
+   **The pack's line must be the last line of `Scripts\main.js`**, so that the pack can see what your other scripts do (see [With your External Add-ons](docs/guide/en/external_add_ons.md)).
 4. **Restart PinballY.** `PinballY.log` shows one "initialized" line per Add-on; errors are also kept in `Scripts\ExpansionPack\logs\errors.log`.
 5. **Choose your Add-ons**, the startup screen and the language in **eXpansion Pack Settings**, in the Operator Menu, then restart PinballY in one press.
 

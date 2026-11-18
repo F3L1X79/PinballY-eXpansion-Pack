@@ -67,7 +67,9 @@ Le journal de PinballY lui-même, dans le dossier de PinballY, ne couvre que la 
 
 ## Questions fréquentes
 
-**Le pack ne démarre pas du tout.** Vérifiez que vous avez `PinballY\Scripts\ExpansionPack\main.js`, et non `ExpansionPack\ExpansionPack\main.js` ni un dossier nommé `PinballY-Expansion-Pack-<version>` (celui-là vient de « Source code (zip) », pas d'`ExpansionPack.zip`), et que `Scripts\main.js` contient la ligne d'import (voir [Installation](install.md)). Un pack qui échoue au chargement écrit son erreur dans `PinballY.log`, après « ExpansionPack: ».
+**Le pack ne démarre pas du tout.** Vérifiez que vous avez `PinballY\Scripts\ExpansionPack\main.js`, et non `ExpansionPack\ExpansionPack\main.js` ni un dossier nommé `PinballY-Expansion-Pack-<version>` (celui-là vient de « Source code (zip) », pas d'`ExpansionPack.zip`), et que `Scripts\main.js` contient la ligne d'import (voir [Installation](install.md)). Un pack qui échoue au chargement écrit son erreur dans `PinballY.log`, après « ExpansionPack not loaded » (« ExpansionPack: » avec la ligne des installations plus anciennes). Souvent, un autre script a échoué juste avant lui, à la ligne du dessus : voir [Avec vos Add-ons externes](external_add_ons.md#un-script-cassé-peut-empêcher-le-pack-de-démarrer).
+
+**Ma vidéo de lancement, ou un autre de mes scripts, ne s'affiche plus, ou un avis de conflit a nommé un de mes scripts.** Ce script et un Add-on du pack prennent le même écran : voir [Avec vos Add-ons externes](external_add_ons.md) pour chaque script connu, ce que vous voyez et quoi faire.
 
 **Aucun add-on ne démarre après une mise à jour de PinballY.** Cherchez dans `PinballY.log` une ligne qui commence par `[ExpansionPack] Started:`. Son absence peut vouloir dire que JavaScript a été désactivé, par exemple par un ancien `Scripts\System\SystemClasses.js` à côté d'un PinballY plus récent. Vérifiez que ce fichier vient bien de la version de PinballY que vous avez installée. Personne n'a vérifié si les installateurs de PinballY écrasent ce dossier : ne le tenez donc pas pour acquis.
 

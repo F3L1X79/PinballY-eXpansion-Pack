@@ -67,7 +67,9 @@ PinballY's own log, in the PinballY folder, covers the current session only. At 
 
 ## Common questions
 
-**The pack does not start at all.** Check that you have `PinballY\Scripts\ExpansionPack\main.js`, not `ExpansionPack\ExpansionPack\main.js` nor a folder named `PinballY-Expansion-Pack-<version>` (that one comes from "Source code (zip)", not `ExpansionPack.zip`), and that `Scripts\main.js` holds the import line (see [Install](install.md)). A pack that fails to load writes its error to `PinballY.log`, under "ExpansionPack:".
+**The pack does not start at all.** Check that you have `PinballY\Scripts\ExpansionPack\main.js`, not `ExpansionPack\ExpansionPack\main.js` nor a folder named `PinballY-Expansion-Pack-<version>` (that one comes from "Source code (zip)", not `ExpansionPack.zip`), and that `Scripts\main.js` holds the import line (see [Install](install.md)). A pack that fails to load writes its error to `PinballY.log`, under "ExpansionPack not loaded" ("ExpansionPack:" with the line of older installs). Often another script failed just before it, on the line above: see [With your External Add-ons](external_add_ons.md#a-broken-script-can-stop-the-pack).
+
+**My launch video, or another script of mine, no longer shows, or a Conflict Notice named one of my scripts.** That script and one of the pack's Add-ons take the same screen: see [With your External Add-ons](external_add_ons.md) for each known script, what you see and what to do.
 
 **No Add-on starts after a PinballY upgrade.** Look in `PinballY.log` for a line starting with `[ExpansionPack] Started:`. Its absence can mean that JavaScript was turned off, for instance by an older `Scripts\System\SystemClasses.js` next to a newer PinballY. Check that this file comes from the PinballY version you installed. Whether PinballY's installers overwrite that folder has not been checked, so do not assume they do.
 
