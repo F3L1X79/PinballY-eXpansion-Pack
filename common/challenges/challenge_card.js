@@ -2,14 +2,15 @@
 // Challenge Card: the week's Challenge and the active Profile's progress at
 // the top right of the wheel screen, on its own layer (see docs/adr/0003).
 // Lights up once on something new; shows last week's verdict first in a new
-// week. Redrawn at startup, on a Profile switch and on "wheelmode".
+// week. A Wheel Mark (common/core/wheel_marks.js), with or without a selected
+// table: redrawn at startup, on a Profile switch and on the return to the wheel.
 // - Hidden, a point, with no Challenge, while a game runs and in attract mode.
 // ============================================================
 
 import lang from "../core/i18n.js";
 import { safeHandler } from "../core/safe_handler.js";
-import { onAttractModeStarted } from "../core/attract_mode.js";
 import { STEAMBALL_COLORS, STEAMBALL_FONTS } from "../drawing/steamball_palette.js";
+import { TOP_RIGHT_STACK } from "../drawing/top_right_stack.js";
 import { createHiddenLayer, hideLayer, placeAligned } from "../drawing/placed_layers.js";
 import { challengeTitleOf } from "./challenge.js";
 
@@ -26,11 +27,10 @@ export const CHALLENGE_CARD_Z_INDEX = 4500;
 // Heights are for a one-line title: everything under the title moves down
 // by the extra lines of a title that wraps.
 export const CARD_REFERENCE_HEIGHT = 1920;
-export const BADGE_HEIGHT = 170;
 const CANVAS = Object.freeze({ width: 400, height: 124 });
 const CARD = Object.freeze({ x: 10, y: 8, width: 360, height: 106, padding: 14, border: 1, accentHeight: 3 });
 // The canvas's room around the card, which the top right stack keeps.
-export const CHALLENGE_CARD_MARGINS = Object.freeze({ top: CARD.y, bottom: CANVAS.height - CARD.y - CARD.height });
+const CHALLENGE_CARD_MARGINS = Object.freeze({ top: CARD.y, bottom: CANVAS.height - CARD.y - CARD.height });
 const HEADER = Object.freeze({ y: 14, size: 11 });
 const TITLE = Object.freeze({ y: 34, size: 16 });
 const BAR = Object.freeze({ y: 66, height: 6 });
@@ -71,9 +71,8 @@ function titleExtraHeight(host, challenge) {
     return Math.max(0, styledText(host, challengeTitleOf(challenge), style).measure(TEXT_WIDTH).height - oneLine);
 }
 
-// The card's canvas height for this Challenge, in reference px: the Mastery
-// Bar sits under it.
-export function challengeCardCanvasHeight(host, challenge) {
+// The card's canvas height for this Challenge, in reference px.
+function challengeCardCanvasHeight(host, challenge) {
     return CANVAS.height + titleExtraHeight(host, challenge);
 }
 
@@ -127,7 +126,8 @@ function drawCard(host, dc, face, lit, extra) {
 }
 
 // topOf: how far below the window's top the card sits, in reference px.
-export function createChallengeCard(host, challenges, profileStore, { topOf }) {
+// Returns the card as a Wheel Mark, for getWheelMarks().register().
+export function createChallengeCard(host, challenges, { topOf }) {
     const layer = createHiddenLayer(host, CHALLENGE_CARD_Z_INDEX);
     let timer = null;
 
@@ -201,16 +201,38 @@ export function createChallengeCard(host, challenges, profileStore, { topOf }) {
         }
     }
 
-    // Never over a game nor in attract mode.
-    const hide = () => {
-        stopTimer();
-        hideLayer(layer);
-    };
-    host.on("gamestarted", safeHandler(SCRIPT_NAME, hide));
-    onAttractModeStarted(host, SCRIPT_NAME, hide);
-    // Fires back on the wheel, after a game, a menu, a dialog or attract mode.
-    host.on("wheelmode", safeHandler(SCRIPT_NAME, () => refresh()));
-    profileStore.onSwitch(safeHandler(SCRIPT_NAME, () => refresh({ switched: true })));
+    // Hidden by the Wheel Mark module (a game, attract mode), or never shown yet.
+    let isHidden = true;
+    // A Profile switch while hidden still drops the previous Profile's verdict.
+    let switchedWhileHidden = false;
 
-    refresh();
+    return {
+        topRight: {
+            place: TOP_RIGHT_STACK.CHALLENGE_CARD,
+            margins: CHALLENGE_CARD_MARGINS,
+            // The week's Challenge's: the Mastery Bar sits under it.
+            height: () => {
+                const view = challenges.getActiveView();
+                return view ? challengeCardCanvasHeight(host, view.challenge) : null;
+            },
+        },
+        // The card follows the active Profile, not the selected table.
+        showsWithoutTable: true,
+        // Redrawn when it shows again, on the return to the wheel and on a
+        // Profile switch; the wheel's moves leave it as it is.
+        show(game, { returned, switched }) {
+            if (!isHidden && !returned && !switched) return;
+            const options = switched || switchedWhileHidden ? { switched: true } : {};
+            isHidden = false;
+            switchedWhileHidden = false;
+            refresh(options);
+        },
+        // Never over a game nor in attract mode.
+        hide({ switched }) {
+            if (switched) switchedWhileHidden = true;
+            isHidden = true;
+            stopTimer();
+            hideLayer(layer);
+        },
+    };
 }

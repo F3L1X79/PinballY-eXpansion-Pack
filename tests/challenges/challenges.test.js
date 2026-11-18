@@ -12,7 +12,8 @@ import { createProfileStore } from "../../common/profiles/profile_store.js";
 import { createPeriodTable, TABLE_OF_THE_DAY, TABLE_OF_THE_WEEK } from "../../common/tables/period_table.js";
 import { createRandomGame } from "../../common/tables/random_game.js";
 import { createChallenges, CHALLENGE_TEMPLATE_IDS } from "../../common/challenges/challenge.js";
-import { createChallengeCard, CHALLENGE_CARD_Z_INDEX, CHALLENGE_VERDICT_MS, BADGE_HEIGHT } from "../../common/challenges/challenge_card.js";
+import { createChallengeCard, CHALLENGE_CARD_Z_INDEX, CHALLENGE_VERDICT_MS } from "../../common/challenges/challenge_card.js";
+import { createWheelMarks } from "../../common/core/wheel_marks.js";
 import { createAchievementToasts } from "../../common/achievements/achievement_toast.js";
 import config from "../../common/core/config.js";
 import lang from "../../common/core/i18n.js";
@@ -63,7 +64,11 @@ function setUp({ now = MONDAY, tables = TABLES, profiles = ["Alice", "Bob"], act
     const toasts = createAchievementToasts(fake);
     const challenges = createChallenges(fake, store,
         { tableOfTheDay, tableOfTheWeek, randomGame, toasts, random: scripted([...randoms]) });
-    createChallengeCard(fake, challenges, store, { topOf: () => (underBadge ? BADGE_HEIGHT : 0) });
+    // The card as the pack wires it: a Wheel Mark, its top from the stack.
+    const marks = createWheelMarks(fake, { attractOrder: { onMove: () => {} }, profileStore: store, underBadge });
+    const card = createChallengeCard(fake, challenges, { topOf: () => mark.top() });
+    const mark = marks.register("Challenges", card);
+    marks.start();
     return { fake, store, toasts, challenges, tableOfTheDay, tableOfTheWeek, randomGame };
 }
 

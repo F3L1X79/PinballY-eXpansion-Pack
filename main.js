@@ -87,9 +87,6 @@ const host = createPinballYHost();
 //   using the main menu module: that module's "menuopen" listener must
 //   see the main menu as Menu Cleanup left it, so that the filter groups
 //   it removes stay out of the Filter Picker.
-// - profileRatings comes after challenges and tableMastery: its Rating
-//   Plate asks where their Challenge Card and Mastery Bar end, once they
-//   have followed the same event.
 // - profilePicker must come before the Welcome Screen, which offers
 //   "Change Player" only when the picker registered itself at init.
 // - drawnMenus must come after every Add-on and shared module that edits the
@@ -98,8 +95,9 @@ const host = createPinballYHost();
 //   turned off. Its first listeners are installed before this list.
 // The other scripts don't depend on each other's order. In particular, the
 // Welcome Screen and the rating prompt go through the wheel dialog module,
-// which shows them in a fixed priority order, and Achievements are announced
-// by non-blocking toasts, which wait for the Welcome Screen.
+// which shows them in a fixed priority order, Achievements are announced
+// by non-blocking toasts, which wait for the Welcome Screen, and the wheel's
+// marks are told by the Wheel Mark module, in the top right stack's order.
 const SCRIPTS = [
     // Interface: translations, then the launch events trace (debugging,
     // LOG_LAUNCH_EVENTS), status line, menu cleanup, menus, filters,
@@ -290,8 +288,9 @@ for (const { key, module } of SCRIPTS) {
     }
 }
 
-// After every Add-on: the wheel's marks hear each event after the Add-ons'
-// own listeners (see common/core/wheel_marks.js).
+// After every Add-on: the wheel's marks are first shown once all have
+// registered, and hear each event after the Add-ons' own listeners, Profile
+// Ratings' switch included (see common/core/wheel_marks.js).
 if (store) {
     try {
         getWheelMarks().start();

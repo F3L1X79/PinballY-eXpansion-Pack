@@ -3,7 +3,7 @@
 // wheel screen (level name, bar, level square). Lights up on demand. Also
 // gives the Collection Mastery's texts to the screens that show it.
 // - Every state is drawn ahead on its own layer (ADR 0010), then only shown or hidden (a point).
-// - Its place (last of the top right stack) is asked on each show.
+// - Its place (last of the top right stack, MASTERY_BAR_PIECE) is asked on each show.
 // ============================================================
 
 import lang from "../core/i18n.js";
@@ -13,6 +13,7 @@ import { MASTERY_STEPS, MAX_MASTERY_LEVEL, METAL_TIER_COUNT, tierOf, metalOf, ti
 import { drawMasterySquare } from "./mastery_square.js";
 import { safeHandler } from "../core/safe_handler.js";
 import { createHiddenLayer, hideLayer, placeAligned, POINT_SPAN } from "../drawing/placed_layers.js";
+import { TOP_RIGHT_STACK } from "../drawing/top_right_stack.js";
 
 const SCRIPT_NAME = "MasteryBar";
 
@@ -29,8 +30,11 @@ export const MASTERY_BAR_Z_INDEX = Object.freeze({
 // edge; the canvas leaves room for the widest halo.
 const CANVAS = Object.freeze({ width: 400, height: 96 });
 const PANEL = Object.freeze({ x: 10, y: 14, width: 360, height: 64, border: 1 });
-// The canvas's room around the panel, which the top right stack keeps.
-export const MASTERY_BAR_MARGINS = Object.freeze({ top: PANEL.y, bottom: CANVAS.height - PANEL.y - PANEL.height });
+// Its piece of the top right stack, the last: nothing sits under it.
+export const MASTERY_BAR_PIECE = Object.freeze({
+    place: TOP_RIGHT_STACK.MASTERY_BAR,
+    margins: Object.freeze({ top: PANEL.y, bottom: CANVAS.height - PANEL.y - PANEL.height }),
+});
 const HEAD = Object.freeze({ y: 24, size: 13, weight: 600 });
 const BAR = Object.freeze({ x: 24, y: 48, width: 262, height: 10 });
 // Where the square sits; its look is common/mastery/mastery_square.js's.

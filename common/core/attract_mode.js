@@ -1,8 +1,8 @@
 // ============================================================
 // Attract mode: whether the cabinet is in attract mode, and a listener for
 // its start that a drawn screen holding it off never reaches. The wheel
-// screen's own pieces (Challenge Card, Wheel Guides, the Wheel Marks of
-// wheel_marks.js) hide with it and come back on "wheelmode", which fires when it ends.
+// screen's own pieces (the Wheel Marks of wheel_marks.js) hide with it and
+// come back on "wheelmode", which fires when it ends.
 // - Checked on the next tick: a listener after the caller's may still prevent "attractmodestart".
 // ============================================================
 

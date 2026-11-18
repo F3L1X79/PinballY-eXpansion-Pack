@@ -187,7 +187,7 @@ The small marks on the wheel screen that say where the player is on the wheel: t
 _Avoid_: markers (the Selection Marker is the glow of a drawn screen), indicators, Status Icon
 
 **Wheel Mark**:
-A piece of the wheel screen that shows something about the selected table, such as the Rating Plate and the Mastery Bar: shown on the selected table, hidden with no table, during a game and in attract mode, and back on the return to the wheel.
+A piece of the wheel screen (the Wheel Guides, the Challenge Card, the Mastery Bar, the Rating Plate): hidden during a game and in attract mode, and back on the return to the wheel. All but the Challenge Card follow the selected table and hide with none.
 _Avoid_: selection display, wheel overlay, Wheel Guides (only the marks of where the player is)
 
 **Wheel Rail**:

@@ -1,22 +1,25 @@
 // ============================================================
-// Challenges: wires the shared Challenge module to the Challenge Card and to
-// the Challenge Tables main menu entry. Draws the week's Challenge at
-// startup if needed; the card follows Profile switches, hides on
-// "gamestarted" and comes back on "wheelmode".
+// Challenges: wires the shared Challenge module to the Challenge Card, a Wheel
+// Mark (common/core/wheel_marks.js) in the top right stack, and to the
+// Challenge Tables main menu entry. The card's first show draws
+// the week's Challenge at startup if needed.
 // - The Challenge Tables entry shows only while the Challenge has Challenge Tables.
 // ============================================================
 
 import { createPinballYHost } from "../common/core/pinbally_host.js";
-import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getChallenges } from "../common/challenges/challenge.js";
 import { createChallengeCard } from "../common/challenges/challenge_card.js";
 import { createChallengeTables } from "../common/challenges/challenge_tables.js";
 import { getMainMenu } from "../common/menus/main_menu.js";
 import { WHEEL_ORDER_SORT } from "../common/tables/wheel_order.js";
-import { createTopRightStack } from "../common/drawing/top_right_stack.js";
+import { getWheelMarks } from "../common/core/wheel_marks.js";
+
+const SCRIPT_NAME = "Challenges";
 
 export default function init() {
     const host = createPinballYHost();
-    createChallengeCard(host, getChallenges(), getProfileStore(), { topOf: createTopRightStack(host).cardTop });
+    // Asked on each show, never before the registration below.
+    const card = createChallengeCard(host, getChallenges(), { topOf: () => mark.top() });
+    const mark = getWheelMarks().register(SCRIPT_NAME, card);
     createChallengeTables(host, getChallenges(), getMainMenu(), { sortFields: WHEEL_ORDER_SORT });
 }

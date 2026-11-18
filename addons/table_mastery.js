@@ -11,8 +11,7 @@
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
-import { createTopRightStack } from "../common/drawing/top_right_stack.js";
-import { createMasteryBar } from "../common/mastery/mastery_bar.js";
+import { createMasteryBar, MASTERY_BAR_PIECE } from "../common/mastery/mastery_bar.js";
 import {
     masteryOf, movedByPlay, levelReachedByPlay, metalOf, collectionMasteryOfProfile, MAX_MASTERY_LEVEL,
 } from "../common/mastery/table_mastery.js";
@@ -29,8 +28,8 @@ export default function init() {
     const host = createPinballYHost();
     const store = getProfileStore();
     // The Wheel Mark module tells the bar after the Challenge Card is redrawn,
-    // so barTop reads the card's new height.
-    const bar = createMasteryBar(host, getDrawingAhead(), { topOf: createTopRightStack(host).barTop });
+    // so its top reads the card's new height; never asked before the registration below.
+    const bar = createMasteryBar(host, getDrawingAhead(), { topOf: () => mark.top() });
     // Got at startup, so the Confetti Shower its toasts start is drawn
     // ahead by then.
     const toasts = getAchievementToasts();
@@ -125,7 +124,8 @@ export default function init() {
         raiseCollectionTier(profileName, level !== MAX_MASTERY_LEVEL);
     }));
 
-    getWheelMarks().register(SCRIPT_NAME, {
+    const mark = getWheelMarks().register(SCRIPT_NAME, {
+        topRight: MASTERY_BAR_PIECE,
         show: showTable,
         // A return with no table to show still ends the moved table's wait.
         hide: ({ returned }) => {

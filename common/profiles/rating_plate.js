@@ -3,12 +3,13 @@
 // right of the wheel screen, five stars (half stars included, empty when not
 // rated) on a small plate, on top of the top right stack. No text, no lit state.
 // - Every value is drawn ahead on its own layer (ADR 0010), then only shown or hidden (a point).
-// - Its place is asked on each show, like the Mastery Bar's (common/drawing/top_right_stack.js).
+// - Its place is asked on each show, like the Mastery Bar's; RATING_PLATE_PIECE gives the top right stack its sizes.
 // ============================================================
 
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
 import { CHALLENGE_CARD_Z_INDEX, CARD_REFERENCE_HEIGHT } from "../challenges/challenge_card.js";
 import { fillStar } from "../drawing/pixel_shapes.js";
+import { TOP_RIGHT_STACK } from "../drawing/top_right_stack.js";
 import { createHiddenLayer, hideLayer, placeAligned, POINT_SPAN } from "../drawing/placed_layers.js";
 
 // Above the Mastery Bar's planes, under popups and menus.
@@ -18,9 +19,12 @@ export const RATING_PLATE_STAR_COLORS = Object.freeze({ filled: STEAMBALL_COLORS
 // left edge lines up with the card's (validated on the cabinet).
 const CANVAS = Object.freeze({ width: 400, height: 56 });
 const PANEL = Object.freeze({ x: 10, y: 6, width: 158, height: 40, border: 1 });
-export const RATING_PLATE_HEIGHT = CANVAS.height;
-// The canvas's room around the panel, which the top right stack keeps.
-export const RATING_PLATE_MARGINS = Object.freeze({ top: PANEL.y, bottom: CANVAS.height - PANEL.y - PANEL.height });
+// Its piece of the top right stack: the canvas's room around the panel is kept.
+export const RATING_PLATE_PIECE = Object.freeze({
+    place: TOP_RIGHT_STACK.RATING_PLATE,
+    margins: Object.freeze({ top: PANEL.y, bottom: CANVAS.height - PANEL.y - PANEL.height }),
+    height: () => CANVAS.height,
+});
 const STAR = Object.freeze({ radius: 11, gap: 6 });
 const STAR_COUNT = 5;
 // 0 to 5 in half steps, as PinballY's rating takes them.
