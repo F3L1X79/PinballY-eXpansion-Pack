@@ -186,6 +186,10 @@ _Avoid_: underlay (PinballY's name for the image layer that carries it), wheel c
 The small marks on the wheel screen that say where the player is on the wheel: the Wheel Rail, the Wheel Position and the Favorite Heart. Shown as "repères de la roue" in French.
 _Avoid_: markers (the Selection Marker is the glow of a drawn screen), indicators, Status Icon
 
+**Wheel Mark**:
+A piece of the wheel screen that shows something about the selected table, such as the Rating Plate and the Mastery Bar: shown on the selected table, hidden with no table, during a game and in attract mode, and back on the return to the wheel.
+_Avoid_: selection display, wheel overlay, Wheel Guides (only the marks of where the player is)
+
 **Wheel Rail**:
 The thin column along the right edge of the wheel screen that lists every page of the wheel, letters or decades (each decade's years under it as an option), in the wheel's order, dimming those with no table. It slides away when the player stops moving and comes back on the next move. Shown as "rail de la roue" in French.
 _Avoid_: alphabet bar, scrollbar, index, jump list

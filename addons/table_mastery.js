@@ -1,8 +1,8 @@
 // ============================================================
 // Table Mastery: shows the selected table's Mastery Bar for the active Profile
-// (last of the top right stack), following "gameselect" and the
-// Attract Order's moves, hidden from "gamestarted" or attract mode to "wheelmode". After a Play,
-// lights the bar up and submits a Mastery Toast for a new Mastery Level or
+// (last of the top right stack), a Wheel Mark (common/core/wheel_marks.js).
+// After a Play, lights the bar up on the return to the wheel, and submits
+// a Mastery Toast for a new Mastery Level or
 // Collection Tier, kept in profile.json ("collectionTier").
 // - Plays come from onPlay (ADR 0008).
 // - A Collection Tier toast names the Avatar Frames it unlocks, then the Reward Prompt for a first frame.
@@ -20,48 +20,35 @@ import { tablesVisibleTo } from "../common/tables/visible_tables.js";
 import { getAchievementToasts, TOAST_KIND } from "../common/achievements/achievement_toast.js";
 import { getProfileRewards } from "../common/avatar_frames/profile_rewards.js";
 import lang from "../common/core/i18n.js";
-import { getAttractOrder } from "../common/tables/attract_order.js";
+import { getWheelMarks } from "../common/core/wheel_marks.js";
 import { safeHandler } from "../common/core/safe_handler.js";
-import { isInAttractMode, onAttractModeStarted } from "../common/core/attract_mode.js";
 
 const SCRIPT_NAME = "TableMastery";
 
 export default function init() {
     const host = createPinballYHost();
     const store = getProfileStore();
-    // The card has already followed the same events, since the Challenges
-    // Add-on starts before this one.
+    // The Wheel Mark module tells the bar after the Challenge Card is redrawn,
+    // so barTop reads the card's new height.
     const bar = createMasteryBar(host, getDrawingAhead(), { topOf: createTopRightStack(host).barTop });
     // Got at startup, so the Confetti Shower its toasts start is drawn
     // ahead by then.
     const toasts = getAchievementToasts();
-    let gameRunning = false;
     // The Play that moved its table's bar forward, until the next return
     // to the wheel: { profileName, configId }.
     let movedTable = null;
 
-    function showTable(game) {
-        if (gameRunning || !game || isInAttractMode(host)) {
-            bar.hide();
-            return;
-        }
-        bar.show(masteryOf(store.getPlay(game.configId)));
-    }
-
-    const showCurrent = () => showTable(host.getCurrentTable());
-
     // Lit up only when the wheel comes back on the very table that moved,
     // for the Profile that played it.
-    function showOnReturn() {
-        const moved = movedTable;
-        movedTable = null;
-        const game = host.getCurrentTable();
+    function showTable(game, { returned }) {
+        const moved = returned ? movedTable : null;
+        if (returned) movedTable = null;
+        const mastery = masteryOf(store.getPlay(game.configId));
         // A Profile Reset since the Play leaves no mastery to light up.
-        const mastery = game && masteryOf(store.getPlay(game.configId));
         if (moved && mastery && game.configId === moved.configId && store.getActiveProfile().name === moved.profileName) {
             bar.lightUp(mastery);
         } else {
-            showTable(game);
+            bar.show(mastery);
         }
     }
 
@@ -138,22 +125,12 @@ export default function init() {
         raiseCollectionTier(profileName, level !== MAX_MASTERY_LEVEL);
     }));
 
-    // Fires on the player's moves and PinballY's own attract switches; the
-    // Attract Order's moves fire none and come through onMove.
-    host.onGameListEvent("gameselect", safeHandler(SCRIPT_NAME, ev => showTable(ev.game)));
-    getAttractOrder().onMove(safeHandler(SCRIPT_NAME, showTable));
-    // Never over a game, like the Challenge Card.
-    host.on("gamestarted", safeHandler(SCRIPT_NAME, () => {
-        gameRunning = true;
-        bar.hide();
-    }));
-    onAttractModeStarted(host, SCRIPT_NAME, () => bar.hide());
-    // Back on the wheel after a game, a menu, a dialog or attract mode.
-    host.on("wheelmode", safeHandler(SCRIPT_NAME, () => {
-        gameRunning = false;
-        showOnReturn();
-    }));
-    store.onSwitch(safeHandler(SCRIPT_NAME, showCurrent));
-
-    showCurrent();
+    getWheelMarks().register(SCRIPT_NAME, {
+        show: showTable,
+        // A return with no table to show still ends the moved table's wait.
+        hide: ({ returned }) => {
+            if (returned) movedTable = null;
+            bar.hide();
+        },
+    });
 }

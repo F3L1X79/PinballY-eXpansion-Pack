@@ -106,7 +106,7 @@ export function createAttractOrder(host, profileStore, { order }) {
     let stillToShow = [];
     const moveListeners = [];
 
-    // setWheelGame fires no "gameselect": the Rating Plate and the Mastery Bar hear of the move here.
+    // setWheelGame fires no "gameselect": onMove listeners hear of the move here.
     function moveWheel(offset, options) {
         host.setWheelGame(offset, options);
         const game = host.getCurrentTable();
