@@ -1634,7 +1634,6 @@ export function createFakePinballYHost({
         getCurrentFilterId: () => currentFilterId,
         getCurrentFilterTitle: () => filterTitleOf(currentFilterId),
         getCurrentFilterGroupCmd: () => groupCmdOf(currentFilterId),
-        getFilterCompare: (filterId) => (filters.has(filterId) ? filters.get(filterId).compareForSort ?? null : null),
         refreshFilter,
         createMetaFilter,
         setWheelGame: setWheelGameFromScript,

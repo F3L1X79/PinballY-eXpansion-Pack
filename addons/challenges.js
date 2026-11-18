@@ -11,7 +11,6 @@ import { getChallenges } from "../common/challenges/challenge.js";
 import { createChallengeCard } from "../common/challenges/challenge_card.js";
 import { createChallengeTables } from "../common/challenges/challenge_tables.js";
 import { getMainMenu } from "../common/menus/main_menu.js";
-import { WHEEL_ORDER_SORT } from "../common/tables/wheel_order.js";
 import { getWheelMarks } from "../common/core/wheel_marks.js";
 
 const SCRIPT_NAME = "Challenges";
@@ -21,5 +20,5 @@ export default function init() {
     // Asked on each show, never before the registration below.
     const card = createChallengeCard(host, getChallenges(), { topOf: () => mark.top() });
     const mark = getWheelMarks().register(SCRIPT_NAME, card);
-    createChallengeTables(host, getChallenges(), getMainMenu(), { sortFields: WHEEL_ORDER_SORT });
+    createChallengeTables(host, getChallenges(), getMainMenu());
 }

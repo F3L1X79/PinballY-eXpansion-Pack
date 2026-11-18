@@ -1,25 +1,29 @@
 ﻿// ============================================================
-// Adds an "Original Tables" filter to PinballY's native "Filter by
+// Adds an "Original Tables" Pack Filter to PinballY's native "Filter by
 // Manufacturer" menu, selecting every table EXCEPT the community-made
 // VPX tables (identified by config.communityTablesManufacturer), listed in
-// the Wheel Order and paged in it. Registered once at init; no event listeners.
+// the Wheel Order and paged in it.
 // ============================================================
 
 import lang from "../common/core/i18n.js";
 import config from "../common/core/config.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
-import { WHEEL_ORDER_SORT } from "../common/tables/wheel_order.js";
+import { createPackFilter } from "../common/tables/pack_filter.js";
+
+const SCRIPT_NAME = "CustomFilter";
 
 export default function init() {
     const COMMUNITY_MANUFACTURER_NAME = config.communityTablesManufacturer;
-    const { originalTablesFilter: FILTER_TITLE } = lang.customMenuLabels;
+    const host = createPinballYHost();
 
-    // Through the host, which keeps compareForSort for the status line.
-    createPinballYHost().createFilter({
+    createPackFilter(host, {
+        scriptName: SCRIPT_NAME,
         id: "project.OriginalTables",
-        title: FILTER_TITLE,
+        title: lang.customMenuLabels.originalTablesFilter,
         group: "[Manuf]",
-        select: game => game.manufacturer !== COMMUNITY_MANUFACTURER_NAME,
-        ...WHEEL_ORDER_SORT,
+        // PinballY passes select() only the tables it can show: the hidden ones listed here never reach the wheel.
+        selectConfigIds: () => host.getAllTables()
+            .filter(game => game.manufacturer !== COMMUNITY_MANUFACTURER_NAME)
+            .map(game => game.configId),
     });
 }

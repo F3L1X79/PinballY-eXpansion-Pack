@@ -2,7 +2,7 @@
 // Wheel Order module: the order the wheel lists the Active Filter's tables
 // in, alphabetical or by year, and the sorted copy's source, both saved in
 // cabinet.json. Owns the Active Filter: showFilter() is the pack's only way to
-// change it, getChosenFilter() to read it. Gives the pack's filters their compare
+// change it, getChosenFilter() to read it. Gives the Pack Filters their compare
 // and page groups. start() creates the sorted copy and applies the saved order.
 // - By year, a PinballY or other script's filter choice is cancelled and its sorted copy shown instead.
 // - The pack's own filters are never copied: switching the order runs the active one again.
@@ -212,13 +212,11 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
 
     // Cabinet check: the page group each Next / Previous Page reaches on a
     // filter paging in the Wheel Order (PinballY gives no way to read its own).
-    function listenToPageButtons() {
+    function listenToPageButtons(isPackFilterInWheelOrder) {
         // The page button just pressed, until the table it reaches is selected.
         let pressedPage = null;
-        // PinballY gives no filter's pageGroup back: the compare the host kept,
-        // the module's own function, tells a filter created with WHEEL_ORDER_SORT.
-        const isPagedInWheelOrder = filterId => filterId === COPY_FULL_ID
-            || host.getFilterCompare(filterId) === compareInWheelOrder;
+        // PinballY gives no filter's pageGroup back: the Pack Filter says how its own page.
+        const isPagedInWheelOrder = filterId => filterId === COPY_FULL_ID || isPackFilterInWheelOrder(filterId);
         // Fires before PinballY carries out the button: the turn comes after.
         host.on("commandbuttondown", safeHandler(SCRIPT_NAME, ev => {
             pressedPage = PAGE_COMMANDS[ev.command] !== undefined && host.getUIMode() === "wheel"
@@ -241,8 +239,9 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
 
     // Creates the sorted copy and takes the player's filter choices over;
     // once, by the Wheel Order Add-on. copyTitle: the copy's name where
-    // PinballY and the menus name the Active Filter.
-    function start({ copyTitle }) {
+    // PinballY and the menus name the Active Filter; isPackFilterInWheelOrder:
+    // the Pack Filter's answer, passed in as the Pack Filter imports this module.
+    function start({ copyTitle, isPackFilterInWheelOrder = () => false }) {
         if (isStarted) return;
         isStarted = true;
         // The source's FilterInfo, read once per run of the copy.
@@ -258,7 +257,7 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
             compareForSort: compareByYear,
             pageGroup: pageGroupByYear,
         });
-        listenToPageButtons();
+        listenToPageButtons(isPackFilterInWheelOrder);
         // Fires before a filter the player picked is applied: while by year,
         // it is cancelled and the copy of that filter shown instead, on the
         // next tick: no setCurFilter runs inside PinballY's own dispatch,
@@ -354,7 +353,9 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
         onChange(listener) {
             changeListeners.push(safeHandler(SCRIPT_NAME, listener));
         },
-        // The compareForSort of the pack's own filters (spec #513): by year
+        // The sorted copy, standing in for the chosen filter while by year.
+        isSortedCopy: filterId => filterId === COPY_FULL_ID,
+        // The compareForSort of the Pack Filters (spec #513): by year
         // or, like PinballY's default, by title.
         compareForSort: (a, b) => (isByYear() ? compareByYear(a, b) : compareTitles(a, b)),
         // Their pageGroup: by decade or, like PinballY's default, by first letter.
@@ -371,11 +372,5 @@ export function getWheelOrder() {
     return sharedWheelOrder;
 }
 
-// For the pack's own filters' createFilter: reads the shared Wheel Order
-// each time PinballY sorts, so the Add-ons' init order does not matter.
-const compareInWheelOrder = (a, b) => getWheelOrder().compareForSort(a, b);
-const pageGroupInWheelOrder = game => getWheelOrder().pageGroup(game);
 // The default showFilter of the modules that take one (a unit test passes its own).
 export const showInWheelOrder = filterId => getWheelOrder().showFilter(filterId);
-// What the pack's own unranked filters sort and page with.
-export const WHEEL_ORDER_SORT = Object.freeze({ compareForSort: compareInWheelOrder, pageGroup: pageGroupInWheelOrder });

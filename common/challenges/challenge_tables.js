@@ -1,26 +1,24 @@
 // ============================================================
-// Challenge Tables: a selection filter (common/tables/selection_filter.js)
-// in the main menu, right under "All Tables", that puts on the wheel the
-// tables that would move the active Profile's Challenge forward (see
+// Challenge Tables: a Pack Filter (common/tables/pack_filter.js) in the
+// main menu, right under "All Tables", that puts on the wheel the tables
+// that would move the active Profile's Challenge forward (see
 // common/challenges/challenge.js). Its entry is in the main menu only
 // while there are some, checked at each opening.
 // ============================================================
 
 import lang from "../core/i18n.js";
-import { createSelectionFilter } from "../tables/selection_filter.js";
+import { createPackFilter } from "../tables/pack_filter.js";
 
 const SCRIPT_NAME = "ChallengeTables";
 // PinballY's "All Tables" has sort key "3000" and the Hall of Fame "6000" in the [Top] group.
 const UNDER_ALL_TABLES_SORT_KEY = "5000";
 
-// sortFields: how the wheel lists and pages them, the Wheel Order's in the Add-on;
-// showFilter: the selection filter's (a unit test passes its own).
-export function createChallengeTables(host, challenges, mainMenu, { sortFields, showFilter }) {
+// wheelOrder: the shared one unless a unit test passes its own.
+export function createChallengeTables(host, challenges, mainMenu, { wheelOrder } = {}) {
     const selectConfigIds = () => challenges.getTablesToPlay().map(table => table.configId);
-    const { filterId } = createSelectionFilter(host, {
+    const { filterId } = createPackFilter(host, {
         scriptName: SCRIPT_NAME,
-        sortFields,
-        showFilter,
+        wheelOrder,
         id: "project.ChallengeTables",
         title: lang.customMenuLabels.challengeTables,
         group: "[Top]",

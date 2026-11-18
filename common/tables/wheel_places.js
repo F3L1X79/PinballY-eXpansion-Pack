@@ -3,11 +3,12 @@
 // table, each one's 1-based place and its page (letter, decade, or none on a
 // ranked selection), shared by the status line and the Wheel Guides.
 // - Never reads the whole wheel per move (it saturated the wheel): only once told, after a Wheel Order toggle, or out of step.
-// - Pages follow the filter shown, never the Wheel Order setting itself (spec #527).
+// - Pages follow the filter shown, never the Wheel Order setting itself (spec #527): a Pack Filter says how it pages.
 // ============================================================
 
 import { createPinballYHost } from "../core/pinbally_host.js";
-import { compareByYear, compareTitles, decadeOf, getWheelOrder, yearOf, WHEEL_ORDER_SORT } from "./wheel_order.js";
+import { compareByYear, compareTitles, decadeOf, getWheelOrder, yearOf } from "./wheel_order.js";
+import { packFilterSortOf, PACK_FILTER_PAGINGS } from "./pack_filter.js";
 
 export const WHEEL_PAGINGS = Object.freeze({ BY_LETTER: "letter", BY_DECADE: "decade" });
 // The page of a title not starting with A-Z, and of a table without a year.
@@ -37,16 +38,17 @@ export function createWheelPlaces(host, wheelOrder) {
     // A toggle can keep the selected and next tables side by side, yet change the pages.
     wheelOrder.onChange(() => { reading = null; });
 
-    // A pack filter sorting in the Wheel Order pages with it, the sorted copy
-    // by decade, a filter with no pack sort (PinballY lists it by title) by
-    // letter; a pack filter ranking its tables has no pages.
-    function pagingOf(compare) {
-        if (compare === null) return WHEEL_PAGINGS.BY_LETTER;
-        if (compare === compareByYear) return WHEEL_PAGINGS.BY_DECADE;
-        if (compare === WHEEL_ORDER_SORT.compareForSort) {
-            return wheelOrder.isByYear() ? WHEEL_PAGINGS.BY_DECADE : WHEEL_PAGINGS.BY_LETTER;
+    // How the Active Filter sorts and pages: a Pack Filter as it declares
+    // (in the Wheel Order, or ranked without pages), the sorted copy by
+    // decade, any other filter (PinballY lists it by title) by letter.
+    function sortingOf(filterId) {
+        const packSort = packFilterSortOf(filterId);
+        if (packSort !== null) {
+            const byWheelOrder = wheelOrder.isByYear() ? WHEEL_PAGINGS.BY_DECADE : WHEEL_PAGINGS.BY_LETTER;
+            return { compare: packSort.compareForSort, paging: packSort.paging === PACK_FILTER_PAGINGS.RANKED ? null : byWheelOrder };
         }
-        return null;
+        if (wheelOrder.isSortedCopy(filterId)) return { compare: compareByYear, paging: WHEEL_PAGINGS.BY_DECADE };
+        return { compare: compareTitles, paging: WHEEL_PAGINGS.BY_LETTER };
     }
 
     // The wheel lists its tables from the current one on, wrapping around:
@@ -54,12 +56,11 @@ export function createWheelPlaces(host, wheelOrder) {
     // goes backwards.
     function read() {
         const games = host.getWheelTables();
-        const compare = host.getFilterCompare(host.getCurrentFilterId());
-        const sort = compare ?? compareTitles;
-        const first = Math.max(0, games.findIndex((game, index) => index > 0 && sort(games[index - 1], game) > 0));
+        const { compare, paging } = sortingOf(host.getCurrentFilterId());
+        const first = Math.max(0, games.findIndex((game, index) => index > 0 && compare(games[index - 1], game) > 0));
         const tables = Object.freeze([...games.slice(first), ...games.slice(0, first)]);
         // pages: taken from the tables the first time asked.
-        return { tables, places: new Map(tables.map((game, index) => [game.configId, index])), paging: pagingOf(compare), pages: null };
+        return { tables, places: new Map(tables.map((game, index) => [game.configId, index])), paging, pages: null };
     }
 
     // Whether the selected table and the next one are where the reading has them.

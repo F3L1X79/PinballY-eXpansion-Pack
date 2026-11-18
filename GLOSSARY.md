@@ -345,6 +345,10 @@ The table of the active Profile's most recent Play, across the whole collection,
 A table drawn at random from the current wheel selection and launched right away.
 _Avoid_: random table, lucky pick
 
+**Pack Filter**:
+A wheel selection the pack itself adds, such as Tables to Discover or My High Scores. It lists and pages its tables in the Wheel Order, unless it has its own ranking, and gives way to all tables once it has none left.
+_Avoid_: selection filter, script filter, custom filter (Original Tables is only one of them)
+
 **Tables to Discover**:
 The tables the active Profile can see that it has never played, offered as a wheel selection. Shown as "Tables à découvrir" in French.
 _Avoid_: never played tables, unplayed tables, new tables

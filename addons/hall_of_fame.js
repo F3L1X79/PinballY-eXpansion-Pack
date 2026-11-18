@@ -12,6 +12,7 @@ import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getActiveProfileTables } from "../common/tables/visible_tables.js";
+import { createSortedPackFilter } from "../common/tables/pack_filter.js";
 
 const SCRIPT_NAME = "HallOfFame";
 
@@ -28,8 +29,9 @@ export default function init() {
     // scan: PinballY sorts and pages the wheel with it once select() is done.
     let ranks = new Map();
 
-    // Through the host, which keeps compareForSort for the status line.
-    host.createFilter({
+    // Through the Pack Filter, which tells the wheel's places it is ranked.
+    createSortedPackFilter(host, {
+        ranked: true,
         id: HALL_OF_FAME_FILTER_ID,
         title: FILTER_TITLE,
         group: "[Top]",

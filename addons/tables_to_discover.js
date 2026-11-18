@@ -13,7 +13,7 @@ import { getActiveProfileTables } from "../common/tables/visible_tables.js";
 import {
     getTablesToDiscover, TABLES_TO_DISCOVER_FILTER_ID, TABLES_TO_DISCOVER_FULL_FILTER_ID,
 } from "../common/tables/tables_to_discover.js";
-import { WHEEL_ORDER_SORT } from "../common/tables/wheel_order.js";
+import { createSortedPackFilter } from "../common/tables/pack_filter.js";
 
 const SCRIPT_NAME = "TablesToDiscover";
 
@@ -29,8 +29,8 @@ export default function init() {
     // The ids of the tables to discover, kept after the scan for select().
     let gameIds = new Set();
 
-    // Through the host, which keeps compareForSort for the status line.
-    host.createFilter({
+    // Listed and paged in the Wheel Order by the Pack Filter.
+    createSortedPackFilter(host, {
         id: TABLES_TO_DISCOVER_FILTER_ID,
         title: FILTER_TITLE,
         group: "[Top]",
@@ -40,7 +40,6 @@ export default function init() {
             gameIds = new Set(getTablesToDiscover(getActiveProfileTables(), profileStore).map(game => game.id));
         }),
         select: game => gameIds.has(game.id),
-        ...WHEEL_ORDER_SORT,
     });
 
     // refreshFilter() runs the filter again, so its before() reads the new

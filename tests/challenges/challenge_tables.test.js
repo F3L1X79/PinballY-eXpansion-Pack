@@ -15,6 +15,7 @@ import { createChallenges } from "../../common/challenges/challenge.js";
 import { createChallengeTables } from "../../common/challenges/challenge_tables.js";
 import { createAchievementToasts } from "../../common/achievements/achievement_toast.js";
 import { createMainMenu } from "../../common/menus/main_menu.js";
+import { createWheelOrder } from "../../common/tables/wheel_order.js";
 import { filterPickerSection } from "../support/main_menu_reader.js";
 import lang from "../../common/core/i18n.js";
 
@@ -61,10 +62,9 @@ function setUp({ challenge, active = "Alice", plays = {}, now = MONDAY } = {}) {
     const randomGame = createRandomGame(fake, store, { animateTo: async () => {}, skipAnimation: true });
     const challenges = createChallenges(fake, store,
         { tableOfTheDay, tableOfTheWeek, randomGame, toasts: createAchievementToasts(fake) });
-    // Several fakes in one process: no shared Wheel Order, the filter changed on this fake.
+    // Several fakes in one process: no shared Wheel Order, this fake's own.
     createChallengeTables(fake, challenges, createMainMenu(fake), {
-        sortFields: { compareForSort: (a, b) => a.title.localeCompare(b.title) },
-        showFilter: fake.setCurrentFilter,
+        wheelOrder: createWheelOrder(fake, store, { isEnabled: true }),
     });
     return { fake, store, tableOfTheDay, tableOfTheWeek };
 }

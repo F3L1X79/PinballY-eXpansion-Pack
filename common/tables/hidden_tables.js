@@ -1,5 +1,5 @@
 // ============================================================
-// Hidden Tables: a selection filter (common/tables/selection_filter.js)
+// Hidden Tables: a Pack Filter (common/tables/pack_filter.js)
 // in the main menu, right under the Favorite Tables, that puts on the wheel the
 // tables carrying PinballY's Hidden flag, the Adult Tables left out for a
 // Child Profile. Its entry is in the main menu only while there are some,
@@ -7,21 +7,20 @@
 // ============================================================
 
 import lang from "../core/i18n.js";
-import { createSelectionFilter } from "./selection_filter.js";
+import { createPackFilter } from "./pack_filter.js";
 import { isKeptFromChild } from "./adult_tables.js";
 
 const SCRIPT_NAME = "HiddenTables";
 // PinballY's "Favorites" filter has sort key "7000" in the [Top] group.
 const UNDER_FAVORITES_SORT_KEY = "7500";
 
-// sortFields: how the wheel lists and pages them, the Wheel Order's in the Add-on.
-export function createHiddenTables(host, { profileStore, mainMenu, sortFields }) {
+export function createHiddenTables(host, { profileStore, mainMenu }) {
     // The child wheel metafilter already keeps the Adult Tables off the
     // wheel; left out here too, so that the entry follows what the wheel shows.
     const selectConfigIds = () => host.getAllTables()
         .filter(game => game.isHidden && !isKeptFromChild(game, profileStore))
         .map(game => game.configId);
-    const { filterId } = createSelectionFilter(host, {
+    const { filterId } = createPackFilter(host, {
         scriptName: SCRIPT_NAME,
         id: "project.HiddenTables",
         title: lang.customMenuLabels.hiddenTablesFilter,
@@ -30,7 +29,6 @@ export function createHiddenTables(host, { profileStore, mainMenu, sortFields })
         // Otherwise PinballY never passes a hidden table to select() (FilterInfo).
         includeHidden: true,
         selectConfigIds,
-        sortFields,
     });
     mainMenu.showFilterWhen(filterId, () => selectConfigIds().length > 0);
 }
