@@ -449,6 +449,10 @@ _Avoid_: last game score, NVRAM score, High Score (a Play Score won no place on 
 The pack's own file, kept through every Pack Update, where a Play whose memory reads oddly for the Play Score rules is written down, never an ordinary one, for the owner to send with a report. Shown as "journal des anomalies des scores de partie" in French.
 _Avoid_: Error Log (an anomaly is no error of the pack)
 
+**Play Settlement**:
+The pack's one owner of a table's board around a Play: it reads the board when a launch begins and again after the game, learns where a table without a ROM keeps its board, and says which place the Play won. It also reads the board the High Score Board shows.
+_Avoid_: High Scores Add-on (it only shows what was won)
+
 **Default Score**:
 A score that belongs to no Profile: already on a table's high score board when the pack first read it, or a High Score whose Profile was removed. Shown as "score par défaut" in French.
 _Avoid_: original score (confused with original tables), anonymous score, factory score (not all of them come from the factory)

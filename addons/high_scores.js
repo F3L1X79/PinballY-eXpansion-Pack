@@ -1,25 +1,22 @@
 // ============================================================
-// High Scores: credits each score that entered a table's board during a Play to the
-// Profile active when it started, whatever initials were typed, and toasts the best place
-// won. With vpxtool, keeps the Play Score read from the ROM's .nv (copied to play_scores\
-// at launch), toasting a House Record or Personal Best when no place was won; the rules'
-// oddities go to play_scores_anomalies.log. Adds "High Score Boards" and "My High Scores" to the main menu.
-// - The board is read when a launch begins and again a little after it ends (Launch Bracket).
-// - Without a ROM, the board comes from VPX's User folder, never read while VPX runs.
+// High Scores: toasts the best place a Play won on its table's board (settled by Play
+// Settlement, which credits it to the Profile active when the Play started). With vpxtool,
+// keeps the Play Score read from the ROM's .nv (copied to play_scores\ at launch), toasting
+// a House Record or Personal Best when no place was won; the rules' oddities go to
+// play_scores_anomalies.log. Adds "High Score Boards" and "My High Scores" to the main menu.
+// - The board around a Play and the ROM-less sources live in Play Settlement.
 // - Replaces PinballY's own "High Scores": removes its entry, cancels HighScores.
 // ============================================================
 
 import { createPinballYHost } from "../common/core/pinbally_host.js";
-import { safeHandler, logHandlerError } from "../common/core/safe_handler.js";
+import { safeHandler } from "../common/core/safe_handler.js";
 import { logError } from "../common/core/error_log.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getProfileRewards } from "../common/avatar_frames/profile_rewards.js";
-import { readBoard } from "../common/high_scores/board_reader.js";
-import { readCompoundFile } from "../common/high_scores/compound_file_reader.js";
-import { readSectionBoard, readTextBoard } from "../common/high_scores/romless_board_reader.js";
 import { getHighScoreStore, SCRIPT_NAME } from "../common/high_scores/high_score_store.js";
 import { createHighScoreBoard } from "../common/high_scores/high_score_board.js";
 import { createMyHighScores } from "../common/high_scores/my_high_scores.js";
+import { createPlaySettlement } from "../common/high_scores/play_settlement.js";
 import { getAchievementToasts, TOAST_KIND } from "../common/achievements/achievement_toast.js";
 import { getMainMenu, MAIN_MENU_POSITION } from "../common/menus/main_menu.js";
 import { isSeparator } from "../common/menus/menu_separator.js";
@@ -34,11 +31,6 @@ import { getNvramWatch, nvramFolderOf } from "../common/vpxtool/nvram_watch.js";
 import { readNvramAnswer, lastGameOf, playScoreOf } from "../common/high_scores/last_game_reader.js";
 import { createPlayScoreAnomalyLog, valueAnomaliesOf, ANOMALY } from "../common/high_scores/play_score_anomaly_log.js";
 
-// PinballY's own read after the game returns the board cached at launch
-// (seen on the cabinet): the Add-on reads again a little later, fresh.
-const AFTER_READ_DELAY_MS = 2000;
-// PinballY kills PINemHi after 7.5 s; a read may also wait behind another one.
-const READ_TIMEOUT_MS = 10000;
 const BOARD_ENTRY = "highScoreBoard";
 // The pack's folder for the .nv copied at launch, one per ROM.
 const PLAY_SCORE_COPY_FOLDER = "play_scores";
@@ -52,16 +44,16 @@ export default function init() {
     const highScores = getHighScoreStore();
     const toasts = getAchievementToasts();
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
-    // From a launch's start to its end: { configId, launchRead (a promise),
-    // snapshot (the User folder at launch), nvCopy, nvChanged (the ROMs
-    // whose .nv the game changed, once the NVRAM watch told) }.
+    // From a launch's start to its end, for its Play Score: { configId,
+    // nvCopy, nvChanged (the ROMs whose .nv the game changed, once the
+    // NVRAM watch told) }.
     let launched = null;
     // The Play the Profile store announced for the launched table, if any.
     let announcedPlay = null;
     const vpxtool = getVpxtoolRunner();
     const anomalies = createPlayScoreAnomalyLog(host, SCRIPT_NAME);
     // The last launch, kept past its end: the NVRAM watch tells it at that
-    // end, before this Add-on's own handler (it subscribed first, below).
+    // end, before Play Settlement tells this Add-on (it subscribed first).
     let watchedLaunch = null;
     getNvramWatch().watch(SCRIPT_NAME, {
         onGameEnded: ({ configId, changed }) => {
@@ -69,8 +61,14 @@ export default function init() {
         },
     });
 
+    const settlement = createPlaySettlement(host, {
+        highScores, launchBracket: getLaunchBracket(), scriptName: SCRIPT_NAME, scoreText: lang.profileStats.number,
+        onBegan: onLaunchBegan, onEnded: onLaunchEnded,
+    });
+
     const board = createHighScoreBoard(host, {
-        highScores, profileRewards: getProfileRewards(), drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls(), refresh: refreshBoard,
+        highScores, profileRewards: getProfileRewards(), drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls(),
+        refresh: configId => settlement.refreshBoard(configId),
         activeProfileName: () => profileStore.getActiveProfile().name,
     });
     const mainMenu = getMainMenu();
@@ -113,283 +111,7 @@ export default function init() {
         if (host.getUIMode() === "wheel") board.open();
     }));
 
-    const wait = ms => new Promise(resolve => host.setTimeout(resolve, ms));
-
-    // PinballY reads no board for a table with a learned source: its DMD
-    // and info box show the one handed to it, kept until the next launch
-    // or forgetting read. A ROM table PINemHi reads never learns one.
-    function handToPinballY(configId) {
-        const known = highScores.boardOf(configId);
-        const game = host.getGameInfo(configId);
-        if (!highScores.sourceOf(configId) || known === null || !game) return;
-        const number = lang.profileStats.number;
-        game.setHighScores(known.map(place => [`${place.rank})`, place.initials, number(place.score)].filter(Boolean).join(" ")));
-    }
-    // A learned source is kept for good: a ROM table's ROM, read by
-    // PINemHi since, must not be hidden behind a stale board.
-    for (const configId of highScores.learnedTables()) {
-        const game = host.getGameInfo(configId);
-        if (game && !game.rom) safeHandler(SCRIPT_NAME, handToPinballY)(configId);
-    }
-
-    // The table's board, read by PINemHi without PinballY's cache when
-    // forget is set: { status: "read", places }, or { status } "unsupported"
-    // or "failed" (failed, timed out), logged.
-    function readTable(configId, { forget = false } = {}) {
-        return new Promise((resolve) => {
-            const game = host.getGameInfo(configId);
-            if (!game) {
-                resolve({ status: "failed" });
-                return;
-            }
-            let finished = false;
-            const finish = (result) => {
-                if (finished) return;
-                finished = true;
-                host.clearTimeout(timer);
-                resolve(result);
-            };
-            const timer = host.setTimeout(safeHandler(SCRIPT_NAME, () => {
-                log(`"${configId}": the high scores read timed out.`);
-                finish({ status: "failed" });
-            }), READ_TIMEOUT_MS);
-            if (forget) game.setHighScores(null);
-            game.getHighScores().then((lines) => {
-                // Settled at once even when reading the lines throws, so no "timed out" follows.
-                try {
-                    const board = readBoard(lines);
-                    if (board.status === "unsupported") log(`"${configId}": PINemHi does not support its ROM.`);
-                    finish(board.status === "unsupported" ? { status: "unsupported" } : { status: "read", places: board.places });
-                } catch (error) {
-                    finish({ status: "failed" });
-                    logHandlerError(SCRIPT_NAME, error);
-                }
-            }, safeHandler(SCRIPT_NAME, (error) => {
-                // PinballY reads no board for a table without a ROM: no news there.
-                if (game.rom) log(`"${configId}": the high scores read failed (${error instanceof Error ? error.message : String(error)}).`);
-                finish({ status: "failed" });
-            }));
-        });
-    }
-
-    // The table's board places, or null when the read did not give a board.
-    const readPlaces = (configId, options) => readTable(configId, options)
-        .then(result => (result.status === "read" ? result.places : null));
-
-    // The High Score Board's read, by config ID while it runs, so a second
-    // opening reuses it.
-    const boardReads = new Map();
-
-    // A fresh read for the High Score Board, recorded as a board read
-    // outside a Play: resolves to its status ("read", "unsupported",
-    // "failed", or "notLearned" for a table without a ROM whose source is
-    // not learned yet) once the store holds it (after a Play being settled
-    // on the table, if any), whether the screen is still open or not. When
-    // PINemHi gives no board, the learned section or file is read now: the
-    // board sits over the wheel, so VPX does not run.
-    function refreshBoard(configId) {
-        if (boardReads.has(configId)) return boardReads.get(configId);
-        const read = readTable(configId, { forget: true }).then(safeHandler(SCRIPT_NAME, async (pinemhiRead) => {
-            try {
-                const result = pinemhiRead.status === "read" ? pinemhiRead : romlessRead(configId, pinemhiRead);
-                if (result.status === "read") await highScores.recordBoard(configId, result.places);
-                else if (!result.logged) log(`"${configId}": no board for the High Score Board; ${highScores.boardOf(configId) === null ? "none known yet" : "the last known board kept"}.`);
-                return result.status;
-            } finally {
-                boardReads.delete(configId);
-                // The read made PinballY forget the board: handed again,
-                // the last known one when nothing was read.
-                if (pinemhiRead.status !== "read") handToPinballY(configId);
-            }
-        })).then(status => status, () => "failed");
-        boardReads.set(configId, read);
-        return read;
-    }
-
-    // VPX keeps VPReg.stg and the tables' text files in the User folder
-    // beside its executable (VPinballX.exe, VPinballX64.exe,
-    // VPinballX_GL64.exe...); null for a table of another system, such as
-    // Future Pinball.
-    function userFolderOf(configId) {
-        const game = host.getGameInfo(configId);
-        const exe = game && game.system ? String(game.system.exe || "") : "";
-        const folderEnd = exe.lastIndexOf("\\");
-        if (folderEnd === -1 || !/^vpinballx/i.test(exe.slice(folderEnd + 1))) return null;
-        return `${exe.slice(0, folderEnd)}\\User`;
-    }
-
     const messageOf = error => (error instanceof Error ? error.message : String(error));
-
-    // The Smurf tables write plain ASCII: one character per byte, decoded
-    // a slice at a time so a large file never passes too many arguments.
-    const asciiOf = (bytes) => {
-        let text = "";
-        for (let at = 0; at < bytes.length; at += 4096) text += String.fromCharCode(...bytes.subarray(at, at + 4096));
-        return text;
-    };
-
-    // The text of every .txt of the User folder, by file name; a file gone
-    // between the listing and its read is left out, a folder that cannot
-    // be listed gives none (both logged).
-    function readTextFiles(configId, folder) {
-        let names;
-        try {
-            names = host.files.listFiles(folder).filter(file => /\.txt$/i.test(file));
-        } catch (error) {
-            log(`"${configId}": ${folder} could not be listed (${messageOf(error)}); no text file in the snapshot.`);
-            return {};
-        }
-        const texts = {};
-        for (const name of names) {
-            try {
-                texts[name] = asciiOf(host.files.readBytes(`${folder}\\${name}`));
-            } catch (error) {
-                log(`"${configId}": ${folder}\\${name} could not be read (${messageOf(error)}); left out of the snapshot.`);
-            }
-        }
-        return texts;
-    }
-
-    // The User folder read whole: { sections, texts, ms }, sections
-    // replaced by { error } when VPReg.stg is not read (error null for a
-    // table of another system). A missing VPReg.stg is logged only when the
-    // board is needed, since a ROM table's PINemHi board never consults it;
-    // a file that cannot be read is logged at once ({ logged: true }).
-    // After the game, the launch snapshot is passed: when its VPReg.stg
-    // read failed, the second one would be useless and is not made.
-    function takeSnapshot(configId, launch = null) {
-        const folder = userFolderOf(configId);
-        if (folder === null) return { error: null, texts: {}, ms: 0 };
-        const start = host.now().getTime();
-        const texts = readTextFiles(configId, folder);
-        const vpreg = launch && !launch.sections ? { error: launch.error, logged: launch.logged } : readVpreg(configId, `${folder}\\VPReg.stg`);
-        return { ...vpreg, texts, ms: host.now().getTime() - start };
-    }
-
-    // VPReg.stg's sections ({ sections }), or { error, logged? }.
-    function readVpreg(configId, path) {
-        if (!host.files.fileExists(path)) return { error: `${path} not found` };
-        try {
-            return { sections: readCompoundFile(host.files.readBytes(path)) };
-        } catch (error) {
-            log(`"${configId}": ${path} could not be read (${messageOf(error)}); nothing credited from it.`);
-            return { error: messageOf(error), logged: true };
-        }
-    }
-
-    // Two snapshots' values of a section are the same, in any order.
-    const sameValues = (a, b) => {
-        if (!a || !b) return a === b;
-        const keys = Object.keys(a);
-        return keys.length === Object.keys(b).length && keys.every(key => a[key] === b[key]);
-    };
-
-    // The source's board in a snapshot ({ kind: "vpreg", section } or
-    // { kind: "text", file }), or null.
-    function boardIn(snapshot, source) {
-        if (source.kind === "text") return source.file in snapshot.texts ? readTextBoard(snapshot.texts[source.file]) : null;
-        return snapshot.sections && snapshot.sections[source.section] ? readSectionBoard(snapshot.sections[source.section]) : null;
-    }
-
-    const describe = source => (source.kind === "text" ? `text file "${source.file}"` : `VPReg.stg section "${source.section}"`);
-    const nameOf = source => (source.kind === "text" ? source.file : source.section);
-
-    const bothReadVpreg = (before, after) => Boolean(before.sections && after.sections);
-
-    // The sources whose board the Play changed, both snapshots holding VPReg.stg.
-    function changedSources(before, after) {
-        const sections = Object.keys(after.sections).filter(name => !sameValues(before.sections[name], after.sections[name])).map(section => ({ kind: "vpreg", section }));
-        const texts = Object.keys(after.texts).filter(file => before.texts[file] !== after.texts[file]).map(file => ({ kind: "text", file }));
-        return [...sections, ...texts].filter(source => boardIn(after, source) !== null);
-    }
-
-    // Among the changed boards, the table's: the only one, or of a section
-    // and a text file, the one with more places (La Schtroumpfette's
-    // five-place file over its lone HighScore); null otherwise.
-    function tableSourceAmong(changed, after) {
-        if (changed.length === 1) return changed[0];
-        if (changed.length !== 2 || changed[0].kind === changed[1].kind) return null;
-        const [a, b] = changed.map(source => boardIn(after, source).length);
-        return a === b ? null : changed[a > b ? 0 : 1];
-    }
-
-    // The User folder's failed VPReg.stg read, logged once.
-    function logFailedRead(configId, before, after) {
-        const failed = [before, after].find(snapshot => !snapshot.sections);
-        if (failed && failed.logged) return;
-        const why = failed && failed.error !== null ? ` (VPReg.stg: ${failed.error})` : "";
-        log(`"${configId}": no board after the game; nothing credited, the last known board kept${why}.`);
-    }
-
-    // The table's learned source ({ source, isNew: false }), or the one
-    // board the Play changed, learned now ({ source, isNew: true }); null
-    // when there is none (logged).
-    function sourceOf(configId, before, after) {
-        const learned = highScores.sourceOf(configId);
-        if (learned) return { source: learned, isNew: false };
-        // A section changed alongside a text file could not be seen.
-        if (!bothReadVpreg(before, after)) {
-            logFailedRead(configId, before, after);
-            return null;
-        }
-        const changed = changedSources(before, after);
-        const source = tableSourceAmong(changed, after);
-        if (source === null) {
-            log(changed.length === 0
-                ? `"${configId}": no board after the game, and no VPReg.stg or text file board changed; nothing learned, nothing credited.`
-                : `"${configId}": no board after the game, and ${changed.length} boards changed (${changed.map(nameOf).join(", ")}); nothing learned, nothing credited.`);
-            return null;
-        }
-        highScores.learnSource(configId, source);
-        return { source, isNew: true };
-    }
-
-    // The table's ROM-less boards around the Play: { before, after },
-    // before null when its source did not exist yet; null when there is no
-    // board after the game (logged).
-    function romlessBoards(configId, before, after) {
-        const found = sourceOf(configId, before, after);
-        if (found === null) return null;
-        const { source } = found;
-        if (source.kind === "vpreg" && !bothReadVpreg(before, after)) {
-            logFailedRead(configId, before, after);
-            return null;
-        }
-        const timing = `User folder read in ${before.ms} ms before the game, ${after.ms} ms after`;
-        log(found.isNew ? `"${configId}": ${describe(source)} learned (${timing}).` : `"${configId}": board read from ${describe(source)} (${timing}).`);
-        const afterBoard = boardIn(after, source);
-        if (afterBoard === null) {
-            log(`"${configId}": no board in ${describe(source)} after the game; nothing credited, the last known board kept.`);
-            return null;
-        }
-        return { before: boardIn(before, source), after: afterBoard };
-    }
-
-    // The High Score Board's read when PINemHi gives no board: the learned
-    // section or file read now ({ status: "read", places } or "failed"),
-    // "notLearned" for a VPX table with nothing learned yet, else
-    // PINemHi's result as it is; logged: true when the outcome was logged.
-    function romlessRead(configId, pinemhiRead) {
-        const source = highScores.sourceOf(configId);
-        if (!source) {
-            const game = host.getGameInfo(configId);
-            if (!game || game.rom || userFolderOf(configId) === null) return pinemhiRead;
-            log(`"${configId}": no board for the High Score Board; no VPReg.stg section or text file learned yet.`);
-            return { status: "notLearned", logged: true };
-        }
-        const snapshot = takeSnapshot(configId);
-        const places = boardIn(snapshot, source);
-        if (places !== null) {
-            log(`"${configId}": board read from ${describe(source)} for the High Score Board (User folder read in ${snapshot.ms} ms).`);
-            return { status: "read", places };
-        }
-        // A VPReg.stg that could not be read was logged by the snapshot.
-        if (!(source.kind === "vpreg" && snapshot.logged)) {
-            const why = source.kind === "vpreg" && snapshot.error ? ` (VPReg.stg: ${snapshot.error})` : "";
-            log(`"${configId}": no board in ${describe(source)} for the High Score Board${why}; ${highScores.boardOf(configId) === null ? "none known yet" : "the last known board kept"}.`);
-        }
-        return { status: "failed", logged: true };
-    }
 
     // A High Score Toast: titleOf(table) gives its title; the toast module
     // holds it until the wheel is back and the toasts before it have shown.
@@ -415,15 +137,10 @@ export default function init() {
         });
     }
 
-    // At "prelaunch": PinballY just cleared its cached board.
+    // At "prelaunch", once Play Settlement read the board.
     function onLaunchBegan({ game }) {
         announcedPlay = null;
-        const { configId } = game;
-        const launchRead = readPlaces(configId).then(safeHandler(SCRIPT_NAME, (places) => {
-            if (places !== null) highScores.recordBoard(configId, places);
-        }));
-        // Read at once, before VPX starts and holds the file.
-        launched = { configId, launchRead, snapshot: takeSnapshot(configId), nvCopy: copyNv(game), nvChanged: [] };
+        launched = { configId: game.configId, nvCopy: copyNv(game), nvChanged: [] };
         watchedLaunch = launched;
     }
 
@@ -555,34 +272,9 @@ export default function init() {
         if (launched && play.configId === launched.configId) announcedPlay = play;
     }));
 
-    // The board read after the game, settled against the last known one:
-    // resolves to { placeWon, places } (the board read, or null).
-    async function settleAfterGame(bracket, play) {
-        await bracket.launchRead;
-        await wait(AFTER_READ_DELAY_MS);
-        const places = await readPlaces(bracket.configId, { forget: true });
-        if (places !== null) return { placeWon: settleAndAnnounce(bracket.configId, places, play), places };
-        try {
-            const after = takeSnapshot(bracket.configId, bracket.snapshot);
-            const boards = romlessBoards(bracket.configId, bracket.snapshot, after);
-            if (boards === null) return { placeWon: false, places: null };
-            if (boards.before !== null) highScores.recordBoardBeforePlay(bracket.configId, boards.before);
-            return { placeWon: settleAndAnnounce(bracket.configId, boards.after, play), places: boards.after };
-        } finally {
-            // The launch made PinballY forget the board: handed again, the
-            // last known one when nothing was read.
-            handToPinballY(bracket.configId);
-        }
-    }
-
-    function settleAndAnnounce(configId, places, play) {
-        const best = highScores.settlePlay(configId, places, play);
-        if (best) announce(configId, best);
-        return Boolean(best);
-    }
-
-    // After the game; a launch a later script cancelled ran no game.
-    function onLaunchEnded({ cancelled }) {
+    // After the game, told by Play Settlement; a launch a later script
+    // cancelled ran no game.
+    function onLaunchEnded({ cancelled, settleBoard }) {
         const bracket = launched;
         const play = announcedPlay;
         launched = null;
@@ -593,10 +285,12 @@ export default function init() {
         // At most one toast per Play: a board settle that failed (logged)
         // may have won a place, so the Play Score then announces nothing.
         const settlePlayScoreSafely = (placeWon, places) => safeHandler(SCRIPT_NAME, settlePlayScore)(bracket, play, placeWon, places);
-        safeHandler(SCRIPT_NAME, settleAfterGame)(bracket, play)
+        const settleAndAnnounce = () => settleBoard(play).then(({ best, places }) => {
+            if (best) announce(bracket.configId, best);
+            return { placeWon: Boolean(best), places };
+        });
+        safeHandler(SCRIPT_NAME, settleAndAnnounce)()
             .then(({ placeWon, places }) => settlePlayScoreSafely(placeWon, places), () => settlePlayScoreSafely(true, null))
             .then(release, release);
     }
-
-    getLaunchBracket().subscribe(SCRIPT_NAME, { onBegan: onLaunchBegan, onEnded: onLaunchEnded });
 }
