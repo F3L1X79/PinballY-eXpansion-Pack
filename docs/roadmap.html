@@ -224,7 +224,6 @@
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
           <a class="chip tr-profiles" href="#pinbally-play-history"><b></b>Historique PinballY</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
-          <a class="chip tr-share" href="#script-conflicts"><b></b>Conflits de scripts</a>
         </div>
         <div class="cell">
           <a class="chip tr-profiles" href="#year-in-pinball"><b></b>Year in Pinball</a>
@@ -324,32 +323,6 @@
               <li>Une table sans image trouvée garde le logo du pack.</li>
             </ul>
             <p class="ctx">Reportée du grill de Discord Rich Presence du 30/10/2026.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-share" id="script-conflicts" data-track="share" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Prévenir quand un autre script entre en conflit avec le pack</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen</span></div>
-          </div>
-          <p>Le pack repère les scripts de <code>Scripts</code> qui se disputent avec un de ses Add-ons le même écran ou le même événement de PinballY (un script de vidéo de lancement contre Seamless Launch Overlay, par exemple), le dit au propriétaire de la borne et lui propose quoi faire, au lieu de le laisser croire à un bug du pack.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">research</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/research</code> (fait : <code>docs/research/script-conflicts.md</code>) → <code>/grill-with-docs</code> (fait) → <code>/to-spec</code> (fait : spec #536) → <code>/to-tickets</code> (fait : #537 à #545, dont #545 humain ; #546, Launch Bracket, préalable de #538) → <code>/implement</code></div>
-          <details>
-            <summary>Décisions du grill (15/11/2026)</summary>
-            <ul>
-              <li>Tous les conflits connus de la recherche comptent (RichardL64 et dépôt officiel en tête). Un Conflict n'est levé que sur l'effet vu : <code>launchoverlayshow</code> ou <code>prelaunch</code> déjà annulé, <code>ev.message</code> vidé ou <code>hideWheelImage</code> sur <code>launchoverlaymessage</code>. Jamais sur la seule présence d'un fichier : zéro fausse alerte.</li>
-              <li>Quand le défaut est de notre côté, on corrige sans prévenir : un <code>prelaunch</code> déjà annulé est ignoré par nos écouteurs de lancement, « Table Setup » n'est pas ajouté s'il existe déjà.</li>
-              <li>Les conflits invisibles à l'effet (<code>seamless-launch-spinner</code>, backglass caché, <code>wheel-actions</code>) vont seulement dans le guide.</li>
-              <li>Conflict Notice (Dialog, rang juste après le PinballY Version Notice) au retour sur la roue, pour un Admin Profile, une fois par Conflict : « Désactiver &lt;notre Add-on&gt; » (puis Redémarrer maintenant / Plus tard, le chemin des réglages) ou « Garder les deux ». Il nomme « probablement » les fichiers connus présents dans <code>Scripts</code>. Chaque détection va aussi dans l'Info Log.</li>
-              <li>Notre ligne d'import doit être la dernière de <code>Scripts\main.js</code> : en gras dans le README et <code>install.md</code> (en/fr), et vérifié au démarrage (un autre <code>import(</code> après la nôtre → Conflict Notice sans bouton de désactivation, une fois par borne).</li>
-              <li>Page du guide « With your External Add-ons » / « Avec vos Add-ons externes » : tout le tableau de recouvrement, détecté ou non, avec ce qu'on voit et quoi faire. La page d'installation pointe vers elle.</li>
-            </ul>
-            <p class="ctx">Idée de Félix du 14/11/2026, après le départ de FD (VPForums), qui faisait tourner LaunchVideo.js à côté du pack : les deux prenaient l'overlay de lancement.</p>
           </details>
         </div>
       </li>
