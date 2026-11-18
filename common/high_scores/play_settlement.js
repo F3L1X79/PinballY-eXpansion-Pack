@@ -1,24 +1,33 @@
 // ============================================================
-// Play Settlement: a table's board around a Play, as a subscriber of the
-// Launch Bracket. Reads the board when a launch begins (PINemHi, and the VPX
-// User folder for a table without a ROM) and a little after it ends, records
-// it in the High Score store, credits the Play, and hands PinballY the board
-// of a table whose source it learned. Also reads the board for the High Score Board.
-// - Without a ROM, the board comes from VPX's User folder, never read while VPX runs.
+// Play Settlement: a Play, as a subscriber of the Launch Bracket. Reads the board at
+// launch (PINemHi, or VPX's User folder without a ROM) and after the game, credits the
+// Play's place, then its Play Score (with vpxtool, from the ROM's .nv copied to
+// play_scores\ at launch; oddities to play_scores_anomalies.log), and announces at most
+// one of them. Hands PinballY a learned board; also reads it for the High Score Board.
+// - The Play and the NVRAM watch's news are read after the board read, never at the launch's end.
 // - A ROM-less table learns its source for good: the one board the Play changed.
 // - Logs under the caller's script name; texts come from the caller (no i18n here).
 // ============================================================
 
 import { safeHandler, logHandlerError } from "../core/safe_handler.js";
+import { logError } from "../core/error_log.js";
+import { nvramFolderOf } from "../vpxtool/nvram_watch.js";
 import { readBoard } from "./board_reader.js";
 import { readCompoundFile } from "./compound_file_reader.js";
 import { readSectionBoard, readTextBoard } from "./romless_board_reader.js";
+import { readNvramAnswer, lastGameOf, playScoreOf } from "./last_game_reader.js";
+import { createPlayScoreAnomalyLog, valueAnomaliesOf, ANOMALY } from "./play_score_anomaly_log.js";
 
 // PinballY's own read after the game returns the board cached at launch
 // (seen on the cabinet): read again a little later, fresh.
 const AFTER_READ_DELAY_MS = 2000;
 // PinballY kills PINemHi after 7.5 s; a read may also wait behind another one.
 const READ_TIMEOUT_MS = 10000;
+// The pack's folder for the .nv copied at launch, one per ROM.
+const PLAY_SCORE_COPY_FOLDER = "play_scores";
+// Unfinished Plays in a row on a ROM that make an anomaly: the sign of a
+// game_over that never turns true.
+const UNFINISHED_PLAYS_IN_A_ROW = 3;
 
 const messageOf = error => (error instanceof Error ? error.message : String(error));
 
@@ -65,16 +74,39 @@ function tableSourceAmong(changed, after) {
     return a === b ? null : changed[a > b ? 0 : 1];
 }
 
-// onEnded's settleBoard(play) resolves to { best, places }: the best place
-// credited, and the board read after the game (each or null).
-export function createPlaySettlement(host, { highScores, launchBracket, scriptName, scoreText, onBegan = () => {}, onEnded = () => {} }) {
+// Why the .nv files the game changed give no Play Score, or null when the
+// game changed the table's .nv alone.
+function whyChangedNvGiveNone(rom, changed) {
+    if (changed.length === 0) return `${rom}.nv did not change during the game`;
+    if (changed.length > 1) return `${changed.length} .nv files changed during the game (${changed.join(", ")})`;
+    if (changed[0].toLowerCase() !== rom.toLowerCase()) return `${changed[0]}.nv changed during the game, not the table's ${rom}.nv`;
+    return null;
+}
+
+// announce({ configId, place }) for the best place a Play won, else
+// announce({ configId, record, score }) for its Play Score's House Record or
+// Personal Best (recordPlayScore's record); at most one per Play.
+export function createPlaySettlement(host, {
+    highScores, launchBracket, profileStore, nvramWatch, vpxtool, scriptName, scoreText, announce,
+}) {
     const log = text => host.log(`[${scriptName}] ${text}`);
     const wait = ms => new Promise(resolve => host.setTimeout(resolve, ms));
-    const tellBegan = safeHandler(scriptName, onBegan);
-    const tellEnded = safeHandler(scriptName, onEnded);
-    // From a launch's start to its end: { configId, launchRead (a promise),
-    // snapshot (the User folder at launch) }.
-    let launched = null;
+    const tellAnnounce = safeHandler(scriptName, announce);
+    const anomalies = createPlayScoreAnomalyLog(host, scriptName);
+    // The last launch, kept past its end until the next one: { configId,
+    // launchRead (a promise), snapshot (the User folder at launch), nvCopy,
+    // nvChanged (the ROMs whose .nv the game changed, once the NVRAM watch
+    // told), play (the Play the Profile store announced, once it did) }.
+    let lastLaunch = null;
+
+    nvramWatch.watch(scriptName, {
+        onGameEnded: ({ configId, changed }) => {
+            if (lastLaunch && lastLaunch.configId === configId) lastLaunch.nvChanged = changed;
+        },
+    });
+    profileStore.onPlay(safeHandler(scriptName, (play) => {
+        if (lastLaunch && lastLaunch.configId === play.configId) lastLaunch.play = play;
+    }));
 
     // PinballY reads no board for a table with a learned source: its DMD
     // and info box show the one handed to it, kept until the next launch
@@ -305,19 +337,21 @@ export function createPlaySettlement(host, { highScores, launchBracket, scriptNa
         return read;
     }
 
-    // The board read after the game, settled against the last known one.
-    async function settleBoard(launch, play) {
+    // The board read after the game, settled against the last known one:
+    // { best, places }, the best place credited and the board read (each
+    // or null). The Play is read here, past the wait, whenever it came.
+    async function settleBoard(launch) {
         const { configId } = launch;
         await launch.launchRead;
         await wait(AFTER_READ_DELAY_MS);
         const places = await readPlaces(configId, { forget: true });
-        if (places !== null) return { best: highScores.settlePlay(configId, places, play), places };
+        if (places !== null) return { best: highScores.settlePlay(configId, places, launch.play), places };
         try {
             const after = takeSnapshot(configId, launch.snapshot);
             const boards = romlessBoards(configId, launch.snapshot, after);
             if (boards === null) return { best: null, places: null };
             if (boards.before !== null) highScores.recordBoardBeforePlay(configId, boards.before);
-            return { best: highScores.settlePlay(configId, boards.after, play), places: boards.after };
+            return { best: highScores.settlePlay(configId, boards.after, launch.play), places: boards.after };
         } finally {
             // The launch made PinballY forget the board: handed again, the
             // last known one (just credited) when nothing was read.
@@ -325,22 +359,152 @@ export function createPlaySettlement(host, { highScores, launchBracket, scriptNa
         }
     }
 
+    // The ROM's .nv copied before VPinMAME writes it, under the ROM's name
+    // (vpxtool picks the map from it), replacing the copy of an earlier
+    // launch, even one PinballY never brought back: { rom, nvPath, copyPath },
+    // { none: why, onlyIfNvChanged } when there is nothing to read (why null
+    // once logged), or null without vpxtool.
+    function copyNv(game) {
+        if (!vpxtool.hasVpxtool()) return null;
+        // Every table without ROM lands here too: the reason is logged only
+        // when the game changed a .nv, a sign the table does run a ROM.
+        if (!game.rom) return { none: "the table's ROM was unknown at launch", onlyIfNvChanged: true };
+        const folder = nvramFolderOf(host, game);
+        if (folder === null) return { none: "no NVRAM folder is known" };
+        const nvPath = `${folder}\\${game.rom}.nv`;
+        if (!host.files.fileExists(nvPath)) return { none: `${nvPath} did not exist at launch` };
+        const copyFolder = `${host.getProjectFolder()}\\${PLAY_SCORE_COPY_FOLDER}`;
+        const copyPath = `${copyFolder}\\${game.rom}.nv`;
+        try {
+            host.files.createFolder(copyFolder);
+            host.files.copyFile(nvPath, copyPath);
+        } catch (error) {
+            logError(scriptName, `ERROR "${game.configId}": ${nvPath} could not be copied (${messageOf(error)}); no Play Score.`, host, error);
+            return { none: null };
+        }
+        return { rom: game.rom, nvPath, copyPath };
+    }
+
+    // A Play Score side that throws (logged) must not cost the Play its place.
+    function guardedCopyNv(game) {
+        try {
+            return copyNv(game);
+        } catch (error) {
+            logHandlerError(scriptName, error);
+            return { none: null };
+        }
+    }
+
+    // vpxtool's answer for the .nv (readNvramAnswer()'s), or undefined when
+    // it gave none (logged, as an error unless it has no map for the ROM;
+    // no map and an unreadable answer go to the anomaly log, with the
+    // answer read before, if any).
+    function readAnswerIn(configId, rom, path, answerBefore) {
+        return new Promise((resolve) => {
+            const giveUp = (why) => {
+                logError(scriptName, `ERROR "${configId}": ${path} not read by vpxtool (${why}); no Play Score.`, host);
+                resolve(undefined);
+            };
+            const anomaly = check => anomalies.write({ configId, rom, check, before: answerBefore });
+            vpxtool.submit({
+                scriptName,
+                args: ["nvram", "show", path],
+                apply: ({ exitCode, output }) => {
+                    // vpxtool's answer for a ROM it has no map of (31 of the
+                    // cabinet's 142 .nv): an unsupported table, not an error.
+                    if (exitCode !== 0) {
+                        log(`"${configId}": vpxtool reads no last game in ${path} (exit code ${exitCode}, no map for this ROM); no Play Score.`);
+                        anomaly(ANOMALY.NO_MAP);
+                        resolve(undefined);
+                        return;
+                    }
+                    try {
+                        resolve(readNvramAnswer(output));
+                    } catch (error) {
+                        anomaly(ANOMALY.UNREADABLE_ANSWER);
+                        giveUp(messageOf(error));
+                    }
+                },
+                fail: giveUp,
+            });
+        });
+    }
+
+    // After the board settled the Play: its Play Score, when the game
+    // changed only the table's own .nv; why not logged otherwise, silently
+    // for a launch shorter than a Play. placeWon: the place stands for the
+    // Play, so its Play Score announces nothing. boardAfter: the board
+    // places read after the game, or null.
+    async function settlePlayScore(launch, placeWon, boardAfter) {
+        const { configId, nvCopy: copy, nvChanged: changed, play } = launch;
+        if (copy === null || play === null) return;
+        const noPlayScore = why => log(`"${configId}": no Play Score for ${play.profileName}: ${why}.`);
+        if (copy.none !== undefined) {
+            const told = copy.none !== null && (!copy.onlyIfNvChanged || changed.length > 0);
+            if (told) noPlayScore(copy.none);
+            return;
+        }
+        const why = whyChangedNvGiveNone(copy.rom, changed);
+        if (why !== null) {
+            noPlayScore(why);
+            return;
+        }
+        // One after the other: a vpxtool that fails on the copy is not run again.
+        const before = await readAnswerIn(configId, copy.rom, copy.copyPath, null);
+        if (before === undefined) return;
+        const after = await readAnswerIn(configId, copy.rom, copy.nvPath, before);
+        if (after === undefined) return;
+        const anomaly = (check, detail) => anomalies.write({ configId, rom: copy.rom, check, detail, before, after });
+        for (const { check, detail } of valueAnomaliesOf(before, after)) anomaly(check, detail);
+        const result = playScoreOf(lastGameOf(before.gameState), lastGameOf(after.gameState));
+        if (result.none) {
+            noPlayScore(result.none);
+            if (!result.unfinished) return;
+            const inARow = highScores.countUnfinishedPlay(copy.rom);
+            if (inARow === UNFINISHED_PLAYS_IN_A_ROW) anomaly(ANOMALY.UNFINISHED_IN_A_ROW, `${inARow} Plays in a row`);
+            return;
+        }
+        highScores.clearUnfinishedPlays(copy.rom);
+        const lowestPlace = boardAfter === null || boardAfter.length === 0 ? null : Math.min(...boardAfter.map(place => Number(place.score)));
+        if (!placeWon && lowestPlace !== null && result.score > lowestPlace) {
+            anomaly(ANOMALY.SHOULD_HAVE_ENTERED_BOARD, `Play Score ${result.score}, lowest place ${lowestPlace}`);
+        }
+        const record = highScores.recordPlayScore(configId, play, result.score);
+        if (record !== null && !placeWon) tellAnnounce({ configId, record, score: result.score });
+    }
+
+    // The board, then the Play Score; the board stays held until both are
+    // settled. A board settle that failed (logged) may have won a place,
+    // so the Play Score then announces nothing.
+    function settle(launch) {
+        const { configId } = launch;
+        const release = highScores.holdBoardForPlay(configId);
+        const settlePlayScoreSafely = (placeWon, places) => safeHandler(scriptName, settlePlayScore)(launch, placeWon, places);
+        const settleAndAnnounce = () => settleBoard(launch).then(({ best, places }) => {
+            if (best) tellAnnounce({ configId, place: best });
+            return { placeWon: Boolean(best), places };
+        });
+        safeHandler(scriptName, settleAndAnnounce)()
+            .then(({ placeWon, places }) => settlePlayScoreSafely(placeWon, places), () => settlePlayScoreSafely(true, null))
+            .then(release, release);
+    }
+
     launchBracket.subscribe(scriptName, {
         // At "prelaunch": PinballY just cleared its cached board.
         onBegan: ({ game }) => {
+            // Should the snapshot throw, the earlier launch's Play and news must not land on this one.
+            lastLaunch = null;
             const { configId } = game;
             const launchRead = readPlaces(configId).then(safeHandler(scriptName, (places) => {
                 if (places !== null) highScores.recordBoard(configId, places);
             }));
-            // Read at once, before VPX starts and holds the file.
-            launched = { configId, launchRead, snapshot: takeSnapshot(configId) };
-            tellBegan({ game });
+            // Read at once, before VPX starts and holds the files.
+            const snapshot = takeSnapshot(configId);
+            lastLaunch = { configId, launchRead, snapshot, nvCopy: guardedCopyNv(game), nvChanged: [], play: null };
         },
-        onEnded: ({ game, cancelled }) => {
-            const launch = launched;
-            launched = null;
-            if (!launch) return;
-            tellEnded({ game, cancelled, settleBoard: play => settleBoard(launch, play) });
+        // A launch a later script cancelled ran no game.
+        onEnded: ({ cancelled }) => {
+            if (lastLaunch && !cancelled) settle(lastLaunch);
         },
     });
 

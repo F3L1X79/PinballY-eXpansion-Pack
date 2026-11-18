@@ -454,7 +454,7 @@ The pack's own file, kept through every Pack Update, where a Play whose memory r
 _Avoid_: Error Log (an anomaly is no error of the pack)
 
 **Play Settlement**:
-The pack's one owner of a table's board around a Play: it reads the board when a launch begins and again after the game, learns where a table without a ROM keeps its board, and says which place the Play won. It also reads the board the High Score Board shows.
+The pack's one owner of what a Play won: it reads the table's board when a launch begins and again after the game, learns where a table without a ROM keeps its board, then reads the Play Score, writes its anomalies to the Play Score Anomaly Log, and says what to announce, at most one thing per Play. It also reads the board the High Score Board shows.
 _Avoid_: High Scores Add-on (it only shows what was won)
 
 **Default Score**:
