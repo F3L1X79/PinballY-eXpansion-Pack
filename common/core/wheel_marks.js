@@ -71,7 +71,7 @@ export function createWheelMarks(host, { attractOrder, profileStore, underBadge 
         // scriptName. showsWithoutTable: shown with a null game rather than hidden.
         // topRight: { place, margins, height() }, its piece of the top right stack.
         // refresh() tells it again, for a change only its Add-on hears of;
-        // top() is where its piece of the stack sits.
+        // top(), only with topRight, is where its piece of the stack sits.
         register(scriptName, { show, hide, showsWithoutTable = false, topRight = null }) {
             const rank = topRight ? TELL_ORDER.indexOf(topRight.place) : TELL_ORDER.length;
             const mark = { rank, showsWithoutTable, show: safeHandler(scriptName, show), hide: safeHandler(scriptName, hide) };
@@ -79,10 +79,9 @@ export function createWheelMarks(host, { attractOrder, profileStore, underBadge 
             marks.splice(after < 0 ? marks.length : after, 0, mark);
             if (topRight) stack.add(topRight.place, topRight);
             if (isListening) tell(mark, host.getCurrentTable());
-            return {
-                refresh: () => tell(mark, host.getCurrentTable()),
-                top: () => stack.topOf(topRight.place),
-            };
+            const handle = { refresh: () => tell(mark, host.getCurrentTable()) };
+            if (topRight) handle.top = () => stack.topOf(topRight.place);
+            return handle;
         },
     };
 }

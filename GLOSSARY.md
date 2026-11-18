@@ -188,7 +188,7 @@ _Avoid_: markers (the Selection Marker is the glow of a drawn screen), indicator
 
 **Wheel Mark**:
 A piece of the wheel screen (the Wheel Guides, the Challenge Card, the Mastery Bar, the Rating Plate): hidden during a game and in attract mode, and back on the return to the wheel. All but the Challenge Card follow the selected table and hide with none.
-_Avoid_: selection display, wheel overlay, Wheel Guides (only the marks of where the player is)
+_Avoid_: selection display, wheel overlay, Wheel Guides (one kind of Wheel Mark: the marks of where the player is)
 
 **Wheel Rail**:
 The thin column along the right edge of the wheel screen that lists every page of the wheel, letters or decades (each decade's years under it as an option), in the wheel's order, dimming those with no table. It slides away when the player stops moving and comes back on the next move. Shown as "rail de la roue" in French.

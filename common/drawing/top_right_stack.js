@@ -24,7 +24,8 @@ export const BADGE_HEIGHT = 170;
 export function createTopRightStack({ underBadge }) {
     const start = underBadge ? BADGE_HEIGHT : 0;
     // By place: { margins: { top, bottom }, height() }, the canvas height in
-    // reference px, or null while the piece takes no room (a card with no Challenge).
+    // reference px, or null while the piece takes no room (a card with no
+    // Challenge); the last piece, with nothing under it, needs no height().
     const pieces = new Map();
 
     const plateBesideBadge = () => underBadge && pieces.has(TOP_RIGHT_STACK.RATING_PLATE) && pieces.has(TOP_RIGHT_STACK.CHALLENGE_CARD);
@@ -39,11 +40,11 @@ export function createTopRightStack({ underBadge }) {
             return start + card.margins.top - TOP_RIGHT_STACK_GAP - (plate.height() - plate.margins.bottom);
         }
         let above = null;
-        for (const each of ORDER) {
-            const piece = pieces.get(each);
-            if (!piece || (each === TOP_RIGHT_STACK.RATING_PLATE && plateBesideBadge())) continue;
+        for (const pieceAbove of ORDER) {
+            const piece = pieces.get(pieceAbove);
+            if (!piece || (pieceAbove === TOP_RIGHT_STACK.RATING_PLATE && plateBesideBadge())) continue;
             const top = above ? above.top + above.height - above.margins.bottom + TOP_RIGHT_STACK_GAP - piece.margins.top : start;
-            if (each === place) return top;
+            if (pieceAbove === place) return top;
             const height = piece.height ? piece.height() : null;
             if (height !== null) above = { top, height, margins: piece.margins };
         }
