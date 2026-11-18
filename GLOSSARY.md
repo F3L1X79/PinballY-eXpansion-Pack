@@ -346,7 +346,7 @@ A table drawn at random from the current wheel selection and launched right away
 _Avoid_: random table, lucky pick
 
 **Pack Filter**:
-A wheel selection the pack itself adds, such as Tables to Discover or My High Scores. It lists and pages its tables in the Wheel Order, unless it has its own ranking, and gives way to all tables once it has none left.
+A wheel selection the pack itself adds, such as Tables to Discover or My High Scores. It lists and pages its tables in the Wheel Order, unless it has its own ranking, and gives way to all tables once it has none left, unless its entry is always in the main menu (Tables to Discover, Hall of Fame): it then stays empty.
 _Avoid_: selection filter, script filter, custom filter (Original Tables is only one of them)
 
 **Tables to Discover**:

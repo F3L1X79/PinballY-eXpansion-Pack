@@ -402,6 +402,22 @@ test("setMark writes a true mark, clearing removes the key, and the update liste
     assert.deepEqual(updates, [["Bob", { isReset: false }], ["Bob", { isReset: false }]]);
 });
 
+test("onActiveProfileReset hears of the active Profile's reset only, not of another Profile's or of a mark", () => {
+    const fake = createFake();
+    fake.addFile(`${PROFILES}\\Bob\\profile.json`, JSON.stringify({ version: 1 }));
+    const store = createProfileStore(fake);
+    let resets = 0;
+    store.onActiveProfileReset(() => { resets += 1; });
+
+    store.resetProfile("Bob");
+    store.setMark("Bob", "isChild", true);
+    assert.equal(resets, 0, "Bob is not active");
+
+    store.switchTo("Bob");
+    store.resetProfile("Bob");
+    assert.equal(resets, 1);
+});
+
 test("setMark refuses Guest and the Child mark of an Admin Profile, writing nothing", () => {
     const fake = createFake();
     fake.addFile(`${PROFILES}\\Alice\\profile.json`, JSON.stringify({ version: 1, isAdmin: true }));

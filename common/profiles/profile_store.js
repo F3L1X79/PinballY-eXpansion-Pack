@@ -628,6 +628,12 @@ export function createProfileStore(host) {
         // listener(profileName, { isReset }): after any change of a Profile's
         // data is saved; isReset when the Profile was reset.
         onUpdate: (listener) => { updateListeners.push(listener); },
+        // listener(): after a Profile Reset of the active Profile is saved.
+        onActiveProfileReset: (listener) => {
+            updateListeners.push((profileName, { isReset }) => {
+                if (isReset && sameName(profileName, activeProfile.name)) listener();
+            });
+        },
         // listener({ profileName, configId, start, seconds }): after a Play is
         // saved; profileName is the Profile active at its start.
         onPlay: (listener) => { playListeners.push(listener); },

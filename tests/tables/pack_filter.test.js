@@ -2,7 +2,7 @@
 // The Pack Filter over the fake host, with its own Wheel Order: an unranked
 // selection follows the Wheel Order and pages with it, a ranked one keeps its
 // ranking; it runs again only when its tables changed, and an empty one gives
-// way to All Tables through the Wheel Order. packFilterSortOf tells its paging.
+// way to All Tables through the Wheel Order unless always in the menu. packFilterSortOf tells its paging.
 // ============================================================
 
 import { test } from "node:test";
@@ -25,7 +25,7 @@ const TABLES = [
 const FILTER_ID = "User.project.TestSelection";
 
 // selected: the config ids the selection gives, read at each run.
-function setUp({ ranked = false, selected = TABLES.map(game => game.configId) } = {}) {
+function setUp({ ranked = false, selected = TABLES.map(game => game.configId), ...options } = {}) {
     const fake = createFakePinballYHost({ now: new Date(2026, 10, 18, 20, 0, 0), tables: TABLES });
     // No table selected yet: the filter then shows its tables from its first one.
     fake.setWheelTables([], { filterId: "Favorites" });
@@ -40,6 +40,7 @@ function setUp({ ranked = false, selected = TABLES.map(game => game.configId) } 
         group: "[Top]",
         sortKey: "5000",
         ranked,
+        ...options,
         selectConfigIds: () => {
             selection.reads += 1;
             return selection.configIds;
@@ -121,6 +122,24 @@ test("emptied, it gives way to All Tables through the Wheel Order: its sorted co
 
     assert.equal(fake.currentFilterId(), "User.project.WheelOrder");
     assert.equal(wheelOrder.getChosenFilterId(), "All");
+    assertNoErrorLogged(fake);
+});
+
+test("always in the menu, it waits for a runAgainOn event, not a return to the wheel, and stays empty", () => {
+    const { fake, packFilter, selection, runAgain } = setUp({ selected: ["Godzilla", "Eight Ball"], alwaysInMenu: true });
+    fake.setCurrentFilter(packFilter.filterId);
+
+    selection.configIds = ["Godzilla"];
+    fake.fire("wheelmode");
+    assert.deepEqual(wheelTitles(fake), ["Eight Ball", "Godzilla"], "unchanged on the return to the wheel");
+
+    runAgain();
+    assert.deepEqual(wheelTitles(fake), ["Godzilla"]);
+
+    selection.configIds = [];
+    runAgain();
+    assert.equal(fake.currentFilterId(), FILTER_ID);
+    assert.deepEqual(wheelTitles(fake), []);
     assertNoErrorLogged(fake);
 });
 
