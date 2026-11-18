@@ -1,9 +1,9 @@
 // ============================================================
 // Wheel Order module: the order the wheel lists the Active Filter's tables
 // in, alphabetical or by year, and the sorted copy's source, both saved in
-// cabinet.json. Gives the compare and page groups the pack's filters sort
-// and page with, and the chosen filter. start() creates the sorted copy, puts
-// the saved order on the filter PinballY restored, and logs the cabinet checks.
+// cabinet.json. Owns the Active Filter: showFilter() is the pack's only way to
+// change it, getChosenFilter() to read it. Gives the pack's filters their compare
+// and page groups. start() creates the sorted copy and applies the saved order.
 // - By year, a PinballY or other script's filter choice is cancelled and its sorted copy shown instead.
 // - The pack's own filters are never copied: switching the order runs the active one again.
 // - With the Wheel Order Add-on off, the order is always alphabetical.
@@ -322,10 +322,19 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
         return { id: sourceId, title: source.title, groupCmd: source.groupCmd, cmd: source.cmd, isStandIn: true };
     }
 
+    // The pack's only way to change the Active Filter (spec #548): a script's
+    // setCurFilter fires no "filterselect" for the module to cancel, so while
+    // by year a copied filter is shown through its sorted copy here.
+    function showFilter(filterId) {
+        if (isStarted && isByYear() && isCopied(filterId)) showCopyOf(filterId);
+        else host.setCurrentFilter(filterId);
+    }
+
     return {
         get,
         isByYear,
         start,
+        showFilter,
         getChosenFilter,
         getChosenFilterId,
         // Switches between alphabetical and by year, saved in cabinet.json at
@@ -366,5 +375,7 @@ export function getWheelOrder() {
 // each time PinballY sorts, so the Add-ons' init order does not matter.
 const compareInWheelOrder = (a, b) => getWheelOrder().compareForSort(a, b);
 const pageGroupInWheelOrder = game => getWheelOrder().pageGroup(game);
+// The default showFilter of the modules that take one (a unit test passes its own).
+export const showInWheelOrder = filterId => getWheelOrder().showFilter(filterId);
 // What the pack's own unranked filters sort and page with.
 export const WHEEL_ORDER_SORT = Object.freeze({ compareForSort: compareInWheelOrder, pageGroup: pageGroupInWheelOrder });

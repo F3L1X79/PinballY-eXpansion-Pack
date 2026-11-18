@@ -27,7 +27,6 @@ import { buildHighScoreAchievements } from "../achievements/high_scores.js";
 import { getHighScoreStore } from "../common/high_scores/high_score_store.js";
 import { buildWorldTourAchievements } from "../achievements/world_tour.js";
 import { createWorldTour } from "../common/achievements/world_tour.js";
-import { getWheelOrder } from "../common/tables/wheel_order.js";
 import { buildSurprisesAchievements } from "../achievements/surprises.js";
 import { createSurprises } from "../common/achievements/surprises.js";
 import { buildEasterEggAchievements } from "../achievements/easter_eggs.js";
@@ -342,7 +341,6 @@ export default function init() {
     // on the wheel the moment the last table is selected.
     createWorldTour(createPinballYHost(), profileStore, {
         onCompleted: () => checkForNewAchievements(),
-        chosenFilterId: () => getWheelOrder().getChosenFilterId(),
     });
     // Its Play listener runs inside the "gameover" handlers, so the deferred
     // check above reads what it recorded.

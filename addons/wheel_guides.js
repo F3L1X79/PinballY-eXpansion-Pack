@@ -81,12 +81,13 @@ export default function init() {
 
     // Cabinet check: whether PinballY refreshes Favorite Tables once the
     // player takes the selected table out of them there. The table and
-    // the count are taken when the menu opens, before the removal.
+    // the count are taken when the menu opens, before the removal; by year,
+    // on the sorted copy of Favorite Tables.
     let favoritesAtMenuOpen = null;
     function noteFavoritesAtMenuOpen() {
         const selected = host.getCurrentTable();
-        favoritesAtMenuOpen = host.getCurrentFilterId() === FAVORITES_FILTER && selected && selected.isFavorite === true
-            ? { selected, count: host.getWheelCount() }
+        favoritesAtMenuOpen = getWheelOrder().getChosenFilterId() === FAVORITES_FILTER && selected && selected.isFavorite === true
+            ? { selected, count: host.getWheelCount(), filterId: host.getCurrentFilterId() }
             : null;
     }
     function checkFavoritesRefresh() {
@@ -96,7 +97,7 @@ export default function init() {
         const countAtClose = host.getWheelCount();
         host.setTimeout(safeHandler(SCRIPT_NAME, () => {
             const countLater = host.getWheelCount();
-            logInfo(SCRIPT_NAME, `"${before.selected.title}" taken out of Favorite Tables while shown there: ${before.count} tables at "menuopen", `
+            logInfo(SCRIPT_NAME, `"${before.selected.title}" taken out of Favorite Tables while shown there (${before.filterId}): ${before.count} tables at "menuopen", `
                 + `${countAtClose} at "menuclose", ${countLater} ${FAVORITES_CHECK_DELAY_MS} ms later `
                 + `(${countLater < before.count ? "refreshed" : "not refreshed"}).`, host);
         }), FAVORITES_CHECK_DELAY_MS);

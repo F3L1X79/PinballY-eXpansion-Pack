@@ -9,6 +9,7 @@
 
 import { safeHandler } from "../core/safe_handler.js";
 import { ALL_TABLES_FILTER, isVisibleTable } from "../core/pinbally_host.js";
+import { getWheelOrder } from "../tables/wheel_order.js";
 
 const SCRIPT_NAME = "WorldTour";
 // A single table is no tour.
@@ -17,8 +18,8 @@ const MIN_TOUR_TABLES = 2;
 // Equal for the same tables to tour, whatever the current one.
 const signatureOf = tourTables => tourTables.map(table => table.configId).sort().join("\n");
 
-// chosenFilterId(): the Wheel Order module's; the Active Filter's id without one.
-export function createWorldTour(host, profileStore, { onCompleted, chosenFilterId = () => host.getCurrentFilterId() }) {
+// chosenFilterId(): the filter the player chose, the Wheel Order's (by year, its sorted copy stands in for it).
+export function createWorldTour(host, profileStore, { onCompleted, chosenFilterId = () => getWheelOrder().getChosenFilterId() }) {
     const seenConfigIds = new Set();
     // The signature of the tables to tour when the tour started; null while
     // the tour waits for its starting table.

@@ -21,6 +21,7 @@ import { collectionMasteryOfProfile } from "../mastery/table_mastery.js";
 import { collectionTextsOf } from "../mastery/mastery_bar.js";
 import { getHallOfFame } from "./hall_of_fame.js";
 import { getTablesToDiscover } from "../tables/tables_to_discover.js";
+import { showInWheelOrder } from "../tables/wheel_order.js";
 import { createNavigationSound } from "../core/navigation_sound.js";
 import { prepareDrawnScreen } from "./drawn_screen.js";
 import { playerLevelColorOf } from "../drawing/steamball_drawing.js";
@@ -38,9 +39,11 @@ const unshared = run => run();
 
 // withAchievementSets(run): runs run() with the Achievement sets that
 // readPlayerLevel and countAchievements build shared between them.
+// showFilter: how a selection button changes the filter, the Wheel Order's.
 export function createProfileStats(host, {
     profileStore, readPlayerLevel, countAchievements, withAchievementSets = unshared, achievementList, profileRewards = null, frameList = null, dailyStreak, tableOfTheDay, tableOfTheWeek, challenges = null,
     highScores = null, hallOfFameFilter = null, tablesToDiscoverFilter = null, householdStats = null, drawingAhead, drawnScreenControls,
+    showFilter = showInWheelOrder,
 }) {
     const { profileStats: TEXT } = lang;
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
@@ -518,7 +521,7 @@ export function createProfileStats(host, {
         if (choice === CHOICE.FRAME) return openChild((onExit, onFailed) => frameList.open(
             isWornChanged => (isWornChanged ? openAgainOnFrame(screen) : onExit()), { onFailed }));
         screen.controlled.close();
-        if (entry) host.setCurrentFilter(entry.filterId);
+        if (entry) showFilter(entry.filterId);
         return undefined;
     }
 

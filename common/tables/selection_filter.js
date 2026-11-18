@@ -3,14 +3,19 @@
 // Add-on computes (Challenge Tables, My High Scores). Returns the filter's
 // full id ("User.<id>") and runAgainIfCurrent. Listens to "wheelmode".
 // - Runs again only when its tables changed, so closing a menu never moves the wheel.
+// - Emptied, it gives way to All Tables through the Wheel Order (its sorted copy while by year).
 // - Listed and paged in the Wheel Order, unless ranked: then in its own order, each table its own Next/Previous Page stop.
 // ============================================================
 
 import { safeHandler } from "../core/safe_handler.js";
 import { ALL_TABLES_FILTER } from "../core/pinbally_host.js";
+import { showInWheelOrder } from "./wheel_order.js";
 
 // sortFields: an unranked selection's compareForSort and pageGroup (the Add-ons pass the Wheel Order's).
-export function createSelectionFilter(host, { scriptName, selectConfigIds, ranked = false, sortFields = {}, ...filter }) {
+// showFilter: how the filter is changed, the Wheel Order's unless a unit test passes its own.
+export function createSelectionFilter(host, {
+    scriptName, selectConfigIds, ranked = false, sortFields = {}, showFilter = showInWheelOrder, ...filter
+}) {
     const filterId = `User.${filter.id}`;
     // Kept after the scan, like PinballY keeps the filter's selection: the
     // position of each table, by config ID.
@@ -39,7 +44,7 @@ export function createSelectionFilter(host, { scriptName, selectConfigIds, ranke
         // The Active Filter is the chosen one here: the Wheel Order's sorted copy never stands in for a pack filter.
         if (host.getCurrentFilterId() !== filterId) return;
         const tables = selectConfigIds();
-        if (tables.length === 0) host.setCurrentFilter(ALL_TABLES_FILTER);
+        if (tables.length === 0) showFilter(ALL_TABLES_FILTER);
         else if (!sameTables(tables)) host.refreshFilter();
     };
     // Fires on each return to the wheel (after a game, a menu, a Profile switch).

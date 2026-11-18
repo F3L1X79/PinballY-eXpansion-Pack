@@ -61,7 +61,11 @@ function setUp({ challenge, active = "Alice", plays = {}, now = MONDAY } = {}) {
     const randomGame = createRandomGame(fake, store, { animateTo: async () => {}, skipAnimation: true });
     const challenges = createChallenges(fake, store,
         { tableOfTheDay, tableOfTheWeek, randomGame, toasts: createAchievementToasts(fake) });
-    createChallengeTables(fake, challenges, createMainMenu(fake), { sortFields: { compareForSort: (a, b) => a.title.localeCompare(b.title) } });
+    // Several fakes in one process: no shared Wheel Order, the filter changed on this fake.
+    createChallengeTables(fake, challenges, createMainMenu(fake), {
+        sortFields: { compareForSort: (a, b) => a.title.localeCompare(b.title) },
+        showFilter: fake.setCurrentFilter,
+    });
     return { fake, store, tableOfTheDay, tableOfTheWeek };
 }
 

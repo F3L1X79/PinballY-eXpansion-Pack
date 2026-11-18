@@ -31,6 +31,6 @@ test("the Wheel Position follows a table leaving Favorite Tables at menuclose", 
     assert.equal(fake.getCurrentTable().title, "Addams Family");
     assert.equal(shownPosition(fake), "1/2");
     assert.match(fake.readFile(INFO_LOG),
-        /\[WheelGuides\] "Cyclone" taken out of Favorite Tables while shown there: 3 tables at "menuopen", 3 at "menuclose", 2 300 ms later \(refreshed\)\./);
+        /\[WheelGuides\] "Cyclone" taken out of Favorite Tables while shown there \(Favorites\): 3 tables at "menuopen", 3 at "menuclose", 2 300 ms later \(refreshed\)\./);
     assertNoErrorLogged(fake);
 });
