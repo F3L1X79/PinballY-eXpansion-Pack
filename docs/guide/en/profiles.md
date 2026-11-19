@@ -23,8 +23,8 @@ Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. An Admin P
 Each Profile has its own star ratings and its own favourites. While your Profile is active, everything PinballY shows uses yours: the stars, the rating dialog, "Favorite Tables", the rating filters and "Add to Favorites" / "Remove from Favorites". Hidden tables stay the same for everyone.
 
 - A new Profile starts with no rating and no favourite.
-- On the wheel, your Rating of the selected table shows as five stars at the top right, above the Challenge Card; they stay empty on a table you have not rated yet.
-- On the wheel, the Favorite Heart in the bottom left corner is red on your Favorite Tables, grey on the others; Guest sees its own, and after Change Player it shows the new Profile's at once. With **Ratings per Profile** off, it shows PinballY's favourites, shared by the cabinet.
+- On the wheel, five stars at the top right show your Rating of the selected table, and the Favorite Heart in the bottom left corner is red on your Favorite Tables (see [On the wheel screen](interface.md#on-the-wheel-screen)).
+- A reminder asks you to rate a table once you have played it long enough (`ASK_TO_RATE_AFTER_MINUTES_PLAYED`), unless your Profile has rated it already.
 - A Profile Reset keeps the Profile's ratings and favourites.
 - The first time the pack runs with this, the ratings and favourites already on the cabinet are given to every Profile, Guest included: nobody loses a favourite, and each of you then sorts your own.
 - A rating you give is kept even if PinballY closes or crashes before you change Profile.

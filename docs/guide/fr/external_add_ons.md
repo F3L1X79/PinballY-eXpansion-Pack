@@ -22,7 +22,11 @@ Ces chevauchements sont corrigés du côté du pack. Vous ne voyez rien, et il n
 
 ## Ce que le pack vous signale : l'écran de lancement
 
-Quand un script importé avant le pack prend l'écran de lancement, l'**Écran de lancement** du pack affiche quand même le sien par-dessus, et votre vidéo ou image de lancement n'apparaît jamais. De retour sur la roue, un **avis de conflit** explique à un [Profil admin](settings.md#profil-admin) (à tous, tant qu'aucun Profil n'est admin) ce qui s'est passé, et nomme après « Probablement : » le script de lancement connu trouvé dans `Scripts`, s'il y en a un. « Désactiver « Écran de lancement » » rend l'écran de lancement à votre script ; « Garder les deux » laisse tout en l'état. Il ne demande qu'une fois pour la borne (voir [Écran de lancement](settings.md#réglages-de-lexpansion-pack)).
+Quand un script importé avant le pack prend l'écran de lancement, l'**Écran de lancement** du pack affiche quand même le sien par-dessus, et votre vidéo ou image de lancement n'apparaît jamais. De retour sur la roue, un **avis de conflit** explique à un [Profil admin](settings.md#profil-admin) (à tous, tant qu'aucun Profil n'est admin) ce qui s'est passé, et quelle ligne retirer de `Scripts\main.js` pour ne garder que l'écran du pack. S'il trouve un script de lancement connu dans `Scripts` ou ses sous-dossiers (`LaunchVideo.js`, `LaunchFade.js`, `launchAnimations.js`, `FlexDMD.js`, ou une ancienne copie de `seamless_launch_overlay.js`), il le nomme après « Probablement : ».
+
+- « Désactiver « Écran de lancement » » rend l'écran de lancement à votre script : il enregistre l'[Écran de lancement](settings.md#réglages-de-lexpansion-pack) désactivé, puis propose « Redémarrer maintenant » ou « Plus tard ».
+- « Garder les deux », ou Exit, laisse tout en l'état.
+- Après l'une ou l'autre réponse, l'avis ne revient plus jamais sur cette borne, même après une mise à jour du pack ou si vous réactivez l'Écran de lancement.
 
 Pour garder plutôt l'écran de lancement du pack, retirez la ligne d'import de votre script de `Scripts\main.js`.
 

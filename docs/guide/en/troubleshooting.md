@@ -81,9 +81,7 @@ PinballY's own log, in the PinballY folder, covers the current session only. At 
 
 **Guest is the only Profile.** The pack ships with Guest alone. Create a Profile from **Change Player**, with its last slot, the "+", or from Windows, as a folder (see [Create a Profile](profiles.md#create-a-profile)).
 
-**I marked a Profile as admin and lost the setup entries.** Once a Profile is marked, the others, Guest included, no longer see them, and you may still be on Guest: pick the marked Profile in Change Player, in the main menu or the Exit menu. PinballY opens Change Player by itself only once the cabinet has two Profiles or more besides Guest.
-
-**I created my first Profile and Guest lost the setup entries, and the "+".** The first Profile created from the cabinet becomes an Admin Profile, as Name Entry's yellow line says, and you are still on Guest: pick the new Profile in Change Player, in the main menu or the Exit menu (see [Create a Profile](profiles.md#create-a-profile)).
+**I marked a Profile as admin, or created my first Profile, and lost the setup entries (and the "+").** Once a Profile is marked, the others, Guest included, no longer see them, and the first Profile created from the cabinet is marked by itself, as Name Entry's yellow line says. You are probably still on Guest: pick the marked Profile in Change Player, in the main menu or the Exit menu. PinballY opens Change Player by itself only once the cabinet has two Profiles or more besides Guest.
 
 **"Manage profiles" is missing from the Exit menu or the Operator Menu.** Once a Profile is marked, it shows to Admin Profiles only; while none is, it shows to every Profile but Guest and Child Profiles, with "Become admin" alone (see [Admin Profile](settings.md#admin-profile)). With PinballY's Exit menu disabled in its options, open the Operator Menu with the coin door service button.
 

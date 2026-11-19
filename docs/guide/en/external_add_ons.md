@@ -22,7 +22,11 @@ These overlaps are fixed on the pack's side. You see nothing, and there is nothi
 
 ## What the pack tells you: the launch screen
 
-When a script imported before the pack takes the launch screen, the pack's **Launch overlay** still shows its own screen over it, so your launch video or image never appears. Back on the wheel, a **Conflict Notice** tells an [Admin Profile](settings.md#admin-profile) (anyone, while no Profile is an Admin) what happened, and names the known launch script it found in `Scripts`, if any, after "Probably:". "Turn off Launch overlay" gives the launch screen back to your script; "Keep both" keeps things as they are. It asks once for the cabinet (see [Launch overlay](settings.md#expansion-pack-settings)).
+When a script imported before the pack takes the launch screen, the pack's **Launch overlay** still shows its own screen over it, so your launch video or image never appears. Back on the wheel, a **Conflict Notice** tells an [Admin Profile](settings.md#admin-profile) (anyone, while no Profile is an Admin) what happened, and which script line to remove from `Scripts\main.js` to keep only the pack's screen. When it finds a known launch script in `Scripts` or its sub-folders (`LaunchVideo.js`, `LaunchFade.js`, `launchAnimations.js`, `FlexDMD.js`, or an older copy of `seamless_launch_overlay.js`), it names it after "Probably:".
+
+- "Turn off Launch overlay" gives the launch screen back to your script: it saves the [Launch overlay](settings.md#expansion-pack-settings) off, then offers "Restart now" or "Later".
+- "Keep both", or Exit, keeps things as they are.
+- After either answer, the Notice never shows again on this cabinet, even after an update of the pack or if you turn the Launch overlay on again.
 
 To keep the pack's launch screen instead, remove your script's import line from `Scripts\main.js`.
 

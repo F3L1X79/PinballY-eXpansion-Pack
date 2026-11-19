@@ -37,9 +37,7 @@ While it is missing and the Table ROMs Add-on is on, a message opens at startup,
 
 Later on, **eXpansion Pack Settings** shows **Install vpxtool v0.38.0** while it is missing and the Table ROMs Add-on is on, whatever you answered; it opens the same message. You can also install it by hand: download `vpxtool` for Windows from its releases page (https://github.com/francisdb/vpxtool/releases) and put `vpxtool.exe` in `ExpansionPack\tools`, next to the restart helper already there.
 
-Without it, a table's ROM is still found, after its first Play.
-
-A table vpxtool cannot read (often a table newer than vpxtool) is noted once in the Error Log, `errors.log`: it is read again only when its file changes or vpxtool is updated. Meanwhile, its ROM is found after its first Play.
+Without vpxtool, a table's ROM is still found, after its first Play. So is the ROM of a table vpxtool cannot read (often a table newer than vpxtool), noted once in the Error Log, `errors.log`: it is read again only when its file changes or vpxtool is updated.
 
 ## PINemHi 3.6.8
 
@@ -62,7 +60,7 @@ Once the cabinet has two Profiles or more besides Guest, PinballY starts on Chan
 Everything the pack keeps stays in `Scripts\ExpansionPack`: your settings (`.env.local`) and each Profile's progress (`profiles`).
 
 - **To back up**, copy that folder.
-- **To reinstall or update by hand**, keep the `profiles` folder, and you get your progress back.
+- **To reinstall or update by hand**, see [Updating offline](updates.md#updating-offline) for what to copy back.
 - **To uninstall**, delete it and remove the import line from `Scripts\main.js`.
 
 ## Installing with git

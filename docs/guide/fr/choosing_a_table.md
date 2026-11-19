@@ -25,8 +25,6 @@ Pour un Profil enfant, voir [Réglages](settings.md#profil-enfant) : la table du
 Chaque minute passée sur une table fait monter votre maîtrise de celle-ci, sur dix niveaux, de Novice à Mage du flipper, chacun plus long à atteindre que le précédent.
 
 - La barre de maîtrise, en haut à droite de l'écran de la roue, montre où vous en êtes sur la table sélectionnée, et un encart annonce le niveau atteint.
-- Dessous, cinq étoiles donnent votre propre note de la table sélectionnée, et changent dès que vous la notez. Une table que vous n'avez pas notée n'en a pas : un zéro s'affiche en cinq étoiles vides.
-- La ligne d'état du bas donne l'avis de toute la maison sur la table sélectionnée : sa note de la maison, la moyenne de vos notes arrondie à la demi-étoile, avec le nombre d'entre vous qui l'ont notée (voir [Profils](profiles.md#notes-et-tables-favorites)).
 - Quand dix de vos tables atteignent le niveau suivant, la maîtrise de votre collection passe un palier. Les tables masquées et non configurées ne comptent pas.
 - Le niveau 10 sur une table et chaque nouveau palier font pleuvoir des confettis.
 - Chaque palier débloque aussi un cadre pour votre Avatar, de la Sylve enchantée à la Légende céleste : choisissez celui que vous portez dans **Mon profil**, sous **Cadre**.
@@ -68,9 +66,7 @@ Pour lire les tableaux d'environ 300 ROM de plus, mettez PINemHi à jour (voir [
 ## Table au hasard et filtres
 
 - Une table au hasard est tirée sur une roue de la fortune (`SKIP_RANDOM_GAME_ANIMATION=true` la lance aussitôt). Lancez-la depuis l'écran d'accueil, ou depuis « Lancer une table au hasard » dans le menu principal, sous « Jouer » : elle est tirée parmi les tables de la roue, filtre actif compris.
-- Derrière « Changer de filtre » dans le menu principal : « Tables à découvrir », « Tables les plus jouées », « Mes meilleurs scores » (les tables où vous avez une place au tableau), « Tables favorites », « Tables masquées » (tant qu'une table est masquée), « Tables Originales » (le fabricant réglé par `COMMUNITY_TABLES_MANUFACTURER`) et « Tables du défi ».
-- Un rappel vous propose de noter une table une fois que vous y avez assez joué (`ASK_TO_RATE_AFTER_MINUTES_PLAYED`), sauf si votre Profil l'a déjà notée.
-- Les notes en étoiles et les « Tables favorites » sont celles du Profil actif : ce que vous notez ou ajoutez aux favoris ne change rien pour les autres (voir [Profils](profiles.md#notes-et-tables-favorites)).
+- Derrière « Changer de filtre » dans le menu principal : « Tables à découvrir », « Tables les plus jouées », « Mes meilleurs scores » (les tables où vous avez une place au tableau), « Tables favorites », « Tables masquées » (tant qu'une table est masquée), « Tables Originales » (le fabricant réglé par `COMMUNITY_TABLES_MANUFACTURER`) et « Tables du défi ». Les « Tables favorites » sont celles du Profil actif (voir [Profils](profiles.md#notes-et-tables-favorites)).
 
 ## Ordre de la roue
 

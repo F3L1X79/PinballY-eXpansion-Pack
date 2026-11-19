@@ -25,8 +25,6 @@ For a Child Profile, see [Settings](settings.md#child-profile): the Table of the
 Every minute you play a table builds your Table Mastery of it, through ten Mastery Levels from Rookie to Pinball Wizard, each longer to reach than the one before.
 
 - The Mastery Bar, at the top right of the wheel screen, shows how far you are on the selected table, and a toast announces the level you reach.
-- Under it, five stars give your own Rating of the selected table, and change as soon as you rate it. A table you have not rated has none: a zero shows as five empty stars.
-- The lower status line gives what the whole household thinks of the selected table: its Household Rating, the average of your Ratings rounded to the half star, with how many of you rated it (see [Profiles](profiles.md#ratings-and-favorite-tables)).
 - When ten of your tables reach the next level, your Collection Mastery climbs a tier. Hidden and unconfigured tables do not count.
 - Mastery Level 10 on a table and each new Collection Tier bring a shower of confetti.
 - Each Collection Tier also unlocks an Avatar Frame, from the Enchanted Forest to the Celestial Legend, to wear around your Avatar: pick it in **My Profile**, under **Frame**.
@@ -68,9 +66,7 @@ To read the boards of about 300 more ROMs, update PINemHi (see [Install](install
 ## Random Game and filters
 
 - A Random Game is spun on a wheel of fortune (`SKIP_RANDOM_GAME_ANIMATION=true` launches it at once). Launch one from the Welcome Screen, or from "Launch a random table" in the main menu, under "Play": it draws from the tables on the wheel, the Active Filter included.
-- Behind "Change Filter" in the main menu: "Tables to Discover", "Most Played Tables", "My High Scores" (the tables where you hold a place on the board), "Favorite Tables", "Hidden Tables" (while a table is hidden), "Original Tables" (the manufacturer set by `COMMUNITY_TABLES_MANUFACTURER`) and "Challenge Tables".
-- A reminder asks you to rate a table once you have played it long enough (`ASK_TO_RATE_AFTER_MINUTES_PLAYED`), unless your Profile has rated it already.
-- Star ratings and "Favorite Tables" are the active Profile's own: what you rate or add to the favourites changes nobody else's (see [Profiles](profiles.md#ratings-and-favorite-tables)).
+- Behind "Change Filter" in the main menu: "Tables to Discover", "Most Played Tables", "My High Scores" (the tables where you hold a place on the board), "Favorite Tables", "Hidden Tables" (while a table is hidden), "Original Tables" (the manufacturer set by `COMMUNITY_TABLES_MANUFACTURER`) and "Challenge Tables". "Favorite Tables" is the active Profile's own (see [Profiles](profiles.md#ratings-and-favorite-tables)).
 
 ## Wheel Order
 

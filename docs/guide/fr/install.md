@@ -37,9 +37,7 @@ Tant qu'il manque et que l'Add-on « ROM des tables » est activé, un message s
 
 Par la suite, **Réglages de l'eXpansion pack** affiche **Installer vpxtool v0.38.0** tant qu'il manque et que l'Add-on « ROM des tables » est activé, quelle que soit votre réponse ; cette ligne ouvre le même message. Vous pouvez aussi l'installer à la main : téléchargez `vpxtool` pour Windows sur sa page de versions (https://github.com/francisdb/vpxtool/releases) et placez `vpxtool.exe` dans `ExpansionPack\tools`, à côté du programme de redémarrage déjà présent.
 
-Sans lui, la ROM d'une table est quand même trouvée, après sa première partie.
-
-Une table que vpxtool ne sait pas lire (souvent une table plus récente que lui) est notée une seule fois dans le journal d'erreurs, `errors.log` : elle n'est relue que lorsque son fichier change ou que vpxtool est mis à jour. En attendant, sa ROM est trouvée après sa première partie.
+Sans vpxtool, la ROM d'une table est quand même trouvée, après sa première partie. De même pour une table que vpxtool ne sait pas lire (souvent une table plus récente que lui), notée une seule fois dans le journal d'erreurs, `errors.log` : elle n'est relue que lorsque son fichier change ou que vpxtool est mis à jour.
 
 ## PINemHi 3.6.8
 
@@ -62,7 +60,7 @@ Dès que la borne compte au moins deux Profils sans compter Invité, PinballY d�
 Tout ce que le pack conserve reste dans `Scripts\ExpansionPack` : vos réglages (`.env.local`) et la progression de chaque Profil (`profiles`).
 
 - **Pour sauvegarder**, copiez ce dossier.
-- **Pour réinstaller ou mettre à jour à la main**, gardez le dossier `profiles` : vous retrouvez votre progression.
+- **Pour réinstaller ou mettre à jour à la main**, voyez [Mettre à jour hors ligne](updates.md#mettre-à-jour-hors-ligne) pour ce qu'il faut recopier.
 - **Pour désinstaller**, supprimez-le et retirez la ligne d'import de `Scripts\main.js`.
 
 ## Installer avec git

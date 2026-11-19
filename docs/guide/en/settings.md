@@ -20,13 +20,11 @@ Everything stays in one folder, with no change to PinballY itself.
 - "Update vpxtool (v0.37.1 → v0.38.0)" while yours is older than the version the pack names;
 - "Update vpxtool", greyed with "vpxtool v0.38.0 is up to date" under it, while yours is that version or newer.
 
-Under "Players and progress", **Ratings per Profile** gives each Profile its own star Ratings and Favorite Tables, kept in a `ratings.json` file of its folder. The first time it runs, every Profile, Guest included, is given the Ratings and Favorite Tables already on the cabinet. Turned off, everyone shares PinballY's Ratings and Favorite Tables again, and the Ratings Achievements are gone (`ADD_ON_PROFILE_RATINGS=false`).
+Until the pack has read your vpxtool's version once (about ten seconds into the first start that finds it), or while that version cannot be read, there is no vpxtool line.
+
+Under "Players and progress", **Ratings per Profile** gives each Profile its own star Ratings and Favorite Tables, kept in a `ratings.json` file of its folder (see [Ratings and Favorite Tables](profiles.md#ratings-and-favorite-tables)). Turned off, everyone shares PinballY's Ratings and Favorite Tables again, and the Ratings Achievements are gone (`ADD_ON_PROFILE_RATINGS=false`).
 
 Under "Menus and filters", **Hidden Games** is on by default: some surprises unlock menu entries, so do not be puzzled when one appears in a player's main menu. Turned off, those entries never show (`ADD_ON_ROCKET_GAME=false`). **Wheel Order** is on too, its wheel alphabetical until a player switches it to by year; turned off, "Change Filter" loses its order entry and the wheel stays alphabetical (`ADD_ON_WHEEL_ORDER=false`, see [Wheel Order](choosing_a_table.md#wheel-order)). The Attract Order line below belongs to it: it shows only while Wheel Order is on, and with Wheel Order off, attract mode is PinballY's own.
-
-Under "Wheel screen", **Wheel Guides** shows where you are on the wheel: the Wheel Rail, the letters (or decades) along the right edge with a gold pill on the selected table's, the Wheel Position, the selected table's place out of the wheel's tables, in the bottom right corner, and the Favorite Heart, red on a Favorite Table, in the bottom left corner (see [Interface](interface.md#on-the-wheel-screen)). Turned off, "Table n/total" comes back to the lower status line (`ADD_ON_WHEEL_GUIDES=false`; in `.env.local`, `WHEEL_RAIL=false` removes the Wheel Rail alone, `WHEEL_POSITION=false` removes the Wheel Position alone, `FAVORITE_HEART=false` the Favorite Heart alone). For a held flipper button to scroll the wheel at the pace the cabinet was tuned for, set PinballY's own "Auto-repeat rate" (Options, Game Wheel) to `180ms`: the pack never changes it.
-
-Under "Launching and playing a table", **Launch overlay** keeps the screen from flashing black while a table loads (`ADD_ON_SEAMLESS_LAUNCH_OVERLAY=false` to turn it off). If another script you run in PinballY, such as a launch video script, takes the launch screen before the pack, the pack's overlay still shows, and back on the wheel a **Conflict Notice** tells an [Admin Profile](#admin-profile) (anyone, while no Profile is an Admin) which script line to remove from `Scripts\main.js` to keep only the pack's. When it finds a known launch script in `Scripts` or its sub-folders (`LaunchVideo.js`, `LaunchFade.js`, `launchAnimations.js`, `FlexDMD.js`, or an older copy of `seamless_launch_overlay.js`), it names it after "Probably:". "Turn off Launch overlay" saves it off, as here, then offers "Restart now" or "Later". "Keep both", or Exit, keeps things as they are. After either answer, the Notice never shows again on this cabinet, even after an update of the pack or if you turn the Launch overlay on again here.
 
 The **Attract Order** line, after the language, chooses how attract mode moves through the tables once the cabinet sits idle:
 
@@ -36,7 +34,9 @@ The **Attract Order** line, after the language, chooses how attract mode moves t
 
 To do this, the pack takes PinballY's switches over: saving In Order or Whole Wheel keeps the value of PinballY's "Switch games every" option, puts a one-day value in its place so PinballY no longer switches, and switches itself at the interval you had set. Saving As PinballY, or turning Wheel Order off, gives your value back. If you change "Switch games every" in PinballY's options meanwhile, the pack takes your new value at the next start: PinballY switches with it for that session, the pack from the start after. Like the other lines, the choice applies when PinballY restarts (`ATTRACT_ORDER`). **Before removing the pack, set the Attract Order back to As PinballY**: otherwise PinballY's attract mode keeps the one-day value and never switches tables.
 
-Until the pack has read your vpxtool's version once (about ten seconds into the first start that finds it), or while that version cannot be read, there is no vpxtool line.
+Under "Wheel screen", **Wheel Guides** shows where you are on the wheel: the Wheel Rail, the letters (or decades) along the right edge with a gold pill on the selected table's, the Wheel Position, the selected table's place out of the wheel's tables, in the bottom right corner, and the Favorite Heart, red on a Favorite Table, in the bottom left corner (see [Interface](interface.md#on-the-wheel-screen)). Turned off, "Table n/total" comes back to the lower status line (`ADD_ON_WHEEL_GUIDES=false`; in `.env.local`, `WHEEL_RAIL=false` removes the Wheel Rail alone, `WHEEL_POSITION=false` removes the Wheel Position alone, `FAVORITE_HEART=false` the Favorite Heart alone). For a held flipper button to scroll the wheel at the pace the cabinet was tuned for, set PinballY's own "Auto-repeat rate" (Options, Game Wheel) to `180ms`: the pack never changes it.
+
+Under "Launching and playing a table", **Launch overlay** keeps the screen from flashing black while a table loads (`ADD_ON_SEAMLESS_LAUNCH_OVERLAY=false` to turn it off). If another script you run in PinballY, such as a launch video script, takes the launch screen before the pack, the pack's overlay still shows, and a **Conflict Notice** says so once: see [With your External Add-ons](external_add_ons.md#what-the-pack-tells-you-the-launch-screen).
 
 The **Offline Mode** group holds what reaches, or offers to reach, the internet, one switch each:
 
@@ -95,8 +95,6 @@ The eXpansion Pack Settings write to this file too. A key they save that is not 
 | `FAVORITE_HEART` | `true` | `false` removes the Favorite Heart (bottom left of the wheel screen, red on a Favorite Table; see [Interface](interface.md#on-the-wheel-screen)). |
 
 Every feature can also be turned off with its `ADD_ON_*` key, for example `ADD_ON_CLOCK=false` or `ADD_ON_CHALLENGES=false`. Only Menu Cleanup, the Backglass Clock (`ADD_ON_BACKGLASS_CLOCK`, the time on the backglass screen during a game, see [Interface](interface.md#backglass-clock)) and Discord Rich Presence (`ADD_ON_DISCORD_RICH_PRESENCE`, see [above](#discord-rich-presence)) are off by default. Each key is described in [.env.example](../../../.env.example).
-
-Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. Keep that folder when you reinstall or update the pack, and you get your progress back.
 
 ## Admin Profile
 
