@@ -51,7 +51,7 @@ test("setup", async () => {
 
 test("the Rating Plate and the Mastery Bar hide through attract mode and come back on the table it ended on", async () => {
     assert.equal(shownRating(fake), 4, "the table on screen before attract mode");
-    assert.equal(shownMastery(fake).head, "To discover");
+    assert.equal(shownMastery(fake).head, "Discover");
 
     fake.enterAttractMode();
     await settle();

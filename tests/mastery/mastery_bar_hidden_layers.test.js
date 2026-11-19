@@ -25,7 +25,7 @@ function assertRuleHeld(fake, where) {
 test("the Mastery Bar's hidden layers are points, and its shown ones keep their usual size and place", async () => {
     const fake = await startScenario();
     fake.advanceTime(DRAWN_AHEAD_MS);
-    assert.equal(shownMastery(fake).head, "To discover");
+    assert.equal(shownMastery(fake).head, "Discover");
     assertRuleHeld(fake, "drawn ahead, resting");
     const [usualPlace] = placesOfShown(fake);
 

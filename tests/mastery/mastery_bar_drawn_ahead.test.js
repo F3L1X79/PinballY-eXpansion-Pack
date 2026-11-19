@@ -19,7 +19,7 @@ test("once drawn ahead, moving the wheel draws nothing", async () => {
     select(fake, OLD_HAND);
     assert.deepEqual(shownMastery(fake), { head: "Specialist", number: "5", fill: 0.5 });
     select(fake, FAVOURITE);
-    assert.equal(shownMastery(fake).head, "To discover");
+    assert.equal(shownMastery(fake).head, "Discover");
 
     assert.equal(fake.drawings().length, drawingsBefore);
     await settle();

@@ -1,6 +1,6 @@
 // ============================================================
 // The Table Mastery Add-on, started by main.js on the fake PinballY
-// globals, shows the Mastery Bar of the selected table: "To discover" with
+// globals, shows the Mastery Bar of the selected table: "Discover" with
 // an empty bar for a table never played, then the Mastery Level its Plays
 // reached, from the first Play on; a game under a minute changes nothing.
 // ============================================================
@@ -15,10 +15,10 @@ test("the Mastery Bar shows the selected table's Mastery Level, from the first P
     // Guest already spent 12 hours on one table before Table Mastery came.
     const fake = await startScenario({ profiles: { guest: { plays: { [OLD_HAND.configId]: playedFor(12 * HOUR) } } } });
 
-    assert.deepEqual(shownMastery(fake), { head: "To discover", number: null, fill: 0 }, "a table never played");
+    assert.deepEqual(shownMastery(fake), { head: "Discover", number: null, fill: 0 }, "a table never played");
 
     await play(fake, NEVER_PLAYED, 59);
-    assert.deepEqual(shownMastery(fake), { head: "To discover", number: null, fill: 0 }, "a game under a minute changes nothing");
+    assert.deepEqual(shownMastery(fake), { head: "Discover", number: null, fill: 0 }, "a game under a minute changes nothing");
 
     await play(fake, NEVER_PLAYED, MINUTE);
     assert.deepEqual(shownMastery(fake), { head: "Rookie", number: "1", fill: 0 }, "the first Play reaches level 1");
@@ -34,7 +34,7 @@ test("the Mastery Bar shows the selected table's Mastery Level, from the first P
     assert.deepEqual(shownMastery(fake), { head: "Pinball Wizard", number: "10", fill: 1 }, "12 hours: level 10, a full bar");
 
     select(fake, FAVOURITE);
-    assert.deepEqual(shownMastery(fake), { head: "To discover", number: null, fill: 0 });
+    assert.deepEqual(shownMastery(fake), { head: "Discover", number: null, fill: 0 });
 
     assert.deepEqual(errorLines(fake), []);
 });

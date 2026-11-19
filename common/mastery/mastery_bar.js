@@ -57,7 +57,7 @@ function drawText(host, dc, text, { x, y, width, size, weight, color, font = STE
     styled.draw(dc, { x, y: top, width, height: measured });
 }
 
-// The head's text and colour: the level's name in its metal, or "to discover".
+// The head's text and colour: the level's name in its metal, or "Discover".
 export function masteryHeadOf(level) {
     const TEXT = lang.tableMastery;
     return level === NEVER_PLAYED

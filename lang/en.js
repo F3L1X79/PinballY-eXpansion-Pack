@@ -661,7 +661,7 @@ export default {
         // The Mastery Levels' names, from level 1 to 10.
         levelNames: ["Rookie", "Apprentice", "Regular", "Adept", "Specialist", "Ace", "Virtuoso", "Prodigy", "Legend", "Pinball Wizard"],
         // A table the active Profile never played.
-        toDiscover: "To discover",
+        toDiscover: "Discover",
         // The Mastery Toast, when a Play reaches a new Mastery Level.
         toastHeader: "Table Mastery",
         toastTitle: (name, level) => `${name} (${level})`,

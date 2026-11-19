@@ -13,7 +13,7 @@ const BADGE = 170;
 test("with the Challenges off, the Mastery Bar sits right under the Profile badge", async () => {
     const fake = await startScenario({ addOns: ["profilePicker", "tableMastery"] });
 
-    assert.equal(shownMastery(fake).head, "To discover");
+    assert.equal(shownMastery(fake).head, "Discover");
     assert.equal(shownTop(fake), BADGE);
     assert.deepEqual(errorLines(fake), []);
 });

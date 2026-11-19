@@ -24,12 +24,12 @@ test("a Profile switch shows the new Profile's Mastery Levels, Guest and a Child
     assert.deepEqual(shownMastery(fake), { head: "Specialist", number: "5", fill: 0.5 });
 
     store.switchTo("Kid");
-    assert.deepEqual(shownMastery(fake), { head: "To discover", number: null, fill: 0 }, "Kid never played it");
+    assert.deepEqual(shownMastery(fake), { head: "Discover", number: null, fill: 0 }, "Kid never played it");
     select(fake, SECOND);
     assert.deepEqual(shownMastery(fake), { head: "Regular", number: "3", fill: 0 });
 
     store.switchTo("guest");
-    assert.equal(shownMastery(fake).head, "To discover");
+    assert.equal(shownMastery(fake).head, "Discover");
     await play(fake, SECOND, MINUTE);
     assert.deepEqual(shownMastery(fake), { head: "Rookie", number: "1", fill: 0 }, "Guest's own first Play");
 

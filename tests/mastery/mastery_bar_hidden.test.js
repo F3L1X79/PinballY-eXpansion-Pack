@@ -18,7 +18,7 @@ test("the Mastery Bar hides while a game runs and with an empty wheel selection"
     fake.fire("gameselect", { game: OLD_HAND });
     assert.equal(shownMastery(fake), null, "still hidden when the wheel moves during the game");
     fake.gameOver(FAVOURITE);
-    assert.equal(shownMastery(fake).head, "To discover", "back on the wheel");
+    assert.equal(shownMastery(fake).head, "Discover", "back on the wheel");
 
     fake.setWheelTables([]);
     fake.fire("gameselect", { game: null });
