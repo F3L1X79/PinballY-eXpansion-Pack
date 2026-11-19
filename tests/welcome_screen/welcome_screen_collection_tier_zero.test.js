@@ -12,6 +12,6 @@ test("at tier 0 the card aims at ten tables at the first level, in French", asyn
     const tables = Array.from({ length: 12 }, (_, index) => tableNumbered(index + 1));
     const { card, errors } = await openCollectionCard({ tables, levels: [2, 1, 1], language: "fr" });
 
-    assert.deepEqual(card, { goal: "Objectif : 10 tables Novice", current: "Actuel : 3/10", tier: 0 });
+    assert.deepEqual(card, { goal: "Objectif : 10 tables Novice", current: "3/10 tables", tier: 0 });
     assert.deepEqual(errors, []);
 });

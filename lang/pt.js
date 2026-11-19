@@ -583,10 +583,11 @@ export default {
             unlockCondition: (tier) => `Grau da coleção ${tier}`,
         },
         // The card's Player Level: its title over the big digits, then the
-        // points so far and those of the next level, thousands separated.
+        // points so far and those of the next level (thousands separated),
+        // and that level's number.
         playerLevel: {
             title: "NÍVEL",
-            current: (points, nextLevelPoints) => `Atual: ${points} / ${nextLevelPoints}`,
+            current: (points, nextLevelPoints, nextLevel) => `${points} / ${nextLevelPoints} pontos para o nível ${nextLevel}`,
         },
         collectionTitle: "MAESTRIA DA COLEÇÃO",
         sections: {
@@ -757,7 +758,7 @@ export default {
         // already reach it, or, at the last tier, that all of them did.
         collection: {
             goal: (count, levelName) => `Meta: ${count} ${count === 1 ? "mesa" : "mesas"} em ${levelName}`,
-            current: (reached, needed) => `Atual: ${reached}/${needed}`,
+            current: (reached, needed) => `${reached}/${needed} ${needed === 1 ? "mesa" : "mesas"}`,
             allTables: (levelName) => `Todas as suas mesas: ${levelName}`,
         },
         levelNames: ["Novato", "Aprendiz", "Frequentador", "Habilidoso", "Especialista", "Ás", "Virtuoso", "Prodígio", "Lenda", "Mago do pinball"],

@@ -586,10 +586,11 @@ export default {
             unlockCondition: (tier) => `Palier de collection ${tier}`,
         },
         // The card's Player Level: its title over the big digits, then the
-        // points so far and those of the next level, thousands separated.
+        // points so far and those of the next level (thousands separated),
+        // and that level's number.
         playerLevel: {
             title: "NIVEAU",
-            current: (points, nextLevelPoints) => `Actuel : ${points} / ${nextLevelPoints}`,
+            current: (points, nextLevelPoints, nextLevel) => `${points} / ${nextLevelPoints} points pour le niveau ${nextLevel}`,
         },
         collectionTitle: "MAÎTRISE DE LA COLLECTION",
         sections: {
@@ -759,7 +760,7 @@ export default {
         // many tables already reach it, or, at the last tier, that all did.
         collection: {
             goal: (count, levelName) => `Objectif : ${count} ${count === 1 ? "table" : "tables"} ${levelName}`,
-            current: (reached, needed) => `Actuel : ${reached}/${needed}`,
+            current: (reached, needed) => `${reached}/${needed} ${needed === 1 ? "table" : "tables"}`,
             allTables: (levelName) => `Toutes tes tables : ${levelName}`,
         },
         levelNames: ["Novice", "Élève", "Adepte", "Disciple", "Spécialiste", "As", "Virtuose", "Prodige", "Légende", "Mage du flipper"],

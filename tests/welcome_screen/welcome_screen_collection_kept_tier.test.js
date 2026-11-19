@@ -15,6 +15,6 @@ test("the Collection Mastery card shows a kept tier after a table left the visib
     const levels = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1];
     const { card, errors } = await openCollectionCard({ tables, levels, profile: { collectionTier: 2 } });
 
-    assert.deepEqual(card, { goal: "Goal: 10 tables at Regular", current: "Current: 0/10", tier: 2 });
+    assert.deepEqual(card, { goal: "Goal: 10 tables at Regular", current: "0/10 tables", tier: 2 });
     assert.deepEqual(errors, []);
 });

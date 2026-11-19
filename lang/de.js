@@ -583,10 +583,11 @@ export default {
             unlockCondition: (tier) => `Sammlungsstufe ${tier}`,
         },
         // The card's Player Level: its title over the big digits, then the
-        // points so far and those of the next level, thousands separated.
+        // points so far and those of the next level (thousands separated),
+        // and that level's number.
         playerLevel: {
             title: "LEVEL",
-            current: (points, nextLevelPoints) => `Aktuell: ${points} / ${nextLevelPoints}`,
+            current: (points, nextLevelPoints, nextLevel) => `${points} / ${nextLevelPoints} Punkte bis Level ${nextLevel}`,
         },
         collectionTitle: "SAMMLUNGSMEISTERSCHAFT",
         sections: {
@@ -757,7 +758,7 @@ export default {
         // already reach it, or, at the last tier, that all of them did.
         collection: {
             goal: (count, levelName) => `Ziel: ${count} ${count === 1 ? "Tisch" : "Tische"} auf Niveau ${levelName}`,
-            current: (reached, needed) => `Aktuell: ${reached}/${needed}`,
+            current: (reached, needed) => `${reached}/${needed} ${needed === 1 ? "Tisch" : "Tische"}`,
             allTables: (levelName) => `Alle Ihre Tische: ${levelName}`,
         },
         levelNames: ["Neuling", "Lehrling", "Stammspieler", "Könner", "Spezialist", "Ass", "Virtuose", "Wunderkind", "Legende", "Flipper-Zauberer"],

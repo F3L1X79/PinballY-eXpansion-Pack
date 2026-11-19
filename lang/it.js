@@ -582,10 +582,11 @@ export default {
             unlockCondition: (tier) => `Grado della collezione ${tier}`,
         },
         // The card's Player Level: its title over the big digits, then the
-        // points so far and those of the next level, thousands separated.
+        // points so far and those of the next level (thousands separated),
+        // and that level's number.
         playerLevel: {
             title: "LIVELLO",
-            current: (points, nextLevelPoints) => `Attuale: ${points} / ${nextLevelPoints}`,
+            current: (points, nextLevelPoints, nextLevel) => `${points} / ${nextLevelPoints} punti per il livello ${nextLevel}`,
         },
         collectionTitle: "MAESTRIA DELLA COLLEZIONE",
         sections: {
@@ -756,7 +757,7 @@ export default {
         // already reach it, or, at the last tier, that all of them did.
         collection: {
             goal: (count, levelName) => `Traguardo: ${count} ${count === 1 ? "tavolo" : "tavoli"} a ${levelName}`,
-            current: (reached, needed) => `Attuale: ${reached}/${needed}`,
+            current: (reached, needed) => `${reached}/${needed} ${needed === 1 ? "tavolo" : "tavoli"}`,
             allTables: (levelName) => `Tutti i tuoi tavoli: ${levelName}`,
         },
         levelNames: ["Novizio", "Apprendista", "Assiduo", "Abile", "Specialista", "Asso", "Virtuoso", "Prodigio", "Leggenda", "Mago del flipper"],

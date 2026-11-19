@@ -11,6 +11,6 @@ test("with fewer than ten tables, the Collection Mastery goal is all of them", a
     const tables = Array.from({ length: 4 }, (_, index) => tableNumbered(index + 1));
     const { card, errors } = await openCollectionCard({ tables, levels: [2, 2, 1, 1] });
 
-    assert.deepEqual(card, { goal: "Goal: 4 tables at Apprentice", current: "Current: 2/4", tier: 1 });
+    assert.deepEqual(card, { goal: "Goal: 4 tables at Apprentice", current: "2/4 tables", tier: 1 });
     assert.deepEqual(errors, []);
 });

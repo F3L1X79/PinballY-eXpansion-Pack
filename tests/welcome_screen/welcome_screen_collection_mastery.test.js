@@ -13,6 +13,6 @@ test("the Collection Mastery card shows the next goal and how far along it is", 
     const tables = Array.from({ length: 12 }, (_, index) => tableNumbered(index + 1));
     const { card, errors } = await openCollectionCard({ tables, levels: [5, 4, 4, 4, 3, 3, 3, 3, 3, 3, 2] });
 
-    assert.deepEqual(card, { goal: "Goal: 10 tables at Adept", current: "Current: 4/10", tier: 3 });
+    assert.deepEqual(card, { goal: "Goal: 10 tables at Adept", current: "4/10 tables", tier: 3 });
     assert.deepEqual(errors, []);
 });

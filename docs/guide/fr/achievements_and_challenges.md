@@ -36,6 +36,8 @@ La durée d'affichage et la taille de l'encart, le son et les confettis se chang
 
 Chaque Succès rapporte des points à votre **niveau**, d'autant plus que son rang est élevé, sans dernier niveau. Il s'affiche en pastille sur votre Avatar, en bronze, puis en argent, en or et en platine à mesure que vous montez, et chaque nouveau niveau atteint a son encart et son feu d'artifice.
 
+[Mon profil](profiles.md#mon-profil) montre le niveau en grands chiffres, une barre vers le suivant et, dessous, vos points sur ceux qu'il demande, par exemple « 30 / 50 points pour le niveau 2 ». Plus bas, la maîtrise de la collection compte vos tables vers son objectif, par exemple « 4/10 tables ».
+
 ---
 
 [← Sommaire du guide](index.md)

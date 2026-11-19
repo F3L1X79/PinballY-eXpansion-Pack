@@ -56,17 +56,17 @@ test("the card shows the Player Level and the points toward the next one", async
         return shown;
     };
 
-    assert.deepEqual(levelOf("guest"), { level: "1", current: "Actuel : 0 / 50" });
-    assert.deepEqual(levelOf("Alice"), { level: "1", current: "Actuel : 45 / 50" });
-    assert.deepEqual(levelOf("Bob"), { level: "2", current: "Actuel : 50 / 125" });
-    assert.deepEqual(levelOf("Carol"), { level: "3", current: "Actuel : 125 / 225" });
-    assert.deepEqual(levelOf("Dave"), { level: "2", current: "Actuel : 100 / 125" });
+    assert.deepEqual(levelOf("guest"), { level: "1", current: "0 / 50 points pour le niveau 2" });
+    assert.deepEqual(levelOf("Alice"), { level: "1", current: "45 / 50 points pour le niveau 2" });
+    assert.deepEqual(levelOf("Bob"), { level: "2", current: "50 / 125 points pour le niveau 3" });
+    assert.deepEqual(levelOf("Carol"), { level: "3", current: "125 / 225 points pour le niveau 4" });
+    assert.deepEqual(levelOf("Dave"), { level: "2", current: "100 / 125 points pour le niveau 3" });
 
     config.addOns.challenges = false;
-    assert.deepEqual(levelOf("Dave"), { level: "1", current: "Actuel : 0 / 50" }, "its Achievements are gone");
+    assert.deepEqual(levelOf("Dave"), { level: "1", current: "0 / 50 points pour le niveau 2" }, "its Achievements are gone");
 
     getProfileStore().resetProfile("Carol");
-    assert.deepEqual(levelOf("Carol"), { level: "1", current: "Actuel : 0 / 50" }, "a Profile Reset starts over");
+    assert.deepEqual(levelOf("Carol"), { level: "1", current: "0 / 50 points pour le niveau 2" }, "a Profile Reset starts over");
 
     assertNoErrorLogged(fake);
 });

@@ -476,10 +476,11 @@ export default {
             unlockCondition: (tier) => `Collection Tier ${tier}`,
         },
         // The card's Player Level: its title over the big digits, then the
-        // points so far and those of the next level, thousands separated.
+        // points so far and those of the next level (thousands separated),
+        // and that level's number.
         playerLevel: {
             title: "LEVEL",
-            current: (points, nextLevelPoints) => `Current: ${points} / ${nextLevelPoints}`,
+            current: (points, nextLevelPoints, nextLevel) => `${points} / ${nextLevelPoints} points to Level ${nextLevel}`,
         },
         collectionTitle: "COLLECTION MASTERY",
         sections: {
@@ -655,7 +656,7 @@ export default {
         // already reach it, or, at the last tier, that all of them did.
         collection: {
             goal: (count, levelName) => `Goal: ${count} ${count === 1 ? "table" : "tables"} at ${levelName}`,
-            current: (reached, needed) => `Current: ${reached}/${needed}`,
+            current: (reached, needed) => `${reached}/${needed} ${needed === 1 ? "table" : "tables"}`,
             allTables: (levelName) => `All your tables: ${levelName}`,
         },
         // The Mastery Levels' names, from level 1 to 10.

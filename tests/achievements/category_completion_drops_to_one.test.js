@@ -42,12 +42,12 @@ test("a Notified Category Achievement whose category drops to one table is gone,
     await showEveryToast();
 
     assert.ok(listedTitles().includes(FANTASY));
-    assert.deepEqual(levelShown(), { level: "2", current: lang.profileStats.playerLevel.current(55, 125) });
+    assert.deepEqual(levelShown(), { level: "2", current: lang.profileStats.playerLevel.current(55, 125, 3) });
 
     fake.setTables([MEDIEVAL, { ...TWILIGHT, isHidden: true }]);
     await settle();
     assert.ok(!listedTitles().includes(FANTASY), "one Fantasy table left");
-    assert.deepEqual(levelShown(), { level: "1", current: lang.profileStats.playerLevel.current(45, 50) });
+    assert.deepEqual(levelShown(), { level: "1", current: lang.profileStats.playerLevel.current(45, 50, 2) });
     fake.advanceTime(ONE_TOAST_MS);
     await settle();
     assert.deepEqual(levelToasts(), []);

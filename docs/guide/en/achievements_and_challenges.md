@@ -36,6 +36,8 @@ The toast's time on screen and size, the sound, and the confetti can be changed 
 
 Each Achievement earns points toward your **Player Level**, the more the higher its Rank, with no last level. It shows as a small pip on your Avatar, in bronze, then silver, gold and platinum as you climb, and reaching a new level brings its own toast and fireworks.
 
+[My Profile](profiles.md#my-profile) shows the level in big digits, a bar toward the next one, and under it your points out of those the next level needs, for example "30 / 50 points to Level 2". Below it, the Collection Mastery counts your tables toward its goal, for example "4/10 tables".
+
 ---
 
 [← Guide index](index.md)

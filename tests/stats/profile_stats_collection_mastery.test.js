@@ -55,8 +55,8 @@ test("the card shows the Collection Mastery's goal, count and tier", async () =>
         return shown;
     };
 
-    assert.deepEqual(collectionOf("Alice"), { goal: "Objectif : 10 tables Novice", current: "Actuel : 3/10", tier: 0 });
-    assert.deepEqual(collectionOf("Bob"), { goal: "Objectif : 10 tables Disciple", current: "Actuel : 4/10", tier: 3 });
+    assert.deepEqual(collectionOf("Alice"), { goal: "Objectif : 10 tables Novice", current: "3/10 tables", tier: 0 });
+    assert.deepEqual(collectionOf("Bob"), { goal: "Objectif : 10 tables Disciple", current: "4/10 tables", tier: 3 });
     assert.deepEqual(collectionOf("Carol"), { goal: "Toutes tes tables : Mage du flipper", current: null, tier: 10 });
     assertNoErrorLogged(fake);
 });

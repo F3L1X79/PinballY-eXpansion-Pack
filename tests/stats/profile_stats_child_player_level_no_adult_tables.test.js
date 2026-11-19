@@ -17,7 +17,7 @@ test("without Adult Tables, the scaling only makes up for Night Owl and Full Moo
     const childWorth = adultWorth - KEPT_FROM_CHILD_POINTS + CHILD_ONLY_POINTS;
     assert.equal(worthOf("Kid"), childWorth);
     assert.equal(pointsOf(levelOf("Kid")), Math.floor(50 * adultWorth / childWorth));
-    assert.deepEqual(levelOf("Alice"), { level: "2", current: "Actuel : 50 / 125" });
+    assert.deepEqual(levelOf("Alice"), { level: "2", current: "50 / 125 points pour le niveau 3" });
 
     assertNoErrorLogged(fake);
 });

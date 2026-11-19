@@ -40,8 +40,9 @@ const LOOK = Object.freeze({
     // The card's soft glow, in rings around its frame.
     cardGlow: 6, cardGlowPeak: 0x40,
     // The Player Level block, top down: its title, the digits (their box
-    // taller than they are, so the bar sits clear below), the bar, the points.
-    playerLevel: Object.freeze({ titleH: 26, titleSize: 17, digitsH: 130, digitsSize: 96, digitsLift: 30, barH: 14, barGap: 12, pointsH: 58, pointsSize: 19 }),
+    // taller than they are, so the bar sits clear below), the bar, the points
+    // on one line, shrunk down to minPointsSize in a narrow card.
+    playerLevel: Object.freeze({ titleH: 26, titleSize: 17, digitsH: 130, digitsSize: 96, digitsLift: 30, barH: 14, barGap: 12, pointsH: 58, pointsSize: 19, minPointsSize: 13 }),
     // The rule, then the Collection Mastery's title and block, its square
     // scaled by squareK.
     ruleH: 31,
@@ -202,7 +203,7 @@ function drawPlayerLevel(host, dc, playerLevel, cardX, cardW, contentX, contentW
     text(host, dc, playerLevel.number, { x: cardX, y: digitsY - look.digitsLift, width: cardW, size: look.digitsSize, weight: 700, color: playerLevel.color, font: FONTS.display, align: "center" });
     const barY = digitsY + look.digitsH;
     drawBar(dc, contentX, barY, contentW, look.barH, playerLevel.share, playerLevel.color);
-    text(host, dc, playerLevel.current, { x: cardX, y: barY + look.barH + look.barGap, width: cardW, size: look.pointsSize, weight: 600, color: COLORS.description, align: "center" });
+    oneLine(host, dc, playerLevel.current, { x: cardX, y: barY + look.barH + look.barGap, width: cardW, size: look.pointsSize, minSize: look.minPointsSize, weight: 600, color: COLORS.description, align: "center" });
 }
 
 // The Collection Mastery as the Mastery Bar shows it, stacked to fit the

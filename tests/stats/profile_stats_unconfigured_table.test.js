@@ -78,7 +78,7 @@ test("a table no longer configured leaves the Collection and reads like a table 
 
     assert.deepEqual(alice.collection, ["1/3", "33%"], "out of the Collection");
     // The goal is capped at the collection's size, here without that table.
-    assert.equal(alice.mastery.current, "Current: 1/3", "out of the Collection Mastery");
+    assert.equal(alice.mastery.current, "1/3 tables", "out of the Collection Mastery");
     assert.deepEqual(alice.games, ["2"], "its Play stays in the totals");
     assert.equal(alice.lastTable, UNCONFIGURED.title, "it can still be the last table played");
 

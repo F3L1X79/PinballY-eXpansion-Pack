@@ -327,7 +327,7 @@ export function createProfileStats(host, {
                     number: String(playerLevel.level),
                     color: playerLevelColorOf(playerLevel.level),
                     share: (playerLevel.points - playerLevel.from) / (playerLevel.to - playerLevel.from),
-                    current: TEXT.playerLevel.current(TEXT.number(playerLevel.points), TEXT.number(playerLevel.to)),
+                    current: TEXT.playerLevel.current(TEXT.number(playerLevel.points), TEXT.number(playerLevel.to), playerLevel.level + 1),
                 },
                 collectionTitle: TEXT.collectionTitle,
                 collection: collectionTextsOf(collectionMastery),
