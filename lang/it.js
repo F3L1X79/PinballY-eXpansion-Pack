@@ -200,8 +200,8 @@ export default {
     // Button's tooltip (see GLOSSARY.md). The key caps and the footer's
     // words are shown in capitals.
     buttonHints: {
-        // PinballY's button names, as on the cabinet's key caps.
-        keyCaps: { next: "Next", prev: "Prev", select: "Select", exit: "Exit" },
+        // The cabinet's key caps: Prev and Next are the left and right flippers.
+        keyCaps: { next: "Flipper Dx", prev: "Flipper Sx", select: "Select", exit: "Exit" },
         browse: "Sfoglia",
         // The flippers on a High Score Board longer than the window.
         scroll: "Scorri",

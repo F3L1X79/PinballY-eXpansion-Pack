@@ -25,7 +25,7 @@ test("the Avatar Frame list speaks French: Retour, and the footer's words", asyn
     untilFrameListShown(fake);
 
     assert.deepEqual(frameListButtonHints(fake), [
-        { keys: ["GAUCHE", "DROITE"], label: "PARCOURIR" },
+        { keys: ["FLIPPER G", "FLIPPER D"], label: "PARCOURIR" },
         { keys: ["SELECT"], label: "CHOISIR" },
         { keys: ["EXIT"], label: "RETOUR" },
     ]);

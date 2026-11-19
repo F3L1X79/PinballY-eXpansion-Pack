@@ -1,7 +1,7 @@
 // ============================================================
 // The High Score Board's Exit Button and Button Hints in French, through
 // main.js on the fake PinballY globals: from the main menu, the tooltip
-// says Retour and the footer "Gauche Droite Parcourir · Select Choisir · Exit Retour";
+// says Retour and the footer "Flipper G Flipper D Parcourir · Select Choisir · Exit Retour";
 // from the HighScores button, Fermer and "… · Exit Fermer"; the view buttons name the other views.
 // ============================================================
 
@@ -33,7 +33,7 @@ test("the board's Exit Button and footer speak French", async () => {
     for (let step = 0; step < 3; step++) press(fake, "Next");
     assert.equal(exitButtonTooltip(fake), "Retour");
     assert.deepEqual(buttonHints(fake), [
-        { keys: ["GAUCHE", "DROITE"], label: "PARCOURIR" },
+        { keys: ["FLIPPER G", "FLIPPER D"], label: "PARCOURIR" },
         { keys: ["SELECT"], label: "CHOISIR" },
         { keys: ["EXIT"], label: "RETOUR" },
     ]);
@@ -45,7 +45,7 @@ test("the board's Exit Button and footer speak French", async () => {
     await settle();
     press(fake, "Prev");
     assert.equal(exitButtonTooltip(fake), "Fermer");
-    assert.deepEqual(buttonHints(fake), [{ keys: ["GAUCHE", "DROITE"], label: "PARCOURIR" }, { keys: ["SELECT"], label: "CHOISIR" }, { keys: ["EXIT"], label: "FERMER" }]);
+    assert.deepEqual(buttonHints(fake), [{ keys: ["FLIPPER G", "FLIPPER D"], label: "PARCOURIR" }, { keys: ["SELECT"], label: "CHOISIR" }, { keys: ["EXIT"], label: "FERMER" }]);
     press(fake, "Exit");
     assertNoErrorLogged(fake);
 });

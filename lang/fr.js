@@ -200,8 +200,8 @@ export default {
     // Button's tooltip (see GLOSSARY.md). The key caps and the footer's
     // words are shown in capitals.
     buttonHints: {
-        // The key caps: Next and Prev are the right and left flipper buttons.
-        keyCaps: { next: "Droite", prev: "Gauche", select: "Select", exit: "Exit" },
+        // The cabinet's key caps: Prev and Next are the left and right flippers.
+        keyCaps: { next: "Flipper D", prev: "Flipper G", select: "Select", exit: "Exit" },
         browse: "Parcourir",
         // The flippers on a High Score Board longer than the window.
         scroll: "Défiler",

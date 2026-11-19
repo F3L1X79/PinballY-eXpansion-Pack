@@ -108,7 +108,7 @@ test("the list opens over the menu with the Profile's header, both sections and 
         assert.ok(chrome.includes(text), `"${text}" is shown in ${JSON.stringify(chrome)}`);
     }
     assert.deepEqual(footerHints(fake), [
-        { keys: ["PREV", "NEXT"], label: "BROWSE" }, { keys: ["SELECT"], label: "CHOOSE" }, { keys: ["EXIT"], label: "BACK" },
+        { keys: ["L FLIPPER", "R FLIPPER"], label: "BROWSE" }, { keys: ["SELECT"], label: "CHOOSE" }, { keys: ["EXIT"], label: "BACK" },
     ]);
     assert.deepEqual(readSections(fake, TEXT), [
         {

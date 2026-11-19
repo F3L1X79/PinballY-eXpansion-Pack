@@ -11,7 +11,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { openProfileStats, choose, untilFrameListShown } from "../stats/profile_stats_reader.js";
 import { frameListButtonHints } from "./avatar_frame_list_reader.js";
 
-test("the footer reads Prev Next Browse, Select Choose, Exit Back", async () => {
+test("the footer reads L Flipper R Flipper Browse, Select Choose, Exit Back", async () => {
     const fake = await startScenario({
         addOns: ["tableMastery", "achievements", "customMenuCommands"], frameImages: true, profiles: { guest: { collectionTier: 3 } },
     });
@@ -22,7 +22,7 @@ test("the footer reads Prev Next Browse, Select Choose, Exit Back", async () => 
     untilFrameListShown(fake);
 
     assert.deepEqual(frameListButtonHints(fake), [
-        { keys: ["PREV", "NEXT"], label: "BROWSE" },
+        { keys: ["L FLIPPER", "R FLIPPER"], label: "BROWSE" },
         { keys: ["SELECT"], label: "CHOOSE" },
         { keys: ["EXIT"], label: "BACK" },
     ]);
