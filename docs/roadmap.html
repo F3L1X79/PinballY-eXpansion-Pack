@@ -213,7 +213,7 @@
         <div class="cell">
         </div>
         <div class="cell">
-          <a class="chip tr-play" href="#household-mission"><b></b>Mission du foyer</a>
+          <a class="chip tr-play" href="#household-mission"><b></b>Défi de la maison</a>
         </div>
 
         <div class="ax row">Moyen</div>
@@ -221,7 +221,6 @@
           <a class="chip tr-profiles" href="#avatar-change"><b></b>Changer d'Avatar</a>
         </div>
         <div class="cell">
-          <a class="chip tr-play" href="#challenge-adaptive"><b></b>Challenges adaptés</a>
           <a class="chip tr-profiles" href="#auto-backup"><b></b>Sauvegarde automatique</a>
           <a class="chip tr-profiles" href="#pinbally-play-history"><b></b>Historique PinballY</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
@@ -287,23 +286,22 @@
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
-            <h3>La Mission du foyer : un objectif de la semaine pour toute la maison</h3>
+            <h3>Le Défi de la maison, et des Challenges calibrés sur le Play Log</h3>
             <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">gros</span><span class="tag">UI</span></div>
           </div>
-          <p>Chaque semaine, tous les Profiles du Household contribuent à un même objectif (découvrir N tables différentes, revisiter des tables délaissées…). Pas de classement : la maison réussit ou non ensemble. Règle d'or : même le joueur le moins fort aide la maison à gagner.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (l'écran de la mission) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Semaine de la Table of the Week (<code>common/tables/period_table.js</code>), Play Log, confettis. Avant les <a href="#challenge-adaptive">Challenges adaptés (n° <span data-ref="challenge-adaptive"></span>)</a> : elle pose la première le calibrage sur le Play Log, qu'ils reprendront</div>
+          <p>Un Household Challenge chaque semaine, en plus du Challenge de chaque Profile : tous les Plays comptent, Guest compris, sans classement, même pour un joueur seul. Les cibles des deux défis viennent du Play Log (deuxième meilleure des 8 dernières semaines + 1). Carte sur le Welcome Screen (grille 2 × 2 à quatre cartes, « ? » qui lance un Random Game), Household Challenge Card sur la roue, Household Challenge Tables, famille d'Achievements « Maison » et un cadre.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="here">prototype</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/prototype</code> (grille 2 × 2, carte « ? », Household Challenge Card) → <code>/to-tickets</code> → <code>/implement</code>. Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/565">#565</a>, qui absorbe les « Challenges adaptés à l'activité de la maison »</div>
           <details>
-            <summary>Questions ouvertes (6)</summary>
+            <summary>Décisions du grilling (19/11/2026)</summary>
             <ul>
-              <li>Calibrage : l'objectif calculé sur les semaines passées du Play Log, jamais un chiffre en dur, pour qu'une mission ne soit ni triviale ni toujours ratée. Que se passe-t-il après un échec (rien, objectif abaissé) ?</li>
-              <li>Quels objectifs respectent la règle d'or : ceux qui comptent des Plays (découvrir, revisiter). « Des records sur plusieurs machines » avantage le plus fort, « faire jouer tous les Profiles » punit la maison pour un absent : les écarter ?</li>
-              <li>Les contributions : « Ont aidé : toi, maman… », sans chiffres ni ordre, pour ne pas refaire un classement ?</li>
-              <li>La récompense : le glossaire ne connaît pas de récompense qui expire. Plutôt une famille d'Achievements « Foyer » (N missions réussies) et un cadre permanent ?</li>
-              <li>Invité contribue-t-il (un visiteur qui aide), et les Profiles qui n'ont pas joué depuis des semaines comptent-ils ?</li>
-              <li>Masquée tant que le Household a moins de deux Profiles actifs ? Où la voir : le Welcome Screen, un toast de progrès ? Qu'est-ce qui la distingue du Challenge de la semaine ?</li>
+              <li>Mêmes 14 modèles que le Challenge, jamais celui du Challenge de la semaine ; « jamais jouée » et « délaissée » jugées pour le Profile qui joue.</li>
+              <li>Pas de seuil de joueurs, seulement 4 semaines de Play Log ; ni plafond par joueur ni minimum de contributeurs.</li>
+              <li>« Ont aidé : » en Avatars, sans chiffres, dans l'ordre des Household Stats ; Guest compte, mais pas dans le calibrage.</li>
+              <li>Toast et confettis pour celui qui le termine, toast à leur prochaine arrivée pour les autres contributeurs.</li>
+              <li>Add-on à part (<code>addOns.householdChallenge</code>), indépendant des Challenges.</li>
             </ul>
-            <p class="ctx">Idée externe du 29/10/2026. Le Play Log ne date que du 01/10/2026 : comme les Challenges adaptés, elle attend des mois de parties réelles pour être calibrée.</p>
+            <p class="ctx">Idée externe du 29/10/2026. Seuls les modèles recalculables depuis le Play Log (début, table, durée) sont calibrés ; les autres gardent leurs plages fixes.</p>
           </details>
         </div>
       </li>
@@ -541,29 +539,6 @@
               <li>Un aperçu en direct des écrans du pack pendant la retouche ?</li>
             </ul>
             <p class="ctx">Idée du 10/10/2026.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="challenge-adaptive" data-track="play" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Challenges adaptés à l'activité de la maison</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span></div>
-          </div>
-          <p>Calculer l'objectif du Challenge d'après ce que la maison a joué les dernières semaines (la mesure du modèle appliquée aux Plays du Play Log, un peu au-dessus de la semaine typique), avec les plages fixes comme plancher et comme repli tant que le journal est trop court.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Lit le Play Log (livré) ; part des plages fixes par modèle de <code>common/challenges/challenge.js</code> (livrées, ticket <a href="https://github.com/F3L1X79/PinballY-Expansion-Pack/issues/119">#119</a>)</div>
-          <details>
-            <summary>Questions ouvertes (3)</summary>
-            <ul>
-              <li>Quelle fenêtre (4 semaines ? plus ?) et quelle marge au-dessus de la semaine typique ?</li>
-              <li>Combien de semaines de journal avant de quitter les plages fixes ?</li>
-              <li>Activité de toute la maison, ou des seuls Profiles qui fixent la barre ?</li>
-            </ul>
-            <p class="ctx">Reporté pendant le grilling du rééquilibrage (01/10/2026) : idée intéressante, mais pas assez de recul. Il faut d'abord analyser un gros Play Log, des mois de parties réelles, pour y voir plus clair.</p>
           </details>
         </div>
       </li>

@@ -4,7 +4,7 @@
 
 Voici ce que nous envisageons pour la suite du pack. Rien n'est promis : les projets évoluent, et certaines de ces idées ne verront peut-être jamais le jour.
 
-- **Mission du foyer** : un objectif par semaine pour toute la maison, sans classement : on réussit ou on échoue ensemble, et même le joueur le moins fort aide.
+- **Défi de la maison** : un second défi chaque semaine pour toute la maison, sans classement : on réussit ou on échoue ensemble, et même le joueur le moins fort aide. Les cibles des défis suivront aussi ce qui se joue vraiment sur la borne.
 - **Year in Pinball** : le bilan de l'année de chaque Profil, les tables jouées et découvertes, les heures de jeu, les préférées, les succès et la plus longue série.
 - **Thèmes** : d'autres styles que Steamball pour tous les écrans dessinés, avec un petit éditeur pour créer le vôtre.
 
