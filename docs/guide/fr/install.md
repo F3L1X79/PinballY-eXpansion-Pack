@@ -29,7 +29,7 @@
 
 Avec vpxtool, la ROM de chaque table est remplie toute seule (l'Add-on « ROM des tables »). vpxtool est écrit par Francis De Brabandere, sous licence Apache-2.0 (https://github.com/francisdb/vpxtool) ; le pack ne l'inclut pas, et vous n'avez rien à télécharger vous-même.
 
-Le script de chaque table est lu une fois, en arrière-plan. Écrire une ROM rafraîchit la roue : la ROM d'une table n'est donc remplie qu'une fois que vous êtes resté quelques secondes dessus et que vous passez à une autre, ou au plus tard à son lancement. Faire défiler la roue ne la fait jamais clignoter.
+Le script de chaque table est lu une fois, en arrière-plan.
 
 Tant qu'il manque et que l'Add-on « ROM des tables » est activé, un message s'ouvre au démarrage, après l'invite de mise à jour et avant l'écran de démarrage, pour un Profil admin (ou pour tous tant qu'aucun Profil n'est marqué). Il dit à quoi sert vpxtool, qui l'a écrit, sa licence et son site, et que vous pourrez toujours l'installer plus tard. **Installer** le télécharge depuis les versions de son auteur, le vérifie et place `vpxtool.exe` dans `ExpansionPack\tools`, avec la comète et « Téléchargement en cours… » à l'écran ; PinballY reste ouvert. Un message dit ensuite si cela a marché, et les scripts des tables sont lus aussitôt.
 
