@@ -18,5 +18,5 @@ test("an unlearned original table asks for a game in French", async () => {
     fake.advanceTime(1000);
     await settle();
 
-    assert.equal(message(fake), "Lancez une partie pour faire apparaître les meilleurs scores de cette table");
+    assert.equal(message(fake), "Jouez une partie d'au moins une minute pour afficher les meilleurs scores de cette table");
 });

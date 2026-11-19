@@ -42,14 +42,15 @@ Quand vous entrez au tableau des meilleurs scores d'une table, la place est à v
 - Les scores déjà au tableau au premier relevé, ceux d'usine compris, n'appartiennent à personne, et une remise à zéro de la ROM qui les ramène n'est jamais attribuée.
 - Un meilleur score gagné le reste même chassé du tableau par des scores plus récents, et rapporte ses propres succès.
 - **Mon profil** montre les meilleurs scores et records que vous détenez encore, et **Stats de la maison** qui détient le plus de records.
-- Les tables sans ROM (créations originales) comptent aussi : le pack lit leur tableau dans le dossier `User` de Visual Pinball X (`VPReg.stg`, ou le fichier texte que certaines tables y gardent), apprend où chaque table le range pendant sa première partie, et le passe à PinballY, pour que le DMD et la fiche de la table l'affichent aussi. Leur tableau apparaît dès qu'une telle table a été jouée avec le pack.
+- Les tables sans ROM (créations originales) comptent aussi : le pack lit leur tableau dans le dossier `User` de Visual Pinball X (`VPReg.stg`, ou le fichier texte que certaines tables y gardent), apprend où chaque table le range pendant sa première partie, et le passe à PinballY, pour que le DMD et la fiche de la table l'affichent aussi. Leur tableau apparaît après une partie d'au moins une minute avec le pack ; d'ici là, le tableau dit « Jouez une partie d'au moins une minute pour afficher les meilleurs scores de cette table ».
 
 **Tableaux des meilleurs scores** dans le menu principal (ou le bouton `HighScores` de PinballY, s'il est affecté) ouvre le tableau de la table sélectionnée, dessiné dans le style Steamball à la place de la fenêtre de PinballY :
 
 - les trois premières places sur un podium sous une couronne d'or, d'argent et de bronze, les autres en lignes en dessous ;
 - chacune avec son rang, son score, ses initiales et le Profil qui l'a gagnée (nom, Avatar et cadre d'Avatar), ou « Score par défaut » avec un portrait choisi d'après ses initiales, le même sur toutes les tables ;
 - le tableau est relu sur la table à chaque ouverture, il montre donc toujours ce qu'elle contient ;
-- sur un tableau trop long pour l'écran, les flippers s'arrêtent aussi sur chaque place sous le podium, en la faisant défiler à l'écran.
+- sur un tableau trop long pour l'écran, les flippers s'arrêtent aussi sur chaque place sous le podium, en la faisant défiler à l'écran ;
+- « Aucun meilleur score trouvé pour cette table » veut dire que les scores n'ont pas pu être lus, pas que la table n'est pas prise en charge : pour une table à ROM, vérifiez que PinballY cherche le fichier NVRAM (`.nv`) dans le dossier `nvram` que VPinMAME utilise vraiment (le **NVRAM folder** du système dans les options de PinballY ; laissé vide, c'est le dossier que VPinMAME a noté dans le registre), et que le fichier y est après une partie. « Les meilleurs scores de cette table ne sont pas pris en charge » reste réservé à une ROM que PINemHi ne sait pas lire.
 
 Trois boutons sous le tableau, un par vue, montrent en doré la vue affichée ; sous le titre de la table, le titre de la vue dit en une ou deux lignes ce qu'elle montre, et chaque vue garde la même taille. Le tableau s'ouvre sur son premier bouton ; les flippers passent d'un bouton au suivant, puis au bouton Retour ; Select (ou Launch) ouvre la vue du bouton choisi, ou ferme le tableau sur le bouton Retour ; Exit le ferme depuis chaque vue :
 

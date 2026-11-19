@@ -742,9 +742,12 @@ export default {
             reading: "Reading\u2026",
             // Over the last known board when the fresh read failed.
             notRefreshed: "These scores could not be refreshed",
+            // PINemHi says it does not support the table's ROM.
             notSupported: "This table's high scores are not supported",
-            // A table without a ROM whose VPReg.stg section or text file is not learned yet.
-            notLearned: "Play a game to bring up this table's high scores",
+            // The read failed and no board is known yet: the scores were not found, the table may still be supported.
+            notFound: "No high scores found for this table",
+            // A table without a ROM whose VPReg.stg section or text file is not learned yet: only a game of a minute or more learns it.
+            notLearned: "Play a game of at least one minute to show this table's high scores",
             // The views' buttons, then each view's title and what it shows, under the table's title.
             views: { table: "ROM scores", household: "Household scores", personal: "Your 5 best scores" },
             viewTitles: { table: "ROM scores", household: "Household scores", personal: "Your 5 best scores" },

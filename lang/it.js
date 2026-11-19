@@ -827,8 +827,9 @@ export default {
             // Over the last known board when the fresh read failed.
             notRefreshed: "Impossibile aggiornare questi punteggi",
             notSupported: "I punteggi di questo tavolo non sono supportati",
+            notFound: "Nessun punteggio trovato per questo tavolo",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
-            notLearned: "Gioca una partita per vedere i punteggi di questo tavolo",
+            notLearned: "Gioca una partita di almeno un minuto per vedere i punteggi di questo tavolo",
             views: { table: "Dalla ROM", household: "Della casa", personal: "I miei 5 migliori" },
             viewTitles: { table: "Punteggi della ROM", household: "Punteggi della casa", personal: "I miei 5 migliori punteggi" },
             viewHelp: {

@@ -1,7 +1,7 @@
 // ============================================================
 // The High Score Board's read going wrong, through main.js on the fake
 // PinballY globals: a never-read table whose read fails or is killed says
-// its high scores are not supported; a known board stays on screen with a
+// no high scores were found for it; a known board stays on screen with a
 // note that it could not be refreshed when PINemHi fails or never answers,
 // and gives way to "not supported" when PINemHi says so. Logged.
 // ============================================================
@@ -13,6 +13,7 @@ import { startHighScores, FACTORY, MEDIEVAL, NOT_SUPPORTED } from "./high_scores
 import { openBoard, press, message, note, podium, BOARD_OPEN_MS } from "./high_score_board_reader.js";
 
 const NOT_SUPPORTED_TEXT = "This table's high scores are not supported";
+const NOT_FOUND_TEXT = "No high scores found for this table";
 
 test("failed, killed, unanswered and unsupported reads each show their message", async () => {
     const { fake, setBoard, saved, log, pendingTimerCount } = await startHighScores();
@@ -31,10 +32,10 @@ test("failed, killed, unanswered and unsupported reads each show their message",
 
     setBoard(MEDIEVAL, FACTORY, { fails: true });
     openBoard(fake, lang);
-    assert.deepEqual(await afterRead(1000), { message: NOT_SUPPORTED_TEXT, note: null, record: null });
+    assert.deepEqual(await afterRead(1000), { message: NOT_FOUND_TEXT, note: null, record: null });
     setBoard(MEDIEVAL, FACTORY, { durationMs: 9000 });
     openBoard(fake, lang);
-    assert.deepEqual(await afterRead(9000), { message: NOT_SUPPORTED_TEXT, note: null, record: null });
+    assert.deepEqual(await afterRead(9000), { message: NOT_FOUND_TEXT, note: null, record: null });
     assert.equal(saved(), undefined);
 
     setBoard(MEDIEVAL, FACTORY);

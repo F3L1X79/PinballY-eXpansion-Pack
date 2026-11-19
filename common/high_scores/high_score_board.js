@@ -142,7 +142,8 @@ export function createHighScoreBoard(host, { highScores, profileRewards, drawing
         const known = game ? highScores.boardOf(game.configId) : [];
         const screen = { title: game ? game.title : "", places: [], message: null, note: null };
         if (status === "notLearned") screen.message = TEXT.notLearned;
-        else if (status === "unsupported" || (known === null && status === "failed")) screen.message = TEXT.notSupported;
+        else if (status === "unsupported") screen.message = TEXT.notSupported;
+        else if (known === null && status === "failed") screen.message = TEXT.notFound;
         else if (known === null) screen.message = TEXT.reading;
         else if (known.length === 0) {
             screen.message = status === "reading" ? TEXT.reading : TEXT.noScore;

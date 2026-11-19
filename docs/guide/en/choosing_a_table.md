@@ -42,14 +42,15 @@ When you enter a table's high score board, the place is yours: the pack reads th
 - The scores already on the board at the first read, factory ones included, belong to no one, and a ROM reset that brings them back is never credited.
 - A High Score stays won even once later scores push it off the board, and earns its own Achievements.
 - **My Profile** shows the High Scores and Table Records you still hold, and **Household Stats** who holds the most Table Records.
-- Tables without a ROM (community originals) count too: the pack reads their board in Visual Pinball X's `User` folder (`VPReg.stg`, or the text file some tables keep there), learns where each table keeps it during its first game, and hands it to PinballY, so the DMD and the table's info box show it as well. Their board appears once such a table has been played with the pack.
+- Tables without a ROM (community originals) count too: the pack reads their board in Visual Pinball X's `User` folder (`VPReg.stg`, or the text file some tables keep there), learns where each table keeps it during its first game, and hands it to PinballY, so the DMD and the table's info box show it as well. Their board appears after one game of a minute or more with the pack; until then, the board says "Play a game of at least one minute to show this table's high scores".
 
 **High Score Boards** in the main menu (or PinballY's `HighScores` button, if mapped) opens the selected table's board, drawn in the Steamball look in place of PinballY's own window:
 
 - the three first places on a podium under a Gold, Silver and Bronze crown, the others in rows below;
 - each with its rank, score, initials and the Profile that won it (name, Avatar and Avatar Frame), or "Default score" with a portrait picked by its initials, the same on every table;
 - the board is read again from the table each time you open it, so it always shows what the table holds now;
-- on a board too long for the screen, the flippers also stop on each place below the podium, scrolling it into view.
+- on a board too long for the screen, the flippers also stop on each place below the podium, scrolling it into view;
+- "No high scores found for this table" means the scores could not be read, not that the table is unsupported: for a ROM table, check that PinballY looks for the NVRAM file (`.nv`) in the `nvram` folder VPinMAME really uses (the system's **NVRAM folder** in PinballY's options; left blank, it is the folder VPinMAME recorded in the registry), and that the file is there after a game. "This table's high scores are not supported" is kept for a ROM that PINemHi cannot read.
 
 Three buttons under the board, one per view, show the view on show in gold; under the table's title, the view's own title says in a line or two what it shows, and every view keeps the same size. The board opens with its first button chosen; the flippers move from one button to the next, then to the Exit Button; Select (or Launch) opens the view of the button chosen, or closes the board on the Exit Button; Exit closes it from any view:
 

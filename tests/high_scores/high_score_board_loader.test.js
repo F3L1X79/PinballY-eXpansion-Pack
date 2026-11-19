@@ -40,7 +40,7 @@ test("the comet turns while the board is read fresh and goes with every outcome 
     const redrawnWith = text => ({ loader: GONE, layers: 0, message: text });
 
     setBoard(MEDIEVAL, FACTORY, { fails: true });
-    assert.deepEqual(await readFor(1000), redrawnWith("This table's high scores are not supported"), "a failed first read");
+    assert.deepEqual(await readFor(1000), redrawnWith("No high scores found for this table"), "a failed first read");
     setBoard(MEDIEVAL, FACTORY, { durationMs: 3000 });
     assert.deepEqual(await readFor(3000), redrawnWith(null), "a fresh board");
     setBoard(MEDIEVAL, FACTORY, { fails: true });
@@ -52,7 +52,7 @@ test("the comet turns while the board is read fresh and goes with every outcome 
 
     setVpreg({ ...OTHER_SECTIONS, ZELDA: ZELDA_FACTORY });
     fake.setWheelGame(TABLES.length);
-    assert.deepEqual(await readFor(1000), redrawnWith("Play a game to bring up this table's high scores"), "not learned");
+    assert.deepEqual(await readFor(1000), redrawnWith("Play a game of at least one minute to show this table's high scores"), "not learned");
     fake.setWheelGame(-TABLES.length);
 
     // The board's fade in lasts under BOARD_OPEN_MS: the comet waits for its end.

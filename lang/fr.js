@@ -834,8 +834,9 @@ export default {
             // Over the last known board when the fresh read failed.
             notRefreshed: "Ces scores n'ont pas pu être actualisés",
             notSupported: "Les meilleurs scores de cette table ne sont pas pris en charge",
+            notFound: "Aucun meilleur score trouvé pour cette table",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
-            notLearned: "Lancez une partie pour faire apparaître les meilleurs scores de cette table",
+            notLearned: "Jouez une partie d'au moins une minute pour afficher les meilleurs scores de cette table",
             views: { table: "Scores de la ROM", household: "Scores de la maison", personal: "Vos 5 meilleurs scores" },
             viewTitles: { table: "Scores de la ROM", household: "Scores de la maison", personal: "Vos 5 meilleurs scores" },
             viewHelp: {

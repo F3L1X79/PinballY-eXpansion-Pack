@@ -828,8 +828,9 @@ export default {
             // Over the last known board when the fresh read failed.
             notRefreshed: "Diese Scores konnten nicht aktualisiert werden",
             notSupported: "Die Highscores dieses Tisches werden nicht unterstützt",
+            notFound: "Keine Highscores für diesen Tisch gefunden",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
-            notLearned: "Spielen Sie eine Partie, um die Highscores dieses Tisches anzuzeigen",
+            notLearned: "Spielen Sie eine Partie von mindestens einer Minute, um die Highscores dieses Tisches anzuzeigen",
             views: { table: "Aus dem ROM", household: "Aus der Familie", personal: "Meine besten 5" },
             viewTitles: { table: "Highscores des ROM", household: "Highscores der Familie", personal: "Meine 5 besten Highscores" },
             viewHelp: {

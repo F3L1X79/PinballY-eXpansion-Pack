@@ -828,8 +828,9 @@ export default {
             // Over the last known board when the fresh read failed.
             notRefreshed: "Não foi possível atualizar estas pontuações",
             notSupported: "As pontuações desta mesa não são suportadas",
+            notFound: "Nenhuma pontuação encontrada para esta mesa",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
-            notLearned: "Jogue uma partida para ver as pontuações desta mesa",
+            notLearned: "Jogue uma partida de pelo menos um minuto para ver as pontuações desta mesa",
             views: { table: "Da ROM", household: "Da casa", personal: "Minhas 5 melhores" },
             viewTitles: { table: "Pontuações da ROM", household: "Pontuações da casa", personal: "Minhas 5 melhores pontuações" },
             viewHelp: {

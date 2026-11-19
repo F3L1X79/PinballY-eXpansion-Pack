@@ -829,8 +829,9 @@ export default {
             // Over the last known board when the fresh read failed.
             notRefreshed: "No se pudieron actualizar estas puntuaciones",
             notSupported: "Las puntuaciones de esta mesa no son compatibles",
+            notFound: "No se encontraron puntuaciones para esta mesa",
             // A table without a ROM whose VPReg.stg section or text file is not learned yet.
-            notLearned: "Juega una partida para ver las puntuaciones de esta mesa",
+            notLearned: "Juega una partida de al menos un minuto para ver las puntuaciones de esta mesa",
             views: { table: "De la ROM", household: "De la casa", personal: "Mis 5 mejores" },
             viewTitles: { table: "Puntuaciones de la ROM", household: "Puntuaciones de la casa", personal: "Mis 5 mejores puntuaciones" },
             viewHelp: {
