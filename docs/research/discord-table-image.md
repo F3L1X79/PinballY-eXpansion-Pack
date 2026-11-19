@@ -122,3 +122,10 @@ Original research verdict: **feasible, with the Virtual Pinball Spreadsheet as t
 5. The logo as `small_image` during a game (Dolphin's layout), and `large_text` content.
 6. A per-cabinet override (base URL for own images) now or never?
 7. **On the cabinet:** what Discord shows for a 404 URL; `JSON.parse` time of the 8 MB file; share of tables with `ipdbId` filled; WebP display in the profile card.
+
+## Grill (2026-11-19): on hold, near abandoned
+
+- **Rights block every source.** Anything Discord can show is published: it fetches without credentials, so a private repo cannot serve it, and uploaded assets are public too. Wheel logos belong to media-pack authors and depict trademarks. Assets uploaded to the shared "Virtual Pinball" app would put the whole pack's Rich Presence at risk of removal. Linking VPS did not convince Félix (not his logos, no license).
+- **Matching blocks the repo option.** Other cabinets' `mediaName`s will rarely match a hosted file name, so per-name images would mostly serve Félix's cabinet.
+- **Settled, should it resume:** image during a game only (wheel and attract mode keep the logo); Dolphin's layout (table image large, the logo as an https `small_image`, "Manufacturer Year" as `large_text`); no setting beyond Discord Rich Presence's own; Adult Tables get their image too.
+- Moved to the bottom of `docs/roadmap.html`.

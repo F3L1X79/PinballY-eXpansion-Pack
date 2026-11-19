@@ -306,29 +306,6 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-share" id="discord-table-image" data-track="share" data-rank="gold">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Image de la table dans Discord Rich Presence</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen-gros</span></div>
-          </div>
-          <p>Pendant une partie, la grande image du statut Discord montre la table jouée au lieu du logo du pack, comme Dolphin montre la jaquette du jeu.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">research</span><i>›</i><span class="here">grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>docs/research/discord-table-image.md</code>. Complète Discord Rich Presence (livré)</div>
-          <details>
-            <summary>Questions ouvertes (3)</summary>
-            <ul>
-              <li>Discord n'affiche qu'une image publique par URL : les images de la roue sont locales. Dolphin héberge son propre serveur de jaquettes, indexé par l'ID universel du jeu ; nos tables n'ont qu'un <code>ipdbId</code> parfois rempli.</li>
-              <li>Quelle source : les photos d'IPDB (URL imprévisible depuis l'ID, accord à demander), le Virtual Pinball Spreadsheet (une image par table, rapprochement par nom, fabricant et année, téléchargement), ou un hébergement à nous ? À établir en <code>/research</code>.</li>
-              <li>Une table sans image trouvée garde le logo du pack.</li>
-            </ul>
-            <p class="ctx">Reportée du grill de Discord Rich Presence du 30/10/2026.</p>
-          </details>
-        </div>
-      </li>
-
       <li draggable="true" tabindex="0" class="item tr-profiles" id="avatar-change" data-track="profiles" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -746,6 +723,28 @@
               <li>Reprendre les décisions du grill du 10/11/2026 (section « Grill » de la recherche) : celles sur le découpage des parties restent valables, celles sur le hook tombent.</li>
             </ul>
             <p class="ctx">Ajouté le 08/11/2026. Grill du 10/11/2026 : le Play reste le lancement (glossaire), puis chantier mis en attente à la demande de Félix, de peur d'alourdir le système. En fin de file jusqu'à VPX 10.8.1 ; le guide dit que seule la dernière partie d'un lancement compte.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-share" id="discord-table-image" data-track="share" data-rank="gold">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Image de la table dans Discord Rich Presence</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen-gros</span></div>
+          </div>
+          <p>En pause, presque abandonné. Pendant une partie, la grande image du statut Discord montrerait la table jouée au lieu du logo du pack, comme Dolphin montre la jaquette du jeu. Aucune source d'images n'est à la fois autorisée et rapprochable des tables de chaque borne.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">research</span><i>›</i><span class="here">grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> (reprise, si une source se présente) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code> · <a href="research/discord-table-image.md">recherche</a>. Complète Discord Rich Presence (livré)</div>
+          <details>
+            <summary>Blocages (2)</summary>
+            <ul>
+              <li>Droits : toute image que Discord affiche est publiée (dépôt public, dépôt privé impossible car Discord lit sans identifiant, assets de l'appli). Les logos de roue sont l'œuvre des auteurs des media packs et montrent des marques ; des assets mis dans l'appli « Virtual Pinball » exposeraient l'appli commune, donc le Rich Presence de tous les joueurs, à un retrait. Les liens vers le Virtual Pinball Spreadsheet n'ont pas convaincu Félix (pas ses logos, dépôt sans licence).</li>
+              <li>Rapprochement : personne n'aura le même <code>mediaName</code> que le nom de l'image hébergée, donc une image par nom ne servirait guère qu'à la borne de Félix.</li>
+            </ul>
+            <p class="ctx">Reportée du grill de Discord Rich Presence du 30/10/2026. Grill du 19/11/2026, déjà décidé si on reprend : image seulement pendant une partie (logo seul sur la roue et en attract mode) ; disposition Dolphin, image de la table en grande image, logo du pack en <code>small_image</code> (URL https), « Fabricant Année » au survol ; aucun réglage de plus que celui de Discord Rich Presence ; les Adult Tables ont leur image aussi. Puis chantier mis tout en bas de la file, Félix pensant l'abandonner.</p>
           </details>
         </div>
       </li>
