@@ -14,7 +14,7 @@ From the start that found it until the update is done, a gold arrow pointing dow
 
 "Update now" downloads and checks the new version, the gold comet turning over the dimmed wheel with "Downloading the update…" beneath it and the buttons blocked meanwhile, then closes PinballY, swaps the pack's folder for the new one, and starts PinballY again. The next start says so under "Update complete": "eXpansion Pack updated to vX.Y.Z", then, after a blank line, what is new as a list, one dash per sentence, in the cabinet's language. After a jump over several versions, the news of each version on the way is listed too, newest first, five sentences at most. A fix release with nothing new for the players shows the first line alone.
 
-These are kept:
+These are kept (the full list is in [Updating offline](#updating-offline)):
 
 - your settings (`.env.local`);
 - the Profiles (`profiles`);
@@ -40,6 +40,30 @@ Each version of the pack names the vpxtool version it was tried with. At each st
 Set "Pack update check" to "Off" in the Offline Mode group of **eXpansion Pack Settings**, or write `UPDATE_CHECK=false` in `.env.local`: the cabinet then never contacts GitHub. From the next start, a white circular arrow, crossed out, sits beside the wheel's clock as a reminder, for whoever sees the setup entries (see [Status Icons](interface.md#status-icons)).
 
 A pack installed with git is never checked nor offered updates: run `git pull` in `Scripts\ExpansionPack`.
+
+## Updating offline
+
+A cabinet without Internet never sees the Update Prompt: update it by hand with the release zip, as "Update now" does. You can go straight from any version to the latest one (from 1.4 to 1.6, say): the pack reads the files of older versions as they are, with no step to run in between.
+
+1. On another computer, download `ExpansionPack.zip` from the latest release (see [Install](install.md)) and bring it to the cabinet.
+2. Close PinballY.
+3. Rename `Scripts\ExpansionPack` to `ExpansionPack.old-<date>`: it is your copy of the previous version (see [Going back to the previous version](#going-back-to-the-previous-version)).
+4. Extract the zip into `PinballY\Scripts`: you should get `Scripts\ExpansionPack\main.js`, not `ExpansionPack\ExpansionPack\main.js`.
+5. Copy back from `ExpansionPack.old-<date>` into `ExpansionPack` those of the following that you have, over what the zip holds:
+   - `.env.local`: your settings;
+   - `profiles`: the Profiles;
+   - `logs`: the pack's logs;
+   - `assets\sounds\local`: your own sounds;
+   - `assets\images\default_scores\local`: your own Default Score images;
+   - `pack_update.json`: the answers given to the pack's notices;
+   - `script_reader.json`: the vpxtool version the pack knows;
+   - `quiet_wheel_pending.json`: a table volume to put back, there only after PinballY was cut off;
+   - `tools`: the files you put there, `vpxtool.exe` included, but not `pack_update.ps1`, `restart_pinbally.ps1` and `script_reader_install.ps1`, which the zip ships newer.
+
+   Coming from a version that kept its logs in the pack folder itself (`errors.log`, `play_scores_anomalies.log` and their `.old.log`), copy those too: the pack moves them into `logs` at its start.
+6. Start PinballY.
+
+So that the cabinet stops looking for updates it cannot reach, set "Pack update check" to "Off" in the Offline Mode group (see [Turning the check off](#turning-the-check-off)).
 
 ## Going back to the previous version
 

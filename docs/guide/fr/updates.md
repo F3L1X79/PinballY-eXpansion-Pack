@@ -14,7 +14,7 @@ Du démarrage qui l'a trouvée jusqu'à la mise à jour, une flèche dorée poin
 
 « Mettre à jour » télécharge et vérifie la nouvelle version, la comète dorée tournant sur la roue assombrie avec « Téléchargement de la mise à jour… » en dessous et les boutons bloqués pendant ce temps, puis ferme PinballY, remplace le dossier du pack par le nouveau, et relance PinballY. Le démarrage suivant l'annonce sous « Mise à jour terminée » : « eXpansion Pack mis à jour en vX.Y.Z », puis, après une ligne vide, la liste des nouveautés, un tiret par phrase, dans la langue de la borne. Après un saut de plusieurs versions, les nouveautés de chaque version sautée sont aussi listées, les plus récentes d'abord, cinq phrases au plus. Une version de correction sans nouveauté pour les joueurs n'affiche que la première ligne.
 
-Sont conservés :
+Sont conservés (la liste complète est dans [Mettre à jour hors ligne](#mettre-à-jour-hors-ligne)) :
 
 - vos réglages (`.env.local`) ;
 - vos Profils (`profiles`) ;
@@ -40,6 +40,30 @@ Chaque version du pack nomme la version de vpxtool avec laquelle elle a été es
 Réglez « Recherche de mises à jour du pack » sur « Désactivé » dans le groupe Mode hors ligne des **Réglages de l'eXpansion pack**, ou écrivez `UPDATE_CHECK=false` dans `.env.local` : la borne ne contacte alors jamais GitHub. Dès le démarrage suivant, une flèche circulaire blanche, barrée, se tient à côté de l'horloge de la roue pour le rappeler, à qui voit les entrées de configuration (voir [Icônes d'état](interface.md#icônes-détat)).
 
 Un pack installé avec git n'est jamais vérifié ni mis à jour : lancez `git pull` dans `Scripts\ExpansionPack`.
+
+## Mettre à jour hors ligne
+
+Une borne sans Internet ne voit jamais l'invite de mise à jour : mettez-la à jour à la main avec le zip de la version, comme le fait « Mettre à jour ». Vous pouvez passer directement de n'importe quelle version à la dernière (de 1.4 à 1.6, par exemple) : le pack lit tels quels les fichiers des versions précédentes, sans étape intermédiaire.
+
+1. Sur un autre ordinateur, téléchargez `ExpansionPack.zip` depuis la dernière version (voir [Installation](install.md)) et apportez-le à la borne.
+2. Fermez PinballY.
+3. Renommez `Scripts\ExpansionPack` en `ExpansionPack.old-<date>` : c'est votre copie de la version précédente (voir [Revenir à la version précédente](#revenir-à-la-version-précédente)).
+4. Extrayez le zip dans `PinballY\Scripts` : vous devez obtenir `Scripts\ExpansionPack\main.js`, et non `ExpansionPack\ExpansionPack\main.js`.
+5. Recopiez de `ExpansionPack.old-<date>` vers `ExpansionPack` ceux des éléments suivants que vous avez, par-dessus ce que contient le zip :
+   - `.env.local` : vos réglages ;
+   - `profiles` : vos Profils ;
+   - `logs` : les journaux du pack ;
+   - `assets\sounds\local` : vos propres sons ;
+   - `assets\images\default_scores\local` : vos propres images de score par défaut ;
+   - `pack_update.json` : les réponses données aux messages du pack ;
+   - `script_reader.json` : la version de vpxtool que le pack connaît ;
+   - `quiet_wheel_pending.json` : un volume de table à rétablir, présent seulement si PinballY a été coupé ;
+   - `tools` : les fichiers que vous y avez mis, `vpxtool.exe` compris, mais pas `pack_update.ps1`, `restart_pinbally.ps1` ni `script_reader_install.ps1`, que le zip apporte plus récents.
+
+   Depuis une version qui gardait ses journaux dans le dossier du pack lui-même (`errors.log`, `play_scores_anomalies.log` et leurs `.old.log`), copiez-les aussi : le pack les range dans `logs` à son démarrage.
+6. Lancez PinballY.
+
+Pour que la borne arrête de chercher des mises à jour qu'elle ne peut pas atteindre, réglez « Recherche de mises à jour du pack » sur « Désactivé » dans le groupe Mode hors ligne (voir [Couper la recherche](#couper-la-recherche)).
 
 ## Revenir à la version précédente
 
