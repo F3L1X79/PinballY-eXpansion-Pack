@@ -59,9 +59,8 @@ play_scores/
 # Personal sounds, not published (see .env.example)
 assets/sounds/local/
 
-# Personal Default Score images, not published; and the sheets the pack's ones were cut from
+# Personal Default Score images, not published
 assets/images/default_scores/local/
-assets/images/default_scores/worskpace/
 
 # Drawn Menu check sheet (maintainer/drawn_menu/generate_drawn_menu.mjs --sheet)
 assets/images/drawn_menu/sheet.png

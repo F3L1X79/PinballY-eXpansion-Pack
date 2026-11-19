@@ -24,7 +24,6 @@ const NOT_KEPT = {
     ".zprofile": "sandbox placeholder", ".zshrc": "sandbox placeholder",
     "docs\\images\\raw": "maintainer's raw screenshots",
     "assets\\images\\drawn_menu\\sheet.png": "maintainer's check sheet",
-    "assets\\images\\default_scores\\worskpace": "maintainer's source sheets",
     // Written by the pack, but remade when needed.
     "play_scores": "the .nv copies, remade at each launch",
     // Left by a version before the logs folder; the older version's own helper keeps them.
