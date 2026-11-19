@@ -47,6 +47,9 @@ const DISCORD_CONSENT_MENU_ID = "expansionPackSettingsDiscordConsent";
 // Starts the menu ids and the command name of the save and restart step.
 const SAVE_AND_RESTART_ID_PREFIX = "expansionPackSettings";
 const SEPARATOR = { cmd: -1 };
+// Where a setting picked on a page of choices has its line, besides a category's page (named by its group).
+const LIST_PLACE = "list";
+const OFFLINE_PLACE = "offline";
 const BOLD_WEIGHT = 700;
 
 // getMenus: what shows the screens, asked on each opening
@@ -68,8 +71,8 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     // The settings picked on a page of choices and saved at once (but for
     // asksConsent's On from off), in the list's order: each by its config key,
     // its choices' names in their order, and its value as compared (a language
-    // whatever its case, as i18n.js reads it), offline when its line is in the
-    // Offline Mode group, group: the category whose page it ends.
+    // whatever its case, as i18n.js reads it), and the place of its line: the
+    // list, the Offline Mode group, or a category whose page it ends.
     // afterSave(from, to) writes what else the choice needs once saved.
     // One command for its line, one per choice. A switch's
     // choices are keyed "true" / "false": String turns the saved boolean into
@@ -77,19 +80,19 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     // Add-on's own page having that name; keyPath and read are the Add-on's value.
     const ON_OFF = { true: TEXT.on, false: TEXT.off };
     const choiceSettings = [
-        { key: "language", menuId: LANGUAGE_MENU_ID, names: TEXT.languageNames, line: TEXT.languageLine, normalize: value => String(value).toLowerCase() },
-        { key: "startupScreen", menuId: STARTUP_SCREEN_MENU_ID, names: TEXT.startupScreenNames, line: TEXT.startupScreenLine, normalize: String },
+        { key: "language", menuId: LANGUAGE_MENU_ID, names: TEXT.languageNames, line: TEXT.languageLine, normalize: value => String(value).toLowerCase(), place: LIST_PLACE },
+        { key: "startupScreen", menuId: STARTUP_SCREEN_MENU_ID, names: TEXT.startupScreenNames, line: TEXT.startupScreenLine, normalize: String, place: LIST_PLACE },
         {
             key: "attractOrder",
             menuId: ATTRACT_ORDER_MENU_ID,
             names: TEXT.attractOrderNames,
             line: TEXT.attractOrderLine,
             normalize: String,
-            group: "wheel",
+            place: "wheel",
             afterSave: (from, to) => saveAttractOrderSwitches(host, profileStore, from, to),
         },
-        { key: "updateCheck", menuId: UPDATE_CHECK_MENU_ID, names: ON_OFF, line: TEXT.updateCheckLine, normalize: String, offline: true },
-        { key: "offerVpxtool", menuId: OFFER_VPXTOOL_MENU_ID, names: ON_OFF, line: TEXT.offerVpxtoolLine, normalize: String, offline: true },
+        { key: "updateCheck", menuId: UPDATE_CHECK_MENU_ID, names: ON_OFF, line: TEXT.updateCheckLine, normalize: String, place: OFFLINE_PLACE },
+        { key: "offerVpxtool", menuId: OFFER_VPXTOOL_MENU_ID, names: ON_OFF, line: TEXT.offerVpxtoolLine, normalize: String, place: OFFLINE_PLACE },
         {
             key: "offlineDiscordRichPresence",
             keyPath: "addOns.discordRichPresence",
@@ -98,7 +101,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
             names: ON_OFF,
             line: state => TEXT.addOnLine(TEXT.addOns.discordRichPresence.name, state),
             normalize: String,
-            offline: true,
+            place: OFFLINE_PLACE,
             asksConsent: true,
         },
     ].map(setting => ({
@@ -144,6 +147,9 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         return { title: setting.line(choiceDiffers(saved, setting) ? TEXT.onRestart(name) : name), cmd: setting.lineCommand };
     };
 
+    const settingLinesAt = (place, saved) => choiceSettings
+        .filter(setting => setting.place === place).map(setting => choiceLineOf(saved, setting));
+
     const releaseToInstall = () => installableRelease(host, getUpdateState());
 
     // Only while the running Table ROMs Add-on would read the scripts with it.
@@ -172,8 +178,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
             ...scriptReaderLines(),
         ];
         getMenus().show(LIST_MENU_ID, [
-            ...choiceSettings.filter(setting => !setting.offline && !setting.group)
-                .map(setting => choiceLineOf(saved, setting)),
+            ...settingLinesAt(LIST_PLACE, saved),
             SEPARATOR,
             ...ADD_ON_GROUPS.map(({ group }) => ({ title: TEXT.groups[group], cmd: groupCommands.get(group), hasSubmenu: true })),
             { title: TEXT.offlineMode, cmd: offlineModeCommand, hasSubmenu: true },
@@ -203,7 +208,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         page = null;
         const saved = readSaved();
         const { addOns } = ADD_ON_GROUPS.find(entry => entry.group === group);
-        const settings = choiceSettings.filter(setting => setting.group === group);
+        const settingLines = settingLinesAt(group, saved);
         getMenus().show(CATEGORY_MENU_ID, [
             { title: TEXT.groups[group], cmd: -1 },
             ...addOns.map((key) => {
@@ -211,7 +216,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
                 const shownState = addOnDiffers(saved, key) ? TEXT.onRestart(state) : state;
                 return { title: TEXT.addOnLine(TEXT.addOns[key].name, shownState), cmd: addOnCommands.get(key) };
             }),
-            ...(settings.length > 0 ? [SEPARATOR, ...settings.map(setting => choiceLineOf(saved, setting))] : []),
+            ...(settingLines.length > 0 ? [SEPARATOR, ...settingLines] : []),
             SEPARATOR,
             { title: TEXT.back, cmd: menuReturnCommand },
         ], { selectedCmd, onBack: () => openList(groupCommands.get(group)) });
@@ -223,16 +228,17 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         const saved = readSaved();
         getMenus().show(OFFLINE_MODE_MENU_ID, [
             { title: TEXT.offlineMode, cmd: -1 },
-            ...choiceSettings.filter(setting => setting.offline).map(setting => choiceLineOf(saved, setting)),
+            ...settingLinesAt(OFFLINE_PLACE, saved),
             SEPARATOR,
             { title: TEXT.back, cmd: menuReturnCommand },
         ], { selectedCmd, onBack: () => openList(offlineModeCommand) });
     }
 
-    // Where a setting's line is: the list, its category or the Offline Mode group.
-    function backToLine(setting) {
-        if (setting.group) openCategory(setting.group, setting.lineCommand);
-        else (setting.offline ? openOfflineMode : openList)(setting.lineCommand);
+    // Back on the setting's line, wherever it is.
+    function backToLine({ place, lineCommand }) {
+        if (place === LIST_PLACE) openList(lineCommand);
+        else if (place === OFFLINE_PLACE) openOfflineMode(lineCommand);
+        else openCategory(place, lineCommand);
     }
 
     const returnToOperatorMenu = () => host.doCommand(operatorMenuCommand);

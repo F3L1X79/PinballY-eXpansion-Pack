@@ -329,25 +329,94 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-share" id="crt-filter" data-track="share" data-rank="silver">
+      <li draggable="true" tabindex="0" class="item tr-profiles" id="avatar-change" data-track="profiles" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
         <div class="content">
           <div class="item-head">
-            <h3>Un faux mode CRT sur la roue</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+            <h3>Changer d'Avatar depuis la borne</h3>
+            <div class="tags"><span class="tag track">Profiles</span><span class="tag">petit-moyen</span><span class="tag">UI</span></div>
           </div>
-          <p>Un filtre graphique façon vieil écran sur la roue, hors partie : un calque statique de scanlines et de vignettage, à activer dans les réglages.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>prototype</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/prototype</code> (un PNG sur un calque, à juger sur la borne) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Pourrait devenir une option des <a href="#themes">thèmes (n° <span data-ref="themes"></span>)</a></div>
+          <p>Aujourd'hui, Avatar Choice ne s'ouvre qu'à la création d'un Profile : ensuite, l'Avatar se change seulement depuis Windows (<code>avatar.png</code> / <code>avatar.jpg</code> dans le dossier du Profile). Rouvrir Avatar Choice pour un Profile existant.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>common/profiles/avatar_choice.js</code> et de la page <code>docs/guide/en/profiles.md</code></div>
           <details>
             <summary>Questions ouvertes (3)</summary>
             <ul>
-              <li>Le rendu est-il beau et la roue reste-t-elle fluide sur la borne ? PinballY remplit chaque pixel d'un calque à chaque image : le coût d'un calque plein écran est à mesurer.</li>
-              <li>Le filtre couvre-t-il aussi les menus et les écrans dessinés, ou la roue seule ? Et le backglass ?</li>
-              <li>Le sens des lignes sur un écran tourné : horizontales pour le joueur, ou celles de l'écran physique ?</li>
+              <li>Où l'ouvrir : un choix « Avatar » dans les Profile Stats, à côté de <b>Frame</b>, ou une entrée de Change Player ?</li>
+              <li>Un <code>avatar.jpg</code> posé à la main (une photo) gagne sur le portrait choisi : le choix sur la borne le remplace-t-il, ou le garde-t-on en tête de la liste ?</li>
+              <li>Qui peut changer l'Avatar d'un autre Profile : seulement le Profile lui-même, ou aussi un Admin Profile ?</li>
             </ul>
-            <p class="ctx">Idée de Félix du 04/11/2026, remontée dans la file à sa demande le 07/11/2026. Le résumé de l'aide PinballY ne mentionne aucun shader : ni courbure d'écran ni bavure de couleurs a priori, à confirmer dans l'aide complète. Pas de scintillement, selon la règle « pas d'animation sans fin ».</p>
+            <p class="ctx">Question de csdf sur le forum (18/11/2026) : « How do you change the Profile picture, once selected? »</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-profiles" id="auto-backup" data-track="profiles" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Sauvegarde automatique et datée des Profiles</h3>
+            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span></div>
+          </div>
+          <p>Une copie datée de <code>profiles</code> au démarrage et avant chaque Pack Update, avec quelques générations gardées et un dossier réglable (autre disque, OneDrive). Le Play Log et les Profiles ne se recréent pas.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>saveJson</code> dans <code>common/profiles/profile_store.js</code> et de la page <code>docs/guide/en/install.md</code></div>
+          <details>
+            <summary>Questions ouvertes (3)</summary>
+            <ul>
+              <li>Combien de générations garder, et à quelle fréquence copier : à chaque démarrage, ou une fois par jour au plus ?</li>
+              <li>Le dossier par défaut : à côté du pack (ne protège pas d'un disque mort), ou rien tant que le propriétaire n'en a pas choisi un ?</li>
+              <li>Comment revenir à une copie : à la main, comme pour une remise à zéro, ou depuis les réglages ?</li>
+            </ul>
+            <p class="ctx">Idée de Claude du 04/11/2026, gardée par Félix, assez bas dans la file à sa demande. Aujourd'hui, chaque fichier n'a qu'un <code>.bak</code> sur le même disque, remplacé à chaque écriture : il protège d'un plantage, pas d'un disque mort ni d'un bug qui écrirait des données fausses.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-profiles" id="pinbally-play-history" data-track="profiles" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Reprendre l'historique de jeu de PinballY</h3>
+            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span></div>
+          </div>
+          <p>Une borne qui installe le pack a souvent des années de parties derrière elle : PinballY garde par table un temps de jeu, un nombre de parties et une date de dernière partie (<code>GameStats.csv</code>, lisibles par <code>game.playTime</code>, <code>playCount</code>, <code>lastPlayed</code>). Aujourd'hui le pack les ignore et chaque Profile part de zéro.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Remet en cause <code>docs/adr/0004-achievements-read-each-profiles-own-plays.md</code> (« Existing progress is not carried over »)</div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Ces chiffres sont communs à toute la maison : les importer une fois dans un Profile choisi (par un Admin Profile), ou les afficher à part comme « total de la borne » sans toucher aux Profiles ?</li>
+              <li>Un import débloque-t-il des Achievements (temps de jeu, Table Mastery, Collection Tiers) ? D'un coup, ce serait une pluie de toasts et des succès non gagnés avec le pack.</li>
+              <li>PinballY n'a pas le détail des parties : l'import ne peut pas recréer de Plays datées dans le Play Log. Comment le marquer (une entrée « historique » à part) sans fausser les Streaks, la Table of the Day ou les Challenges ?</li>
+              <li>Une seule fois par borne, ou refaisable ? Que se passe-t-il pour les parties jouées depuis l'installation du pack, déjà comptées par PinballY aussi ?</li>
+            </ul>
+            <p class="ctx">Demande d'un utilisateur Reddit (17/11/2026, 2102 tables), qui parlait de « GameInfo.csv ». Félix : à griller plus tard, pas pressé.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="loader-font" data-track="play" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>La police de « Loading… » sous le Loader</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">UI</span></div>
+          </div>
+          <p>L'étape du lancement sous le Loader (« Loading… », « Closing… ») est écrite en Gabriola, une police calligraphique, alors que le reste de l'interface est en Segoe UI. Un joueur trouve que ça détonne.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> (une décision de style) → <code>/implement</code>. <code>STEAMBALL_FONTS.script</code> dans <code>common/drawing/steamball_palette.js</code>, seul utilisateur : <code>common/drawing/loader.js</code></div>
+          <details>
+            <summary>Questions ouvertes (2)</summary>
+            <ul>
+              <li>Garder Gabriola (touche Steamball voulue), passer en Segoe UI comme le corps, ou en Bahnschrift SemiCondensed comme les pieds de page ?</li>
+              <li>Le Loader et sa légende servent aussi aux attentes bloquantes (« Downloading… »), à l'ouverture des écrans, au voile de démarrage et à la sauvegarde avant redémarrage : la nouvelle police vaut-elle partout ?</li>
+            </ul>
+            <p class="ctx">Remarque de csdf sur le forum (18/11/2026) : « it looks odd for the Loading font (a serif font) to be different from the main UI font ».</p>
           </details>
         </div>
       </li>
@@ -448,6 +517,29 @@
         </div>
       </li>
 
+      <li draggable="true" tabindex="0" class="item tr-share" id="crt-filter" data-track="share" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Un faux mode CRT sur la roue</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Un filtre graphique façon vieil écran sur la roue, hors partie : un calque statique de scanlines et de vignettage, à activer dans les réglages.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>prototype</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/prototype</code> (un PNG sur un calque, à juger sur la borne) → <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Pourrait devenir une option des <a href="#themes">thèmes (n° <span data-ref="themes"></span>)</a></div>
+          <details>
+            <summary>Questions ouvertes (3)</summary>
+            <ul>
+              <li>Le rendu est-il beau et la roue reste-t-elle fluide sur la borne ? PinballY remplit chaque pixel d'un calque à chaque image : le coût d'un calque plein écran est à mesurer.</li>
+              <li>Le filtre couvre-t-il aussi les menus et les écrans dessinés, ou la roue seule ? Et le backglass ?</li>
+              <li>Le sens des lignes sur un écran tourné : horizontales pour le joueur, ou celles de l'écran physique ?</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 04/11/2026, remontée dans la file à sa demande le 07/11/2026. Le résumé de l'aide PinballY ne mentionne aucun shader : ni courbure d'écran ni bavure de couleurs a priori, à confirmer dans l'aide complète. Pas de scintillement, selon la règle « pas d'animation sans fin ».</p>
+          </details>
+        </div>
+      </li>
+
       <li draggable="true" tabindex="0" class="item tr-play" id="screen-animations" data-track="play" data-rank="gold">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -467,30 +559,6 @@
               <li>Un module commun, pour ne pas les refaire écran par écran ?</li>
             </ul>
             <p class="ctx">Idée de Félix du 04/11/2026, remontée dans la file à sa demande le 07/11/2026. Les fondus d'ouverture des écrans existent déjà. Depuis la spec #418, les boutons de tous les Drawn Screens passent par un seul module, <code>common/core/drawn_screen_controls.js</code> : une réaction aux appuis peut s'y brancher une fois pour tous.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-share" id="themes" data-track="share" data-rank="platinum">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Thèmes : d'autres palettes que Steamball, au choix</h3>
-            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">gros</span></div>
-          </div>
-          <p>Le propriétaire choisit le thème de tous les écrans dessinés (Welcome Screen, Achievement List, Profile Stats, toasts, Drawn Menus…) parmi plusieurs, Steamball restant celui par défaut.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (les palettes, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Avant l'<a href="#theme-editor">éditeur de palette (n° <span data-ref="theme-editor"></span>)</a></div>
-          <details>
-            <summary>Questions ouvertes (4)</summary>
-            <ul>
-              <li>Quels thèmes, et combien pour commencer ?</li>
-              <li>Ce que couvre un thème : seulement les couleurs et les polices de <code>common/drawing/steamball_palette.js</code>, ou aussi les images peintes d'avance (cadres, panneau et verre des Drawn Menus, blasons), à repeindre une fois par thème par les scripts de <code>maintainer/</code> ?</li>
-              <li>Où le choisir : un réglage dans <code>.env.local</code>, un choix par Profile, ou une entrée de menu ?</li>
-              <li>Les confettis et les feux d'artifice suivent-ils le thème ?</li>
-            </ul>
-            <p class="ctx">Idée du 10/10/2026. Aujourd'hui, les couleurs passent déjà presque toutes par <code>common/drawing/steamball_palette.js</code>, mais les images PNG sont peintes en Steamball.</p>
           </details>
         </div>
       </li>
@@ -520,6 +588,30 @@
         </div>
       </li>
 
+      <li draggable="true" tabindex="0" class="item tr-share" id="themes" data-track="share" data-rank="platinum">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Thèmes : d'autres palettes que Steamball, au choix</h3>
+            <div class="tags"><span class="tag track">Diffusion</span><span class="tag">gros</span></div>
+          </div>
+          <p>Le propriétaire choisit le thème de tous les écrans dessinés (Welcome Screen, Achievement List, Profile Stats, toasts, Drawn Menus…) parmi plusieurs, Steamball restant celui par défaut.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (les palettes, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Avant l'<a href="#theme-editor">éditeur de palette (n° <span data-ref="theme-editor"></span>)</a></div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Quels thèmes, et combien pour commencer ?</li>
+              <li>Ce que couvre un thème : seulement les couleurs et les polices de <code>common/drawing/steamball_palette.js</code>, ou aussi les images peintes d'avance (cadres, panneau et verre des Drawn Menus, blasons), à repeindre une fois par thème par les scripts de <code>maintainer/</code> ?</li>
+              <li>Où le choisir : un réglage dans <code>.env.local</code>, un choix par Profile, ou une entrée de menu ?</li>
+              <li>Les confettis et les feux d'artifice suivent-ils le thème ?</li>
+            </ul>
+            <p class="ctx">Idée du 10/10/2026. Aujourd'hui, les couleurs passent déjà presque toutes par <code>common/drawing/steamball_palette.js</code>, mais les images PNG sont peintes en Steamball.</p>
+          </details>
+        </div>
+      </li>
+
       <li draggable="true" tabindex="0" class="item tr-share" id="theme-editor" data-track="share" data-rank="gold">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -543,76 +635,6 @@
         </div>
       </li>
 
-      <li draggable="true" tabindex="0" class="item tr-profiles" id="avatar-change" data-track="profiles" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Changer d'Avatar depuis la borne</h3>
-            <div class="tags"><span class="tag track">Profiles</span><span class="tag">petit-moyen</span><span class="tag">UI</span></div>
-          </div>
-          <p>Aujourd'hui, Avatar Choice ne s'ouvre qu'à la création d'un Profile : ensuite, l'Avatar se change seulement depuis Windows (<code>avatar.png</code> / <code>avatar.jpg</code> dans le dossier du Profile). Rouvrir Avatar Choice pour un Profile existant.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>common/profiles/avatar_choice.js</code> et de la page <code>docs/guide/en/profiles.md</code></div>
-          <details>
-            <summary>Questions ouvertes (3)</summary>
-            <ul>
-              <li>Où l'ouvrir : un choix « Avatar » dans les Profile Stats, à côté de <b>Frame</b>, ou une entrée de Change Player ?</li>
-              <li>Un <code>avatar.jpg</code> posé à la main (une photo) gagne sur le portrait choisi : le choix sur la borne le remplace-t-il, ou le garde-t-on en tête de la liste ?</li>
-              <li>Qui peut changer l'Avatar d'un autre Profile : seulement le Profile lui-même, ou aussi un Admin Profile ?</li>
-            </ul>
-            <p class="ctx">Question de csdf sur le forum (18/11/2026) : « How do you change the Profile picture, once selected? »</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-profiles" id="auto-backup" data-track="profiles" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Sauvegarde automatique et datée des Profiles</h3>
-            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span></div>
-          </div>
-          <p>Une copie datée de <code>profiles</code> au démarrage et avant chaque Pack Update, avec quelques générations gardées et un dossier réglable (autre disque, OneDrive). Le Play Log et les Profiles ne se recréent pas.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>saveJson</code> dans <code>common/profiles/profile_store.js</code> et de la page <code>docs/guide/en/install.md</code></div>
-          <details>
-            <summary>Questions ouvertes (3)</summary>
-            <ul>
-              <li>Combien de générations garder, et à quelle fréquence copier : à chaque démarrage, ou une fois par jour au plus ?</li>
-              <li>Le dossier par défaut : à côté du pack (ne protège pas d'un disque mort), ou rien tant que le propriétaire n'en a pas choisi un ?</li>
-              <li>Comment revenir à une copie : à la main, comme pour une remise à zéro, ou depuis les réglages ?</li>
-            </ul>
-            <p class="ctx">Idée de Claude du 04/11/2026, gardée par Félix, assez bas dans la file à sa demande. Aujourd'hui, chaque fichier n'a qu'un <code>.bak</code> sur le même disque, remplacé à chaque écriture : il protège d'un plantage, pas d'un disque mort ni d'un bug qui écrirait des données fausses.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-profiles" id="pinbally-play-history" data-track="profiles" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Reprendre l'historique de jeu de PinballY</h3>
-            <div class="tags"><span class="tag track">Profiles</span><span class="tag">moyen</span></div>
-          </div>
-          <p>Une borne qui installe le pack a souvent des années de parties derrière elle : PinballY garde par table un temps de jeu, un nombre de parties et une date de dernière partie (<code>GameStats.csv</code>, lisibles par <code>game.playTime</code>, <code>playCount</code>, <code>lastPlayed</code>). Aujourd'hui le pack les ignore et chaque Profile part de zéro.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Remet en cause <code>docs/adr/0004-achievements-read-each-profiles-own-plays.md</code> (« Existing progress is not carried over »)</div>
-          <details>
-            <summary>Questions ouvertes (4)</summary>
-            <ul>
-              <li>Ces chiffres sont communs à toute la maison : les importer une fois dans un Profile choisi (par un Admin Profile), ou les afficher à part comme « total de la borne » sans toucher aux Profiles ?</li>
-              <li>Un import débloque-t-il des Achievements (temps de jeu, Table Mastery, Collection Tiers) ? D'un coup, ce serait une pluie de toasts et des succès non gagnés avec le pack.</li>
-              <li>PinballY n'a pas le détail des parties : l'import ne peut pas recréer de Plays datées dans le Play Log. Comment le marquer (une entrée « historique » à part) sans fausser les Streaks, la Table of the Day ou les Challenges ?</li>
-              <li>Une seule fois par borne, ou refaisable ? Que se passe-t-il pour les parties jouées depuis l'installation du pack, déjà comptées par PinballY aussi ?</li>
-            </ul>
-            <p class="ctx">Demande d'un utilisateur Reddit (17/11/2026, 2102 tables), qui parlait de « GameInfo.csv ». Félix : à griller plus tard, pas pressé.</p>
-          </details>
-        </div>
-      </li>
-
       <li draggable="true" tabindex="0" class="item tr-play" id="sound-design" data-track="play" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
         <div class="emblem"></div>
@@ -632,28 +654,6 @@
               <li>D'où viennent les sons, et sous quelle licence ? Félix les choisit à l'oreille.</li>
             </ul>
             <p class="ctx">Idée de Félix du 04/11/2026, assez bas dans la file à sa demande.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="loader-font" data-track="play" data-rank="bronze">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>La police de « Loading… » sous le Loader</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">UI</span></div>
-          </div>
-          <p>L'étape du lancement sous le Loader (« Loading… », « Closing… ») est écrite en Gabriola, une police calligraphique, alors que le reste de l'interface est en Segoe UI. Un joueur trouve que ça détonne.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> (une décision de style) → <code>/implement</code>. <code>STEAMBALL_FONTS.script</code> dans <code>common/drawing/steamball_palette.js</code>, seul utilisateur : <code>common/drawing/loader.js</code></div>
-          <details>
-            <summary>Questions ouvertes (2)</summary>
-            <ul>
-              <li>Garder Gabriola (touche Steamball voulue), passer en Segoe UI comme le corps, ou en Bahnschrift SemiCondensed comme les pieds de page ?</li>
-              <li>Le Loader et sa légende servent aussi aux attentes bloquantes (« Downloading… »), à l'ouverture des écrans, au voile de démarrage et à la sauvegarde avant redémarrage : la nouvelle police vaut-elle partout ?</li>
-            </ul>
-            <p class="ctx">Remarque de csdf sur le forum (18/11/2026) : « it looks odd for the Loading font (a serif font) to be different from the main UI font ».</p>
           </details>
         </div>
       </li>
