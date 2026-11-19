@@ -28,7 +28,8 @@ export function readRomOutput(output) {
 // (common/table_roms/script_reader_state.js); runner: the shared vpxtool
 // runner (common/vpxtool/vpxtool_runner.js); its own one by default, for a
 // queue made alone on a host.
-export function createScriptQueue(host, record, { version = null, runner = createVpxtoolRunner(host) } = {}) {
+// onDone: called once every run this start submitted has answered or failed.
+export function createScriptQueue(host, record, { version = null, runner = createVpxtoolRunner(host), onDone = () => {} } = {}) {
     // vpxtool reads the script from the .vbs beside the .vpx when there is
     // one; vpxtool.exe's own state tells a new vpxtool after a failure.
     const fileStateOf = (vpxPath, vpxtool) => ({
@@ -92,7 +93,19 @@ export function createScriptQueue(host, record, { version = null, runner = creat
         start: () => {
             if (started) return;
             started = true;
-            for (const job of [...versionRuns, ...tablesToRead().map(tableRun)]) runner.submit(job);
+            const jobs = [...versionRuns, ...tablesToRead().map(tableRun)];
+            let remaining = jobs.length;
+            // A handler that throws still counts its run as done.
+            const counted = handler => (value) => {
+                try {
+                    handler(value);
+                } finally {
+                    remaining -= 1;
+                    if (remaining === 0) onDone();
+                }
+            };
+            if (remaining === 0) onDone();
+            for (const job of jobs) runner.submit({ ...job, apply: counted(job.apply), fail: counted(job.fail) });
         },
     };
 }

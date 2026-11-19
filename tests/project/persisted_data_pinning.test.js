@@ -556,8 +556,11 @@ test("the Table ROM record keeps its file name and keys", () => {
     fake.addFile(noRom, "table", { modified: new Date(2026, 5, 3, 12, 0, 0) });
     fake.addProgram("C:\\PinballY\\Scripts\\ExpansionPack\\tools\\vpxtool.exe", args => ({ output: args[1] === vpx ? "afm_113\n" : "" }));
 
-    createScriptQueue(fake, createTableRomRecord(fake, createProfileStore(fake))).start();
+    const record = createTableRomRecord(fake, createProfileStore(fake));
+    createScriptQueue(fake, record).start();
     fake.advanceTime(60 * 1000);
+    assert.equal(JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\table_roms.json`)).tables["Attack from Mars (Bally 1995)"].pending, "afm_113");
+    record.writePending("Attack from Mars (Bally 1995)");
 
     assert.deepEqual(JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\table_roms.json`)), {
         version: 1,

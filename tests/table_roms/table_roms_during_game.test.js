@@ -2,7 +2,7 @@
 // Table ROMs during a game, through main.js on the fake PinballY globals:
 // no vpxtool run starts from a table's launch until the return to the
 // wheel; the run already started at launch finishes and its ROM is
-// written, even when the game slows it past the usual time limit; the
+// recorded, even when the game slows it past the usual time limit; the
 // queue then resumes with the remaining tables.
 // ============================================================
 
@@ -20,7 +20,7 @@ const STARTUP_DELAY_MS = 10 * 1000;
 const GAME_MS = 30 * 60 * 1000;
 
 test("a game pauses the script reading, lets the run in progress finish, and the queue resumes after it", async () => {
-    const { fake, readScripts, roms, log, scriptsRead } = await startTableRoms({
+    const { fake, readScripts, roms, pendingRoms, log, scriptsRead } = await startTableRoms({
         tables: TABLES,
         files: Object.fromEntries(TABLES.map(game => [vpxFile(game.configId), {}])),
         vpxtool: {
@@ -41,12 +41,13 @@ test("a game pauses the script reading, lets the run in progress finish, and the
     fake.advanceTime(GAME_MS);
 
     assert.deepEqual(scriptsRead(), [vpxFile(AFM)], "no run starts during the game");
-    assert.deepEqual(roms(), { [AFM]: "afm_113", [MEDIEVAL]: "", [TMNT]: "" }, "the run in progress at launch is recorded");
+    assert.deepEqual(pendingRoms(), { [AFM]: "afm_113" }, "the run in progress at launch is recorded");
 
     fake.gameOver(played);
     readScripts();
 
     assert.deepEqual(scriptsRead(), [vpxFile(AFM), vpxFile(MEDIEVAL), vpxFile(TMNT)], "the queue resumes after the game");
-    assert.deepEqual(roms(), { [AFM]: "afm_113", [MEDIEVAL]: "mm_109c", [TMNT]: "tmnt_104" });
+    assert.deepEqual(pendingRoms(), { [AFM]: "afm_113", [MEDIEVAL]: "mm_109c", [TMNT]: "tmnt_104" });
+    assert.deepEqual(roms(), { [AFM]: "", [MEDIEVAL]: "", [TMNT]: "" }, "written once the wheel moves on, or at launch");
     assert.deepEqual(log().filter(line => line.includes("ERROR")), []);
 });

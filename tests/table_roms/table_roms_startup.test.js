@@ -1,7 +1,8 @@
 // ============================================================
 // Table ROMs at a first startup: every VPX table with a game file is read by
-// vpxtool, one at a time; empty fields get the ROM, hand-typed ones never
-// change, "no ROM" is remembered, the record keeps each finding.
+// vpxtool, one at a time; a ROM for an empty field is kept pending (no
+// write yet), hand-typed ones never change, "no ROM" is remembered, the
+// record keeps each finding.
 // - Only the last non-empty line of vpxtool's output counts.
 // ============================================================
 
@@ -47,9 +48,8 @@ const VPXTOOL = {
 
 const fileState = configId => ({ modified: MODIFIED.getTime(), size: `script of ${configId}`.length });
 const read = (configId, rom) => ({ vpx: fileState(configId), vbs: null, rom });
-const written = rom => ({ rom, source: "script" });
 
-test("a first startup fills the empty ROM fields from the table scripts, and leaves hand-typed ROMs alone", async () => {
+test("a first startup keeps the table scripts' ROMs pending for the empty fields, and leaves hand-typed ROMs alone", async () => {
     const { readScripts, roms, log, record, scriptsRead } = await startTableRoms({ tables: TABLES, files: FILES, vpxtool: VPXTOOL });
     assert.deepEqual(scriptsRead(), [], "nothing read during startup");
 
@@ -57,37 +57,32 @@ test("a first startup fills the empty ROM fields from the table scripts, and lea
 
     assert.deepEqual(scriptsRead(), READ_TABLES.map(vpxFile), "the Visual Pinball X tables with a game file, hidden ones too, one at a time");
     assert.deepEqual(roms(), {
-        [AFM]: "afm_113",
-        [TMNT]: "tmnt_104",
-        [TMNT_REMIX]: "tmnt_104",
+        [AFM]: "",
+        [TMNT]: "",
+        [TMNT_REMIX]: "",
         [TWILIGHT_ZONE]: "tz_94h",
         [MEDIEVAL]: "mm_109c",
-        [SONIC]: "sonic_l1",
+        [SONIC]: "",
         [SPACE_TRIP]: "",
         [FUTURE_PINBALL]: "",
         [NO_FILE]: "",
-        [HIDDEN]: "hidden_l1",
-    });
+        [HIDDEN]: "",
+    }, "the ROMs to write wait for the wheel to move on, or a launch");
     assert.deepEqual(log(), [
-        `[TableRoms] "${AFM}": ROM "afm_113" written (was empty; source: script).`,
-        `[TableRoms] "${TMNT}": ROM "tmnt_104" written (was empty; source: script).`,
-        `[TableRoms] "${TMNT_REMIX}": ROM "tmnt_104" written (was empty; source: script).`,
         `[TableRoms] "${TWILIGHT_ZONE}": hand-typed ROM "tz_94h" kept; the script gives "tz_94ch".`,
-        `[TableRoms] "${SONIC}": ROM "sonic_l1" written (was empty; source: script).`,
         `[TableRoms] "${SPACE_TRIP}": its script loads no ROM.`,
-        `[TableRoms] "${HIDDEN}": ROM "hidden_l1" written (was empty; source: script).`,
     ]);
     assert.deepEqual(record(), {
         version: 1,
         tables: {
-            [AFM]: { script: read(AFM, "afm_113"), written: written("afm_113") },
-            [TMNT]: { script: read(TMNT, "tmnt_104"), written: written("tmnt_104") },
-            [TMNT_REMIX]: { script: read(TMNT_REMIX, "tmnt_104"), written: written("tmnt_104") },
+            [AFM]: { script: read(AFM, "afm_113"), pending: "afm_113" },
+            [TMNT]: { script: read(TMNT, "tmnt_104"), pending: "tmnt_104" },
+            [TMNT_REMIX]: { script: read(TMNT_REMIX, "tmnt_104"), pending: "tmnt_104" },
             [TWILIGHT_ZONE]: { script: read(TWILIGHT_ZONE, "tz_94ch") },
             [MEDIEVAL]: { script: read(MEDIEVAL, "mm_109c") },
-            [SONIC]: { script: read(SONIC, "sonic_l1"), written: written("sonic_l1") },
+            [SONIC]: { script: read(SONIC, "sonic_l1"), pending: "sonic_l1" },
             [SPACE_TRIP]: { script: read(SPACE_TRIP, null) },
-            [HIDDEN]: { script: read(HIDDEN, "hidden_l1"), written: written("hidden_l1") },
+            [HIDDEN]: { script: read(HIDDEN, "hidden_l1"), pending: "hidden_l1" },
         },
     });
 });

@@ -30,7 +30,7 @@ test("a new vpxtool reads again a table the old one failed on", async () => {
         `[TableRoms] ERROR reading the script of "${NEW_TABLE}": vpxtool exit code 1; read again once the table or vpxtool changes.`,
     ]);
 
-    const { fake, readScripts, roms, scriptsRead } = await startTableRoms({
+    const { fake, readScripts, pendingRoms, scriptsRead } = await startTableRoms({
         tables: [table(NEW_TABLE)],
         files: { ...FILES, [RECORD_FILE]: { content: firstRun.record } },
         vpxtool: { [vpxFile(NEW_TABLE)]: "new_100" },
@@ -39,6 +39,6 @@ test("a new vpxtool reads again a table the old one failed on", async () => {
     readScripts();
 
     assert.deepEqual(scriptsRead(), [vpxFile(NEW_TABLE)]);
-    assert.deepEqual(roms(), { [NEW_TABLE]: "new_100" });
+    assert.deepEqual(pendingRoms(), { [NEW_TABLE]: "new_100" });
     assertNoErrorLogged(fake);
 });

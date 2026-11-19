@@ -3,7 +3,7 @@
 // through the shared vpxtool runner 10 s after startup or at once after a
 // Script Reader install; the .nv file each game changed confirms it. Writes table_roms.json next to cabinet.json, and logfile.log.
 // vpxtool missing or older brings the Script Reader Prompt; its version is read again first.
-// - Never overwrites a ROM typed by hand.
+// - Never overwrites a ROM typed by hand; a script's ROM waits for the wheel to move or hide (pending_rom_writer.js).
 // - The confirmation is written at the launch's end (Launch Bracket), before any "postlaunch" listener.
 // ============================================================
 
@@ -13,6 +13,9 @@ import { getProfileStore } from "../common/profiles/profile_store.js";
 import { createTableRomRecord, SCRIPT_NAME } from "../common/table_roms/table_rom_record.js";
 import { createScriptQueue } from "../common/table_roms/script_queue.js";
 import { createNvConfirmation } from "../common/table_roms/nv_confirmation.js";
+import { createPendingRomWriter } from "../common/table_roms/pending_rom_writer.js";
+import { getLaunchBracket } from "../common/core/launch_bracket.js";
+import { logInfo } from "../common/core/info_log.js";
 import { getVpxtoolRunner } from "../common/vpxtool/vpxtool_runner.js";
 import { getNvramWatch } from "../common/vpxtool/nvram_watch.js";
 import { getScriptReaderInstaller } from "../common/table_roms/script_reader_install.js";
@@ -27,8 +30,13 @@ export default function init() {
     const profileStore = getProfileStore();
     const record = createTableRomRecord(host, profileStore);
     const installer = getScriptReaderInstaller();
-    const queue = createScriptQueue(host, record, { version: getScriptReaderState(), runner: getVpxtoolRunner() });
+    const queue = createScriptQueue(host, record, {
+        version: getScriptReaderState(),
+        runner: getVpxtoolRunner(),
+        onDone: () => logInfo(SCRIPT_NAME, `Script reading done; ROMs pending: ${record.pendingCount()}.`, host),
+    });
     createNvConfirmation(host, record, getNvramWatch());
+    createPendingRomWriter(host, record, getLaunchBracket());
     // The reading starts at once after an install; the shared runner goes
     // on by itself with the old vpxtool after a failure.
     installer.onFinished(installed => {

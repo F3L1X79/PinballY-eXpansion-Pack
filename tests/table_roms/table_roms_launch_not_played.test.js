@@ -21,7 +21,7 @@ const VERSION_READ_MS = 500;
 const ONE_READ_MS = 1000;
 
 test("a cancelled launch and a failed launch do not leave the script reading paused", async () => {
-    const { fake, roms, log, scriptsRead } = await startTableRoms({
+    const { fake, roms, pendingRoms, log, scriptsRead } = await startTableRoms({
         tables: TABLES,
         files: Object.fromEntries(TABLES.map(game => [vpxFile(game.configId), {}])),
         vpxtool: { [vpxFile(AFM)]: "afm_113", [vpxFile(MEDIEVAL)]: "mm_109c", [vpxFile(TMNT)]: "tmnt_104" },
@@ -45,6 +45,7 @@ test("a cancelled launch and a failed launch do not leave the script reading pau
     fake.advanceTime(ONE_READ_MS);
 
     assert.deepEqual(scriptsRead(), [vpxFile(AFM), vpxFile(MEDIEVAL), vpxFile(TMNT)], "the reading resumes after a failed launch");
-    assert.deepEqual(roms(), { [AFM]: "afm_113", [MEDIEVAL]: "mm_109c", [TMNT]: "tmnt_104" });
+    assert.deepEqual(roms(), { [AFM]: "afm_113", [MEDIEVAL]: "", [TMNT]: "" }, "the launch wrote the ROM read before it");
+    assert.deepEqual(pendingRoms(), { [MEDIEVAL]: "mm_109c", [TMNT]: "tmnt_104" });
     assert.deepEqual(log().filter(line => line.includes("ERROR")), []);
 });

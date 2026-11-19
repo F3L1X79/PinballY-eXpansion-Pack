@@ -7,12 +7,14 @@
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
+import { DWELL_MS } from "../../common/table_roms/pending_rom_writer.js";
 
 export const NOW = new Date(2026, 9, 12, 20, 0, 0);
 export const PROFILES_FOLDER = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 export const RECORD_FILE = `${PROFILES_FOLDER}\\table_roms.json`;
 export const VPXTOOL = "C:\\PinballY\\Scripts\\ExpansionPack\\tools\\vpxtool.exe";
 export const TABLES_FOLDER = "C:\\Visual Pinball\\Tables";
+const INFO_LOG = "C:\\PinballY\\Scripts\\ExpansionPack\\logs\\info.log";
 export const NVRAM_FOLDER = "C:\\Visual Pinball\\VPinMAME\\nvram";
 export const NVRAM_REGISTRY_KEY = "HKCU\\Software\\Freeware\\Visual PinMame\\globals\\nvram_directory";
 // Before the game's .nv files are written.
@@ -70,6 +72,13 @@ export async function startTableRoms({
     await import("../../main.js");
     await settle();
 
+    // The player turns the wheel to the table: "gameselect" fires with it.
+    const select = (configId) => {
+        const offset = fake.getWheelTables().findIndex(game => game.configId === configId);
+        if (offset < 0) throw new Error(`Not in the wheel: ${configId}`);
+        fake.moveWheel(offset);
+    };
+
     return {
         fake,
         readScripts: () => fake.advanceTime(LONG_ENOUGH_MS),
@@ -91,6 +100,32 @@ export async function startTableRoms({
             fake.advanceTime(durationMs);
             for (const rom of nvWritten) fake.addFile(`${folder}\\${rom}.nv`, "nvram");
             fake.gameOver(game);
+        },
+        // The player stays on each table in turn for the dwell, then turns
+        // back to the first: every pending ROM among them is written.
+        dwellOnEach: (configIds) => {
+            for (const configId of [...configIds, configIds[0]]) {
+                select(configId);
+                fake.advanceTime(DWELL_MS);
+            }
+        },
+        // The ROM a script read left pending, by table.
+        pendingRoms: () => {
+            const text = fake.readFile(RECORD_FILE);
+            const tables = text === undefined ? {} : JSON.parse(text).tables;
+            return Object.fromEntries(Object.entries(tables).filter(([, entry]) => entry.pending !== undefined).map(([configId, entry]) => [configId, entry.pending]));
+        },
+        select,
+        // The ROM fields PinballY was asked to write, in order: [configId, rom].
+        romUpdates: () => fake.gameUpdates().filter(update => "rom" in update.changes).map(update => [update.configId, update.changes.rom]),
+        // The Table ROMs cabinet checks of info.log (its lines also in
+        // logfile.log left out), without their date, once written (next tick).
+        infoLines: async () => {
+            await settle();
+            const logged = new Set(fake.logLines());
+            const text = fake.readFile(INFO_LOG) ?? "";
+            return text.split(/\r?\n/).filter(line => line.includes("[TableRoms]"))
+                .map(line => line.slice(line.indexOf("[TableRoms]"))).filter(line => !logged.has(line));
         },
         // The table files vpxtool was asked to read, in order.
         scriptsRead: () => fake.programRuns().filter(run => run.args[0] === "romname").map(run => run.args[1]),

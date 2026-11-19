@@ -34,9 +34,13 @@ test("a Play's .nv wins over the script's guess and clears a \"no ROM\" mark", a
     await play(SPACE_TRIP, { nvWritten: ["spacetrp"] });
 
     assert.deepEqual(roms(), { [TWILIGHT_ZONE]: "tz_94ch", [AFM]: "afm_113b", [MEDIEVAL]: "mm_109c", [SPACE_TRIP]: "spacetrp" });
+    // Each launch writes the script's pending ROM first.
     assert.deepEqual(log().slice(scriptLines), [
+        `[TableRoms] "${TWILIGHT_ZONE}": ROM "tz_94h" written (was empty; source: script).`,
         `[TableRoms] "${TWILIGHT_ZONE}": ROM "tz_94ch" written (was "tz_94h"; source: nv).`,
+        `[TableRoms] "${AFM}": ROM "afm_113" written (was empty; source: script).`,
         `[TableRoms] "${AFM}": ROM "afm_113b" written (was "afm_113"; source: nv).`,
+        `[TableRoms] "${MEDIEVAL}": ROM "mm_109c" written (was empty; source: script).`,
         `[TableRoms] "${SPACE_TRIP}": ROM "spacetrp" written (was empty; source: nv).`,
     ]);
     assert.deepEqual(record().tables, {

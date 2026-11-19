@@ -28,7 +28,7 @@ const FIRST_FILES = {
 
 const FIRST_RUN = `
 import { startTableRoms, table, RECORD_FILE } from ${JSON.stringify(new URL("./table_roms_scenario.js", import.meta.url).href)};
-const { fake, readScripts, roms, log } = await startTableRoms(${JSON.stringify({
+const { fake, readScripts, dwellOnEach, roms, log } = await startTableRoms(${JSON.stringify({
     tables: TABLES.map(configId => table(configId)),
     files: FIRST_FILES,
     vpxtool: {
@@ -41,24 +41,25 @@ const { fake, readScripts, roms, log } = await startTableRoms(${JSON.stringify({
     },
 })});
 readScripts();
+dwellOnEach(${JSON.stringify(TABLES)});
 process.stdout.write(JSON.stringify({ record: fake.readFile(RECORD_FILE), roms: roms(), log: log() }));
 `;
 
 test("a restart reads again the changed tables and the timed-out one, not those vpxtool failed on", async () => {
     const firstRun = JSON.parse(execFileSync(process.execPath, ["--input-type=module", "-e", FIRST_RUN], { encoding: "utf8" }));
     assert.deepEqual(firstRun.log, [
-        `[TableRoms] "${AFM}": ROM "afm_11" written (was empty; source: script).`,
         `[TableRoms] "${SPACE_TRIP}": its script loads no ROM.`,
         `[TableRoms] ERROR reading the script of "${BROKEN}": vpxtool exit code 1; read again once the table or vpxtool changes.`,
         `[TableRoms] ERROR reading the script of "${SLOW}": no answer from vpxtool within 60 s; read again at the next startup.`,
         `[TableRoms] ERROR reading the script of "${NOISY}": vpxtool's output is no ROM name: "error: cannot read the table!"; read again once the table or vpxtool changes.`,
+        `[TableRoms] "${AFM}": ROM "afm_11" written (was empty; source: script).`,
         `[TableRoms] "${PATCHED}": ROM "pat_1" written (was empty; source: script).`,
         `[TableRoms] "${KEPT}": ROM "kept_1" written (was empty; source: script).`,
     ]);
     assert.deepEqual(Object.keys(JSON.parse(firstRun.record).tables), [AFM, SPACE_TRIP, BROKEN, NOISY, PATCHED, KEPT], "a timeout is not recorded");
 
     // The AFM and noisy table files were updated, and the patched table's .vbs.
-    const { readScripts, roms, log, scriptsRead } = await startTableRoms({
+    const { readScripts, dwellOnEach, roms, log, scriptsRead } = await startTableRoms({
         tables: TABLES.map(configId => table(configId, firstRun.roms[configId] ? { rom: firstRun.roms[configId] } : {})),
         files: {
             ...FIRST_FILES,
@@ -78,6 +79,7 @@ test("a restart reads again the changed tables and the timed-out one, not those 
         },
     });
     readScripts();
+    dwellOnEach(TABLES);
 
     assert.deepEqual(scriptsRead(), [AFM, SLOW, NOISY, PATCHED].map(vpxFile));
     assert.deepEqual(roms(), {

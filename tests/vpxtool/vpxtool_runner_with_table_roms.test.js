@@ -19,7 +19,7 @@ const READ_MS = 30 * 1000;
 const GAME_MS = 30 * 60 * 1000;
 
 test("another Add-on's run waits for the script read in progress and for the game, then runs", async () => {
-    const { fake, roms } = await startTableRoms({
+    const { fake, pendingRoms } = await startTableRoms({
         tables: [table(AFM)],
         files: { [vpxFile(AFM)]: {} },
         vpxtool: { [vpxFile(AFM)]: { output: "afm_113\n", durationMs: READ_MS } },
@@ -45,7 +45,7 @@ test("another Add-on's run waits for the script read in progress and for the gam
     fake.gameStarted(played);
     fake.advanceTime(GAME_MS);
 
-    assert.deepEqual(roms(), { [AFM]: "afm_113" }, "the script read finished during the game");
+    assert.deepEqual(pendingRoms(), { [AFM]: "afm_113" }, "the script read finished during the game");
     assert.deepEqual(nvramRuns(), [], "no run starts during the game");
 
     fake.gameOver(played);

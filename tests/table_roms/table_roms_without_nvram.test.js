@@ -13,7 +13,7 @@ const MEDIEVAL = "Medieval Madness (Williams 1997)";
 const ELSEWHERE = "C:\\Visual Pinball\\VPinMAME\\nvram";
 
 test("without an NVRAM folder, one line is logged and the script guess still works", async () => {
-    const { fake, play, readScripts, roms, log } = await startTableRoms({
+    const { fake, play, readScripts, pendingRoms, log } = await startTableRoms({
         tables: [table(AFM), table(MEDIEVAL)],
         files: { [vpxFile(AFM)]: {}, [vpxFile(MEDIEVAL)]: {} },
         vpxtool: { [vpxFile(AFM)]: "afm_113", [vpxFile(MEDIEVAL)]: "mm_109c" },
@@ -25,7 +25,7 @@ test("without an NVRAM folder, one line is logged and the script guess still wor
     await play(MEDIEVAL, { nvWritten: ["mm_109b"], folder: ELSEWHERE });
     readScripts();
 
-    assert.deepEqual(roms(), { [AFM]: "afm_113", [MEDIEVAL]: "mm_109c" });
+    assert.deepEqual(pendingRoms(), { [AFM]: "afm_113", [MEDIEVAL]: "mm_109c" });
     assert.deepEqual(log().filter(line => line.includes("NVRAM")), [
         "[TableRoms] VPinMAME's NVRAM folder not found (no NVRAM path in the system settings nor nvram_directory in the registry); the ROMs are not confirmed after a game.",
     ]);

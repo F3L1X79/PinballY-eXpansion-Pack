@@ -29,6 +29,8 @@
 
 With vpxtool, each table's ROM is filled in by itself (the Table ROMs Add-on). vpxtool is written by Francis De Brabandere, under the Apache-2.0 licence (https://github.com/francisdb/vpxtool); the pack does not include it, and you have nothing to download yourself.
 
+Each table's script is read once, in the background. Writing a ROM refreshes the wheel, so a table's ROM is filled in only once you have stayed on it for a couple of seconds and move on, or at the latest when it is launched: scrolling through the wheel never makes it blink.
+
 While it is missing and the Table ROMs Add-on is on, a message opens at startup, after the Update Prompt and before the startup screen, for an Admin Profile (or anyone while no Profile is marked). It says what vpxtool is for, who wrote it, its licence and its site, and that you can still install it later. **Install** downloads it from its author's releases, checks it and puts `vpxtool.exe` in `ExpansionPack\tools`, with the comet and "Downloading…" on screen; PinballY stays open. A message then says whether it worked, and the table scripts are read at once.
 
 **No thanks** saves `OFFER_VPXTOOL=false` in `.env.local`: the pack never asks again, and **Offer vpxtool** reads Off in the Offline Mode group of the eXpansion Pack Settings (see [Settings](settings.md#expansion-pack-settings)). Exit closes the message without an answer: it comes back at the next start. Until an Admin Profile starts PinballY, the message waits.

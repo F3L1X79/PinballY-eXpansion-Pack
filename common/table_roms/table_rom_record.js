@@ -1,8 +1,9 @@
 // ============================================================
 // Table ROM record: the Table ROMs Add-on's memory in table_roms.json next to
 // cabinet.json: per table, its file state when last read (or when vpxtool
-// failed on it), the ROM found and the ROM last written into PinballY.
-// Every write goes through decideRomWrite().
+// failed on it), the ROM found, the ROM pending (found by the script, not
+// written yet) and the ROM last written into PinballY. Every write goes
+// through decideRomWrite().
 // - Saved through the Profile store, so no Profile Reset touches it.
 // ============================================================
 
@@ -51,12 +52,19 @@ export function createTableRomRecord(host, store) {
     const existingEntry = configId => (isRecord(data.tables[configId]) ? data.tables[configId] : {});
     const save = () => store.saveCabinetFile(RECORD_NAME, data);
 
-    function applyFinding(configId, finding) {
+    // write: false keeps a ROM to write as the table's pending one instead,
+    // since every update() refreshes the wheel. Returns whether it wrote.
+    function applyFinding(configId, finding, { write = true } = {}) {
         const game = host.getGameInfo(configId);
-        if (!game) return;
+        if (!game) return false;
         const { written } = existingEntry(configId);
         const currentRom = game.rom;
         const decision = decideRomWrite(currentRom, written, finding);
+        if (decision === ROM_DECISION.write && !write) {
+            entryOf(configId).pending = finding.rom;
+            return false;
+        }
+        delete existingEntry(configId).pending;
         if (decision === ROM_DECISION.confirm) {
             // Nothing to write, but no later script read may replace it now.
             entryOf(configId).written = { rom: written.rom, source: ROM_SOURCE.nv };
@@ -65,10 +73,12 @@ export function createTableRomRecord(host, store) {
             entryOf(configId).written = { rom: finding.rom, source: finding.source };
             const was = isEmptyRom(currentRom) ? "was empty" : `was "${currentRom}"`;
             log(`"${configId}": ROM "${finding.rom}" written (${was}; source: ${finding.source}).`);
+            return true;
         } else if (decision === ROM_DECISION.disagree) {
             const from = finding.source === ROM_SOURCE.script ? "the script gives" : "the .nv gives";
             log(`"${configId}": hand-typed ROM "${currentRom}" kept; ${from} "${finding.rom}".`);
         }
+        return false;
     }
 
     return {
@@ -87,16 +97,32 @@ export function createTableRomRecord(host, store) {
             entryOf(configId).scriptFailure = { vpx: state.vpx, vbs: state.vbs, vpxtool: state.vpxtool };
             save();
         },
-        // Remembers what the table's script gave (rom null: no ROM) and
-        // applies it to PinballY's ROM field.
+        // Remembers what the table's script gave (rom null: no ROM); a ROM
+        // that would go into PinballY's field is kept pending, for writePending().
         applyScriptRead: (configId, state, rom) => {
             const entry = entryOf(configId);
             entry.script = { vpx: state.vpx, vbs: state.vbs, rom };
             delete entry.scriptFailure;
-            if (rom !== null) applyFinding(configId, { rom, source: ROM_SOURCE.script });
-            // A ROM a .nv confirmed makes it a ROM table whatever its script says.
-            else if (!(entry.written && entry.written.source === ROM_SOURCE.nv)) log(`"${configId}": its script loads no ROM.`);
+            if (rom !== null) applyFinding(configId, { rom, source: ROM_SOURCE.script }, { write: false });
+            else {
+                delete entry.pending;
+                // A ROM a .nv confirmed makes it a ROM table whatever its script says.
+                if (!(entry.written && entry.written.source === ROM_SOURCE.nv)) log(`"${configId}": its script loads no ROM.`);
+            }
             save();
+        },
+        // The table's ROM found by its script and not written yet, or null.
+        pendingRom: configId => existingEntry(configId).pending ?? null,
+        pendingCount: () => Object.values(data.tables).filter(entry => isRecord(entry) && typeof entry.pending === "string").length,
+        // Writes the table's pending ROM, decided against the field's value
+        // now (a ROM typed by hand since is kept). Returns the ROM written, or null.
+        writePending: (configId) => {
+            const rom = existingEntry(configId).pending;
+            if (typeof rom !== "string") return null;
+            const wrote = applyFinding(configId, { rom, source: ROM_SOURCE.script });
+            delete existingEntry(configId).pending;
+            save();
+            return wrote ? rom : null;
         },
         // Applies the ROM whose .nv a game wrote.
         applyNvConfirmation: (configId, rom) => {
