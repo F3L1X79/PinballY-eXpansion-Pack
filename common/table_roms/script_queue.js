@@ -4,6 +4,7 @@
 // script needs reading, and records the ROM each answer names.
 // - A failure vpxtool answers is recorded: read again once the table or vpxtool changes.
 // - A timeout is only logged: the table is read again next startup.
+// - The record saves its answers per batch; the queue saves the rest when it empties and at launch.
 // ============================================================
 
 import { logError } from "../core/error_log.js";
@@ -27,9 +28,12 @@ export function readRomOutput(output) {
 // version: what hears the --version run's answer
 // (common/table_roms/script_reader_state.js); runner: the shared vpxtool
 // runner (common/vpxtool/vpxtool_runner.js); its own one by default, for a
-// queue made alone on a host.
+// queue made alone on a host; launchBracket: the Launch Bracket, whose
+// launches save the answers not saved yet.
 // onDone: called once every run this start submitted has answered or failed.
-export function createScriptQueue(host, record, { version = null, runner = createVpxtoolRunner(host), onDone = () => {} } = {}) {
+export function createScriptQueue(host, record, {
+    version = null, runner = createVpxtoolRunner(host), launchBracket = null, onDone = () => {},
+} = {}) {
     // vpxtool reads the script from the .vbs beside the .vpx when there is
     // one; vpxtool.exe's own state tells a new vpxtool after a failure.
     const fileStateOf = (vpxPath, vpxtool) => ({
@@ -71,6 +75,9 @@ export function createScriptQueue(host, record, { version = null, runner = creat
         record.applyScriptRead(table.configId, table.state, answer.rom);
     }
 
+    // A game may crash PinballY with the cabinet.
+    if (launchBracket) launchBracket.subscribe(SCRIPT_NAME, { onBegan: record.saveAnswers });
+
     const tableRun = table => ({
         scriptName: SCRIPT_NAME,
         args: ["romname", table.path],
@@ -101,7 +108,10 @@ export function createScriptQueue(host, record, { version = null, runner = creat
                     handler(value);
                 } finally {
                     remaining -= 1;
-                    if (remaining === 0) onDone();
+                    if (remaining === 0) {
+                        record.saveAnswers();
+                        onDone();
+                    }
                 }
             };
             if (remaining === 0) onDone();

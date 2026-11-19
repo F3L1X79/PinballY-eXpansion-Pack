@@ -5,10 +5,14 @@
 // written yet) and the ROM last written into PinballY. Every write goes
 // through decideRomWrite().
 // - Saved through the Profile store, so no Profile Reset touches it.
+// - Script answers are saved per SAVE_BATCH_SIZE or by saveAnswers(); every other change saves at once.
 // ============================================================
 
 const RECORD_NAME = "table_roms";
 const RECORD_VERSION = 1;
+// Script answers recorded between two saves: one whole-file write per answer
+// adds to the wheel's stutter while a large collection is read.
+export const SAVE_BATCH_SIZE = 25;
 // The Table ROMs Add-on's name in logfile.log, for its shared modules too.
 export const SCRIPT_NAME = "TableRoms";
 
@@ -50,7 +54,16 @@ export function createTableRomRecord(host, store) {
     };
     // The table's entry, without creating it: none when nothing is recorded.
     const existingEntry = configId => (isRecord(data.tables[configId]) ? data.tables[configId] : {});
-    const save = () => store.saveCabinetFile(RECORD_NAME, data);
+    // Script answers not saved yet: lost to a stop, so read again next start.
+    let answersUnsaved = 0;
+    const save = () => {
+        store.saveCabinetFile(RECORD_NAME, data);
+        answersUnsaved = 0;
+    };
+    const answerRecorded = () => {
+        answersUnsaved += 1;
+        if (answersUnsaved >= SAVE_BATCH_SIZE) save();
+    };
 
     // write: false keeps a ROM to write as the table's pending one instead,
     // since every update() refreshes the wheel. Returns whether it wrote.
@@ -92,13 +105,15 @@ export function createTableRomRecord(host, store) {
             if (sameTable(script)) return false;
             return !(sameTable(scriptFailure) && sameFileState(scriptFailure.vpxtool, state.vpxtool));
         },
-        // Remembers a failure that comes from the table's files, not from a busy cabinet.
+        // Remembers a failure that comes from the table's files, not from a
+        // busy cabinet; saved with its batch of answers.
         applyScriptFailure: (configId, state) => {
             entryOf(configId).scriptFailure = { vpx: state.vpx, vbs: state.vbs, vpxtool: state.vpxtool };
-            save();
+            answerRecorded();
         },
-        // Remembers what the table's script gave (rom null: no ROM); a ROM
-        // that would go into PinballY's field is kept pending, for writePending().
+        // Remembers what the table's script gave (rom null: no ROM), saved
+        // like a failure; a ROM that would go into PinballY's field is kept
+        // pending, for writePending().
         applyScriptRead: (configId, state, rom) => {
             const entry = entryOf(configId);
             entry.script = { vpx: state.vpx, vbs: state.vbs, rom };
@@ -109,7 +124,11 @@ export function createTableRomRecord(host, store) {
                 // A ROM a .nv confirmed makes it a ROM table whatever its script says.
                 if (!(entry.written && entry.written.source === ROM_SOURCE.nv)) log(`"${configId}": its script loads no ROM.`);
             }
-            save();
+            answerRecorded();
+        },
+        // Saves the script answers of a batch not full yet, if any.
+        saveAnswers: () => {
+            if (answersUnsaved > 0) save();
         },
         // The table's ROM found by its script and not written yet, or null.
         pendingRom: configId => existingEntry(configId).pending ?? null,

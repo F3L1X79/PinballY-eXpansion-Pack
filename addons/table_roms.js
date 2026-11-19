@@ -33,6 +33,7 @@ export default function init() {
     const queue = createScriptQueue(host, record, {
         version: getScriptReaderState(),
         runner: getVpxtoolRunner(),
+        launchBracket: getLaunchBracket(),
         onDone: () => logInfo(SCRIPT_NAME, `Script reading done; ROMs pending: ${record.pendingCount()}.`, host),
     });
     createNvConfirmation(host, record, getNvramWatch());

@@ -2,8 +2,8 @@
 // Table ROMs during a game, through main.js on the fake PinballY globals:
 // no vpxtool run starts from a table's launch until the return to the
 // wheel; the run already started at launch finishes and its ROM is
-// recorded, even when the game slows it past the usual time limit; the
-// queue then resumes with the remaining tables.
+// recorded (saved with its batch), even when the game slows it past the
+// usual time limit; the queue then resumes with the remaining tables.
 // ============================================================
 
 import { test } from "node:test";
@@ -41,7 +41,7 @@ test("a game pauses the script reading, lets the run in progress finish, and the
     fake.advanceTime(GAME_MS);
 
     assert.deepEqual(scriptsRead(), [vpxFile(AFM)], "no run starts during the game");
-    assert.deepEqual(pendingRoms(), { [AFM]: "afm_113" }, "the run in progress at launch is recorded");
+    assert.deepEqual(pendingRoms(), {}, "the run in progress at launch waits for its batch to be saved");
 
     fake.gameOver(played);
     readScripts();
