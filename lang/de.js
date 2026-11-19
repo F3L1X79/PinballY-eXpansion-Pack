@@ -1143,6 +1143,10 @@ export default {
         restarting: "Neustart läuft",
     },
     releaseHighlights: {
+        "1.7.0": [
+            "Wenn ein anderes Skript, das du in PinballY nutzt, denselben Bildschirm wie das Pack belegt, sagt dir jetzt ein Hinweis, was passiert und was zu tun ist.",
+            "Die Tastenhinweise unter den Bildschirmen des Packs zeigen jetzt die Flipper, und der Startsound ist leiser.",
+        ],
         "1.6.0": [
             "Filter wechseln kann das Rad jetzt nach Jahr ordnen, und Nächste und Vorherige Seite springen dann von Jahrzehnt zu Jahrzehnt.",
             "Auf dem Rad helfen dir eine Buchstabenleiste, die Position des Tisches und ein Herz für deine Lieblingstische bei der Orientierung.",

@@ -1143,6 +1143,10 @@ export default {
         restarting: "A reiniciar",
     },
     releaseHighlights: {
+        "1.7.0": [
+            "Quando outro script que você usa no PinballY ocupa o mesmo ecrã que o pack, um aviso diz agora o que acontece e o que fazer.",
+            "As ajudas de botões sob os ecrãs do pack mostram agora os flippers, e o som de lançamento toca mais baixo.",
+        ],
         "1.6.0": [
             "Trocar filtro pode agora ordenar a roda por ano, e Página seguinte e Página anterior saltam então de uma década para outra.",
             "Na roda, um trilho de letras, a posição da mesa e um coração para as suas mesas favoritas ajudam você a se orientar.",

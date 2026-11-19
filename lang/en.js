@@ -1095,6 +1095,10 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.7.0": [
+            "When another script you run in PinballY takes the same screen as the pack, a Conflict Notice now tells you what happens and what to do.",
+            "The button hints under the pack's screens now show the flippers, and the launch sound plays quieter.",
+        ],
         "1.6.0": [
             "Change Filter can now list the wheel by year, and Next and Previous Page then jump by decade.",
             "On the wheel, a rail of letters, the table's position and a heart for your Favorite Tables help you find your way.",

@@ -1142,6 +1142,10 @@ export default {
         restarting: "Riavvio in corso",
     },
     releaseHighlights: {
+        "1.7.0": [
+            "Quando un altro script che usi in PinballY occupa la stessa schermata del pack, un avviso ora ti dice cosa succede e cosa fare.",
+            "Gli aiuti ai pulsanti sotto le schermate del pack ora mostrano i flipper, e il suono di avvio è più basso.",
+        ],
         "1.6.0": [
             "Cambia filtro ora può ordinare la ruota per anno, e Pagina successiva e Pagina precedente saltano allora da un decennio all'altro.",
             "Sulla ruota, una guida di lettere, la posizione del tavolo e un cuore per i tuoi tavoli preferiti ti aiutano a orientarti.",

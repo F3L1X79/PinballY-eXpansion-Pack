@@ -1148,6 +1148,10 @@ export default {
         restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
+        "1.7.0": [
+            "Quand un autre script que vous utilisez dans PinballY prend le même écran que le pack, un message vous dit maintenant ce qui se passe et quoi faire.",
+            "Les aides sous les écrans du pack montrent maintenant les flippers, et le son de lancement est moins fort.",
+        ],
         "1.6.0": [
             "Changer de filtre peut maintenant classer la roue par année, et Page suivante et Page précédente sautent alors d'une décennie à l'autre.",
             "Sur la roue, un rail de lettres, la position de la table et un cœur pour vos tables favorites vous aident à vous repérer.",

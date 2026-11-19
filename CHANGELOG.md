@@ -2,6 +2,15 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.7.0 (2026-11-19)
+
+- **External Add-ons**: a new guide page, **With your External Add-ons**, lists the scripts known to share a screen with the pack, what you see and what to do. When a script imported before the pack takes the launch screen, a **Conflict Notice** back on the wheel tells an Admin Profile and names the probable script: **Keep both**, or **Turn off the Launch overlay** from the Notice. Another Conflict Notice at startup asks to move the pack's import line to the end of `Scripts\main.js` when it is not the last.
+- **Living with other scripts**: a launch another script cancelled no longer counts as a game; a launch message another script blanked stays blank; an External Add-on's own Table setup entry replaces the pack's, in its place under Play.
+- **Wheel Order**: by year, launching a Table of the Day or a Challenge Table that the current filter leaves out, or a pack selection that empties, now lands on All Tables still sorted by year instead of alphabetical. Original Tables gives way to All Tables once empty.
+- **Table ROMs**: with vpxtool, the wheel images and the table's info box no longer flicker while the pack reads every table's script on a large collection. A ROM found that way is written to PinballY once you stay on its table a couple of seconds and move on, or at the latest when the table launches.
+- **Launch Sound**: plays at half volume by default; `LAUNCH_SOUND_VOLUME` (0 to 100) in `.env.local` sets it. A setting in `.env.local` that is not a number now goes to the Error Log.
+- **Small touches**: the button hints under the drawn screens show the flippers instead of Prev / Next; the Mastery Bar says "Discover"; Profile Stats' Player Level and Collection Mastery lines say what they count; `logs\info.log` holds the current session only, the previous one kept as `info.old.log`; the guide explains how to update offline with the release zip.
+
 ## v1.6.0 (2026-11-15)
 
 - **Wheel Order**: "Order: alphabetical", at the end of "Change Filter", switches the wheel to **By year**, oldest table first, on every filter and wheel selection of the pack. By year, Next and Previous Page jump by decade. The order and the chosen filter are kept after a restart, and the main menu names the order under the Active Filter. Turned off with **Wheel Order** in the eXpansion Pack Settings.

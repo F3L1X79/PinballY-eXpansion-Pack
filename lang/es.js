@@ -1144,6 +1144,10 @@ export default {
         restarting: "Reiniciando",
     },
     releaseHighlights: {
+        "1.7.0": [
+            "Cuando otro script que usas en PinballY ocupa la misma pantalla que el pack, un aviso te dice ahora qué ocurre y qué hacer.",
+            "Las ayudas de botones bajo las pantallas del pack muestran ahora los flippers, y el sonido de lanzamiento suena más bajo.",
+        ],
         "1.6.0": [
             "Cambiar filtro ya puede ordenar la rueda por año, y Página siguiente y Página anterior saltan entonces de una década a otra.",
             "En la rueda, un riel de letras, la posición de la mesa y un corazón para tus mesas favoritas te ayudan a orientarte.",
