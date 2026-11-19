@@ -17,7 +17,7 @@ test("the Welcome Screen's footer speaks French", async () => {
     const { fake } = await startWelcomeScreen();
 
     assert.deepEqual(buttonHints(fake), [
-        { keys: ["FLIPPER G", "FLIPPER D"], label: "PARCOURIR" },
+        { keys: ["GAUCHE", "DROITE"], label: "PARCOURIR" },
         { keys: ["SELECT"], label: "CHOISIR" },
         { keys: ["EXIT"], label: "FERMER" },
     ]);
