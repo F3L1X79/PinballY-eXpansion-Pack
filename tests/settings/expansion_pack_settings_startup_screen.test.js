@@ -26,13 +26,13 @@ test("setup", async () => {
     await settle();
 });
 
-test("the Startup screen line comes before the language, with the saved screen", () => {
+test("the Startup screen line comes after the language, with the saved screen", () => {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
     chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 
-    assert.deepEqual(drawnMenuLines(fake).slice(5, 8), ["---", "Startup screen: Profile picker", "Language: English"]);
+    assert.deepEqual(drawnMenuLines(fake).slice(0, 3), ["Language: English", "Startup screen: Profile picker", "---"]);
 });
 
 test("its page lists the three Startup Screens, the saved one marked, then Cancel", () => {

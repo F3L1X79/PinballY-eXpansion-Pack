@@ -1,6 +1,6 @@
 // ============================================================
 // The Offline Mode group of the eXpansion Pack Settings, through main.js:
-// a submenu after the language line holding the Pack update check line,
+// a submenu after the categories holding the Pack update check line,
 // whose page lists On and Off, the saved one marked; choosing saves
 // UPDATE_CHECK at once, shown "on restart", back on its line in the group;
 // a failed write says "Setting not saved". No "Update to" entry here.
@@ -25,13 +25,13 @@ test("setup", async () => {
     await settle();
 });
 
-test("Offline Mode comes after the language line as a submenu, with no Update entry when no release is known", () => {
+test("Offline Mode comes after the categories as a submenu, with no Update entry when no release is known", () => {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
     chooseEntry(fake, "eXpansion Pack Settings");
     fake.advanceTime(OPEN_OVER_MS);
 
-    assert.deepEqual(drawnMenuLines(fake).slice(5), ["---", "Startup screen: Profile picker", "Language: English", "Attract Order: As PinballY", "Offline Mode", "---", "Back"]);
+    assert.deepEqual(drawnMenuLines(fake).slice(-4), ["Launching and playing a table", "Offline Mode", "---", "Back"]);
     assert.ok(markedEntries(fake, "submenu").includes("Offline Mode"));
 });
 

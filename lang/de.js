@@ -297,7 +297,7 @@ export default {
     // Labels for menu items this project adds itself (see custom_menu_commands.js, random_game.js, custom_filter.js, hall_of_fame.js and tables_to_discover.js).
     customMenuLabels: {
         challengeTables: "Tische für die Herausforderung",
-        hallOfFameFilter: "Hall of Fame",
+        hallOfFameFilter: "Meistgespielte Tische",
         myHighScoresFilter: "Meine Highscores",
         hiddenTablesFilter: "Ausgeblendete Tische",
         tablesToDiscoverFilter: "Unentdeckte Tische",
@@ -867,10 +867,10 @@ export default {
         back: "Zurück",
         groups: {
             playersAndProgress: "Spieler und Fortschritt",
-            wheelScreen: "Wheel-Bildschirm",
-            menusAndFilters: "Menüs und Filter",
+            wheel: "Wheel",
+            menus: "Menüs",
+            filters: "Filter",
             launchingAndPlaying: "Einen Tisch starten und spielen",
-            debugging: "Fehlersuche",
         },
         onRestart: (state) => `${state} (nach Neustart)`,
         whenOnLabel: "An:",
@@ -956,7 +956,7 @@ export default {
                 whenOff: "Die schlichten Menüs von PinballY kehren zurück, außer für diese Einstellungen.",
             },
             customMenuCommands: {
-                name: "Menübefehle",
+                name: "Tischkonfiguration",
                 whenOn: "Tischkonfiguration im Hauptmenü.",
                 whenOff: "Sonst ändert sich nichts.",
             },
@@ -971,7 +971,7 @@ export default {
                 whenOff: "Sonst ändert sich nichts.",
             },
             hallOfFame: {
-                name: "Hall of Fame",
+                name: "Meistgespielte Tische",
                 whenOn: "Ein Filter mit Ihren zehn meistgespielten Tischen.",
                 whenOff: "Keine Schaltfläche Meistgespielte Tische unter Mein Profil.",
             },
@@ -1033,11 +1033,6 @@ export default {
             tableRoms: {
                 name: "Tisch-ROMs",
                 whenOn: "Findet die ROM jedes Tisches selbst (benötigt vpxtool).",
-                whenOff: "Sonst ändert sich nichts.",
-            },
-            launchEventsTrace: {
-                name: "Startereignis-Protokoll",
-                whenOn: "Protokolliert die Startereignisse zur Fehlersuche (mit LOG_LAUNCH_EVENTS=true).",
                 whenOff: "Sonst ändert sich nichts.",
             },
         },

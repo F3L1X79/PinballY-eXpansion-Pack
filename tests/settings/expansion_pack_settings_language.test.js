@@ -76,7 +76,7 @@ test("choosing a language rewrites only the LANGUAGE line and the list shows it 
 });
 
 test("the screens stay in the running language, the new saved one marked", () => {
-    assert.ok(drawnMenuLines(fake).includes("Wheel screen"), "the list still in English");
+    assert.ok(drawnMenuLines(fake).includes("Players and progress"), "the list still in English");
     openLanguagePage("Language: Français (on restart)");
     assert.deepEqual(drawnMenuLines(fake), [...LANGUAGES, "---", "Cancel"]);
     assert.deepEqual(markedEntries(fake, "radio"), ["Français"]);

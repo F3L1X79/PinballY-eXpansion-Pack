@@ -8,7 +8,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import config from "../../common/core/config.js";
-import { isDrawnMenuShown, highlightedEntry, press, OPEN_OVER_MS } from "../drawn_menu/drawn_menu_reader.js";
+import { isDrawnMenuShown, highlightedEntry, press, chooseEntry, OPEN_OVER_MS } from "../drawn_menu/drawn_menu_reader.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 
 test("with Drawn Menus off, the list is still drawn and goes back to the native Operator Menu", async () => {
@@ -28,8 +28,8 @@ test("with Drawn Menus off, the list is still drawn and goes back to the native 
 
     assert.equal(fake.currentMenu(), null, "no native menu left");
     assert.ok(isDrawnMenuShown(fake), "the list is drawn");
-    assert.equal(highlightedEntry(fake), "Players and progress");
-    press(fake, "Select");
+    assert.equal(highlightedEntry(fake), "Language: English");
+    chooseEntry(fake, "Players and progress");
     fake.advanceTime(OPEN_OVER_MS);
     assert.equal(highlightedEntry(fake), "Profile picker: On (on restart)", "as saved (the defaults), running off");
     press(fake, "Exit");

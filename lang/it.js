@@ -296,7 +296,7 @@ export default {
     // Labels for menu items this project adds itself (see custom_menu_commands.js, random_game.js, custom_filter.js, hall_of_fame.js and tables_to_discover.js).
     customMenuLabels: {
         challengeTables: "Tavoli della sfida",
-        hallOfFameFilter: "Hall of Fame",
+        hallOfFameFilter: "Tavoli più giocati",
         myHighScoresFilter: "I miei punteggi",
         hiddenTablesFilter: "Tavoli nascosti",
         tablesToDiscoverFilter: "Tavoli da scoprire",
@@ -866,10 +866,10 @@ export default {
         back: "Indietro",
         groups: {
             playersAndProgress: "Giocatori e progressi",
-            wheelScreen: "La ruota",
-            menusAndFilters: "Menu e filtri",
+            wheel: "Ruota",
+            menus: "Menu",
+            filters: "Filtri",
             launchingAndPlaying: "Avviare e giocare un tavolo",
-            debugging: "Debug",
         },
         onRestart: (state) => `${state} (al riavvio)`,
         whenOnLabel: "Sì:",
@@ -955,7 +955,7 @@ export default {
                 whenOff: "Tornano i menu semplici di PinballY, tranne che per queste impostazioni.",
             },
             customMenuCommands: {
-                name: "Comandi di menu",
+                name: "Configurazione del tavolo",
                 whenOn: "Configurazione del tavolo nel menu principale.",
                 whenOff: "Nient'altro cambia.",
             },
@@ -970,7 +970,7 @@ export default {
                 whenOff: "Nient'altro cambia.",
             },
             hallOfFame: {
-                name: "Hall of Fame",
+                name: "Tavoli più giocati",
                 whenOn: "Un filtro dei tuoi dieci tavoli più giocati.",
                 whenOff: "Niente pulsante Tavoli più giocati in «Il mio profilo».",
             },
@@ -1032,11 +1032,6 @@ export default {
             tableRoms: {
                 name: "ROM dei tavoli",
                 whenOn: "Trova da sé la ROM di ogni tavolo (richiede vpxtool).",
-                whenOff: "Nient'altro cambia.",
-            },
-            launchEventsTrace: {
-                name: "Traccia di avvio",
-                whenOn: "Registra gli eventi di avvio, per la risoluzione dei problemi (con LOG_LAUNCH_EVENTS=true).",
                 whenOff: "Nient'altro cambia.",
             },
         },

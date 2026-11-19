@@ -18,7 +18,7 @@ These overlaps are fixed on the pack's side. You see nothing, and there is nothi
 
 - **A launch another script cancelled** (RichardL64's `Spin.js`, which cancels a launch that comes too soon after the plunger): the pack treats it as no launch. The **Backglass Clock** does not show, **High Scores** reads no board, and no pack surprise starts on it.
 - **A launch message another script blanked** (RichardL64's `LaunchVideo.js`, timhobbs's `launchAnimations.js` with its option on): **PinballY translation** leaves it blank instead of writing its translation back.
-- **A "Table setup" entry another script already added to the main menu** (the official `command_example`): the pack's own "Set Up Table" from **Menu commands** gives way to it, so the menu has only one.
+- **A "Table setup" entry another script already added to the main menu** (the official `command_example`): the pack's own "Set Up Table" (the **Set Up Table** Add-on) gives way to it, so the menu has only one.
 
 ## What the pack tells you: the launch screen
 

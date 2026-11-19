@@ -297,7 +297,7 @@ export default {
     // Labels for menu items this project adds itself (see custom_menu_commands.js, random_game.js, custom_filter.js, hall_of_fame.js and tables_to_discover.js).
     customMenuLabels: {
         challengeTables: "Mesas do desafio",
-        hallOfFameFilter: "Hall of Fame",
+        hallOfFameFilter: "Mesas mais jogadas",
         myHighScoresFilter: "Minhas pontuações",
         hiddenTablesFilter: "Mesas ocultas",
         tablesToDiscoverFilter: "Mesas a descobrir",
@@ -867,10 +867,10 @@ export default {
         back: "Voltar",
         groups: {
             playersAndProgress: "Jogadores e progresso",
-            wheelScreen: "A roleta",
-            menusAndFilters: "Menus e filtros",
+            wheel: "Roleta",
+            menus: "Menus",
+            filters: "Filtros",
             launchingAndPlaying: "Iniciar e jogar uma mesa",
-            debugging: "Depuração",
         },
         onRestart: (state) => `${state} (ao reiniciar)`,
         whenOnLabel: "Sim:",
@@ -956,7 +956,7 @@ export default {
                 whenOff: "Os menus simples do PinballY voltam, exceto nestas configurações.",
             },
             customMenuCommands: {
-                name: "Comandos de menu",
+                name: "Configuração da mesa",
                 whenOn: "Configuração da mesa no menu principal.",
                 whenOff: "Nada mais muda.",
             },
@@ -971,7 +971,7 @@ export default {
                 whenOff: "Nada mais muda.",
             },
             hallOfFame: {
-                name: "Hall of Fame",
+                name: "Mesas mais jogadas",
                 whenOn: "Um filtro das suas dez mesas mais jogadas.",
                 whenOff: "Sem o botão Mesas mais jogadas em Meu perfil.",
             },
@@ -1033,11 +1033,6 @@ export default {
             tableRoms: {
                 name: "ROMs das mesas",
                 whenOn: "Encontra sozinho a ROM de cada mesa (requer vpxtool).",
-                whenOff: "Nada mais muda.",
-            },
-            launchEventsTrace: {
-                name: "Rastreio de início",
-                whenOn: "Registra os eventos de início, para solução de problemas (com LOG_LAUNCH_EVENTS=true).",
                 whenOff: "Nada mais muda.",
             },
         },

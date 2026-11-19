@@ -30,7 +30,10 @@ test("the list speaks French", async () => {
     chooseEntry(fake, "Réglages de l'eXpansion pack");
     fake.advanceTime(OPEN_OVER_MS);
 
-    assert.deepEqual(drawnMenuLines(fake).slice(0, 2), ["Joueurs et progression", "Écran de la roue"]);
+    assert.deepEqual(drawnMenuLines(fake), [
+        "Langue : Español au redémarrage", "Écran de démarrage : Choix du joueur", "---",
+        "Joueurs et progression", "Roue", "Menus", "Filtres", "Lancer et jouer une table", "Mode hors ligne", "---", "Retour",
+    ]);
     chooseEntry(fake, "Joueurs et progression");
     fake.advanceTime(OPEN_OVER_MS);
     assert.deepEqual(drawnMenuLines(fake).slice(0, 5), [
@@ -39,11 +42,12 @@ test("the list speaks French", async () => {
     ]);
     press(fake, "Exit");
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Langue : Español au redémarrage", "Next");
-    assert.equal(highlightedEntry(fake), "Mode attraction : Comme PinballY", "the Attract Order line comes after the language");
-    press(fake, "Next");
-    assert.equal(highlightedEntry(fake), "Mode hors ligne", "then the Offline Mode group");
-    press(fake, "Select");
+    chooseEntry(fake, "Roue");
+    fake.advanceTime(OPEN_OVER_MS);
+    assert.deepEqual(drawnMenuLines(fake).slice(-3), ["Mode attraction : Comme PinballY", "---", "Retour"], "the Attract Order line on the Wheel page");
+    press(fake, "Exit");
+    fake.advanceTime(OPEN_OVER_MS);
+    chooseEntry(fake, "Mode hors ligne");
     fake.advanceTime(OPEN_OVER_MS);
     assert.deepEqual(drawnMenuLines(fake), [
         "[MODE HORS LIGNE]", "Recherche de mises à jour du pack : Activé", "Proposer vpxtool : Activé", "Discord Rich Presence : Désactivé", "---", "Retour",

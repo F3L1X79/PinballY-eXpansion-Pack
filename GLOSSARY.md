@@ -401,6 +401,10 @@ _Avoid_: quest, goal, mission, Achievement (an Achievement is a permanent milest
 A play goal set for one week, alongside each Profile's own Challenge, that the cabinet's players reach together: every Play counts towards it, Guest's included, and nothing ranks who helped most. It is completed or missed when the week ends. Shown as "Défi de la maison" in French.
 _Avoid_: Household Mission, family quest, team challenge, Challenge (alone: a Challenge belongs to one Profile)
 
+**Household Challenge Tables**:
+The tables the active Profile can see that would move the Household Challenge forward if played now, offered as a wheel selection; only some Household Challenges have them.
+_Avoid_: Challenge Tables (those move the Profile's own Challenge forward)
+
 **Challenge Card**:
 The small card at the top right of the wheel screen that keeps the week's Challenge and the active Profile's progress always in view.
 _Avoid_: challenge widget, challenge popup, status line

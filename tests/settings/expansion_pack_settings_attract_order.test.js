@@ -1,6 +1,6 @@
 // ============================================================
 // The Attract Order line of the eXpansion Pack Settings, through main.js:
-// after the language, whether the Wheel Order Add-on is on or off; its
+// on the Wheel page under its Add-ons, whether the Wheel Order Add-on is on or off; its
 // page lists As PinballY, In Order and Whole Wheel. Saving one of the last two
 // keeps PinballY's "Switch games every" and writes the long value (the other
 // leaves it alone); only As PinballY gives it back, never Wheel Order saved off.
@@ -36,12 +36,14 @@ test("setup", async () => {
     await settle();
 });
 
-test("the Attract Order line comes after the startup screen and the language", () => {
+test("the Attract Order line is on the Wheel page, after its Add-ons and a separator", () => {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
     choose("eXpansion Pack Settings");
+    assert.equal(drawnMenuLines(fake).some(line => line.startsWith("Attract Order")), false, "not on the list itself");
+    choose("Wheel");
 
-    assert.deepEqual(drawnMenuLines(fake).slice(6, 9), ["Startup screen: Profile picker", "Language: English", "Attract Order: As PinballY"]);
+    assert.deepEqual(drawnMenuLines(fake).slice(-5), ["Wheel Order: On", "---", "Attract Order: As PinballY", "---", "Back"]);
 });
 
 test("its page lists As PinballY, In Order and Whole Wheel, the saved one marked, then Cancel", () => {
@@ -51,10 +53,11 @@ test("its page lists As PinballY, In Order and Whole Wheel, the saved one marked
     assert.deepEqual(markedEntries(fake, "radio"), ["As PinballY"]);
 });
 
-test("saving In Order keeps PinballY's interval and writes the long value, shown on restart", () => {
+test("saving In Order keeps PinballY's interval and writes the long value, shown on restart, back on its line", () => {
     choose("In Order");
 
     assert.equal(fake.readFile(ENV_LOCAL), "ATTRACT_ORDER=inOrder\r\n");
+    assert.equal(drawnMenuLines(fake)[0], "[WHEEL]", "back on the Wheel page");
     assert.equal(highlightedEntry(fake), "Attract Order: In Order (on restart)");
     assert.equal(keptSwitchTime(), 7);
     assert.equal(switchTime(), "86400");
@@ -101,13 +104,7 @@ test("saving the Wheel Order Add-on off leaves the Attract Order and PinballY's 
     choose("Whole Wheel");
     assert.equal(keptSwitchTime(), 7);
 
-    choose("Menus and filters");
-    for (let guard = 0; highlightedEntry(fake) !== "Wheel Order: On"; guard++) {
-        if (guard > 100) throw new Error("No Wheel Order line in the category.");
-        press(fake, "Next");
-    }
-    press(fake, "Select");
-    fake.advanceTime(OPEN_OVER_MS);
+    choose("Wheel Order: On");
     press(fake, "Select");
     choose("Save");
 
@@ -124,6 +121,7 @@ test("with the Wheel Order Add-on saved off, the line is listed and saving it wr
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
     choose("eXpansion Pack Settings");
+    choose("Wheel");
     assert.equal(drawnMenuLines(fake).includes("Attract Order: Whole Wheel (on restart)"), true);
 
     choose("Attract Order: Whole Wheel (on restart)");

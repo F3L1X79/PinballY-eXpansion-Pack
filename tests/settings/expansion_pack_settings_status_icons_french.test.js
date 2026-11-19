@@ -25,10 +25,10 @@ test("the Status Icons' page speaks French", async () => {
     fake.advanceTime(OPEN_OVER_MS);
     chooseEntry(fake, "Réglages de l'eXpansion pack");
     fake.advanceTime(OPEN_OVER_MS);
-    chooseEntry(fake, "Écran de la roue");
+    chooseEntry(fake, "Roue");
     fake.advanceTime(OPEN_OVER_MS);
     assert.deepEqual(drawnMenuLines(fake).slice(0, 5), [
-        "[ÉCRAN DE LA ROUE]", "Ligne d'état : Activé au redémarrage", "Horloge : Activé au redémarrage", "Icônes d'état : Activé",
+        "[ROUE]", "Ligne d'état : Activé au redémarrage", "Horloge : Activé au redémarrage", "Icônes d'état : Activé",
         "Arc de la roue : Activé au redémarrage",
     ]);
 

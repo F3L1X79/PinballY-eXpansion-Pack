@@ -872,10 +872,10 @@ export default {
         back: "Retour",
         groups: {
             playersAndProgress: "Joueurs et progression",
-            wheelScreen: "Écran de la roue",
-            menusAndFilters: "Menus et filtres",
+            wheel: "Roue",
+            menus: "Menus",
+            filters: "Filtres",
             launchingAndPlaying: "Lancer et jouer une table",
-            debugging: "Débogage",
         },
         onRestart: (state) => `${state} au redémarrage`,
         whenOnLabel: "Activé :",
@@ -961,7 +961,7 @@ export default {
                 whenOff: "Les menus simples de PinballY reviennent, sauf pour ces réglages.",
             },
             customMenuCommands: {
-                name: "Commandes de menu",
+                name: "Configurer la table",
                 whenOn: "Configurer la table dans le menu principal.",
                 whenOff: "Rien d'autre ne change.",
             },
@@ -1038,11 +1038,6 @@ export default {
             tableRoms: {
                 name: "ROM des tables",
                 whenOn: "Trouve seul la ROM de chaque table (avec vpxtool).",
-                whenOff: "Rien d'autre ne change.",
-            },
-            launchEventsTrace: {
-                name: "Trace des lancements",
-                whenOn: "Journalise les lancements, pour le dépannage (avec LOG_LAUNCH_EVENTS=true).",
                 whenOff: "Rien d'autre ne change.",
             },
         },

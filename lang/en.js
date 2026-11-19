@@ -794,10 +794,10 @@ export default {
         // The categories of the list, each heading its own page, grouped as in .env.example.
         groups: {
             playersAndProgress: "Players and progress",
-            wheelScreen: "Wheel screen",
-            menusAndFilters: "Menus and filters",
+            wheel: "Wheel",
+            menus: "Menus",
+            filters: "Filters",
             launchingAndPlaying: "Launching and playing a table",
-            debugging: "Debugging",
         },
         // A saved state that differs from the running one.
         onRestart: (state) => `${state} (on restart)`,
@@ -888,7 +888,7 @@ export default {
                 whenOff: "PinballY's plain menus come back, but for these settings.",
             },
             customMenuCommands: {
-                name: "Menu commands",
+                name: "Set Up Table",
                 whenOn: "Set Up Table in the main menu.",
                 whenOff: "Nothing else changes.",
             },
@@ -904,7 +904,7 @@ export default {
                 whenOff: "Nothing else changes.",
             },
             hallOfFame: {
-                name: "Hall of Fame",
+                name: "Most Played Tables",
                 whenOn: "A filter of your ten most played tables.",
                 whenOff: "No Most Played Tables button in the Profile Stats.",
             },
@@ -966,11 +966,6 @@ export default {
             tableRoms: {
                 name: "Table ROMs",
                 whenOn: "Finds each table's ROM by itself (needs vpxtool).",
-                whenOff: "Nothing else changes.",
-            },
-            launchEventsTrace: {
-                name: "Launch events trace",
-                whenOn: "Logs the launch events, for troubleshooting (with LOG_LAUNCH_EVENTS=true).",
                 whenOff: "Nothing else changes.",
             },
         },

@@ -18,7 +18,7 @@ Ces chevauchements sont corrigés du côté du pack. Vous ne voyez rien, et il n
 
 - **Un lancement qu'un autre script a annulé** (`Spin.js` de RichardL64, qui annule un lancement venu trop tôt après le relâchement du plongeur) : le pack le traite comme s'il n'y avait pas de lancement. L'**Horloge du backglass** ne s'affiche pas, **Meilleurs scores** ne lit aucun tableau, et aucune surprise du pack ne démarre dessus.
 - **Un message de lancement qu'un autre script a effacé** (`LaunchVideo.js` de RichardL64, `launchAnimations.js` de timhobbs avec son option active) : **Traduction de PinballY** le laisse vide au lieu d'y remettre sa traduction.
-- **Une entrée « Table setup » qu'un autre script a déjà ajoutée au menu principal** (le `command_example` officiel) : l'entrée « Configurer la table » de **Commandes de menu** lui laisse sa place, et le menu n'en montre qu'une.
+- **Une entrée « Table setup » qu'un autre script a déjà ajoutée au menu principal** (le `command_example` officiel) : l'entrée « Configurer la table » du pack (l'Add-on **Configurer la table**) lui laisse sa place, et le menu n'en montre qu'une.
 
 ## Ce que le pack vous signale : l'écran de lancement
 

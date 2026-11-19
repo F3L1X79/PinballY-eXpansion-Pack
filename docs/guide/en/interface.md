@@ -51,7 +51,7 @@ Small icons sit right of the wheel's clock, on its line, as tall as its digits. 
 - A gold arrow pointing down, only to whoever sees the setup entries (an [Admin Profile](settings.md#admin-profile), or anyone while no Profile is marked): a newer version of the pack is waiting (see [Updates](updates.md)).
 - A white circular arrow, crossed out, only to whoever sees the setup entries: the pack update check is turned off.
 
-They keep their place when the minute changes and when the clock is turned off, hide during a game, and follow the active Profile after Change Player. An icon that comes or goes while you are on the wheel fades once. Turn them off with "Status Icons" in the wheel screen group of **eXpansion Pack Settings**, or `ADD_ON_STATUS_ICONS=false`.
+They keep their place when the minute changes and when the clock is turned off, hide during a game, and follow the active Profile after Change Player. An icon that comes or goes while you are on the wheel fades once. Turn them off with "Status Icons" in the Wheel group of **eXpansion Pack Settings**, or `ADD_ON_STATUS_ICONS=false`.
 
 ## Launches, waits and sounds
 

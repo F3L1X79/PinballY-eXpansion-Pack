@@ -123,7 +123,7 @@ test("Save changes only that key's line, the rest of the file byte for byte", ()
 test("a key with no active line gets one appended at the end", () => {
     chooseEntry(fake, "Back");
     fake.advanceTime(OPEN_OVER_MS);
-    openCategory("Wheel screen");
+    openCategory("Wheel");
     openPage("Clock: On (on restart)");
     press(fake, "Select");
     chooseEntry(fake, "Save");

@@ -1,8 +1,8 @@
 // ============================================================
 // eXpansion Pack Settings: their entry in the Operator Menu, in its own group after Batch Capture, for whoever
-// sees the setup entries, opens the list of Add-on categories (their Add-ons as saved in .env.local,
-// read again on each opening, one page per Add-on whose Save rewrites its one line), the Startup screen,
-// Language and Attract Order pages, the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
+// sees the setup entries, opens the list: the Language and Startup screen pages, the Add-on categories (their Add-ons
+// as saved in .env.local, read again on each opening, one page per Add-on whose Save rewrites its one line; the Wheel's
+// Attract Order page), the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
 // Listens to "menuopen" and "command"; saves and restarts through save_and_restart.js, and writes PinballY's attract switch time for the Attract Order.
 // - Started by main.js whatever config.addOns says, its "menuopen" listener before the Drawn Menus Add-on's.
 // - Always drawn (getPackMenusForDialogs), even with the Drawn Menus Add-on off.
@@ -69,22 +69,23 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     // asksConsent's On from off), in the list's order: each by its config key,
     // its choices' names in their order, and its value as compared (a language
     // whatever its case, as i18n.js reads it), offline when its line is in the
-    // Offline Mode group. afterSave(from, to) writes what else the choice
-    // needs once saved.
+    // Offline Mode group, group: the category whose page it ends.
+    // afterSave(from, to) writes what else the choice needs once saved.
     // One command for its line, one per choice. A switch's
     // choices are keyed "true" / "false": String turns the saved boolean into
     // one of them. Discord Rich Presence's key only names its commands, the
     // Add-on's own page having that name; keyPath and read are the Add-on's value.
     const ON_OFF = { true: TEXT.on, false: TEXT.off };
     const choiceSettings = [
-        { key: "startupScreen", menuId: STARTUP_SCREEN_MENU_ID, names: TEXT.startupScreenNames, line: TEXT.startupScreenLine, normalize: String },
         { key: "language", menuId: LANGUAGE_MENU_ID, names: TEXT.languageNames, line: TEXT.languageLine, normalize: value => String(value).toLowerCase() },
+        { key: "startupScreen", menuId: STARTUP_SCREEN_MENU_ID, names: TEXT.startupScreenNames, line: TEXT.startupScreenLine, normalize: String },
         {
             key: "attractOrder",
             menuId: ATTRACT_ORDER_MENU_ID,
             names: TEXT.attractOrderNames,
             line: TEXT.attractOrderLine,
             normalize: String,
+            group: "wheel",
             afterSave: (from, to) => saveAttractOrderSwitches(host, profileStore, from, to),
         },
         { key: "updateCheck", menuId: UPDATE_CHECK_MENU_ID, names: ON_OFF, line: TEXT.updateCheckLine, normalize: String, offline: true },
@@ -159,9 +160,9 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         return [{ title: TEXT.vpxtoolUpToDateLine, cmd: scriptReaderLineCommand, disabled: true, reason: TEXT.vpxtoolUpToDate(offer.installed) }];
     }
 
-    // The categories, each opening its page, then the settings picked on a
-    // page of choices and the Offline Mode group, then the Pack Update and
-    // the Script Reader install while each is possible.
+    // The settings picked on a page of choices that sit on the list itself,
+    // then the categories, each opening its page, and the Offline Mode group,
+    // then the Pack Update and the Script Reader install while each is possible.
     function openList(selectedCmd = null) {
         page = null;
         const saved = readSaved();
@@ -171,10 +172,10 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
             ...scriptReaderLines(),
         ];
         getMenus().show(LIST_MENU_ID, [
-            ...ADD_ON_GROUPS.map(({ group }) => ({ title: TEXT.groups[group], cmd: groupCommands.get(group), hasSubmenu: true })),
-            SEPARATOR,
-            ...choiceSettings.filter(setting => !setting.offline)
+            ...choiceSettings.filter(setting => !setting.offline && !setting.group)
                 .map(setting => choiceLineOf(saved, setting)),
+            SEPARATOR,
+            ...ADD_ON_GROUPS.map(({ group }) => ({ title: TEXT.groups[group], cmd: groupCommands.get(group), hasSubmenu: true })),
             { title: TEXT.offlineMode, cmd: offlineModeCommand, hasSubmenu: true },
             SEPARATOR,
             ...(installs.length > 0 ? [...installs, SEPARATOR] : []),
@@ -196,11 +197,13 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         ], { dialogStyle: true, onBack: () => openList(scriptReaderLineCommand) });
     }
 
-    // A category's Add-ons, each On / Off as saved, under its heading.
+    // A category's Add-ons, each On / Off as saved, under its heading, then
+    // the settings it holds after a separator.
     function openCategory(group, selectedCmd = null) {
         page = null;
         const saved = readSaved();
         const { addOns } = ADD_ON_GROUPS.find(entry => entry.group === group);
+        const settings = choiceSettings.filter(setting => setting.group === group);
         getMenus().show(CATEGORY_MENU_ID, [
             { title: TEXT.groups[group], cmd: -1 },
             ...addOns.map((key) => {
@@ -208,6 +211,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
                 const shownState = addOnDiffers(saved, key) ? TEXT.onRestart(state) : state;
                 return { title: TEXT.addOnLine(TEXT.addOns[key].name, shownState), cmd: addOnCommands.get(key) };
             }),
+            ...(settings.length > 0 ? [SEPARATOR, ...settings.map(setting => choiceLineOf(saved, setting))] : []),
             SEPARATOR,
             { title: TEXT.back, cmd: menuReturnCommand },
         ], { selectedCmd, onBack: () => openList(groupCommands.get(group)) });
@@ -225,8 +229,11 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         ], { selectedCmd, onBack: () => openList(offlineModeCommand) });
     }
 
-    // Where a setting's line is: the list or the Offline Mode group.
-    const backToLine = setting => (setting.offline ? openOfflineMode : openList)(setting.lineCommand);
+    // Where a setting's line is: the list, its category or the Offline Mode group.
+    function backToLine(setting) {
+        if (setting.group) openCategory(setting.group, setting.lineCommand);
+        else (setting.offline ? openOfflineMode : openList)(setting.lineCommand);
+    }
 
     const returnToOperatorMenu = () => host.doCommand(operatorMenuCommand);
 

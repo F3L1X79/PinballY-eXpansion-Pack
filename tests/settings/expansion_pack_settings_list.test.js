@@ -1,9 +1,9 @@
 // ============================================================
 // The eXpansion Pack Settings list through main.js, Drawn Menus on: the
-// Add-on categories, as in .env.example, each opening its page of Add-ons
-// On / Off as saved in .env.local (read again on each opening), then the
-// Language line; a category's Back returns to its line, Exit on the list to
-// the Operator Menu; attract mode closes the list.
+// Language and Startup screen lines, then the Add-on categories as in .env.example,
+// each opening its page of Add-ons On / Off as saved in .env.local (read
+// again on each opening); a category's Back returns to its line, Exit on the
+// list to the Operator Menu; attract mode closes the list.
 // ============================================================
 
 import { test } from "node:test";
@@ -16,9 +16,9 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 const ENV_LOCAL = "C:\\PinballY\\Scripts\\ExpansionPack\\.env.local";
 const fake = createFakePinballYHost({ now: new Date(2026, 9, 22, 20, 0, 0) });
 
-const CATEGORIES = ["Players and progress", "Wheel screen", "Menus and filters", "Launching and playing a table", "Debugging"];
+const CATEGORIES = ["Players and progress", "Wheel", "Menus", "Filters", "Launching and playing a table"];
 
-const listLines = (language = "English") => [...CATEGORIES, "---", "Startup screen: Profile picker", `Language: ${language}`, "Attract Order: As PinballY", "Offline Mode", "---", "Back"];
+const listLines = (language = "English") => [`Language: ${language}`, "Startup screen: Profile picker", "---", ...CATEGORIES, "Offline Mode", "---", "Back"];
 
 // Every Add-on but Drawn Menus runs off here: a saved On shows "on restart".
 const ON = "On (on restart)";
@@ -30,17 +30,20 @@ const categoryPages = ({ achievements = ON, clock = ON, menuCleanup = "Off" } = 
         `Profile picker: ${ON}`, `Ratings per Profile: ${ON}`, `Welcome Screen: ${ON}`, `Achievements: ${achievements}`, `Session stats: ${ON}`,
         `Challenges: ${ON}`, `Table Mastery: ${ON}`, `High Scores: ${ON}`, "---", "Back",
     ],
-    "Wheel screen": ["[WHEEL SCREEN]", `Status line: ${ON}`, `Clock: ${clock}`, `Status Icons: ${ON}`, `Wheel Arc: ${ON}`, `Wheel Guides: ${ON}`, "---", "Back"],
-    "Menus and filters": [
-        "[MENUS AND FILTERS]",
-        `PinballY translation: ${ON}`, "Drawn Menus: On", `Menu commands: ${ON}`, `Random table: ${ON}`, `Hidden Games: ${ON}`,
-        `Hall of Fame: ${ON}`, `Tables to Discover: ${ON}`, `Hidden Tables: ${ON}`, `Original Tables: ${ON}`, `Wheel Order: ${ON}`, `Menu Cleanup: ${menuCleanup}`, "---", "Back",
+    "Wheel": [
+        "[WHEEL]",
+        `Status line: ${ON}`, `Clock: ${clock}`, `Status Icons: ${ON}`, `Wheel Arc: ${ON}`, `Wheel Guides: ${ON}`, `Wheel Order: ${ON}`,
+        "---", "Attract Order: As PinballY", "---", "Back",
     ],
+    "Menus": [
+        "[MENUS]",
+        `PinballY translation: ${ON}`, "Drawn Menus: On", `Menu Cleanup: ${menuCleanup}`, `Set Up Table: ${ON}`, `Random table: ${ON}`, `Hidden Games: ${ON}`, "---", "Back",
+    ],
+    "Filters": ["[FILTERS]", `Most Played Tables: ${ON}`, `Tables to Discover: ${ON}`, `Hidden Tables: ${ON}`, `Original Tables: ${ON}`, "---", "Back"],
     "Launching and playing a table": [
         "[LAUNCHING AND PLAYING A TABLE]",
         `Backglass: ${ON}`, "Backglass Clock: Off", "Discord Rich Presence: Off", `Launch overlay: ${ON}`, `Launch sound: ${ON}`, `Rating prompt: ${ON}`, `Table ROMs: ${ON}`, "---", "Back",
     ],
-    "Debugging": ["[DEBUGGING]", `Launch events trace: ${ON}`, "---", "Back"],
 });
 
 // Each category's page, opened from the list in turn, left by its Back.
@@ -79,19 +82,19 @@ test("the list shows the categories, each opening its Add-ons, as saved by defau
     assert.equal(fake.currentMenu(), null, "no native menu");
     assert.deepEqual(drawnMenuLines(fake), listLines());
     assert.deepEqual(markedEntries(fake, "submenu"), [...CATEGORIES, "Offline Mode"]);
-    assert.equal(highlightedEntry(fake), "Players and progress");
+    assert.equal(highlightedEntry(fake), "Language: English");
     assert.deepEqual(readCategoryPages(), categoryPages());
 });
 
 test("on a category's page, the cursor starts on its first Add-on and Exit returns to the list", () => {
-    chooseEntry(fake, "Wheel screen");
+    chooseEntry(fake, "Wheel");
     fake.advanceTime(OPEN_OVER_MS);
     assert.equal(highlightedEntry(fake), `Status line: ${ON}`, "the cursor skips the heading");
 
     press(fake, "Exit");
     fake.advanceTime(OPEN_OVER_MS);
     assert.deepEqual(drawnMenuLines(fake), listLines());
-    assert.equal(highlightedEntry(fake), "Wheel screen");
+    assert.equal(highlightedEntry(fake), "Wheel");
 });
 
 test("Exit goes back to the Operator Menu, past the restart question", () => {

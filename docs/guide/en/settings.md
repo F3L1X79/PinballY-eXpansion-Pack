@@ -22,11 +22,20 @@ Everything stays in one folder, with no change to PinballY itself.
 
 Until the pack has read your vpxtool's version once (about ten seconds into the first start that finds it), or while that version cannot be read, there is no vpxtool line.
 
+The list, from top to bottom:
+
+- **Language** and **Startup screen**;
+- the Add-on categories, each opening its page: **Players and progress**, **Wheel** (the wheel screen's Add-ons, then the Attract Order line), **Menus**, **Filters** (the filters the pack adds: Most Played Tables, Tables to Discover, Hidden Tables, Original Tables) and **Launching and playing a table**;
+- the **Offline Mode** group;
+- the "Update to" and vpxtool lines while they apply, then **Back**.
+
 Under "Players and progress", **Ratings per Profile** gives each Profile its own star Ratings and Favorite Tables, kept in a `ratings.json` file of its folder (see [Ratings and Favorite Tables](profiles.md#ratings-and-favorite-tables)). Turned off, everyone shares PinballY's Ratings and Favorite Tables again, and the Ratings Achievements are gone (`ADD_ON_PROFILE_RATINGS=false`).
 
-Under "Menus and filters", **Hidden Games** is on by default: some surprises unlock menu entries, so do not be puzzled when one appears in a player's main menu. Turned off, those entries never show (`ADD_ON_ROCKET_GAME=false`). **Wheel Order** is on too, its wheel alphabetical until a player switches it to by year; turned off, "Change Filter" loses its order entry and the wheel stays alphabetical (`ADD_ON_WHEEL_ORDER=false`, see [Wheel Order](choosing_a_table.md#wheel-order)). It has nothing to do with attract mode: the Attract Order line below works with Wheel Order on or off.
+Under "Menus", **Hidden Games** is on by default: some surprises unlock menu entries, so do not be puzzled when one appears in a player's main menu. Turned off, those entries never show (`ADD_ON_ROCKET_GAME=false`). **Set Up Table** adds that entry to the main menu (`ADD_ON_CUSTOM_MENU_COMMANDS=false` to remove it).
 
-The **Attract Order** line, after the language, chooses how attract mode moves through the tables once the cabinet sits idle:
+Under "Wheel", **Wheel Order** is on, its wheel alphabetical until a player switches it to by year; turned off, "Change Filter" loses its order entry and the wheel stays alphabetical (`ADD_ON_WHEEL_ORDER=false`, see [Wheel Order](choosing_a_table.md#wheel-order)). It has nothing to do with attract mode: the Attract Order line below it works with Wheel Order on or off.
+
+The **Attract Order** line, at the bottom of the "Wheel" page after a separator, chooses how attract mode moves through the tables once the cabinet sits idle:
 
 - **As PinballY** (the default): PinballY jumps a few tables at random at each switch, as without the pack.
 - **In Order**: each switch moves to the next table of the wheel, with PinballY's own one-step spin, and starts over at the first after the last. With the wheel by year, attract mode is a chronological tour.
@@ -34,7 +43,7 @@ The **Attract Order** line, after the language, chooses how attract mode moves t
 
 To do this, the pack takes PinballY's switches over: saving In Order or Whole Wheel keeps the value of PinballY's "Switch games every" option, puts a one-day value in its place so PinballY no longer switches, and switches itself at the interval you had set. Saving As PinballY gives your value back. If you change "Switch games every" in PinballY's options meanwhile, the pack takes your new value at the next start: PinballY switches with it for that session, the pack from the start after. Like the other lines, the choice applies when PinballY restarts (`ATTRACT_ORDER`). **Before removing the pack, set the Attract Order back to As PinballY**: otherwise PinballY's attract mode keeps the one-day value and never switches tables.
 
-Under "Wheel screen", **Wheel Guides** shows where you are on the wheel: the Wheel Rail, the letters (or decades) along the right edge with a gold pill on the selected table's, the Wheel Position, the selected table's place out of the wheel's tables, in the bottom right corner, and the Favorite Heart, red on a Favorite Table, in the bottom left corner (see [Interface](interface.md#on-the-wheel-screen)). Turned off, "Table n/total" comes back to the lower status line (`ADD_ON_WHEEL_GUIDES=false`; in `.env.local`, `WHEEL_RAIL=false` removes the Wheel Rail alone, `WHEEL_POSITION=false` removes the Wheel Position alone, `FAVORITE_HEART=false` the Favorite Heart alone). For a held flipper button to scroll the wheel at the pace the cabinet was tuned for, set PinballY's own "Auto-repeat rate" (Options, Game Wheel) to `180ms`: the pack never changes it.
+Under "Wheel", **Wheel Guides** shows where you are on the wheel: the Wheel Rail, the letters (or decades) along the right edge with a gold pill on the selected table's, the Wheel Position, the selected table's place out of the wheel's tables, in the bottom right corner, and the Favorite Heart, red on a Favorite Table, in the bottom left corner (see [Interface](interface.md#on-the-wheel-screen)). Turned off, "Table n/total" comes back to the lower status line (`ADD_ON_WHEEL_GUIDES=false`; in `.env.local`, `WHEEL_RAIL=false` removes the Wheel Rail alone, `WHEEL_POSITION=false` removes the Wheel Position alone, `FAVORITE_HEART=false` the Favorite Heart alone). For a held flipper button to scroll the wheel at the pace the cabinet was tuned for, set PinballY's own "Auto-repeat rate" (Options, Game Wheel) to `180ms`: the pack never changes it.
 
 Under "Launching and playing a table", **Launch overlay** keeps the screen from flashing black while a table loads (`ADD_ON_SEAMLESS_LAUNCH_OVERLAY=false` to turn it off). If another script you run in PinballY, such as a launch video script, takes the launch screen before the pack, the pack's overlay still shows, and a **Conflict Notice** says so once: see [With your External Add-ons](external_add_ons.md#what-the-pack-tells-you-the-launch-screen).
 
@@ -87,7 +96,7 @@ The eXpansion Pack Settings write to this file too. A key they save that is not 
 | `SKIP_RANDOM_GAME_ANIMATION` | `false` | `true` skips the wheel of fortune and launches the Random Game at once. |
 | `ASK_TO_RATE_AFTER_MINUTES_PLAYED` | `60` | Minutes played on a table before you are asked to rate it. |
 | `LOG_UNTRANSLATED_MENU_TITLES` | `false` | `true` writes each untranslated PinballY menu title to `PinballY.log`. |
-| `LOG_LAUNCH_EVENTS` | `false` | `true` writes each launch event to `PinballY.log` with a millisecond timestamp, to check their order on the cabinet. |
+| `LOG_LAUNCH_EVENTS` | `false` | `true` writes each launch event to `PinballY.log` with a millisecond timestamp, to check their order on the cabinet. Not in the eXpansion Pack Settings. |
 | `WHEEL_RAIL` | `true` | `false` removes the Wheel Rail (`#` and A to Z along the right edge of the wheel screen, or decades with the Wheel Order by year, a gold pill on the selected table's; see [Interface](interface.md#on-the-wheel-screen)). |
 | `WHEEL_RAIL_YEARS` | `false` | `true` shows, by year, each decade's years under it on the Wheel Rail, smaller, as two digits (`84`), the pill on the selected table's year (see [Choosing a table](choosing_a_table.md#wheel-order)). |
 | `WHEEL_RAIL_SECONDS` | `3` | Seconds the Wheel Rail stays without a move before sliding away; the next move brings it back. A whole number; `0` keeps it always shown. Needs `WHEEL_RAIL=true` (see [Interface](interface.md#on-the-wheel-screen)). |
