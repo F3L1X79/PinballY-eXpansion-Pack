@@ -1144,6 +1144,10 @@ export default {
         restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
+        "1.7.1": [
+            "Quand une table n'affiche aucun tableau des meilleurs scores, le message vous dit maintenant quoi faire.",
+            "La liste des Réglages de l'eXpansion pack est rangée par thème, et l'ordre du mode attract fonctionne même sans l'ordre de la roue.",
+        ],
         "1.7.0": [
             "Quand un autre script que vous utilisez dans PinballY prend le même écran que le pack, un message vous dit maintenant ce qui se passe et quoi faire.",
             "Les aides sous les écrans du pack montrent maintenant les flippers, et le son de lancement est moins fort.",

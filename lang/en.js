@@ -1093,6 +1093,10 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.7.1": [
+            "When a table shows no High Score Board, the message now says what to do.",
+            "The eXpansion Pack Settings list is reorganised by theme, and the Attract Order works even with the Wheel Order turned off.",
+        ],
         "1.7.0": [
             "When another script you run in PinballY takes the same screen as the pack, a Conflict Notice now tells you what happens and what to do.",
             "The button hints under the pack's screens now show the flippers, and the launch sound plays quieter.",

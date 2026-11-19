@@ -1138,6 +1138,10 @@ export default {
         restarting: "Riavvio in corso",
     },
     releaseHighlights: {
+        "1.7.1": [
+            "Quando un tavolo non mostra nessuna tabella dei punteggi migliori, il messaggio ora ti dice cosa fare.",
+            "L'elenco delle Impostazioni del pack è ordinato per tema, e l'ordine della modalità attract funziona anche senza l'ordine della ruota.",
+        ],
         "1.7.0": [
             "Quando un altro script che usi in PinballY occupa la stessa schermata del pack, un avviso ora ti dice cosa succede e cosa fare.",
             "Gli aiuti ai pulsanti sotto le schermate del pack ora mostrano i flipper, e il suono di avvio è più basso.",

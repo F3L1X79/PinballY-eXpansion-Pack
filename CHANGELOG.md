@@ -2,6 +2,12 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.7.1 (2026-11-19)
+
+- **High Score Boards**: when a table shows no board, the message now says what to do. A table without a ROM asks for "a game of at least one minute"; a table whose scores could not be read says "No high scores found for this table" instead of "not supported", which is kept for a ROM PINemHi cannot read. The guide says what to check when the scores are not found.
+- **Attract Order**: works whatever Add-ons are on, even with **Wheel Order** turned off. Its line always shows in the eXpansion Pack Settings, and turning Wheel Order off no longer gives PinballY's attract interval back. The Wheel Order switch now says what it does.
+- **eXpansion Pack Settings**: the list is reorganised: Language and Startup screen first, then Players and progress, Wheel (with the Attract Order under its Add-ons), Menus, Filters, Launching and playing a table, Offline Mode. The Debugging category goes: the launch events trace stays a `.env.local` setting.
+
 ## v1.7.0 (2026-11-19)
 
 - **External Add-ons**: a new guide page, **With your External Add-ons**, lists the scripts known to share a screen with the pack, what you see and what to do. When a script imported before the pack takes the launch screen, a **Conflict Notice** back on the wheel tells an Admin Profile and names the probable script: **Keep both**, or **Turn off the Launch overlay** from the Notice. Another Conflict Notice at startup asks to move the pack's import line to the end of `Scripts\main.js` when it is not the last.

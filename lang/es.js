@@ -1140,6 +1140,10 @@ export default {
         restarting: "Reiniciando",
     },
     releaseHighlights: {
+        "1.7.1": [
+            "Cuando una mesa no muestra ninguna tabla de mejores puntuaciones, el mensaje te dice ahora qué hacer.",
+            "La lista de Ajustes del pack está ordenada por temas, y el orden del modo attract funciona incluso sin el orden de la rueda.",
+        ],
         "1.7.0": [
             "Cuando otro script que usas en PinballY ocupa la misma pantalla que el pack, un aviso te dice ahora qué ocurre y qué hacer.",
             "Las ayudas de botones bajo las pantallas del pack muestran ahora los flippers, y el sonido de lanzamiento suena más bajo.",
