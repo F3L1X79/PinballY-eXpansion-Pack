@@ -69,6 +69,7 @@ The eXpansion Pack Settings write to this file too. A key they save that is not 
 | `UNTRACKED_TABLES` | empty | Tables that are not really pinball games, such as a media player launched as a table: comma-separated titles, exactly as in PinballY (`Media Player,Jukebox`). They stay on the wheel and launch, but are left out of the stats, the Achievements and the Random Game. Remove a table from the list and it comes back with its saved games. |
 | `COMMUNITY_TABLES_MANUFACTURER` | `VPX Community` | Manufacturer you gave to fictional or community tables, for the status line and the "Original Tables" filter. |
 | `LAUNCH_SOUND_FILE` | `assets\sounds\launch.mp3` | Sound played when a table launches: a path from the pack's folder (your own sounds go in `assets\sounds\local\`) or a full path; empty = no sound. |
+| `LAUNCH_SOUND_VOLUME` | `50` | Volume of the launch sound, from `0` to `100`. It plays outside PinballY's own audio, so PinballY's volume settings and Pinvol do not lower it: with Pinvol, lower this value until the sound matches your tables. A value outside `0`-`100`, or not a number, plays at `50` and is written to `logs\errors.log`. |
 | `ACHIEVEMENT_SOUND_FILE` | `assets\sounds\achievement.wav` | Sound played with each Achievement toast. |
 | `PROFILE_GREETING_SOUND_FILE` | `assets\sounds\profile_greeting.mp3` | Sound played when a player is greeted. |
 | `CONFETTI_SOUND_FILE` | `assets\sounds\confetti.wav` | Sound played once when a shower of confetti starts. |

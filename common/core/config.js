@@ -2,8 +2,8 @@
 // Player settings for the PinballY scripts in this project, with neutral
 // defaults. Each player overrides them in a git-ignored .env.local in the
 // pack's folder (copy .env.example), read synchronously at load time; the
-// overridden keys and any invalid line are written to the PinballY log.
-// Sound paths may be relative to the pack's folder.
+// overridden keys and unknown lines go to the PinballY log, an invalid value
+// to the Error Log. Sound paths may be relative to the pack's folder.
 // ============================================================
 
 import { applyEnvOverrides } from "./env_overrides.js";
@@ -49,6 +49,10 @@ export const DEFAULTS = {
     // Empty = no sound.
     ...SHIPPED_SOUNDS,
     ...UNSHIPPED_SOUNDS,
+    // Volume of the launch sound, from 0 to 100. Windows Media Player plays
+    // it outside PinballY's audio (Pinvol treats it as a table's sound), so
+    // below its full 100, to sit near PinballY's own sounds.
+    launchSoundVolume: 50,
     // Manufacturer name you gave fictional/community VPX tables in PinballY.
     // Used by the status line and the "Original Tables" filter.
     communityTablesManufacturer: "VPX Community",
@@ -240,10 +244,13 @@ function loadConfig() {
         return resolveSoundFiles(copyOfDefaults(), projectFolder);
     }
 
-    const { config, overridden, problems } = applyEnvOverrides(DEFAULTS, text);
+    const { config, overridden, problems, invalidValues } = applyEnvOverrides(DEFAULTS, text);
     host.log(`${LOG_PREFIX} .env.local overrides: ${overridden.length > 0 ? overridden.join(", ") : "none"}.`);
+    // An invalid value is an error: the owner's setting is lost, so it must
+    // still be readable after PinballY restarts.
     for (const problem of problems) {
-        host.log(`${LOG_PREFIX} .env.local ${problem}; ignored.`);
+        if (invalidValues.includes(problem)) logError(SCRIPT_NAME, `ERROR in .env.local ${problem}; ignored.`, host);
+        else host.log(`${LOG_PREFIX} .env.local ${problem}; ignored.`);
     }
     setUntrackedTables(config.untrackedTables);
     return resolveSoundFiles(config, projectFolder);

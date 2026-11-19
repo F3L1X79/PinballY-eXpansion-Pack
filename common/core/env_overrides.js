@@ -81,6 +81,9 @@ export function applyEnvOverrides(defaults, text) {
     const keyMap = buildKeyMap(defaults);
     const overridden = [];
     const problems = [];
+    // The problems that lose a setting the owner wrote; an unknown key may
+    // just be one the pack no longer reads.
+    const invalidValues = [];
 
     const lines = String(text || "").replace(/^\uFEFF/, "").split(/\r?\n/);
     lines.forEach((rawLine, index) => {
@@ -104,7 +107,9 @@ export function applyEnvOverrides(defaults, text) {
         const rawValue = stripQuotes(split.value);
         const converted = convert(rawValue, owner[target.key]);
         if (!converted.ok) {
-            problems.push(`${lineLabel}: invalid value "${rawValue}" for ${envKey} (expected ${converted.expected})`);
+            const problem = `${lineLabel}: invalid value "${rawValue}" for ${envKey} (expected ${converted.expected})`;
+            problems.push(problem);
+            invalidValues.push(problem);
             return;
         }
 
@@ -112,5 +117,5 @@ export function applyEnvOverrides(defaults, text) {
         if (!overridden.includes(envKey)) overridden.push(envKey);
     });
 
-    return { config, overridden, problems };
+    return { config, overridden, problems, invalidValues };
 }

@@ -69,6 +69,7 @@ Les réglages de l'eXpansion Pack écrivent aussi dans ce fichier. Une clé qu'i
 | `UNTRACKED_TABLES` | vide | Les tables qui n'en sont pas vraiment, comme un lecteur multimédia lancé comme une table : leurs titres séparés par des virgules, écrits exactement comme dans PinballY (`Media Player,Jukebox`). Elles restent sur la roue et se lancent, mais sortent des statistiques, des Succès et de la table au hasard. Retirée de la liste, une table revient avec ses parties enregistrées. |
 | `COMMUNITY_TABLES_MANUFACTURER` | `VPX Community` | Fabricant donné aux tables fictives ou communautaires, pour la ligne d'état et le filtre « Tables Originales ». |
 | `LAUNCH_SOUND_FILE` | `assets\sounds\launch.mp3` | Son joué au lancement d'une table : un chemin depuis le dossier du pack (vos sons vont dans `assets\sounds\local\`) ou un chemin complet ; vide = aucun son. |
+| `LAUNCH_SOUND_VOLUME` | `50` | Volume du son de lancement, de `0` à `100`. Il est joué hors du son de PinballY : ni les réglages de volume de PinballY ni Pinvol ne le baissent. Avec Pinvol, baissez cette valeur jusqu'à ce que le son s'accorde à vos tables. Une valeur hors de `0`-`100`, ou qui n'est pas un nombre, joue à `50` et est écrite dans `logs\errors.log`. |
 | `ACHIEVEMENT_SOUND_FILE` | `assets\sounds\achievement.wav` | Son joué avec chaque annonce de Succès. |
 | `PROFILE_GREETING_SOUND_FILE` | `assets\sounds\profile_greeting.mp3` | Son joué quand un joueur est accueilli. |
 | `CONFETTI_SOUND_FILE` | `assets\sounds\confetti.wav` | Son joué une fois au début d'une pluie de confettis. |

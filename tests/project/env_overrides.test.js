@@ -26,7 +26,13 @@ function defaults() {
 
 test("empty text keeps every default and reports nothing", () => {
     const result = applyEnvOverrides(defaults(), "");
-    assert.deepEqual(result, { config: defaults(), overridden: [], problems: [] });
+    assert.deepEqual(result, { config: defaults(), overridden: [], problems: [], invalidValues: [] });
+});
+
+test("only a value that does not fit its setting counts among the invalid values", () => {
+    const { problems, invalidValues } = applyEnvOverrides(defaults(), "FORMER_KEY=1\nLANGUAGE fr\nASK_TO_RATE_AFTER_MINUTES_PLAYED=abc");
+    assert.equal(problems.length, 3);
+    assert.deepEqual(invalidValues, [problems[2]]);
 });
 
 test("UPPER_SNAKE_CASE keys map to top-level and ADD_ON_* keys to addOns", () => {
