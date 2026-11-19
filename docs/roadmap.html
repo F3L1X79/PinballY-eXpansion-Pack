@@ -196,7 +196,7 @@
         <span class="recap" id="recap" aria-label="Chantiers par effort"></span>
       </div>
       <div class="gauge" aria-hidden="true"><i id="hero-gauge" style="width:0"></i></div>
-      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 15.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
+      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 19.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
     </div>
   </header>
 
@@ -241,6 +241,8 @@
         <div class="cell">
           <a class="chip tr-play" href="#best-play-score"><b></b>Meilleure partie du lancement</a>
           <a class="chip tr-share" href="#crt-filter"><b></b>Faux CRT</a>
+          <a class="chip tr-play" href="#kraken"><b></b>Kraken</a>
+          <a class="chip tr-play" href="#tv-snow"><b></b>Neige TV</a>
           <a class="chip tr-play" href="#neon-confirmations"><b></b>Confirmations néon</a>
         </div>
         <div class="cell">
@@ -348,6 +350,54 @@
               <li>Le sens des lignes sur un écran tourné : horizontales pour le joueur, ou celles de l'écran physique ?</li>
             </ul>
             <p class="ctx">Idée de Félix du 04/11/2026, remontée dans la file à sa demande le 07/11/2026. Le résumé de l'aide PinballY ne mentionne aucun shader : ni courbure d'écran ni bavure de couleurs a priori, à confirmer dans l'aide complète. Pas de scintillement, selon la règle « pas d'animation sans fin ».</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="kraken" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Easter Egg : le Kraken sort ses tentacules du bas de l'écran</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Un nouvel Easter Egg au même moment que le Crow (une fois par démarrage, juste après la fermeture du Startup Screen) : des tentacules montent du bas de la roue, ondulent un instant puis replongent. Son propre Secret Achievement de la famille Surprises.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (les tentacules sur un calque, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Reprend les règles des Easter Eggs (<code>common/easter_eggs/easter_egg_rules.js</code>) et la forme du Crow (<code>common/easter_eggs/crow.js</code> : poses PNG, calques non bloquants, roue au silence)</div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Deux Easter Eggs sur un même moment : un seul tirage qui choisit ensuite le Crow ou le Kraken, ou deux tirages à la suite ? Le Crow ne doit pas devenir plus rare pour autant ; et si le Profile a déjà le Crow, le Kraken prend-il sa place ?</li>
+              <li>Le look : combien de tentacules, dessinés (Steamball, cuivre et rivets) ou en poses PNG comme le Crow ? Ils passent devant les Wheel Marks et le bas de la roue : la durée et la hauteur max.</li>
+              <li>Le son : grondement marin, remous ? La table se tait-elle comme pour le Crow ?</li>
+              <li>Le nom et l'indice de l'Achievement, dans les six langues ; son blason (Platinum comme les autres Surprises ?).</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 19/11/2026. Mouvement unique, qui finit seul, selon la règle « pas d'animation sans fin ». Interrompu au <code>prelaunch</code> et au mode attract, comme le Crow.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="tv-snow" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Easter Egg : la neige d'une vieille télé et « Interruption momentanée de l'image »</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Un nouvel Easter Egg au même moment que le Fake Blue Screen (au retour d'une table, après la lecture des High Scores) : l'écran part en neige avec son souffle, puis un vieux carton de coupure du signal TV, avant de rendre la roue. Son propre Secret Achievement de la famille Surprises.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (quelques images de neige sur un calque, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Reprend la forme du Fake Blue Screen (<code>common/easter_eggs/fake_blue_screen.js</code> : Drawn Screen controls, roue au silence, fin seule). Voisin du <a href="#crt-filter">faux CRT (n° <span data-ref="crt-filter"></span>)</a></div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Le même partage de moment que le Kraken avec le Crow : un tirage puis un choix entre l'écran bleu et la neige, sans rendre l'écran bleu plus rare ?</li>
+              <li>La neige bouge : quelques images de bruit préparées d'avance par le Drawing ahead, qui tournent pendant quelques secondes ? PinballY remplit chaque pixel d'un calque plein écran : le coût est à mesurer.</li>
+              <li>Le carton : un texte par langue (« Interruption momentanée de l'image » à la française, « Please stand by », « Bitte warten »…), une mire, ou les deux ? Les textes passent par <code>lang/</code>, dans les six langues.</li>
+              <li>La durée, le son (souffle, puis bip de mire ?), et le nom, l'indice et le blason de l'Achievement.</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 19/11/2026. Un effet unique qui finit seul, compatible avec la règle « pas d'animation sans fin ». Comme tous les Easter Eggs, décrit nulle part pour le joueur : pas de page du guide.</p>
           </details>
         </div>
       </li>
