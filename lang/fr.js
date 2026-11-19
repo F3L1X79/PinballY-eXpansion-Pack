@@ -858,7 +858,7 @@ export default {
         languageLine: (languageName) => `Langue : ${languageName}`,
         startupScreenLine: (screenName) => `Écran de démarrage : ${screenName}`,
         startupScreenNames: { welcome: "Écran d'accueil", profilePicker: "Choix du joueur", wheel: "Roue" },
-        // How attract mode moves through the tables, shown with the Wheel Order Add-on on.
+        // How attract mode moves through the tables.
         attractOrderLine: (orderName) => `Mode attraction : ${orderName}`,
         attractOrderNames: { pinballY: "Comme PinballY", inOrder: "Dans l'ordre", wholeWheel: "Toute la roue" },
         offlineMode: "Mode hors ligne",
@@ -997,7 +997,7 @@ export default {
             },
             wheelOrder: {
                 name: "Ordre de la roue",
-                whenOn: "Une entrée de « Changer de filtre » range les tables de la roue par année, de la plus ancienne.",
+                whenOn: "Une entrée de « Changer de filtre » permet aux joueurs de passer la roue par année, de la plus ancienne. Elle reste alphabétique jusque-là.",
                 whenOff: "La roue reste alphabétique.",
             },
             menuCleanup: {

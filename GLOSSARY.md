@@ -397,6 +397,10 @@ The distinct non-empty manufacturers of the tables of the Plays started during o
 A casual play goal set for one week, the same for every Profile, such as playing five different Stern tables; it is completed or missed when the week ends. Shown as "Défi" in French.
 _Avoid_: quest, goal, mission, Achievement (an Achievement is a permanent milestone)
 
+**Household Challenge**:
+A play goal set for one week, alongside each Profile's own Challenge, that the cabinet's players reach together: every Play counts towards it, Guest's included, and nothing ranks who helped most. It is completed or missed when the week ends. Shown as "Défi de la maison" in French.
+_Avoid_: Household Mission, family quest, team challenge, Challenge (alone: a Challenge belongs to one Profile)
+
 **Challenge Card**:
 The small card at the top right of the wheel screen that keeps the week's Challenge and the active Profile's progress always in view.
 _Avoid_: challenge widget, challenge popup, status line

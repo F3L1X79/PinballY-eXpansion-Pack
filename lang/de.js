@@ -992,7 +992,7 @@ export default {
             },
             wheelOrder: {
                 name: "Reihenfolge des Rads",
-                whenOn: "Ein Eintrag in Filter wechseln ordnet die Tische des Rads nach Jahr, die ältesten zuerst.",
+                whenOn: "Mit einem Eintrag in Filter wechseln ordnen Spieler die Tische des Rads nach Jahr, die ältesten zuerst. Bis dahin bleibt es alphabetisch.",
                 whenOff: "Das Rad bleibt alphabetisch.",
             },
             menuCleanup: {

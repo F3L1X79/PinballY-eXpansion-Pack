@@ -69,8 +69,8 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     // asksConsent's On from off), in the list's order: each by its config key,
     // its choices' names in their order, and its value as compared (a language
     // whatever its case, as i18n.js reads it), offline when its line is in the
-    // Offline Mode group. isShown(saved settings), when given, lists its line;
-    // afterSave(from, to) writes what else the choice needs once saved.
+    // Offline Mode group. afterSave(from, to) writes what else the choice
+    // needs once saved.
     // One command for its line, one per choice. A switch's
     // choices are keyed "true" / "false": String turns the saved boolean into
     // one of them. Discord Rich Presence's key only names its commands, the
@@ -85,7 +85,6 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
             names: TEXT.attractOrderNames,
             line: TEXT.attractOrderLine,
             normalize: String,
-            isShown: saved => saved.addOns.wheelOrder,
             afterSave: (from, to) => saveAttractOrderSwitches(host, profileStore, from, to),
         },
         { key: "updateCheck", menuId: UPDATE_CHECK_MENU_ID, names: ON_OFF, line: TEXT.updateCheckLine, normalize: String, offline: true },
@@ -118,7 +117,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     const saveCommand = host.allocateCommand("expansionPackSettings_save");
     const discordConsentCommand = host.allocateCommand("expansionPackSettings_discordConsent");
     // Saves each value, and asks Restart now or Later on leaving the list.
-    const saveAndRestart = createSaveAndRestart(host, profileStore, getMenus, { scriptName: SCRIPT_NAME, idPrefix: SAVE_AND_RESTART_ID_PREFIX });
+    const saveAndRestart = createSaveAndRestart(host, getMenus, { scriptName: SCRIPT_NAME, idPrefix: SAVE_AND_RESTART_ID_PREFIX });
     const updateCommand = host.allocateCommand("expansionPackSettings_update");
     const scriptReaderLineCommand = host.allocateCommand("expansionPackSettings_installVpxtool");
     const scriptReaderInstallCommand = host.allocateCommand("expansionPackSettings_scriptReaderInstall");
@@ -174,7 +173,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
         getMenus().show(LIST_MENU_ID, [
             ...ADD_ON_GROUPS.map(({ group }) => ({ title: TEXT.groups[group], cmd: groupCommands.get(group), hasSubmenu: true })),
             SEPARATOR,
-            ...choiceSettings.filter(setting => !setting.offline && (!setting.isShown || setting.isShown(saved)))
+            ...choiceSettings.filter(setting => !setting.offline)
                 .map(setting => choiceLineOf(saved, setting)),
             { title: TEXT.offlineMode, cmd: offlineModeCommand, hasSubmenu: true },
             SEPARATOR,

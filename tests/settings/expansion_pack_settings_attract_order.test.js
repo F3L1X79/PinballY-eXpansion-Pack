@@ -1,9 +1,9 @@
 // ============================================================
 // The Attract Order line of the eXpansion Pack Settings, through main.js:
-// after the language, only while the Wheel Order Add-on is saved on; its
+// after the language, whether the Wheel Order Add-on is on or off; its
 // page lists As PinballY, In Order and Whole Wheel. Saving one of the last two
 // keeps PinballY's "Switch games every" and writes the long value (the other
-// leaves it alone); As PinballY or the Wheel Order Add-on off gives it back.
+// leaves it alone); only As PinballY gives it back, never Wheel Order saved off.
 // ============================================================
 
 import { test } from "node:test";
@@ -96,7 +96,7 @@ test("saving As PinballY gives the kept value back and forgets it", () => {
     assert.equal(switchTime(), "7");
 });
 
-test("saving the Wheel Order Add-on off gives the kept value back and forgets it", () => {
+test("saving the Wheel Order Add-on off leaves the Attract Order and PinballY's option alone", () => {
     choose("Attract Order: As PinballY");
     choose("Whole Wheel");
     assert.equal(keptSwitchTime(), 7);
@@ -112,18 +112,24 @@ test("saving the Wheel Order Add-on off gives the kept value back and forgets it
     choose("Save");
 
     assert.match(fake.readFile(ENV_LOCAL), /ADD_ON_WHEEL_ORDER=false/);
-    assert.equal(keptSwitchTime(), undefined);
-    assert.equal(switchTime(), "7");
+    assert.match(fake.readFile(ENV_LOCAL), /ATTRACT_ORDER=wholeWheel/);
+    assert.equal(keptSwitchTime(), 7);
+    assert.equal(switchTime(), "86400");
 });
 
-test("the line is not listed while the Wheel Order Add-on is saved off", () => {
+test("with the Wheel Order Add-on saved off, the line is listed and saving it writes PinballY's option", () => {
     press(fake, "Exit");
     fake.advanceTime(OPEN_OVER_MS);
-    fake.addFile(ENV_LOCAL, "ATTRACT_ORDER=pinballY\r\nADD_ON_WHEEL_ORDER=false\r\n");
+    fake.addFile(ENV_LOCAL, "ATTRACT_ORDER=wholeWheel\r\nADD_ON_WHEEL_ORDER=false\r\n");
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
     choose("eXpansion Pack Settings");
+    assert.equal(drawnMenuLines(fake).includes("Attract Order: Whole Wheel (on restart)"), true);
 
-    assert.equal(drawnMenuLines(fake).some(line => line.startsWith("Attract Order")), false);
+    choose("Attract Order: Whole Wheel (on restart)");
+    choose("As PinballY");
+
+    assert.equal(keptSwitchTime(), undefined);
+    assert.equal(switchTime(), "7");
     assertNoErrorLogged(fake);
 });

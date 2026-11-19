@@ -1,6 +1,6 @@
 // ============================================================
 // Attract Order module: how attract mode moves through the tables (As PinballY,
-// In Order, Whole Wheel), started by the Wheel Order Add-on. In Order and Whole
+// In Order, Whole Wheel), started by main.js whatever Add-ons are on. In Order and Whole
 // Wheel take PinballY's switches over: one animated move per kept interval, from
 // an unprevented "attractmodestart" to "attractmodeend", told to onMove listeners
 // (setWheelGame fires no "gameselect"). Logs the cabinet checks.
@@ -64,8 +64,8 @@ const readKept = profileStore => profileStore.getCabinetData()[KEPT_SWITCH_TIME_
 const logUnreadableKept = (host, kept) => logError(SCRIPT_NAME, `ERROR ${KEPT_SWITCH_TIME_KEY} ${kept === undefined ? "missing" : `unreadable (${JSON.stringify(kept)})`} in cabinet.json; ${SWITCH_TIME_KEY} left as it is.`, host);
 
 // The kept value back in PinballY's option, then forgotten; an unreadable one
-// is logged and the option left as it is. Also for the Wheel Order Add-on saved off.
-export function giveAttractSwitchesBack(host, profileStore) {
+// is logged and the option left as it is.
+function giveAttractSwitchesBack(host, profileStore) {
     const kept = readKept(profileStore);
     if (kept === undefined) return;
     if (!isSwitchTime(kept)) {
@@ -164,8 +164,8 @@ export function createAttractOrder(host, profileStore, { order }) {
         }));
     }
 
-    // Once, by the Wheel Order Add-on, or by main.js with that Add-on off. The
-    // backstop for a hand-edited .env.local or the owner's own change in PinballY.
+    // Once, by main.js whatever Add-ons are on. The backstop for a hand-edited
+    // .env.local or the owner's own change in PinballY.
     function start() {
         if (isStarted) return;
         isStarted = true;
@@ -206,9 +206,7 @@ let sharedAttractOrder = null;
 
 export function getAttractOrder() {
     if (!sharedAttractOrder) {
-        // With the Wheel Order Add-on off, As PinballY whatever .env.local says.
-        const order = config.addOns.wheelOrder === false ? ATTRACT_ORDERS.PINBALLY : config.attractOrder;
-        sharedAttractOrder = createAttractOrder(createPinballYHost(), getProfileStore(), { order });
+        sharedAttractOrder = createAttractOrder(createPinballYHost(), getProfileStore(), { order: config.attractOrder });
     }
     return sharedAttractOrder;
 }

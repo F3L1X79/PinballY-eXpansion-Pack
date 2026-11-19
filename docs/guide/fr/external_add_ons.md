@@ -49,7 +49,7 @@ Pour garder plutôt l'écran de lancement du pack, retirez la ligne d'import de 
 | Les scripts qui ajoutent des entrées de menu (`tableEdit.js`, `forceCapture.js` de timhobbs, exemples officiels) | Leurs entrées sont dessinées dans le style du pack, avec leurs propres mots : le pack ne les traduit pas. Avec `LOG_UNTRANSLATED_MENU_TITLES=true`, elles sont listées comme non traduites dans `PinballY.log`. | Rien. |
 | `Filter.js`, `FilterTop.js` de RichardL64 | Ils tournent très bien. Avec l'**Ordre de la roue** par année, un filtre qu'ils choisissent s'affiche par année, comme un filtre choisi depuis « Changer de filtre ». | Rien. |
 | `CategoryButtons` officiel | Il tourne très bien, mais une catégorie qu'il choisit reste par ordre alphabétique même avec l'**Ordre de la roue** par année : il change de filtre sans prévenir les autres scripts. | Rien ; choisissez la catégorie depuis « Changer de filtre » pour la voir par année. |
-| `AttractFade.js`, `AutoOff.js` de RichardL64 ; `auto_shutdown` officiel | Ils tournent très bien : ils ne font qu'écouter le mode attract, et la ligne « Mode attraction » de l'**Ordre de la roue** règle toujours le parcours des tables. | Rien. |
+| `AttractFade.js`, `AutoOff.js` de RichardL64 ; `auto_shutdown` officiel | Ils tournent très bien : ils ne font qu'écouter le mode attract, et la ligne **Mode attraction** des Réglages de l'eXpansion pack règle toujours le parcours des tables. | Rien. |
 
 ## Les scripts qui tournent très bien à côté du pack
 

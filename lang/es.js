@@ -993,7 +993,7 @@ export default {
             },
             wheelOrder: {
                 name: "Orden de la rueda",
-                whenOn: "Una entrada de Cambiar filtro ordena las mesas de la rueda por año, de la más antigua.",
+                whenOn: "Una entrada de Cambiar filtro permite a los jugadores ordenar la rueda por año, de la más antigua. Hasta entonces sigue en orden alfabético.",
                 whenOff: "La rueda sigue en orden alfabético.",
             },
             menuCleanup: {

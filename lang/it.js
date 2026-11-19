@@ -991,7 +991,7 @@ export default {
             },
             wheelOrder: {
                 name: "Ordine della ruota",
-                whenOn: "Una voce di Cambia filtro ordina i tavoli della ruota per anno, dal più vecchio.",
+                whenOn: "Una voce di Cambia filtro permette ai giocatori di ordinare la ruota per anno, dal più vecchio. Fino ad allora resta in ordine alfabetico.",
                 whenOff: "La ruota resta in ordine alfabetico.",
             },
             menuCleanup: {

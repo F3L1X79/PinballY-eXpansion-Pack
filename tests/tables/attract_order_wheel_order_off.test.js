@@ -1,8 +1,7 @@
 // ============================================================
 // The Attract Order In Order through main.js with the Wheel Order Add-on
-// off: the Attract Order is As PinballY, so the kept value goes back to
-// PinballY's "Switch games every" at startup and the pack never moves the
-// wheel in attract mode.
+// off: the Attract Order starts with the pack all the same, so attract mode
+// moves through the wheel's tables, PinballY's option and the kept value untouched.
 // ============================================================
 
 import { test } from "node:test";
@@ -13,10 +12,11 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 
 const CABINET_FILE = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles\\cabinet.json";
 const SWITCH_TIME_KEY = "AttractMode.SwitchTime";
+const STEP_MS = 10000;
 const table = title => ({ id: title, configId: title, title });
 const TABLES = ["Attack from Mars", "Black Knight", "Cirqus Voltaire"].map(table);
 
-test("with the Wheel Order Add-on off, In Order is As PinballY", async () => {
+test("with the Wheel Order Add-on off, In Order still moves through the wheel", async () => {
     const fake = createFakePinballYHost({ now: new Date(2026, 10, 14, 20, 0, 0), tables: TABLES });
     fake.seedSettings({ [SWITCH_TIME_KEY]: 86400 });
     fake.addFile(CABINET_FILE, JSON.stringify({ version: 1, activeProfile: "guest", attractOrderSwitchTime: 10 }));
@@ -30,10 +30,11 @@ test("with the Wheel Order Add-on off, In Order is As PinballY", async () => {
 
     fake.enterAttractMode();
     await settle();
-    fake.advanceTime(60000);
+    fake.advanceTime(2 * STEP_MS);
 
-    assert.deepEqual(fake.wheelMoves(), []);
-    assert.equal(fake.storedSettings()[SWITCH_TIME_KEY], "10");
-    assert.equal(JSON.parse(fake.readFile(CABINET_FILE)).attractOrderSwitchTime, undefined);
+    assert.equal(fake.getCurrentTable().title, "Cirqus Voltaire");
+    assert.deepEqual(fake.wheelMoves(), [{ offset: 1, animate: true, fast: false }, { offset: 1, animate: true, fast: false }]);
+    assert.deepEqual([...fake.writtenSettingsKeys()].filter(key => key === SWITCH_TIME_KEY), []);
+    assert.equal(JSON.parse(fake.readFile(CABINET_FILE)).attractOrderSwitchTime, 10);
     assertNoErrorLogged(fake);
 });

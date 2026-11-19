@@ -70,8 +70,8 @@ export const DEFAULTS = {
     // "wheel" (the bare wheel). One whose Add-on is off gives way to the
     // next, from the Profile picker to the Welcome Screen to the wheel.
     startupScreen: "profilePicker",
-    // How attract mode moves through the tables, only with the Wheel Order
-    // Add-on on: "pinballY" (the default: as PinballY does), "inOrder"
+    // How attract mode moves through the tables, whatever Add-ons are on:
+    // "pinballY" (the default: as PinballY does), "inOrder"
     // (the next table of the wheel at each switch) or "wholeWheel" (every
     // table once, shuffled, before any comes back). Saved from the Settings,
     // which also set PinballY's own "Switch games every".

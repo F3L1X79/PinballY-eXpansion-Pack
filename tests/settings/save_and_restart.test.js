@@ -17,7 +17,7 @@ function start() {
     const fake = createFakePinballYHost();
     const shown = [];
     const menus = { show: (id, items, options) => shown.push({ id, items, options }) };
-    const saveAndRestart = createSaveAndRestart(fake, null, () => menus, { scriptName: "Caller", idPrefix: "caller" });
+    const saveAndRestart = createSaveAndRestart(fake, () => menus, { scriptName: "Caller", idPrefix: "caller" });
     const titles = () => shown[shown.length - 1].items.filter(item => item.title).map(item => item.title);
     const choose = title => fake.fire("command", { id: shown[shown.length - 1].items.find(item => item.title === title).cmd });
     return { fake, shown, saveAndRestart, titles, choose };

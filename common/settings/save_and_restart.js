@@ -3,7 +3,6 @@
 // the one save and restart path of the pack. One instance per caller, under the caller's own name and ids.
 // Listens to "command" and "commandbuttondown"; writes .env.local; draws the restart veil and its Loader.
 // - A failed read or write is caught here, not by safeHandler, for the owner to see "Setting not saved".
-// - Wheel Order saved off gives PinballY's attract interval back, never leaving attract mode frozen.
 // - From Restart now until PinballY quits, or the restart fails, no button moves the wheel or launches a table.
 // ============================================================
 
@@ -14,7 +13,6 @@ import { DRAWN_MENU_Z_INDEX } from "../drawn_menu/drawn_menu_painter.js";
 import { createLoader } from "../drawing/loader.js";
 import { DIMMED_WHEEL } from "../drawing/steamball_drawing.js";
 import { DIALOG_PRIORITY, getWheelDialogs } from "../core/wheel_dialog.js";
-import { giveAttractSwitchesBack } from "../tables/attract_order.js";
 import { saveEnvSetting } from "./env_local_rewrite.js";
 
 const SEPARATOR = { cmd: -1 };
@@ -24,7 +22,7 @@ const RESTART_LOADER_Z_INDEX = DRAWN_MENU_Z_INDEX.backdrop - 1;
 
 // getMenus: what shows the Dialogs, asked on each one; scriptName: the log
 // lines' prefix; idPrefix: starts the caller's own menu ids and command name.
-export function createSaveAndRestart(host, profileStore, getMenus, { scriptName, idPrefix }) {
+export function createSaveAndRestart(host, getMenus, { scriptName, idPrefix }) {
     const { saveAndRestart: TEXT } = lang;
     const menuReturnCommand = host.getBuiltInCommand("MenuReturn");
     const restartCommand = host.allocateCommand(`${idPrefix}_restart`);
@@ -47,10 +45,8 @@ export function createSaveAndRestart(host, profileStore, getMenus, { scriptName,
         onSaved();
     }
 
-    // The Attract Order belongs to the Wheel Order Add-on.
     function saveAddOn(key, value, { onSaved, reopen }) {
-        const alsoWrite = key === "wheelOrder" && !value ? () => giveAttractSwitchesBack(host, profileStore) : null;
-        saveSetting(`addOns.${key}`, value, { onSaved, reopen, alsoWrite });
+        saveSetting(`addOns.${key}`, value, { onSaved, reopen });
     }
 
     // Later and Exit both run onLater.

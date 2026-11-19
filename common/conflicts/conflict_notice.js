@@ -232,7 +232,7 @@ export function getConflictNotice() {
             state: getUpdateState(),
             profileStore,
             dialogs: getWheelDialogs(),
-            saveAndRestart: createSaveAndRestart(host, profileStore, getPackMenusForDialogs, { scriptName: SCRIPT_NAME, idPrefix: MENU_ID }),
+            saveAndRestart: createSaveAndRestart(host, getPackMenusForDialogs, { scriptName: SCRIPT_NAME, idPrefix: MENU_ID }),
         });
     }
     return sharedConflictNotice;

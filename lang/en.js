@@ -774,7 +774,7 @@ export default {
         languageLine: (languageName) => `Language: ${languageName}`,
         startupScreenLine: (screenName) => `Startup screen: ${screenName}`,
         startupScreenNames: { welcome: "Welcome Screen", profilePicker: "Profile picker", wheel: "Wheel" },
-        // How attract mode moves through the tables, shown with the Wheel Order Add-on on.
+        // How attract mode moves through the tables.
         attractOrderLine: (orderName) => `Attract Order: ${orderName}`,
         attractOrderNames: { pinballY: "As PinballY", inOrder: "In Order", wholeWheel: "Whole Wheel" },
         // The Offline Mode group, heading its own page, and its switches.
@@ -925,7 +925,7 @@ export default {
             },
             wheelOrder: {
                 name: "Wheel Order",
-                whenOn: "An entry of Change Filter lists the wheel's tables by year, oldest first.",
+                whenOn: "An entry of Change Filter lets players switch the wheel to by year, oldest first. It is alphabetical until they do.",
                 whenOff: "The wheel stays alphabetical.",
             },
             menuCleanup: {

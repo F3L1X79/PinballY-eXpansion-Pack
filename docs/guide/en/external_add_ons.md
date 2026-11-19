@@ -49,7 +49,7 @@ To keep the pack's launch screen instead, remove your script's import line from 
 | Scripts that add menu entries (timhobbs's `tableEdit.js`, `forceCapture.js`, official examples) | Their entries are drawn in the pack's style, in their own words: the pack does not translate them. With `LOG_UNTRANSLATED_MENU_TITLES=true`, they are listed in `PinballY.log` as untranslated. | Nothing. |
 | RichardL64's `Filter.js`, `FilterTop.js` | They run fine. With the **Wheel Order** by year, a filter they pick is shown by year, like one picked from Change Filter. | Nothing. |
 | Official `CategoryButtons` | It runs fine, but a category it switches to stays alphabetical even with the **Wheel Order** by year: it changes the filter without telling the other scripts. | Nothing; pick the category from Change Filter to see it by year. |
-| RichardL64's `AttractFade.js`, `AutoOff.js`; official `auto_shutdown` | They run fine: they only listen to attract mode, and the Attract Order line of the **Wheel Order** still sets how attract mode moves through the tables. | Nothing. |
+| RichardL64's `AttractFade.js`, `AutoOff.js`; official `auto_shutdown` | They run fine: they only listen to attract mode, and the **Attract Order** line of the eXpansion Pack Settings still sets how attract mode moves through the tables. | Nothing. |
 
 ## Scripts that run fine next to the pack
 

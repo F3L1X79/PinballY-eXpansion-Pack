@@ -3,20 +3,18 @@
 // Back, naming the order the wheel lists its tables in and opening the
 // Wheel Order page, which switches it between alphabetical and by year.
 // Starts the Wheel Order module's sorted copy, which puts the saved order
-// on the Active Filter at once, and the Attract Order, which belongs to it.
+// on the Active Filter at once.
 // ============================================================
 
 import lang from "../common/core/i18n.js";
 import { getMainMenu } from "../common/menus/main_menu.js";
 import { getWheelOrder } from "../common/tables/wheel_order.js";
 import { isPackFilterInWheelOrder } from "../common/tables/pack_filter.js";
-import { getAttractOrder } from "../common/tables/attract_order.js";
 
 export default function init() {
     const TEXT = lang.customMenuLabels;
     const wheelOrder = getWheelOrder();
     wheelOrder.start({ copyTitle: TEXT.wheelOrderByYear, isPackFilterInWheelOrder });
-    getAttractOrder().start();
     // The Filter Picker runs a choice's action only for the other order.
     const switchOrder = () => { wheelOrder.toggle(); };
     getMainMenu().filterPicker.addEntry({

@@ -2,7 +2,7 @@
 // Entry point loaded by PinballY: installs the Easter Eggs' first listeners, reads the window's size at init, loads the Profile store, logs the startup
 // summary, keeps the Adult Tables off a Child Profile's wheel, switches to Guest
 // without the Profile picker, resolves the Startup Screen, restores the quiet wheel's
-// volume, starts the Play Error Toasts and an Attract Order left without its Add-on, initializes SCRIPTS in order but those off in
+// volume, starts the Play Error Toasts and the Attract Order, initializes SCRIPTS in order but those off in
 // config.addOns (the eXpansion Pack Settings before Drawn Menus), then the Wheel Marks' listeners, the Update result and Prompt, the PinballY Version Notice and the Update Check.
 // - A script whose init() throws is logged, Error Log included, and skipped, so the others still load.
 // - LOG_STARTUP_TIMING logs each init time.
@@ -258,13 +258,13 @@ function startSettings() {
     }
 }
 
-// The Attract Order belongs to the Wheel Order Add-on; with it off, it is
-// As PinballY and still gives a kept interval back to PinballY.
-if (store && ENABLED_SCRIPTS.wheelOrder === false) {
+// Whatever Add-ons are on (In Order and Whole Wheel follow whatever the wheel
+// lists); needs the Profile store, which keeps PinballY's interval.
+if (store) {
     try {
         getAttractOrder().start();
     } catch (error) {
-        logError(SCRIPT_NAME, `ERROR giving PinballY its attract interval back: ${error.message}`, null, error);
+        logError(SCRIPT_NAME, `ERROR starting the Attract Order: ${error.message}`, null, error);
     }
 }
 
