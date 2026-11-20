@@ -1140,6 +1140,9 @@ export default {
         restarting: "Reiniciando",
     },
     releaseHighlights: {
+        "1.7.2": [
+            "Por año, «Lanzar una mesa al azar» lanza ahora la mesa en la que se detiene la rueda.",
+        ],
         "1.7.1": [
             "Cuando una mesa no muestra ninguna tabla de mejores puntuaciones, el mensaje te dice ahora qué hacer.",
             "La lista de Ajustes del pack está ordenada por temas, y el orden del modo attract funciona incluso sin el orden de la rueda.",

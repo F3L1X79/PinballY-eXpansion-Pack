@@ -1093,6 +1093,9 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.7.2": [
+            "By year, \"Launch a random table\" now launches the table the wheel stops on.",
+        ],
         "1.7.1": [
             "When a table shows no High Score Board, the message now says what to do.",
             "The eXpansion Pack Settings list is reorganised by theme, and the Attract Order works even with the Wheel Order turned off.",

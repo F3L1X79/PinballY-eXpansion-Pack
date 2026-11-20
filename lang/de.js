@@ -1139,6 +1139,9 @@ export default {
         restarting: "Neustart läuft",
     },
     releaseHighlights: {
+        "1.7.2": [
+            "Nach Jahr startet „Zufälligen Tisch starten“ jetzt den Tisch, auf dem das Rad stehen bleibt.",
+        ],
         "1.7.1": [
             "Wenn ein Tisch keine Highscore-Tabelle zeigt, sagt dir die Meldung jetzt, was zu tun ist.",
             "Die Liste der Expansion-Pack-Einstellungen ist nach Themen geordnet, und die Attract-Reihenfolge funktioniert auch ohne die Rad-Reihenfolge.",

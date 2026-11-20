@@ -1139,6 +1139,9 @@ export default {
         restarting: "A reiniciar",
     },
     releaseHighlights: {
+        "1.7.2": [
+            "Por ano, \"Iniciar uma mesa aleatória\" inicia agora a mesa em que a roda para.",
+        ],
         "1.7.1": [
             "Quando uma mesa não mostra nenhuma tabela de melhores pontuações, a mensagem diz agora o que fazer.",
             "A lista de Configurações do pack está organizada por tema, e a ordem do modo attract funciona mesmo sem a ordem da roda.",

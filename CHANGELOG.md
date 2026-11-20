@@ -2,6 +2,10 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.7.2 (2026-11-20)
+
+- **Random Game**: by year, the wheel now stops on the table that launches. It could stop on another one, as Next Page jumps by decade there. Each Random Game leaves a line in `logs\info.log` with the table on the wheel and the table launched.
+
 ## v1.7.1 (2026-11-19)
 
 - **High Score Boards**: when a table shows no board, the message now says what to do. A table without a ROM asks for "a game of at least one minute"; a table whose scores could not be read says "No high scores found for this table" instead of "not supported", which is kept for a ROM PINemHi cannot read. The guide says what to check when the scores are not found.

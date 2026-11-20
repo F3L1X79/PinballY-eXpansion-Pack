@@ -1138,6 +1138,9 @@ export default {
         restarting: "Riavvio in corso",
     },
     releaseHighlights: {
+        "1.7.2": [
+            "Per anno, «Avvia un tavolo a caso» ora avvia il tavolo su cui si ferma la ruota.",
+        ],
         "1.7.1": [
             "Quando un tavolo non mostra nessuna tabella dei punteggi migliori, il messaggio ora ti dice cosa fare.",
             "L'elenco delle Impostazioni del pack è ordinato per tema, e l'ordine della modalità attract funziona anche senza l'ordine della ruota.",

@@ -1144,6 +1144,9 @@ export default {
         restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
+        "1.7.2": [
+            "Par année, « Lancer une table au hasard » lance maintenant la table sur laquelle la roue s'arrête.",
+        ],
         "1.7.1": [
             "Quand une table n'affiche aucun tableau des meilleurs scores, le message vous dit maintenant quoi faire.",
             "La liste des Réglages de l'eXpansion pack est rangée par thème, et l'ordre du mode attract fonctionne même sans l'ordre de la roue.",
