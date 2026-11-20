@@ -59,7 +59,7 @@ Once the cabinet has two Profiles or more besides Guest, PinballY starts on Chan
 
 Everything the pack keeps stays in `Scripts\ExpansionPack`: your settings (`.env.local`) and each Profile's progress (`profiles`).
 
-- **To back up**, copy that folder.
+- **To back up**, copy that folder. For dated versions on another disk, turn on Windows File History or OneDrive for it: each file of `profiles` keeps only one `.bak` copy beside it, against a crash while writing.
 - **To reinstall or update by hand**, see [Updating offline](updates.md#updating-offline) for what to copy back.
 - **To uninstall**, delete it and remove the import line from `Scripts\main.js`.
 

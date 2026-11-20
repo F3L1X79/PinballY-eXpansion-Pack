@@ -59,7 +59,7 @@ Dès que la borne compte au moins deux Profils sans compter Invité, PinballY d�
 
 Tout ce que le pack conserve reste dans `Scripts\ExpansionPack` : vos réglages (`.env.local`) et la progression de chaque Profil (`profiles`).
 
-- **Pour sauvegarder**, copiez ce dossier.
+- **Pour sauvegarder**, copiez ce dossier. Pour en garder des versions datées sur un autre disque, activez dessus l'Historique des fichiers de Windows ou OneDrive : chaque fichier de `profiles` n'a qu'une copie `.bak` à côté de lui, contre un plantage pendant l'écriture.
 - **Pour réinstaller ou mettre à jour à la main**, voyez [Mettre à jour hors ligne](updates.md#mettre-à-jour-hors-ligne) pour ce qu'il faut recopier.
 - **Pour désinstaller**, supprimez-le et retirez la ligne d'import de `Scripts\main.js`.
 
