@@ -1140,6 +1140,9 @@ export default {
         restarting: "Reiniciando",
     },
     releaseHighlights: {
+        "1.7.3": [
+            "En la rueda, el corazón y la posición de la mesa cambian ahora al instante cuando añades un favorito u ocultas una mesa desde un menú.",
+        ],
         "1.7.2": [
             "Por año, «Lanzar una mesa al azar» lanza ahora la mesa en la que se detiene la rueda.",
         ],

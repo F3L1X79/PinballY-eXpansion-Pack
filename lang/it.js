@@ -1138,6 +1138,9 @@ export default {
         restarting: "Riavvio in corso",
     },
     releaseHighlights: {
+        "1.7.3": [
+            "Sulla ruota, il cuore e la posizione del tavolo ora cambiano subito quando aggiungi un preferito o nascondi un tavolo da un menu.",
+        ],
         "1.7.2": [
             "Per anno, «Avvia un tavolo a caso» ora avvia il tavolo su cui si ferma la ruota.",
         ],

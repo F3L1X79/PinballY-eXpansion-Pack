@@ -1144,6 +1144,9 @@ export default {
         restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
+        "1.7.3": [
+            "Sur la roue, le cœur et la position de la table changent maintenant tout de suite quand vous ajoutez un favori ou cachez une table depuis un menu.",
+        ],
         "1.7.2": [
             "Par année, « Lancer une table au hasard » lance maintenant la table sur laquelle la roue s'arrête.",
         ],

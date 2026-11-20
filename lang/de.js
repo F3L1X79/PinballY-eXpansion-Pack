@@ -1139,6 +1139,9 @@ export default {
         restarting: "Neustart läuft",
     },
     releaseHighlights: {
+        "1.7.3": [
+            "Auf dem Rad ändern sich das Herz und die Position des Tisches jetzt sofort, wenn du in einem Menü einen Favoriten hinzufügst oder einen Tisch ausblendest.",
+        ],
         "1.7.2": [
             "Nach Jahr startet „Zufälligen Tisch starten“ jetzt den Tisch, auf dem das Rad stehen bleibt.",
         ],

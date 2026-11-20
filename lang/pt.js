@@ -1139,6 +1139,9 @@ export default {
         restarting: "A reiniciar",
     },
     releaseHighlights: {
+        "1.7.3": [
+            "Na roda, o coração e a posição da mesa agora mudam na hora quando você adiciona um favorito ou oculta uma mesa a partir de um menu.",
+        ],
         "1.7.2": [
             "Por ano, \"Iniciar uma mesa aleatória\" inicia agora a mesa em que a roda para.",
         ],

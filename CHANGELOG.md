@@ -2,6 +2,11 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.7.3 (2026-11-20)
+
+- **Wheel Guides**: adding or removing a Favorite Table, or hiding a table, from a drawn menu now updates the Favorite Heart, the Wheel Position and the Wheel Rail at once, instead of at the next move on the wheel.
+- **Rating Plate and Mastery Bar**: a finer top edge; the Rating Plate's shows once the table is rated, 0 stars included.
+
 ## v1.7.2 (2026-11-20)
 
 - **Random Game**: by year, the wheel now stops on the table that launches. It could stop on another one, as Next Page jumps by decade there. Each Random Game leaves a line in `logs\info.log` with the table on the wheel and the table launched.
