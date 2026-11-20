@@ -60,8 +60,6 @@ export const RANK_COLORS = Object.freeze({
 
 export const STEAMBALL_FONTS = Object.freeze({
     body: "Segoe UI",
-    // The Achievement List's footer and key caps.
+    // Titles, footers, key caps and the Loader's caption.
     display: "Bahnschrift SemiCondensed",
-    // The launch's step beneath the Loader; a calligraphic font Windows ships.
-    script: "Gabriola",
 });

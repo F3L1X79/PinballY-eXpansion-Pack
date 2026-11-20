@@ -26,23 +26,21 @@ export const LOADER_SCREEN = Object.freeze({ PLAYFIELD: "playfield", BACKGLASS: 
 
 // The caption's canvas, drawn at twice a 1080-pixel-high window's pixels so
 // that its one-pixel outline shows half as thick, and scaled by height
-// only, so the layer never covers the whole window. Gabriola draws small
-// for its size and has a tall line, hence a size above body text that
-// still looks a little under it, and a canvas kept just above its line's
-// height, its empty top already a gap under the comet.
+// only, so the layer never covers the whole window. The line is centred
+// in a canvas taller than itself, the space above it a gap under the comet.
 const CANVAS_SCALE = 2;
-const CAPTION_LOOK = Object.freeze({ width: 1200, height: 100, size: 48, weight: 400, outline: 1 });
+const CAPTION_LOOK = Object.freeze({ width: 1200, height: 100, size: 36, weight: 600, outline: 1 });
 const CAPTION_HEIGHT = CAPTION_LOOK.height / (1080 * CANVAS_SCALE);
 const CAPTION_SCALE = Object.freeze({ ySpan: CAPTION_HEIGHT });
 const OUTLINE_COLOR = 0xFF000000;
 const OUTLINE_DIRECTIONS = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
 
-// The words on one line, in light gold calligraphy, repeated first in black
-// round them: PinballY's styled text has no stroke.
+// The words on one line, in light gold, repeated first in black round
+// them: PinballY's styled text has no stroke.
 function drawCaption(host, dc, words) {
     const { width, height, size, weight, outline } = CAPTION_LOOK;
     const line = (dx, dy, color) => oneLine(host, dc, words, {
-        x: outline + dx, y: dy, width: width - 2 * outline, height, size, weight, color, font: FONTS.script, align: "center",
+        x: outline + dx, y: dy, width: width - 2 * outline, height, size, weight, color, font: FONTS.display, align: "center",
     });
     for (const [dx, dy] of OUTLINE_DIRECTIONS) line(dx * outline, dy * outline, OUTLINE_COLOR);
     line(0, 0, COLORS.lightGold);

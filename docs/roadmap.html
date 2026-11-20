@@ -235,7 +235,6 @@
         <div class="cell">
           <a class="chip tr-share" href="#pinbally-release-day"><b></b>Nouvelle version de PinballY</a>
           <a class="chip tr-play" href="#play-scores-final-only"><b></b>Play Scores Stern M-200</a>
-          <a class="chip tr-play" href="#loader-font"><b></b>Police du Loader</a>
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#best-play-score"><b></b>Meilleure partie du lancement</a>
@@ -315,8 +314,8 @@
             <div class="tags"><span class="tag track">Profiles</span><span class="tag">petit-moyen</span><span class="tag">UI</span></div>
           </div>
           <p>Aujourd'hui, Avatar Choice ne s'ouvre qu'à la création d'un Profile : ensuite, l'Avatar se change seulement depuis Windows (<code>avatar.png</code> / <code>avatar.jpg</code> dans le dossier du Profile). Rouvrir Avatar Choice pour un Profile existant.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="here">tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/567">#567</a>. Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>common/profiles/avatar_choice.js</code> et de la page <code>docs/guide/en/profiles.md</code></div>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
+          <div class="links">Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/567">#567</a>, tickets #568 à #573. Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>common/profiles/avatar_choice.js</code> et de la page <code>docs/guide/en/profiles.md</code></div>
           <details>
             <summary>Décisions du grill (20/11/2026)</summary>
             <ul>
@@ -374,28 +373,6 @@
               <li>Une seule fois par borne, ou refaisable ? Que se passe-t-il pour les parties jouées depuis l'installation du pack, déjà comptées par PinballY aussi ?</li>
             </ul>
             <p class="ctx">Demande d'un utilisateur Reddit (17/11/2026, 2102 tables), qui parlait de « GameInfo.csv ». Félix : à griller plus tard, pas pressé.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="loader-font" data-track="play" data-rank="bronze">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>La police de « Loading… » sous le Loader</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">UI</span></div>
-          </div>
-          <p>L'étape du lancement sous le Loader (« Loading… », « Closing… ») est écrite en Gabriola, une police calligraphique, alors que le reste de l'interface est en Segoe UI. Un joueur trouve que ça détonne.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> (une décision de style) → <code>/implement</code>. <code>STEAMBALL_FONTS.script</code> dans <code>common/drawing/steamball_palette.js</code>, seul utilisateur : <code>common/drawing/loader.js</code></div>
-          <details>
-            <summary>Questions ouvertes (2)</summary>
-            <ul>
-              <li>Garder Gabriola (touche Steamball voulue), passer en Segoe UI comme le corps, ou en Bahnschrift SemiCondensed comme les pieds de page ?</li>
-              <li>Le Loader et sa légende servent aussi aux attentes bloquantes (« Downloading… »), à l'ouverture des écrans, au voile de démarrage et à la sauvegarde avant redémarrage : la nouvelle police vaut-elle partout ?</li>
-            </ul>
-            <p class="ctx">Remarque de csdf sur le forum (18/11/2026) : « it looks odd for the Loading font (a serif font) to be different from the main UI font ».</p>
           </details>
         </div>
       </li>
