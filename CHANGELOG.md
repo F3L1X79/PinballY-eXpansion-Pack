@@ -2,6 +2,12 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.7.4 (2026-11-20)
+
+- **Wheel Order**: by year, a decade filter (Era) now shows only its own tables instead of the whole wheel, and the chosen filter is kept after a restart instead of going back to All Tables.
+- **Surprises**: a new switch under Menus in the eXpansion Pack Settings, for cabinets that would rather not be surprised. What a Profile already unlocked stays.
+- **Small touches**: the main menu's Rate Table entry shows the table's name alone, without its Rating; the Loader's caption uses the font of titles and footers.
+
 ## v1.7.3 (2026-11-20)
 
 - **Wheel Guides**: adding or removing a Favorite Table, or hiding a table, from a drawn menu now updates the Favorite Heart, the Wheel Position and the Wheel Rail at once, instead of at the next move on the wheel.

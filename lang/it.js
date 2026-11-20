@@ -1142,6 +1142,9 @@ export default {
         restarting: "Riavvio in corso",
     },
     releaseHighlights: {
+        "1.7.4": [
+            "Per anno, un filtro per decennio ora mostra solo i suoi tavoli, e la ruota mantiene il tuo filtro dopo un riavvio.",
+        ],
         "1.7.3": [
             "Sulla ruota, il cuore e la posizione del tavolo ora cambiano subito quando aggiungi un preferito o nascondi un tavolo da un menu.",
         ],

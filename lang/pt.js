@@ -1143,6 +1143,9 @@ export default {
         restarting: "A reiniciar",
     },
     releaseHighlights: {
+        "1.7.4": [
+            "Por ano, um filtro por década agora mostra só as próprias mesas, e a roda mantém o seu filtro depois de reiniciar.",
+        ],
         "1.7.3": [
             "Na roda, o coração e a posição da mesa agora mudam na hora quando você adiciona um favorito ou oculta uma mesa a partir de um menu.",
         ],

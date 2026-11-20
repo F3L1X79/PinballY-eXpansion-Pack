@@ -1147,6 +1147,9 @@ export default {
         restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
+        "1.7.4": [
+            "Par année, un filtre par décennie ne montre plus que ses propres tables, et la roue garde votre filtre après un redémarrage.",
+        ],
         "1.7.3": [
             "Sur la roue, le cœur et la position de la table changent maintenant tout de suite quand vous ajoutez un favori ou cachez une table depuis un menu.",
         ],

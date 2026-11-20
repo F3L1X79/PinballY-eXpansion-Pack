@@ -1097,6 +1097,9 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.7.4": [
+            "By year, a decade filter now shows only its own tables, and the wheel keeps your filter after a restart.",
+        ],
         "1.7.3": [
             "On the wheel, the heart and the table's position now change at once when you add a favourite or hide a table from a menu.",
         ],

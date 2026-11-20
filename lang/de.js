@@ -1143,6 +1143,9 @@ export default {
         restarting: "Neustart läuft",
     },
     releaseHighlights: {
+        "1.7.4": [
+            "Nach Jahr zeigt ein Jahrzehnt-Filter jetzt nur noch seine eigenen Tische, und das Rad behält deinen Filter nach einem Neustart.",
+        ],
         "1.7.3": [
             "Auf dem Rad ändern sich das Herz und die Position des Tisches jetzt sofort, wenn du in einem Menü einen Favoriten hinzufügst oder einen Tisch ausblendest.",
         ],
