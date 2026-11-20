@@ -24,7 +24,7 @@ _Avoid_: Error Toast (not a failure of the pack), conflict warning, compatibilit
 
 **Easter Egg**:
 A rare, unannounced event of the cabinet, each tied to its own moment: at most one a day for the whole cabinet, and never twice the same for a Profile. Described nowhere for the player. Each one gives the active Profile a Secret Achievement of the Surprises family.
-_Avoid_: Surprise (Surprises is only the Achievement family, and the Easter Eggs' Add-on name in the settings, which must not give them away), hidden event, glitch
+_Avoid_: Surprise (Surprises is only the Achievement family, not to be mistaken for the Achievement Toasts' congratulations), hidden event, glitch
 
 **Rocket Game**:
 The main menu's game where a rocket dodges asteroids on the flippers and shoots them with Launch: the Rocket Easter Egg's game, played again on purpose, with shooting added. Its entry shows only for a Profile that has had that Easter Egg.

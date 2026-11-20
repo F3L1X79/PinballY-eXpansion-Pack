@@ -903,7 +903,7 @@ export default {
             },
             // Named so as not to spoil them.
             easterEggs: {
-                name: "Surprises",
+                name: "Easter Eggs",
                 whenOn: "Now and then, a surprise.",
                 whenOff: "No surprises for anyone; what they already unlocked stays.",
             },

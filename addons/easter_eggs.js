@@ -1,6 +1,6 @@
 // ============================================================
 // Easter Eggs: rare events tied to their own moments, turned off like any
-// Add-on ("Surprises" in the eXpansion Pack Settings, never named there).
+// Add-on, under this name in the eXpansion Pack Settings.
 // The rules live in common/easter_eggs/easter_egg_rules.js.
 // - installFirstListeners() runs in main.js after the Launch Bracket, only when on: the Rocket's takeover.
 // - The Crow is drawn once per start, a tick after the Startup Screen has closed.

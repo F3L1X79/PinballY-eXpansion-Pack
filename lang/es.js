@@ -971,7 +971,7 @@ export default {
                 whenOff: "No cambia nada más.",
             },
             easterEggs: {
-                name: "Sorpresas",
+                name: "Easter eggs",
                 whenOn: "De vez en cuando, una sorpresa.",
                 whenOff: "Ninguna sorpresa para nadie; lo que ya desbloquearon se queda.",
             },
