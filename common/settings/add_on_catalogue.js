@@ -13,7 +13,7 @@ export const ADD_ON_GROUPS = Object.freeze([
         addOns: ["profilePicker", "profileRatings", "startupChoicePrompt", "achievements", "sessionStatsTracker", "challenges", "tableMastery", "highScores"],
     },
     { group: "wheel", addOns: ["statusLineInfo", "clock", "statusIcons", "wheelArc", "wheelGuides", "wheelOrder"] },
-    { group: "menus", addOns: ["uiTranslation", "drawnMenus", "menuCleanup", "customMenuCommands", "randomGame", "rocketGame"] },
+    { group: "menus", addOns: ["uiTranslation", "drawnMenus", "menuCleanup", "customMenuCommands", "randomGame", "rocketGame", "easterEggs"] },
     { group: "filters", addOns: ["hallOfFame", "tablesToDiscover", "hiddenTables", "customFilter"] },
     { group: "launchingAndPlaying", addOns: ["forceBackglass", "backglassClock", "discordRichPresence", "seamlessLaunchOverlay", "playLaunchSound", "ratingPrompt", "tableRoms"] },
 ]);

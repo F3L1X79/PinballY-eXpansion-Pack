@@ -969,6 +969,11 @@ export default {
                 whenOn: "Hauptmenü-Einträge, die manche Überraschungen freischalten.",
                 whenOff: "Sonst ändert sich nichts.",
             },
+            easterEggs: {
+                name: "Überraschungen",
+                whenOn: "Ab und zu eine Überraschung.",
+                whenOff: "Für niemanden mehr Überraschungen; was sie schon freigeschaltet haben, bleibt.",
+            },
             hallOfFame: {
                 name: "Meistgespielte Tische",
                 whenOn: "Ein Filter mit Ihren zehn meistgespielten Tischen.",

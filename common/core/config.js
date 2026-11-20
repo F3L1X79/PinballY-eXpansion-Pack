@@ -143,6 +143,8 @@ export const DEFAULTS = {
         randomGame: true,
         // A main menu entry that only some surprises unlock.
         rocketGame: true,
+        // The surprises; off, a Profile keeps what it already earned from them.
+        easterEggs: true,
         customFilter: true,
         hallOfFame: true,
         tablesToDiscover: true,

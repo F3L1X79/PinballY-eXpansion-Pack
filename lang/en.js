@@ -901,6 +901,12 @@ export default {
                 whenOn: "Main menu entries that some surprises unlock.",
                 whenOff: "Nothing else changes.",
             },
+            // Named so as not to spoil them.
+            easterEggs: {
+                name: "Surprises",
+                whenOn: "Now and then, a surprise.",
+                whenOff: "No surprises for anyone; what they already unlocked stays.",
+            },
             hallOfFame: {
                 name: "Most Played Tables",
                 whenOn: "A filter of your ten most played tables.",

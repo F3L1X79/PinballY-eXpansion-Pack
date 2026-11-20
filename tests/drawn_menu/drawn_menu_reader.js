@@ -30,8 +30,7 @@ export const isAnythingDrawn = fake => fake.drawingLayers()
 // their wrapped lines joined as drawn, without the spaces between them),
 // the message's parts drawn bolder than it, trimmed, and the rows from top to
 // bottom: { kind: "entry", title, mark } (mark: "check", "radio",
-// "submenu" or null; a disabled entry with its reason too, an entry with a
-// note with its note, the title then without it),
+// "submenu" or null; a disabled entry with its reason too),
 // { kind: "heading", title } or { kind: "separator" };
 // and the footer's lines under the list ([{ label, name }], null when none).
 export function readDrawnMenu(fake) {
@@ -77,7 +76,6 @@ export function readDrawnMenu(fake) {
         else if (stroke.color === COLORS.heading) rows.push({ kind: "heading", title: stroke.text });
         else if (stroke.color === COLORS.gold) rows.at(-1).mark = MARK_NAMES.get(stroke.text);
         else if (stroke.color === COLORS.reason) rows.at(-1).reason = stroke.text;
-        else if (stroke.color === COLORS.note) rows.at(-1).note = stroke.text.trim();
         // A disabled entry's mark, after its label, in its dimmed colour.
         else if (stroke.color === COLORS.disabledEntry && MARK_NAMES.has(stroke.text) && rows.at(-1).reason === null) {
             rows.at(-1).mark = MARK_NAMES.get(stroke.text);
@@ -136,19 +134,18 @@ export const drawnMenuLines = fake => readDrawnMenu(fake).rows.map(row => {
 export const markedEntries = (fake, mark) => readDrawnMenu(fake).rows.filter(row => row.mark === mark).map(row => row.title);
 
 // The headings and entries as drawn on the texts' canvas, from top to
-// bottom, a disabled entry's reason after it (kind "reason"), an entry's
-// note after it (kind "note"):
+// bottom, a disabled entry's reason after it (kind "reason"):
 // { kind, title, top, bottom, size, color, weight } (size in points).
 export function drawnRowBoxes(fake) {
     const layer = textsLayer(fake);
     if (!layer) throw new Error("No Drawn Menu is shown.");
     const kinds = new Map([
-        [COLORS.heading, "heading"], [COLORS.entry, "entry"], [COLORS.disabledEntry, "entry"], [COLORS.reason, "reason"], [COLORS.note, "note"],
+        [COLORS.heading, "heading"], [COLORS.entry, "entry"], [COLORS.disabledEntry, "entry"], [COLORS.reason, "reason"],
     ]);
     return layer.strokes()
         .filter(stroke => "text" in stroke && kinds.has(stroke.color) && (stroke.color === COLORS.heading || !isDialogText(stroke)))
         .map(stroke => ({
-            kind: kinds.get(stroke.color), title: stroke.color === COLORS.note ? stroke.text.trim() : stroke.text, top: stroke.rect.y, bottom: stroke.rect.y + stroke.rect.height,
+            kind: kinds.get(stroke.color), title: stroke.text, top: stroke.rect.y, bottom: stroke.rect.y + stroke.rect.height,
             size: stroke.size, color: stroke.color, weight: stroke.weight,
         }));
 }

@@ -36,16 +36,20 @@ export const TOAST_GONE_MS = 30000;
 export const BACKDROP_Z_INDEX = 7500;
 export const TEXT_Z_INDEX = 7580;
 
-// wins: the Easter Egg whose draw wins; files: which images exist; addOns: those on.
+// wins: the Easter Egg whose draw wins; files: which images exist; addOns:
+// those on, besides the Easter Eggs unless easterEggs is false; profiles:
+// { [name]: profile.json's extra data }, besides Guest.
 export async function startRocketScenario({
     wins = "rocket", addOns = ["achievements", "sessionStatsTracker", "backglassClock", "highScores"], files = ROCKET_IMAGES,
+    easterEggs = true, profiles = {},
 } = {}) {
     const fake = createFakePinballYHost({ tables: TABLES, now: new Date(2026, 10, 9, 20, 0, 0) });
     fake.setWheelTables(TABLES.map(table => table.configId));
     for (const path of [...files, NAVIGATION_SOUND, NAVIGATION_SOUND.replace("Next.wav", "Prev.wav")]) fake.addFile(path);
+    for (const [name, data] of Object.entries(profiles)) fake.addFile(profileFile(name), JSON.stringify({ version: 1, ...data }));
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
-    for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);
+    for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key) || (key === "easterEggs" && easterEggs);
     config.language = "en";
     config.startupScreen = "wheel";
 

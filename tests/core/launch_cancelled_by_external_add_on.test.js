@@ -39,7 +39,7 @@ test("a launch an External Add-on cancels before the pack is no launch for the p
     fake.setNvramBoard(AFM, BOARD);
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
-    for (const key of Object.keys(config.addOns)) config.addOns[key] = ["backglassClock", "highScores", "tableRoms"].includes(key);
+    for (const key of Object.keys(config.addOns)) config.addOns[key] = ["backglassClock", "highScores", "tableRoms", "easterEggs"].includes(key);
     config.language = "en";
     config.startupScreen = "wheel";
     const { toastDrawings } = await import("../achievements/achievement_toast_reader.js");

@@ -968,6 +968,11 @@ export default {
                 whenOn: "Voci del menu principale che alcune sorprese sbloccano.",
                 whenOff: "Nient'altro cambia.",
             },
+            easterEggs: {
+                name: "Sorprese",
+                whenOn: "Ogni tanto, una sorpresa.",
+                whenOff: "Nessuna sorpresa per nessuno; ciò che hanno già sbloccato resta.",
+            },
             hallOfFame: {
                 name: "Tavoli più giocati",
                 whenOn: "Un filtro dei tuoi dieci tavoli più giocati.",

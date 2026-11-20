@@ -37,7 +37,7 @@ const categoryPages = ({ achievements = ON, clock = ON, menuCleanup = "Off" } = 
     ],
     "Menus": [
         "[MENUS]",
-        `PinballY translation: ${ON}`, "Drawn Menus: On", `Menu Cleanup: ${menuCleanup}`, `Set Up Table: ${ON}`, `Random table: ${ON}`, `Hidden Games: ${ON}`, "---", "Back",
+        `PinballY translation: ${ON}`, "Drawn Menus: On", `Menu Cleanup: ${menuCleanup}`, `Set Up Table: ${ON}`, `Random table: ${ON}`, `Hidden Games: ${ON}`, `Surprises: ${ON}`, "---", "Back",
     ],
     "Filters": ["[FILTERS]", `Most Played Tables: ${ON}`, `Tables to Discover: ${ON}`, `Hidden Tables: ${ON}`, `Original Tables: ${ON}`, "---", "Back"],
     "Launching and playing a table": [

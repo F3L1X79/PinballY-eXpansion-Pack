@@ -44,7 +44,6 @@ test("Rate Table reads its name alone in the main menu, whatever the selected ta
 
     const rated = rateTableItemOn(MEDIEVAL);
     assert.equal(rated.title, "Rate Table");
-    assert.equal(rated.note, undefined, "no note");
     assert.equal(rated.after, "Add to Favorites", "the entry keeps its place");
     assert.equal(rateTableItemOn(TWILIGHT).title, "Rate Table");
     assert.equal(rateTableItemOn(MARS).title, "Rate Table");

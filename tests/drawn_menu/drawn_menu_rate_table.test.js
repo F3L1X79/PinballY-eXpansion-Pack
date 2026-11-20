@@ -1,7 +1,7 @@
 // ============================================================
 // The main menu's Rate Table in a Drawn Menu, through main.js on the fake
 // PinballY globals: on a rated table it reads its name alone, with no stars
-// and no note, highlighted or not (the native item's title:
+// and no Rating text, highlighted or not (the native item's title:
 // main_menu_rate_table.test.js).
 // ============================================================
 
@@ -32,9 +32,12 @@ test("Rate Table is drawn as its name alone on a rated table, highlighted or not
     openMainMenu(fake);
 
     const rateTable = readDrawnMenu(fake).rows.find(row => row.title === "Rate Table");
-    assert.deepEqual(rateTable, { kind: "entry", title: "Rate Table", mark: null }, "no stars, no note");
+    assert.deepEqual(rateTable, { kind: "entry", title: "Rate Table", mark: null }, "no stars, no Rating text");
 
-    while (highlightedEntry(fake) !== "Rate Table") press(fake, "Next");
+    for (let guard = 0; highlightedEntry(fake) !== "Rate Table"; guard++) {
+        assert.ok(guard < 30, "Rate Table is never highlighted");
+        press(fake, "Next");
+    }
     const selected = shownLayers(fake, DRAWN_MENU_Z_INDEX.selectedText).find(layer => layer.texts().length > 0);
     assert.deepEqual(selected.texts(), ["Rate Table"]);
     assert.equal(selected.strokes().some(stroke => "fill" in stroke), false, "nothing drawn after it");

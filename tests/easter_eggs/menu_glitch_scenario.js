@@ -31,7 +31,7 @@ export async function startMenuGlitchScenario({ addOns = ["drawnMenus", "achieve
     for (const path of files) fake.addFile(path);
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
-    for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key) || key === "profilePicker";
+    for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key) || key === "profilePicker" || key === "easterEggs";
     config.language = "en";
     config.startupScreen = "wheel";
 

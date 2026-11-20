@@ -1,8 +1,8 @@
 // ============================================================
-// Easter Eggs: rare events tied to their own moments, part of the pack
-// and impossible to turn off, so it has no entry among config.addOns or the
-// eXpansion Pack Settings. The rules live in common/easter_eggs/easter_egg_rules.js.
-// - installFirstListeners() runs first in main.js, after the Launch Bracket: the Rocket and its buttons.
+// Easter Eggs: rare events tied to their own moments, turned off like any
+// Add-on ("Surprises" in the eXpansion Pack Settings, never named there).
+// The rules live in common/easter_eggs/easter_egg_rules.js.
+// - installFirstListeners() runs in main.js after the Launch Bracket, only when on: the Rocket's takeover.
 // - The Crow is drawn once per start, a tick after the Startup Screen has closed.
 // - The Menu Glitch is drawn at the main menu's "menuopen", after Drawn Menus' listener.
 // - The Maneki-neko is drawn at one "gameselect" of the session.

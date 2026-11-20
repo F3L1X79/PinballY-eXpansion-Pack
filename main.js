@@ -1,5 +1,5 @@
 ﻿// ============================================================
-// Entry point loaded by PinballY: installs the Easter Eggs' first listeners, reads the window's size at init, loads the Profile store, logs the startup
+// Entry point loaded by PinballY: creates the Rocket engine and the Easter Eggs' first listeners (when on), reads the window's size at init, loads the Profile store, logs the startup
 // summary, keeps the Adult Tables off a Child Profile's wheel, switches to Guest
 // without the Profile picker, resolves the Startup Screen, restores the quiet wheel's
 // volume, starts the Play Error Toasts and the Attract Order, initializes SCRIPTS in order but those off in
@@ -27,6 +27,7 @@ import { getWindowLayout } from "./common/core/window_layout.js";
 import { getLaunchBracket } from "./common/core/launch_bracket.js";
 import { getAttractOrder } from "./common/tables/attract_order.js";
 import { getWheelMarks } from "./common/core/wheel_marks.js";
+import { getRocketEngine } from "./common/rocket/rocket_engine.js";
 
 // Logs each script's init duration (ms), to help find a slow-starting script.
 const LOG_STARTUP_TIMING = true;
@@ -91,8 +92,8 @@ const host = createPinballYHost();
 //   "Change Player" only when the picker registered itself at init.
 // - drawnMenus must come after every Add-on and shared module that edits the
 //   entries, so its "menuopen" listener draws the final ones.
-// - easterEggs is not in config.addOns, so it always starts: it cannot be
-//   turned off. Its first listeners are installed before this list.
+// - easterEggs' first listeners are installed before this list, only when
+//   it is on; the Rocket engine is created there either way.
 // The other scripts don't depend on each other's order. In particular, the
 // Welcome Screen and the rating prompt go through the wheel dialog module,
 // which shows them in a fixed priority order, Achievements are announced
@@ -157,12 +158,14 @@ try {
     logError(SCRIPT_NAME, `ERROR installing the Launch Bracket: ${error.message}`, null, error);
 }
 
-// Then the Easter Eggs' first listeners: the Rocket's takeover, and the
-// Drawn Screen controls' buttons before any other Add-on's.
+// Then the Rocket engine, shared with the Rocket Game, whose Drawn Screen
+// controls' buttons come before any other Add-on's; then, Easter Eggs on, the
+// Rocket's takeover. Off, a launch is never taken over.
 try {
-    easterEggs.installFirstListeners();
+    getRocketEngine();
+    if (ENABLED_SCRIPTS.easterEggs !== false) easterEggs.installFirstListeners();
 } catch (error) {
-    logError(SCRIPT_NAME, `ERROR installing the Easter Eggs' first listeners: ${error.message}`, null, error);
+    logError(SCRIPT_NAME, `ERROR creating the Rocket engine or the Easter Eggs' first listeners: ${error.message}`, null, error);
 }
 
 // Then, during the scripts' init: the view's size is read while PinballY

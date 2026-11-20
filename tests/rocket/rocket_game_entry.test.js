@@ -12,7 +12,7 @@ import { launchFromWheel, untilPlaying, untilCrash, SCORE_MS, LEAVING_MS, TABLES
 import { startRocketGame, mainMenuTitles, hadTheRocket } from "./rocket_game_scenario.js";
 
 test("the entry shows for a Profile once its Rocket Easter Egg has ended, and goes with a Profile Reset", async () => {
-    const { fake, lang, store } = await startRocketGame({ profiles: { Alice: {}, Bob: hadTheRocket }, active: "Alice", wins: "rocket" });
+    const { fake, lang, store } = await startRocketGame({ profiles: { Alice: {}, Bob: hadTheRocket }, active: "Alice", wins: "rocket", addOns: ["rocketGame", "easterEggs"] });
     const hasEntry = () => mainMenuTitles(fake).includes(lang.rocketGame.menuEntry);
     assert.equal(hasEntry(), false);
     store.switchTo("Bob");

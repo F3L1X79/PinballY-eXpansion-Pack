@@ -35,7 +35,7 @@ export async function startBlueScreenScenario({
     for (const path of files) fake.addFile(path);
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
-    for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key);
+    for (const key of Object.keys(config.addOns)) config.addOns[key] = addOns.includes(key) || key === "easterEggs";
     config.language = "en";
     config.startupScreen = "wheel";
 
