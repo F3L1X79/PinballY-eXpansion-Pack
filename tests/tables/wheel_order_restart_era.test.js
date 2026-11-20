@@ -1,8 +1,8 @@
 // ============================================================
 // A restart by year on an era, through main.js: PinballY restores the
-// sorted copy, which takes the era saved in cabinet.json as its source
+// sorted copy late, which takes the era saved in cabinet.json as its source
 // again; "Active filter: ..." names the era, and the Info Log names the
-// filter PinballY restored.
+// filter PinballY shows at init and the one it saved.
 // ============================================================
 
 import { test } from "node:test";
@@ -23,6 +23,6 @@ test("by year on an era, a restart shows the same era by year", async () => {
     assert.deepEqual(orderFrom(fake, "Eight Ball"), ["Eight Ball", "Gorgar"]);
     assert.equal(fake.getCurrentTable().title, "Gorgar", "the table PinballY restored stays selected");
     assert.equal(activeFilterEntry(fake, lang), lang.customMenuLabels.activeFilter("1970s Tables"));
-    assert.match(fake.readFile(INFO_LOG), /\[WheelOrder\] filter restored at startup: User\.project\.WheelOrder,/);
+    assert.match(fake.readFile(INFO_LOG), /\[WheelOrder\] filter restored at startup: All, saved User\.project\.WheelOrder,/);
     assertNoErrorLogged(fake);
 });

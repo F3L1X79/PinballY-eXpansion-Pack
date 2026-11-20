@@ -397,6 +397,9 @@ export function createFakePinballYHost({
     // Their commands, by full id.
     const filterCommands = new Map();
     let currentFilterId = "All";
+    // The saved script filter PinballY could not restore at startup, not
+    // created yet: its creation posts its command (pinbally-help.md section 2.5).
+    let pendingRestoredFilter = null;
     // Metafilters by id, and the tables they ruled out the last time a
     // filter ran: like PinballY, select() is not called again until then.
     const metaFilters = new Map();
@@ -1448,6 +1451,7 @@ export function createFakePinballYHost({
     // table in collection order, "Favorites" the favourite ones, a script filter runs; the current table
     // stays current when the new filter keeps it.
     function setCurrentFilter(filterId) {
+        pendingRestoredFilter = null;
         const [current] = host.getWheelTables();
         if (filterId === "All") {
             currentFilterId = filterId;
@@ -1480,14 +1484,24 @@ export function createFakePinballYHost({
         if (currentIndex > 0) setWheelGame(currentIndex);
     }
 
-    // Like gameList.createFilter(): kept under its full id, never shown until selected.
+    // Like gameList.createFilter(): kept under its full id, never shown until
+    // selected, but for the filter PinballY is waiting for: its command is
+    // posted, firing "filterselect" once the scripts' code has run.
     function createFilter(filter) {
-        filters.set(`User.${filter.id}`, filter);
+        const fullId = `User.${filter.id}`;
+        filters.set(fullId, filter);
         const cmd = nextFilterCommandId++;
         if (cmd > BUILT_IN_COMMANDS.FilterLast) throw new Error("The fake host has no filter command left.");
         commandIds.set(`filter ${filter.id}`, cmd);
-        filterCommands.set(`User.${filter.id}`, cmd);
+        filterCommands.set(fullId, cmd);
+        if (pendingRestoredFilter === fullId) realSetTimeout(() => chooseFilter(fullId), 0);
         return cmd;
+    }
+
+    // A filter's command: "filterselect" fires before the filter is applied,
+    // and a listener cancelling it leaves the filter unapplied (FilterSelectEvent.html).
+    function chooseFilter(filterId) {
+        if (!fire("filterselect", { id: filterId }).defaultPrevented) setCurrentFilter(filterId);
     }
 
     // A script filter runs again from its first table; any other filter
@@ -1872,11 +1886,21 @@ export function createFakePinballYHost({
         },
         // Shows a script filter, by its full id ("User.<id>").
         selectFilter: applyFilter,
-        // The player picks a filter in a menu: "filterselect" fires before
-        // the filter is applied, and a listener cancelling it leaves the
-        // filter unapplied (FilterSelectEvent.html).
-        chooseFilter(filterId) {
-            if (!fire("filterselect", { id: filterId }).defaultPrevented) setCurrentFilter(filterId);
+        // The player picks a filter in a menu.
+        chooseFilter,
+        // The filter the last session saved, as PinballY restores it before
+        // the scripts run: a script filter is not created yet, so All shows,
+        // currentConfigId selected, until its creation posts its command.
+        restoreSavedFilter(filterId, currentConfigId) {
+            settings.set("GameList.CurrentFilter", filterId);
+            if (!filterId.startsWith("User.") || filters.has(filterId)) {
+                setCurrentFilter(filterId);
+            } else {
+                setCurrentFilter("All");
+                pendingRestoredFilter = filterId;
+            }
+            const index = host.getWheelTables().findIndex(game => game.configId === currentConfigId);
+            if (index > 0) setWheelGame(index);
         },
         // The script filters' descriptions, as created.
         scriptFilters: () => [...filters.values()],

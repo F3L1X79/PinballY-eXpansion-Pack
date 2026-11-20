@@ -26,6 +26,8 @@ const SOURCE_CABINET_KEY = "wheelOrderSource";
 // The sorted copy standing in for the Active Filter while by year.
 const COPY_ID = "project.WheelOrder";
 const COPY_FULL_ID = `User.${COPY_ID}`;
+// PinballY's setting holding the Active Filter the last session saved.
+const SAVED_FILTER_SETTING = "GameList.CurrentFilter";
 const PACK_FILTER_PREFIX = "User.project.";
 const UNCOPIED_FILTERS = ["Hidden", "Unconfigured"];
 // The titles the alphabetical order check logs from each list.
@@ -266,6 +268,12 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
         // next tick: no setCurFilter runs inside PinballY's own dispatch,
         // and every later listener has heard the cancelled event by then.
         host.onGameListEvent("filterselect", safeHandler(SCRIPT_NAME, ev => {
+            // The copy's command is in no menu: PinballY posts it when it
+            // restores the copy, after applyAtStartup has put the right filter.
+            if (ev.id === COPY_FULL_ID) {
+                ev.preventDefault();
+                return;
+            }
             if (!isByYear() || !isCopied(ev.id)) return;
             ev.preventDefault();
             const filterId = ev.id;
@@ -288,9 +296,11 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
     // takes its saved source again, any other filter is treated as a choice.
     function applyAtStartup() {
         const restoredId = host.getCurrentFilterId();
-        // Cabinet check: whether PinballY restores a script filter (the copy) or falls back to All.
-        logInfo(SCRIPT_NAME, `filter restored at startup: ${restoredId}, Wheel Order ${get()}.`, host);
-        if (restoredId === COPY_FULL_ID) {
+        // PinballY restores a script filter late: All shows until its
+        // creation posts its command (pinbally-help.md section 2.5).
+        const savedId = host.settings.getString(SAVED_FILTER_SETTING, "");
+        logInfo(SCRIPT_NAME, `filter restored at startup: ${restoredId}, saved ${savedId}, Wheel Order ${get()}.`, host);
+        if (restoredId === COPY_FULL_ID || savedId === COPY_FULL_ID) {
             const savedSource = readSavedSource();
             if (isByYear()) showCopyOf(savedSource);
             else host.setCurrentFilter(savedSource);

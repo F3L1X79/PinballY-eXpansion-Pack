@@ -23,8 +23,8 @@ const TABLES = [
     table("Cirqus Voltaire", 1997),
 ];
 
-// cabinet: the Wheel Order's keys in cabinet.json; restored: the filter
-// PinballY restored and its wheel, before the scripts run.
+// cabinet: the Wheel Order's keys in cabinet.json; restored: the filter the
+// last session saved and its wheel; a script filter is restored once created.
 export async function restart({ cabinet, restored: { filterId, wheel } }) {
     const { fake, lang, settle } = await startOnProfilePicker({
         addOns: ["startupChoicePrompt", "profilePicker", "customMenuCommands", "wheelOrder", "tablesToDiscover"],
@@ -32,7 +32,8 @@ export async function restart({ cabinet, restored: { filterId, wheel } }) {
         now: new Date(2026, 10, 14, 20, 0, 0),
         seed: (seeded) => {
             seeded.addFile(CABINET_FILE, JSON.stringify({ version: 1, activeProfile: "Bob", ...cabinet }));
-            seeded.setWheelTables(wheel, { filterId });
+            if (filterId.startsWith("User.")) seeded.restoreSavedFilter(filterId, wheel[0]);
+            else seeded.setWheelTables(wheel, { filterId });
         },
     });
     await settle();
