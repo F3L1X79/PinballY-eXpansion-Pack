@@ -60,6 +60,6 @@ export const RANK_COLORS = Object.freeze({
 
 export const STEAMBALL_FONTS = Object.freeze({
     body: "Segoe UI",
-    // Titles, footers, key caps and the Loader's caption.
+    // Headings and figures, footers and key caps: all but body text.
     display: "Bahnschrift SemiCondensed",
 });

@@ -27,7 +27,7 @@ export const LOADER_SCREEN = Object.freeze({ PLAYFIELD: "playfield", BACKGLASS: 
 // The caption's canvas, drawn at twice a 1080-pixel-high window's pixels so
 // that its one-pixel outline shows half as thick, and scaled by height
 // only, so the layer never covers the whole window. The line is centred
-// in a canvas taller than itself, the space above it a gap under the comet.
+// in a canvas taller than itself, its empty top a gap under the comet.
 const CANVAS_SCALE = 2;
 const CAPTION_LOOK = Object.freeze({ width: 1200, height: 100, size: 36, weight: 600, outline: 1 });
 const CAPTION_HEIGHT = CAPTION_LOOK.height / (1080 * CANVAS_SCALE);
