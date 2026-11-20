@@ -2,7 +2,7 @@
 // Quiet wheel and a Random Game launched from the Welcome Screen opened
 // from the main menu: the selected table is back at its own volume before
 // the Random Game launches.
-// - Runs with the animation off: the fake has no wheel buttons.
+// - Runs with the animation off: the launch comes at once.
 // ============================================================
 
 import { test } from "node:test";

@@ -74,25 +74,14 @@ export async function pressButtonRepeatedly(
     }
 }
 
-function getGameFirstLetter(game) {
-    if (!game) return "";
-    const value = game.configId ?? game.title;
-    return String(value ?? "").charAt(0);
-}
+// PinballY's default page group (FilterInfo.html): the title's first letter.
+export const firstLetterOfTitle = game => String((game && game.title) ?? "").charAt(0);
 
-/**
- * Splits a wheel navigation of `targetIndex` steps into "page jumps"
- * (NextPage, roughly one per starting letter crossed) and "item jumps"
- * (Next, one per table). This avoids hundreds of single-table "Next"
- * presses for long jumps by using page-jumps to cross most of the alphabet,
- * then fine-tuning with individual "Next" presses.
- * Falls back to item-only jumps for short distances (<= 20 tables).
- *
- * @param {number} targetIndex Index to reach, relative to the current position.
- * @param {object[]} games Ordered game list, as returned by gameList.getAllWheelGames().
- * @returns {{pageJumpCount: number, itemJumpCount: number}}
- */
-export function computeNavigationPlan(targetIndex, games) {
+// Splits a move of targetIndex tables into NextPage jumps, one per page
+// group crossed, and Next presses for the rest (Next only up to 20 tables).
+// pageGroupOf must be the wheel's own: NextPage turns until a table of
+// another group (FilterInfo.html), so any other grouping misses the target.
+export function computeNavigationPlan(targetIndex, games, pageGroupOf = firstLetterOfTitle) {
     const safeTargetIndex = Math.max(0, Math.floor(Number(targetIndex) || 0));
     if (safeTargetIndex <= SHORT_NAVIGATION_THRESHOLD) {
         return { pageJumpCount: 0, itemJumpCount: safeTargetIndex };
@@ -103,31 +92,31 @@ export function computeNavigationPlan(targetIndex, games) {
     }
 
     const cappedTargetIndex = Math.min(safeTargetIndex, games.length - 1);
-    const letterChangeIndexes = [];
-    let previousFirstLetter = getGameFirstLetter(games[0]);
+    const groupChangeIndexes = [];
+    let previousGroup = pageGroupOf(games[0]);
 
     for (let i = 0; i < cappedTargetIndex; i++) {
-        const firstLetter = getGameFirstLetter(games[i]);
-        if (firstLetter !== previousFirstLetter) {
-            previousFirstLetter = firstLetter;
-            letterChangeIndexes.push(i);
+        const group = pageGroupOf(games[i]);
+        if (group !== previousGroup) {
+            previousGroup = group;
+            groupChangeIndexes.push(i);
         }
     }
 
     let pageJumpCount = 0;
     let lastPageJumpIndex = cappedTargetIndex;
 
-    for (const letterChangeIndex of letterChangeIndexes) {
+    for (const groupChangeIndex of groupChangeIndexes) {
         pageJumpCount++;
-        const remaining = cappedTargetIndex - letterChangeIndex;
+        const remaining = cappedTargetIndex - groupChangeIndex;
 
         if (remaining < SHORT_NAVIGATION_THRESHOLD) {
             if (remaining <= 0) pageJumpCount--;
-            else lastPageJumpIndex = letterChangeIndex;
+            else lastPageJumpIndex = groupChangeIndex;
             break;
         }
 
-        lastPageJumpIndex = letterChangeIndex;
+        lastPageJumpIndex = groupChangeIndex;
     }
 
     return {
@@ -139,7 +128,7 @@ export function computeNavigationPlan(targetIndex, games) {
 // Animates the wheel from its current position (index 0 of `games`, as
 // returned by gameList.getAllWheelGames()) to exactly `targetIndex`.
 // Options: baseSpeedMs (timing curve), usePageJumpOptimization (NextPage
-// jumps for long distances).
+// jumps for long distances), pageGroupOf (the wheel's page group).
 export async function animateWheelTo(games, targetIndex, options = {}) {
     const safeGames = Array.isArray(games) ? games : [];
     if (safeGames.length === 0) return;
@@ -159,7 +148,7 @@ export async function animateWheelTo(games, targetIndex, options = {}) {
     let itemJumpCount = safeTargetIndex;
 
     if (usePageJumpOptimization) {
-        const plan = computeNavigationPlan(safeTargetIndex, safeGames);
+        const plan = computeNavigationPlan(safeTargetIndex, safeGames, options.pageGroupOf);
         pageJumpCount = plan.pageJumpCount;
         itemJumpCount = plan.itemJumpCount;
     }

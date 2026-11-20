@@ -1,7 +1,7 @@
 // ============================================================
 // Welcome Screen Add-on off: the main menu still offers "Launch a random
 // table", right under Play, and it launches the wheel's table.
-// - Runs with the animation off: the fake has no wheel buttons.
+// - Runs with the animation off: the launch comes at once.
 // ============================================================
 
 import { test } from "node:test";

@@ -1331,8 +1331,17 @@ export function createFakePinballYHost({
 
     // Like PinballY's CmdExit on an open menu (docs/pinbally/pinbally-help.md,
     // 4.2): the native menu shown closes, firing its "menuclose". Fires no
-    // "commandbuttondown", as doButtonCommand never does.
+    // "commandbuttondown", as doButtonCommand never does. On the wheel, Next
+    // turns it one table and NextPage to the next page group (FilterInfo.html,
+    // pageGroup), firing "gameselect" with the table reached.
     function doButtonCommand(name, down) {
+        if (down && !shownMenu && uiMode === "wheel" && (name === "Next" || name === "NextPage")) {
+            const offset = name === "Next" ? 1 : pageOffset(1);
+            if (offset === 0) return;
+            setWheelGame(offset);
+            fire("gameselect", { game: host.getWheelTables()[0] || null });
+            return;
+        }
         if (name !== "Exit" || !down || !shownMenu) return;
         const { id } = shownMenu;
         shownMenu = null;

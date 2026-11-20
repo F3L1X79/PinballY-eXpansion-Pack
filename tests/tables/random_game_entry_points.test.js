@@ -2,7 +2,7 @@
 // The Welcome Screen's random choice, at startup and from the main menu's
 // Welcome Screen entry, never launches the Last Played Table when another
 // is there, and each Play counts in the Random Games played.
-// - Runs with the animation off: the fake has no wheel buttons.
+// - Runs with the animation off: the launch comes at once.
 // ============================================================
 
 import { test } from "node:test";

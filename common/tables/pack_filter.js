@@ -2,7 +2,7 @@
 // Pack Filter: a wheel selection of the tables an Add-on computes (Challenge
 // Tables, Hall of Fame...), listed and paged in the Wheel Order unless
 // ranked. Runs again on "wheelmode" (unless alwaysInMenu) and on runAgainOn events.
-// packFilterSortOf() tells how a Pack Filter lists and pages its tables.
+// packFilterSortOf() tells how a Pack Filter lists its tables, pageGroupOfFilter() how a filter pages.
 // - Runs again only when its tables changed, so closing a menu never moves the wheel.
 // - Emptied, it gives way to All Tables through the Wheel Order (its sorted copy while by year), unless alwaysInMenu.
 // - Ranked, each table is its own Next/Previous Page stop. PinballY gives no filter's pageGroup back.
@@ -10,7 +10,7 @@
 
 import { safeHandler } from "../core/safe_handler.js";
 import { ALL_TABLES_FILTER } from "../core/pinbally_host.js";
-import { getWheelOrder } from "./wheel_order.js";
+import { getWheelOrder, pageGroupByYear } from "./wheel_order.js";
 
 export const PACK_FILTER_PAGINGS = Object.freeze({ WHEEL_ORDER: "wheelOrder", RANKED: "ranked" });
 
@@ -27,6 +27,18 @@ export const isPackFilterInWheelOrder = filterId => {
 
 // The given Wheel Order, else the shared one, read when used: the Add-ons' init order does not matter.
 const wheelOrderOf = wheelOrder => wheelOrder ?? getWheelOrder();
+
+// The pageGroup the filter with this full id pages the wheel with, the
+// pack's filters only; null for PinballY's default (the title's first
+// letter), as PinballY gives no filter's pageGroup back.
+export function pageGroupOfFilter(filterId, wheelOrder) {
+    if (wheelOrderOf(wheelOrder).isSortedCopy(filterId)) return pageGroupByYear;
+    const packSort = packFilterSortOf(filterId);
+    if (packSort === null) return null;
+    // Ranked, each table is a page of its own.
+    if (packSort.paging === PACK_FILTER_PAGINGS.RANKED) return game => game.configId;
+    return game => wheelOrderOf(wheelOrder).pageGroup(game);
+}
 
 // selectConfigIds: the tables, in their ranking when ranked. runAgainOn: functions
 // each registering a listener, called when the tables may have changed.

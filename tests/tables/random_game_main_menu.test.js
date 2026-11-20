@@ -3,7 +3,7 @@
 // a table of the wheel selection, never the Last Played Table when another
 // is there, each Play counts in the Random Games played, and the entry is
 // gone while the wheel selection is empty.
-// - Runs with the animation off: the fake has no wheel buttons.
+// - Runs with the animation off: the launch comes at once.
 // ============================================================
 
 import { test } from "node:test";

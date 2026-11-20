@@ -2,7 +2,7 @@
 // Welcome Screen: a Random Game whose launch fails after the screen closed
 // (its promise rejected) is logged once, under the screen's name, and the
 // press still never reaches the wheel.
-// - Runs with the animation off: the fake has no wheel buttons.
+// - Runs with the animation off: the launch comes at once.
 // ============================================================
 
 import { test } from "node:test";

@@ -1,7 +1,7 @@
 // ============================================================
 // Welcome Screen late at night: the late-night greeting, and the random
 // choice launches a Random Game, never the Last Played Table.
-// - Runs with the animation off: the fake has no wheel buttons.
+// - Runs with the animation off: the launch comes at once.
 // ============================================================
 
 import { test } from "node:test";

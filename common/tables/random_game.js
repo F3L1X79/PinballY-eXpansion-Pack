@@ -11,6 +11,8 @@ import { createPinballYHost } from "../core/pinbally_host.js";
 import { safeHandler } from "../core/safe_handler.js";
 import { getProfileStore } from "../profiles/profile_store.js";
 import { isUntrackedTable } from "../core/untracked_tables.js";
+import { pageGroupOfFilter } from "./pack_filter.js";
+import { logInfo } from "../core/info_log.js";
 import config from "../core/config.js";
 
 const SCRIPT_NAME = "RandomGame";
@@ -88,6 +90,9 @@ export function createRandomGame(host, profileStore, { animateTo, skipAnimation 
                 : drawnIndex;
 
             await animateTo(tables, landingIndex);
+            // Cabinet check: the table the wheel stopped on is the one launched.
+            const shown = host.getCurrentTable();
+            logInfo(SCRIPT_NAME, `Random Game: wheel on "${shown ? shown.title : "nothing"}", launching "${tables[landingIndex].title}".`, host);
             playGame(tables[landingIndex]);
         } finally {
             launchInProgress = false;
@@ -128,10 +133,13 @@ export function createRandomGame(host, profileStore, { animateTo, skipAnimation 
     return { launch, getRandomGamesPlayed, getLastPlayedTable: findLastPlayedTable, isStartedGameRandom: () => startedGameIsRandom };
 }
 
-async function animateWheelThenPause(tables, index) {
+// NextPage jumps follow the Active Filter's own page groups (by decade while
+// by year): planned by first letter, they stop off the drawn table.
+async function animateWheelThenPause(host, tables, index) {
     await animateWheelTo(tables, index, {
         baseSpeedMs: ANIMATION_BASE_SPEED_MS,
         usePageJumpOptimization: USE_PAGE_JUMP_OPTIMIZATION,
+        pageGroupOf: pageGroupOfFilter(host.getCurrentFilterId()) ?? undefined,
     });
     await sleep(POST_ANIMATION_DELAY_MS);
 }
@@ -142,7 +150,10 @@ let sharedRandomGame = null;
 // while the Welcome Screen's one is animating is ignored.
 export function getRandomGame() {
     if (!sharedRandomGame) {
-        sharedRandomGame = createRandomGame(createPinballYHost(), getProfileStore(), { animateTo: animateWheelThenPause });
+        const host = createPinballYHost();
+        sharedRandomGame = createRandomGame(host, getProfileStore(), {
+            animateTo: (tables, index) => animateWheelThenPause(host, tables, index),
+        });
     }
     return sharedRandomGame;
 }
