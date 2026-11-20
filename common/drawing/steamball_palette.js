@@ -47,6 +47,10 @@ export const STEAMBALL_COLORS = Object.freeze({
     transparent: 0x00000000,
 });
 
+// The thin line over a panel's top border: a rated table's Rating Plate (in
+// this yellow) and the Mastery Bar once played (thickness only, its metal).
+export const TOP_EDGE = Object.freeze({ color: STEAMBALL_COLORS.notice, thickness: 1 });
+
 export const RANK_COLORS = Object.freeze({
     [ACHIEVEMENT_RANK.BRONZE]: 0xFFCD7F32,
     [ACHIEVEMENT_RANK.SILVER]: 0xFFC0C8D0,

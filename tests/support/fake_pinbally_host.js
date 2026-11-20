@@ -45,6 +45,8 @@ const BUILT_IN_COMMANDS = {
     FilterByEra: 18, FilterByManufacturer: 19, FilterBySystem: 20, FilterByCategory: 21, FilterByRating: 22,
     FilterByRecency: 23, FilterByAdded: 24, RemoveFavorite: 25, ResumeGame: 26, KillGame: 27,
     Options: 28, BatchCaptureStep1: 29, ClearCredits: 30, EnableVideos: 31, MuteVideos: 32, CaptureGo: 33,
+    // Toggles the current table's hidden flag (pinbally-help.md, game dialogs; Help/Commands.html).
+    HideGame: 34,
     // Every filter's command is in this range, PinballY's and the scripts' alike.
     FilterFirst: 900, FilterLast: 949,
 };

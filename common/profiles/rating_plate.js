@@ -6,7 +6,7 @@
 // - Its place is asked on each show, like the Mastery Bar's; RATING_PLATE_PIECE gives the top right stack its sizes.
 // ============================================================
 
-import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
+import { STEAMBALL_COLORS, TOP_EDGE } from "../drawing/steamball_palette.js";
 import { CHALLENGE_CARD_Z_INDEX, CARD_REFERENCE_HEIGHT } from "../challenges/challenge_card.js";
 import { fillStar } from "../drawing/pixel_shapes.js";
 import { TOP_RIGHT_STACK } from "../drawing/top_right_stack.js";
@@ -15,13 +15,10 @@ import { createHiddenLayer, hideLayer, placeAligned, POINT_SPAN } from "../drawi
 // Above the Mastery Bar's planes, under popups and menus.
 export const RATING_PLATE_Z_INDEX = CHALLENGE_CARD_Z_INDEX + 5;
 export const RATING_PLATE_STAR_COLORS = Object.freeze({ filled: STEAMBALL_COLORS.gold, empty: STEAMBALL_COLORS.track });
-// The thin edge over a rated table's plate: yellower than the stars' gold,
-// so five empty stars read as 0 stars, not as a table never rated.
-export const RATING_PLATE_RATED_EDGE_COLOR = STEAMBALL_COLORS.notice;
 // On the Challenge Card's 1920 px reference and canvas width: the panel's
 // left edge lines up with the card's (validated on the cabinet).
 const CANVAS = Object.freeze({ width: 400, height: 56 });
-const PANEL = Object.freeze({ x: 10, y: 6, width: 158, height: 40, border: 1, ratedEdge: 2 });
+const PANEL = Object.freeze({ x: 10, y: 6, width: 158, height: 40, border: 1 });
 // Its piece of the top right stack: the canvas's room around the panel is kept.
 export const RATING_PLATE_PIECE = Object.freeze({
     place: TOP_RIGHT_STACK.RATING_PLATE,
@@ -39,8 +36,8 @@ function drawPlate(dc, value) {
     const rating = value === UNRATED ? 0 : value;
     dc.fillRect(PANEL.x, PANEL.y, PANEL.width, PANEL.height, STEAMBALL_COLORS.panelTranslucent);
     dc.frameRect(PANEL.x, PANEL.y, PANEL.width, PANEL.height, PANEL.border, STEAMBALL_COLORS.border);
-    // Over the top border, inside the panel's width.
-    if (value !== UNRATED) dc.fillRect(PANEL.x, PANEL.y, PANEL.width, PANEL.ratedEdge, RATING_PLATE_RATED_EDGE_COLOR);
+    // Only once rated, so five empty stars read as 0 stars, not as a table never rated.
+    if (value !== UNRATED) dc.fillRect(PANEL.x, PANEL.y, PANEL.width, TOP_EDGE.thickness, TOP_EDGE.color);
     const rowWidth = STAR_COUNT * 2 * STAR.radius + (STAR_COUNT - 1) * STAR.gap;
     const firstX = PANEL.x + Math.round((PANEL.width - rowWidth) / 2) + STAR.radius;
     const centerY = PANEL.y + PANEL.height / 2;

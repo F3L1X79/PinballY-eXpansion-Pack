@@ -6,10 +6,10 @@
 // ============================================================
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
-import { RATING_PLATE_Z_INDEX, RATING_PLATE_STAR_COLORS, RATING_PLATE_RATED_EDGE_COLOR } from "../../common/profiles/rating_plate.js";
+import { RATING_PLATE_Z_INDEX, RATING_PLATE_STAR_COLORS } from "../../common/profiles/rating_plate.js";
 import { CHALLENGE_CARD_Z_INDEX } from "../../common/challenges/challenge_card.js";
 import { MASTERY_BAR_Z_INDEX } from "../../common/mastery/mastery_bar.js";
-import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
+import { STEAMBALL_COLORS, TOP_EDGE } from "../../common/drawing/steamball_palette.js";
 import config from "../../common/core/config.js";
 
 export const NOW = new Date(2026, 8, 23, 10, 0, 0);
@@ -79,7 +79,7 @@ export function shownRating(fake) {
 export function shownAsRated(fake) {
     const [shown] = shownPlates(fake);
     if (!shown) return null;
-    return areaOf(shown, RATING_PLATE_RATED_EDGE_COLOR) > 0;
+    return shown.strokes().some(stroke => stroke.fill === TOP_EDGE.color && stroke.rect.height === TOP_EDGE.thickness);
 }
 
 // How far below the top of the window the plate sits, in reference px;

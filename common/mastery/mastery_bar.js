@@ -7,7 +7,7 @@
 // ============================================================
 
 import lang from "../core/i18n.js";
-import { STEAMBALL_COLORS, STEAMBALL_FONTS } from "../drawing/steamball_palette.js";
+import { STEAMBALL_COLORS, STEAMBALL_FONTS, TOP_EDGE } from "../drawing/steamball_palette.js";
 import { CHALLENGE_CARD_Z_INDEX, CARD_REFERENCE_HEIGHT } from "../challenges/challenge_card.js";
 import { MASTERY_STEPS, MAX_MASTERY_LEVEL, METAL_TIER_COUNT, tierOf, metalOf, tierMetalOf, withAlpha, mix, WHITE } from "./table_mastery.js";
 import { drawMasterySquare } from "./mastery_square.js";
@@ -79,6 +79,8 @@ export function collectionTextsOf(collection) {
 function drawPanel(host, dc, level) {
     dc.fillRect(PANEL.x, PANEL.y, PANEL.width, PANEL.height, STEAMBALL_COLORS.panelTranslucent);
     dc.frameRect(PANEL.x, PANEL.y, PANEL.width, PANEL.height, PANEL.border, STEAMBALL_COLORS.border);
+    // The edge in the bar's own metal, none on a table to discover.
+    if (level > NEVER_PLAYED) dc.fillRect(PANEL.x, PANEL.y, PANEL.width, TOP_EDGE.thickness, tierMetalOf(tierOf(level)));
     const head = masteryHeadOf(level);
     drawText(host, dc, head.text, { ...HEAD, x: BAR.x, width: SQUARE.x - BAR.x, color: head.color });
 }

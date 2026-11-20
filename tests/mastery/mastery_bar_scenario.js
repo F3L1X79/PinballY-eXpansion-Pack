@@ -8,6 +8,7 @@
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
 import { MASTERY_BAR_Z_INDEX } from "../../common/mastery/mastery_bar.js";
 import { toastDrawings } from "../achievements/achievement_toast_reader.js";
+import { TOP_EDGE } from "../../common/drawing/steamball_palette.js";
 import config from "../../common/core/config.js";
 
 export const NOW = new Date(2026, 8, 23, 10, 0, 0);
@@ -103,6 +104,14 @@ export function shownMastery(fake) {
         number: squares.length > 0 ? squares[0].texts().join("") : null,
         fill: filled ? filled.rect.width / track.rect.width : 0,
     };
+}
+
+// The colour of the thin edge over the shown panel's top; null without one
+// or when the bar is hidden.
+export function shownTopEdge(fake) {
+    const [panel] = shownOn(fake, MASTERY_BAR_Z_INDEX.panel);
+    const edge = panel && panel.strokes().find(stroke => "fill" in stroke && stroke.rect.height === TOP_EDGE.thickness);
+    return edge ? edge.fill : null;
 }
 
 // Whether the lit state shows over the bar.
