@@ -1,8 +1,8 @@
 // ============================================================
 // The Rating Plate keeps the hidden layer rule, through main.js on the
 // fake PinballY globals: one layer per Rating from 0 to 5 in half steps,
-// drawn ahead; shown, hidden during a game and back on the wheel, no
-// hidden one is more than a point.
+// and one unrated, drawn ahead; shown, hidden during a game and back on
+// the wheel, no hidden one is more than a point.
 // ============================================================
 
 import { test } from "node:test";
@@ -12,7 +12,8 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { layersBreakingTheRule } from "../support/hidden_layer_rule.js";
 
 const [MEDIEVAL, MARS] = TABLES;
-const RATING_COUNT = 11;
+// 0 to 5 in half steps, and the unrated plate.
+const RATING_COUNT = 12;
 
 function assertRuleHeld(fake, where) {
     assert.deepEqual(layersBreakingTheRule(fake, plateLayers(fake)), [], where);

@@ -4,6 +4,7 @@
 // A Wheel Mark (common/core/wheel_marks.js); the wheel is read again after a
 // filter choice, a menu, a Wheel Order toggle, a Profile switch and the return to the wheel.
 // - "filterselect" fires before the filter applies, and "menuclose" before a table leaves Favorite Tables: read at 0 and 300 ms.
+// - A favourite command is read after too: a Drawn Menu cancels the native menu, whose "menuclose" never fires.
 // - Shown under menus and drawn screens; those re-reads go through the module, so none shows over a game.
 // - The Wheel Rail's rest waits for the Startup Screen to close (or a game, or attract mode).
 // ============================================================
@@ -102,8 +103,12 @@ export default function init() {
     let favoriteCommand = null;
     function noteFavoriteCommand(ev) {
         const found = FAVORITE_COMMANDS.find(({ name }) => host.getBuiltInCommand(name) === ev.id);
+        if (!found) return;
+        // A Drawn Menu cancels the native one, which then fires no "menuclose":
+        // read again after the command itself, which PinballY runs after this event.
+        readAgainSoon();
         const selected = host.getCurrentTable();
-        if (found && selected) favoriteCommand = { ...found, selected };
+        if (selected) favoriteCommand = { ...found, selected };
     }
     function checkFavoriteFlag() {
         const noted = favoriteCommand;

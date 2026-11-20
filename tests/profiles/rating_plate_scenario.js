@@ -6,7 +6,7 @@
 // ============================================================
 
 import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js";
-import { RATING_PLATE_Z_INDEX, RATING_PLATE_STAR_COLORS } from "../../common/profiles/rating_plate.js";
+import { RATING_PLATE_Z_INDEX, RATING_PLATE_STAR_COLORS, RATING_PLATE_RATED_EDGE_COLOR } from "../../common/profiles/rating_plate.js";
 import { CHALLENGE_CARD_Z_INDEX } from "../../common/challenges/challenge_card.js";
 import { MASTERY_BAR_Z_INDEX } from "../../common/mastery/mastery_bar.js";
 import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
@@ -72,6 +72,14 @@ export function shownRating(fake) {
     const filled = areaOf(shown[0], RATING_PLATE_STAR_COLORS.filled);
     const empty = areaOf(shown[0], RATING_PLATE_STAR_COLORS.empty);
     return Math.round(10 * filled / (filled + empty)) / 2;
+}
+
+// Whether the shown plate wears the rated edge along its top (a rated
+// table, 0 stars included); null without a plate.
+export function shownAsRated(fake) {
+    const [shown] = shownPlates(fake);
+    if (!shown) return null;
+    return areaOf(shown, RATING_PLATE_RATED_EDGE_COLOR) > 0;
 }
 
 // How far below the top of the window the plate sits, in reference px;
