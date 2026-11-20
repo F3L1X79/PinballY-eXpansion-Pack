@@ -244,16 +244,19 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
     function start({ copyTitle, isPackFilterInWheelOrder = () => false }) {
         if (isStarted) return;
         isStarted = true;
-        // The source's FilterInfo, read once per run of the copy.
-        let source = null;
+        // The configIds of the source's tables, read once per run of the copy:
+        // an Era's testGame keeps every table on the cabinet, its getGames()
+        // is right (pinbally-help.md section 2.5).
+        let sourceTables = new Set();
         host.createFilter({
             id: COPY_ID,
             // No group: never listed in a filter menu.
             title: copyTitle,
             // Fires each time the copy runs, before PinballY scans the tables.
-            before: safeHandler(SCRIPT_NAME, () => { source = host.getFilterInfo(sourceId); }),
-            // testGame gives null for an invalid game.
-            select: game => source !== null && source.testGame(game) === true,
+            before: safeHandler(SCRIPT_NAME, () => {
+                sourceTables = new Set(host.getFilterInfo(sourceId).getGames().map(game => game.configId));
+            }),
+            select: game => sourceTables.has(game.configId),
             compareForSort: compareByYear,
             pageGroup: pageGroupByYear,
         });

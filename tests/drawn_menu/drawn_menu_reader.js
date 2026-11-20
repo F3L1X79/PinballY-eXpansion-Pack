@@ -13,7 +13,6 @@ export const GLIDE_OVER_MS = 400;
 
 const { colors: COLORS } = DRAWN_MENU_LOOK;
 const MARK_NAMES = new Map(Object.entries(DRAWN_MENU_MARKS).map(([name, glyph]) => [glyph, name]));
-const STAR_COLORS = [COLORS.starFilled, COLORS.starEmpty];
 
 const textsLayer = fake => shownLayers(fake, DRAWN_MENU_Z_INDEX.texts).find(layer => layer.texts().length > 0) || null;
 
@@ -32,8 +31,7 @@ export const isAnythingDrawn = fake => fake.drawingLayers()
 // the message's parts drawn bolder than it, trimmed, and the rows from top to
 // bottom: { kind: "entry", title, mark } (mark: "check", "radio",
 // "submenu" or null; a disabled entry with its reason too, an entry with a
-// note with its note, the title then without it, an entry with stars with
-// the Rating they show as stars),
+// note with its note, the title then without it),
 // { kind: "heading", title } or { kind: "separator" };
 // and the footer's lines under the list ([{ label, name }], null when none).
 export function readDrawnMenu(fake) {
@@ -55,13 +53,6 @@ export function readDrawnMenu(fake) {
         }
         if (footer !== null) {
             if ("text" in stroke) footer.at(-1).name = stroke.text.trim();
-            continue;
-        }
-        if ("fill" in stroke && STAR_COLORS.includes(stroke.fill)) {
-            const row = rows.at(-1);
-            const area = stroke.rect.width * stroke.rect.height;
-            row.starAreas = row.starAreas || { filled: 0, empty: 0 };
-            row.starAreas[stroke.fill === COLORS.starFilled ? "filled" : "empty"] += area;
             continue;
         }
         if ("fill" in stroke) {
@@ -94,14 +85,7 @@ export function readDrawnMenu(fake) {
         else if (stroke.color === COLORS.disabledEntry) rows.push({ kind: "entry", title: stroke.text, mark: null, reason: null });
         else rows.push({ kind: "entry", title: stroke.text, mark: null });
     }
-    return { title, message, messageBold, rows: rows.map(withStars), footer };
-}
-
-// A row's stars as the Rating they show, to the half star (the gold part
-// of their five stars), instead of their pixel areas.
-function withStars({ starAreas, ...row }) {
-    if (!starAreas) return row;
-    return { ...row, stars: Math.round(10 * starAreas.filled / (starAreas.filled + starAreas.empty)) / 2 };
+    return { title, message, messageBold, rows, footer };
 }
 
 // A dialog's title and message as drawn on the texts' canvas, each

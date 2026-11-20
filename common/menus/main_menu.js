@@ -4,7 +4,7 @@
 // sections, sends the selections and groups to the Filter Picker, and runs
 // the chosen entry's action. Listens to "menuopen" and "command".
 // - main.js's order never decides where an entry lands.
-// - PinballY's High Scores reads "Table Scores", and Rate Table names the Rating, in the main menu only.
+// - PinballY's High Scores reads "Table Scores" in the main menu only.
 // - A [Top] filter's condition is checked on each opening; a failing one is logged and kept.
 // ============================================================
 
@@ -13,7 +13,6 @@ import { safeHandler } from "../core/safe_handler.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { createFilterPicker } from "./filter_picker.js";
 import { SEPARATOR_CMD, isSeparator } from "./menu_separator.js";
-import { ratingOf } from "../profiles/profile_ratings.js";
 import { getWheelOrder } from "../tables/wheel_order.js";
 import { getDrawnMenus } from "../drawn_menu/drawn_menu.js";
 
@@ -120,20 +119,9 @@ export function createMainMenu(host, { chosenFilter = activeFilterOf(host), getM
 
     // PinballY's High Scores reads "Table Scores" here only, over UI
     // Translation's title (registered first), so it never shares the High
-    // Score Board's name; the pause menu keeps "High Scores". Rate Table
-    // names the selected table's Rating (none when PinballY holds -1), read
-    // again at each opening, after UI Translation's title; its note is the
-    // Rating alone, which the Drawn Menu draws as stars.
+    // Score Board's name; the pause menu keeps "High Scores".
     function withMainMenuTitle(item) {
         if (item.cmd === host.getBuiltInCommand("HighScores")) return { ...item, title: lang.customMenuLabels.tableScores };
-        if (item.cmd === host.getBuiltInCommand("RateGame")) {
-            const table = host.getCurrentTable();
-            const rating = table ? ratingOf(table) : null;
-            if (rating !== null) {
-                const note = lang.customMenuLabels.currentRating(rating);
-                return { ...item, title: `${item.title} ${note}`, note, stars: rating };
-            }
-        }
         return item;
     }
 

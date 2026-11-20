@@ -306,7 +306,6 @@ export default {
         // The Random Game's main menu entry, worded as welcomeScreen.randomTable.
         randomTable: "Iniciar uma mesa aleatória",
         tableScores: "Pontuações",
-        currentRating: (rating) => `(atual: ${String(rating).replace(".", ",")} / 5)`,
         filterPickerBack: "Voltar",
         activeFilter: (name) => `Filtro ativo: ${name}`,
         // The Filter Picker's entry before Back, naming the current Wheel Order.

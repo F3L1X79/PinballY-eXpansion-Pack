@@ -305,7 +305,6 @@ export default {
         // The Random Game's main menu entry, worded as welcomeScreen.randomTable.
         randomTable: "Avvia un tavolo a caso",
         tableScores: "Punteggi",
-        currentRating: (rating) => `(attuale: ${String(rating).replace(".", ",")} / 5)`,
         filterPickerBack: "Indietro",
         activeFilter: (name) => `Filtro attivo: ${name}`,
         // The Filter Picker's entry before Back, naming the current Wheel Order.

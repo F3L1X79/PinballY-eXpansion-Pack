@@ -1,8 +1,8 @@
 // ============================================================
-// The main menu's Rate Table, through main.js on the fake PinballY globals:
-// it names the selected table's current Rating ("Rate Table (current: 4.5 / 5)"),
-// a 0 included, read again at each opening; PinballY's -1 and an empty wheel
-// keep the plain title. The entry keeps its place and its command.
+// The main menu's Rate Table, through main.js on the fake PinballY globals
+// with Drawn Menus off: it reads its name alone on a rated table, a 0
+// included, as on an unrated one and an empty wheel, with no Rating text.
+// The entry keeps its place and its command.
 // ============================================================
 
 import { test } from "node:test";
@@ -20,7 +20,7 @@ const TABLES = [
     { id: 3, configId: TWILIGHT, title: "Twilight Zone", rating: 0 },
 ];
 
-test("Rate Table names the selected table's current Rating in the main menu", async () => {
+test("Rate Table reads its name alone in the main menu, whatever the selected table's Rating", async () => {
     const fake = createFakePinballYHost({ tables: TABLES });
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
@@ -43,22 +43,19 @@ test("Rate Table names the selected table's current Rating in the main menu", as
     }
 
     const rated = rateTableItemOn(MEDIEVAL);
-    assert.equal(rated.title, "Rate Table (current: 4.5 / 5)");
+    assert.equal(rated.title, "Rate Table");
+    assert.equal(rated.note, undefined, "no note");
     assert.equal(rated.after, "Add to Favorites", "the entry keeps its place");
-    assert.equal(rateTableItemOn(TWILIGHT).title, "Rate Table (current: 0 / 5)");
+    assert.equal(rateTableItemOn(TWILIGHT).title, "Rate Table");
     assert.equal(rateTableItemOn(MARS).title, "Rate Table");
     assert.equal(rateTableItemOn(null).title, "Rate Table");
 
-    // PinballY's rating dialog saves the new Rating on the table.
-    fake.getGameInfo(MARS).update({ rating: 3 });
-    assert.equal(rateTableItemOn(MARS).title, "Rate Table (current: 3 / 5)");
-
-    // Only the main menu: the entry still runs PinballY's own command.
+    // The entry still runs PinballY's own command.
     let ratingDialogOpened = false;
     fake.setNativeCommand(globalThis.command.RateGame, () => { ratingDialogOpened = true; });
     fake.setWheelTables([MEDIEVAL]);
     fake.openMainMenu();
-    fake.selectMenuItem("Rate Table (current: 4.5 / 5)");
+    fake.selectMenuItem("Rate Table");
     assert.equal(ratingDialogOpened, true);
     assertNoErrorLogged(fake);
 });

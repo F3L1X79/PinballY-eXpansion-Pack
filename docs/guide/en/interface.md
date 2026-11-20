@@ -12,7 +12,6 @@ PinballY's own menus and messages in French, German, Spanish, Italian or Portugu
 
 PinballY's menus and other scripts' menus are drawn in the pack's Steamball look, with the same entries, sorted into sections, and the same buttons: the main menu, Exit, filters, power off, table setup, the Operator Menu, a game's pause, media capture (batch capture included) and confirmations.
 
-- In the main menu, Rate Table shows the selected table's Rating when it has one: five stars after its name, half stars included, as on the wheel ("Rate Table (current: 4.5 / 5)" in PinballY's own menu). It is the active Profile's own Rating, unless **Ratings per Profile** is off (see [Ratings and Favorite Tables](profiles.md#ratings-and-favorite-tables)).
 - In the pause, Exit and "Cancel" resume the game.
 - At the foot of a drawn screen, the button hints name the cabinet's buttons: "L Flipper" and "R Flipper" (the Prev and Next buttons of PinballY) to browse or scroll, "Select" to choose, "Exit" to go back or close.
 - On every drawn menu and screen, a held Select, Launch or Exit counts once, while a held flipper keeps going.

@@ -12,7 +12,6 @@ Les menus et messages de PinballY enfin en français, mais aussi en allemand, es
 
 Les menus de PinballY et ceux des autres scripts sont dessinés dans le style Steamball du pack, avec les mêmes entrées, rangées en sections, et les mêmes boutons : menu principal, sortie, filtres, extinction, configuration de la table, menu opérateur, pause d'une partie, capture des médias (y compris par lot) et confirmations.
 
-- Dans le menu principal, Noter la table montre la note de la table sélectionnée quand elle en a une : cinq étoiles après son nom, demi-étoiles comprises, comme sur la roue (« Noter la table (actuel : 4,5 / 5) » dans le menu de PinballY). C'est la note du Profil actif, sauf si **Notes par Profil** est désactivé (voir [Notes et tables favorites](profiles.md#notes-et-tables-favorites)).
 - Dans la pause, Exit et « Annuler » reprennent la partie.
 - Au pied d'un écran dessiné, les indications nomment les boutons de la borne : « Gauche » et « Droite » (les flippers, boutons Prev et Next de PinballY) pour parcourir ou faire défiler, « Select » pour choisir, « Exit » pour revenir ou fermer.
 - Sur tous les menus et écrans dessinés, Select, Launch ou Exit gardé enfoncé ne compte qu'une fois, alors qu'un flipper gardé enfoncé continue de défiler.

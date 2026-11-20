@@ -1582,11 +1582,11 @@ export function createFakePinballYHost({
         return era ? `${era[1]}s Tables` : filterId;
     }
 
-    // FilterInfo.testGame(game) of the filters the fake knows (FilterInfo.html):
-    // All, every table, Hidden ones included as seen on the cabinet
-    // (pinbally-help.md §2.5, #515); Favorites, the favourite ones; an Era
-    // (YearRange.from.to), those released in those years; a script filter,
-    // its select() over the tables it is given. Null for a filter it does not know.
+    // What each filter the fake knows selects (FilterInfo.html): All, every
+    // table, Hidden ones included as seen on the cabinet (pinbally-help.md
+    // §2.5, #515); Favorites, the favourite ones; an Era (YearRange.from.to),
+    // those released in those years; a script filter, its select() over the
+    // tables it is given. Null for a filter it does not know.
     function gameTestOf(filterId) {
         const filter = filters.get(filterId);
         const range = yearRangeOf(filterId);
@@ -1607,7 +1607,8 @@ export function createFakePinballYHost({
         if (cmd === undefined && !testGame) throw new Error(`The fake host knows no filter ${filterId}.`);
         const info = { id: filterId, cmd, title: filterTitleOf(filterId), groupCmd: groupCmdOf(filterId) };
         if (testGame) {
-            info.testGame = testGame;
+            // An Era's testGame keeps every table, its getGames() is right (seen on the cabinet, pinbally-help.md §2.5).
+            info.testGame = yearRangeOf(filterId) ? () => true : testGame;
             // Hidden tables left out, All's included (seen on the cabinet, #515).
             info.getGames = () => allTables.filter(game => canBeOnWheel(game, filters.get(filterId)) && testGame(game));
         }

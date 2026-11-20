@@ -49,8 +49,6 @@ function copyItem(item) {
     return {
         title: note === null ? fullTitle : fullTitle.slice(0, -note.length).trimEnd(),
         note,
-        // The pack's own: a note that is a Rating (0 to 5), drawn as stars.
-        stars: note !== null && typeof item.stars === "number" ? item.stars : null,
         cmd: typeof item.cmd === "number" ? item.cmd : SEPARATOR_CMD,
         selected: Boolean(item.selected),
         checked: Boolean(item.checked),
@@ -86,7 +84,7 @@ export function buildMenuModel(items, { dialogStyle = false, pagingCommands = []
         if (item.cmd >= 0) {
             rows.push({
                 kind: ROW_KIND.ENTRY, title: item.title, cmd: item.cmd, mark: markNameOf(item), stayOpen: item.stayOpen, selected: item.selected,
-                disabled: item.disabled, reason: item.reason, note: item.note, stars: item.stars,
+                disabled: item.disabled, reason: item.reason, note: item.note,
             });
         } else if (isDialogText && message === null) {
             message = item.runs || item.title;
@@ -321,7 +319,7 @@ export function createDrawnMenus(host, { drawingAhead, nativeMenus = createNativ
         const { geometry, model } = shown;
         const width = Math.max(1, Math.round(geometry.listWidth));
         const height = Math.max(1, Math.round(geometry.contentHeight));
-        const rows = model.rows.map(({ kind, title, mark, reason, note, stars }) => [kind, title, mark, reason, note, stars]);
+        const rows = model.rows.map(({ kind, title, mark, reason, note }) => [kind, title, mark, reason, note]);
         const signature = JSON.stringify([model.title, model.message, rows, model.footer, shown.scroll, width, height, geometry.k]);
         if (signature !== textsSignature) {
             textsLayer.clear(TRANSPARENT);

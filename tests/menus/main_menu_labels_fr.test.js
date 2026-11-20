@@ -1,9 +1,9 @@
 // ============================================================
 // The main menu in French, through main.js on the fake PinballY globals:
 // "Mon profil", "Mes succès", PinballY's High Scores as "Scores de la table"
-// (still "Meilleurs scores" in the pause menu), Rate Table with the Rating's
-// decimal comma ("Noter la table (actuel : 4,5 / 5)"), Favorites as "Tables
-// favorites", the screens keeping their own titles, "Tables à découvrir".
+// (still "Meilleurs scores" in the pause menu), Rate Table as "Noter la
+// table" alone on a rated table, Favorites as "Tables favorites", the screens
+// keeping their own titles, "Tables à découvrir".
 // ============================================================
 
 import { test } from "node:test";
@@ -15,10 +15,10 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 const ADD_ONS_UNDER_TEST = ["uiTranslation", "customMenuCommands", "achievements", "tablesToDiscover"];
 // Any command id: only the title is translated.
 const FAVORITES_FILTER_CMD = 7000;
-// Rated in half stars, so Rate Table shows the French decimal comma.
+// Rated, yet Rate Table shows its name alone.
 const TABLES = [{ id: 1, configId: "Medieval Madness (Williams 1997)", title: "Medieval Madness", rating: 4.5 }];
 
-test("the main menu names My Profile, My Achievements, the Table Scores, the current Rating and the Favorite Tables in French, the pause menu keeping Meilleurs scores", async () => {
+test("the main menu names My Profile, My Achievements, the Table Scores, Rate Table and the Favorite Tables in French, the pause menu keeping Meilleurs scores", async () => {
     const fake = createFakePinballYHost({ now: new Date(2026, 8, 30, 20, 0, 0), tables: TABLES });
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
@@ -39,7 +39,7 @@ test("the main menu names My Profile, My Achievements, the Table Scores, the cur
     const titles = fake.currentMenu().items.map(item => item.title);
     fake.closeMenu();
 
-    for (const label of ["Mon profil", "Mes succès", "Scores de la table", "Noter la table (actuel : 4,5 / 5)", "Tables favorites"]) {
+    for (const label of ["Mon profil", "Mes succès", "Scores de la table", "Noter la table", "Tables favorites"]) {
         assert.ok(titles.includes(label), `${label} in ${titles.join(" | ")}`);
     }
     assert.equal(titles.includes("Meilleurs scores"), false, titles.join(" | "));

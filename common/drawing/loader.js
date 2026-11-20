@@ -40,7 +40,7 @@ const OUTLINE_DIRECTIONS = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1]
 function drawCaption(host, dc, words) {
     const { width, height, size, weight, outline } = CAPTION_LOOK;
     const line = (dx, dy, color) => oneLine(host, dc, words, {
-        x: outline + dx, y: dy, width: width - 2 * outline, height, size, weight, color, font: FONTS.display, align: "center",
+        x: outline + dx, y: dy, width: width - 2 * outline, height, size, weight, color, font: FONTS.body, align: "center",
     });
     for (const [dx, dy] of OUTLINE_DIRECTIONS) line(dx * outline, dy * outline, OUTLINE_COLOR);
     line(0, 0, COLORS.lightGold);
