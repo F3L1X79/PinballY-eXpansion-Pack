@@ -315,14 +315,16 @@
             <div class="tags"><span class="tag track">Profiles</span><span class="tag">petit-moyen</span><span class="tag">UI</span></div>
           </div>
           <p>Aujourd'hui, Avatar Choice ne s'ouvre qu'à la création d'un Profile : ensuite, l'Avatar se change seulement depuis Windows (<code>avatar.png</code> / <code>avatar.jpg</code> dans le dossier du Profile). Rouvrir Avatar Choice pour un Profile existant.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="here">spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
           <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>common/profiles/avatar_choice.js</code> et de la page <code>docs/guide/en/profiles.md</code></div>
           <details>
-            <summary>Questions ouvertes (3)</summary>
+            <summary>Décisions du grill (20/11/2026)</summary>
             <ul>
-              <li>Où l'ouvrir : un choix « Avatar » dans les Profile Stats, à côté de <b>Frame</b>, ou une entrée de Change Player ?</li>
-              <li>Un <code>avatar.jpg</code> posé à la main (une photo) gagne sur le portrait choisi : le choix sur la borne le remplace-t-il, ou le garde-t-on en tête de la liste ?</li>
-              <li>Qui peut changer l'Avatar d'un autre Profile : seulement le Profile lui-même, ou aussi un Admin Profile ?</li>
+              <li>Ouvert en sélectionnant l'Avatar de « Mon Profile » (juste après l'Exit Button dans la boucle, infobulle « Changer d'Avatar ») ; retour sur « Mon Profile », sélection sur l'Avatar. Seul le Profile actif, Guest compris ; pas sur une page en lecture seule.</li>
+              <li>23 portraits (le 24 est retiré) ; la 24ᵉ place est l'Own Picture (<code>avatar.jpg</code> ou son <code>.bak</code>) ou, sans elle, un « ? » qui tire un portrait libre au hasard.</li>
+              <li>Choisir un portrait renomme <code>avatar.jpg</code> en <code>.bak</code> ; un portrait précédent est écrasé. Exit ne change rien (le panneau « Garder l'Avatar par défaut » reste propre à la création).</li>
+              <li>Les portraits pris par un autre Profile listé sont grisés et sautés (rien de grisé si tous sont pris). Portrait actuel retrouvé par taille de fichier, sinon sélection sur la première place.</li>
+              <li>Guest livré avec <code>profiles/guest/avatar.jpg</code> (vrai JPEG) ; migration : l'ancien <code>avatar.png</code> livré, reconnu par sa taille, est remplacé si Guest n'a pas d'<code>avatar.jpg</code>.</li>
             </ul>
             <p class="ctx">Question de csdf sur le forum (18/11/2026) : « How do you change the Profile picture, once selected? »</p>
           </details>
