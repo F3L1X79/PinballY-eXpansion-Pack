@@ -110,5 +110,17 @@ test("leaving the list with these lines changed asks to restart", () => {
 
     assert.equal(readDrawnMenu(fake).message, "The saved settings apply when PinballY restarts.");
     choose("Later");
+});
+
+test("opened again with Wheel Guides saved off, the Wheel page still lists none of the four lines", () => {
+    fake.addFile(ENV_LOCAL, "ADD_ON_WHEEL_GUIDES=false\r\nWHEEL_RAIL=true\r\n");
+    press(fake, "Exit");
+    fake.advanceTime(OPEN_OVER_MS);
+    fake.openOperatorMenu();
+    fake.advanceTime(OPEN_OVER_MS);
+    choose("eXpansion Pack Settings");
+    choose("Wheel");
+
+    assert.deepEqual(settingLines(), ["Attract Order: As PinballY"]);
     assertNoErrorLogged(fake);
 });

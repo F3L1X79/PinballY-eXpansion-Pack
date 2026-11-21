@@ -1,8 +1,8 @@
 // ============================================================
 // eXpansion Pack Settings: their entry in the Operator Menu, in its own group after Batch Capture, for whoever
 // sees the setup entries, opens the list: the Language and Startup screen pages, the Add-on categories (their Add-ons
-// as saved in .env.local, read again on each opening, one page per Add-on whose Save rewrites its one line; the Wheel's
-// Wheel Guides switches, listed while saved on, and Attract Order page), the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
+// as saved in .env.local, read again on each opening, one page per Add-on whose Save rewrites its one line, then the
+// category's own settings), the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
 // Listens to "menuopen" and "command"; saves and restarts through save_and_restart.js, and writes PinballY's attract switch time for the Attract Order.
 // - Started by main.js whatever config.addOns says, its "menuopen" listener before the Drawn Menus Add-on's.
 // - Always drawn (getPackMenusForDialogs), even with the Drawn Menus Add-on off.
@@ -54,6 +54,7 @@ const SEPARATOR = { cmd: -1 };
 // Where a setting picked on a page of choices has its line, besides a category's page (named by its group).
 const LIST_PLACE = "list";
 const OFFLINE_PLACE = "offline";
+const WHEEL_PLACE = "wheel";
 const BOLD_WEIGHT = 700;
 
 // getMenus: what shows the screens, asked on each opening
@@ -85,29 +86,25 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     // shows(saved): whether the line is listed, the settings as saved; always when absent.
     const ON_OFF = { true: TEXT.on, false: TEXT.off };
     // The Wheel Guides' own switches would do nothing with the Add-on off.
-    const wheelGuidesSaved = saved => saved.addOns.wheelGuides;
+    const wheelGuidesSavedOn = saved => saved.addOns.wheelGuides;
+    const wheelGuidesSwitch = (key, menuId, line, shows = wheelGuidesSavedOn) => ({ key, menuId, names: ON_OFF, line, normalize: String, place: WHEEL_PLACE, shows });
     const choiceSettings = [
         { key: "language", menuId: LANGUAGE_MENU_ID, names: TEXT.languageNames, line: TEXT.languageLine, normalize: value => String(value).toLowerCase(), place: LIST_PLACE },
         { key: "startupScreen", menuId: STARTUP_SCREEN_MENU_ID, names: TEXT.startupScreenNames, line: TEXT.startupScreenLine, normalize: String, place: LIST_PLACE },
-        { key: "wheelRail", menuId: WHEEL_RAIL_MENU_ID, names: ON_OFF, line: TEXT.wheelRailLine, normalize: String, place: "wheel", shows: wheelGuidesSaved },
+        wheelGuidesSwitch("wheelRail", WHEEL_RAIL_MENU_ID, TEXT.wheelRailLine),
         {
-            key: "wheelRailYears",
-            menuId: WHEEL_RAIL_YEARS_MENU_ID,
+            ...wheelGuidesSwitch("wheelRailYears", WHEEL_RAIL_YEARS_MENU_ID, TEXT.wheelRailYearsLine, saved => wheelGuidesSavedOn(saved) && saved.wheelRail),
             names: TEXT.wheelRailYearsNames,
-            line: TEXT.wheelRailYearsLine,
-            normalize: String,
-            place: "wheel",
-            shows: saved => wheelGuidesSaved(saved) && saved.wheelRail,
         },
-        { key: "wheelPosition", menuId: WHEEL_POSITION_MENU_ID, names: ON_OFF, line: TEXT.wheelPositionLine, normalize: String, place: "wheel", shows: wheelGuidesSaved },
-        { key: "favoriteHeart", menuId: FAVORITE_HEART_MENU_ID, names: ON_OFF, line: TEXT.favoriteHeartLine, normalize: String, place: "wheel", shows: wheelGuidesSaved },
+        wheelGuidesSwitch("wheelPosition", WHEEL_POSITION_MENU_ID, TEXT.wheelPositionLine),
+        wheelGuidesSwitch("favoriteHeart", FAVORITE_HEART_MENU_ID, TEXT.favoriteHeartLine),
         {
             key: "attractOrder",
             menuId: ATTRACT_ORDER_MENU_ID,
             names: TEXT.attractOrderNames,
             line: TEXT.attractOrderLine,
             normalize: String,
-            place: "wheel",
+            place: WHEEL_PLACE,
             afterSave: (from, to) => saveAttractOrderSwitches(host, profileStore, from, to),
         },
         { key: "updateCheck", menuId: UPDATE_CHECK_MENU_ID, names: ON_OFF, line: TEXT.updateCheckLine, normalize: String, place: OFFLINE_PLACE },

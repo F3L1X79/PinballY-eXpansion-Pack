@@ -36,7 +36,7 @@ test("setup", async () => {
     await settle();
 });
 
-test("the Attract Order line is on the Wheel page, after its Add-ons and a separator", () => {
+test("the Attract Order line is on the Wheel page, after its Add-ons, a separator and the Wheel Guides lines", () => {
     fake.openOperatorMenu();
     fake.advanceTime(OPEN_OVER_MS);
     choose("eXpansion Pack Settings");

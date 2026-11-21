@@ -855,12 +855,13 @@ export default {
         languageLine: (languageName) => `Sprache: ${languageName}`,
         startupScreenLine: (screenName) => `Startbildschirm: ${screenName}`,
         startupScreenNames: { welcome: "Willkommensseite", profilePicker: "Profilauswahl", wheel: "Wheel" },
-        // How attract mode moves through the tables, shown with the Wheel Order Add-on on.
+        // The Wheel Guides' own switches, on the Wheel page.
         wheelRailLine: (state) => `Wheel-Leiste: ${state}`,
         wheelRailYearsLine: (choiceName) => `Leiste nach Jahr: ${choiceName}`,
         wheelRailYearsNames: { false: "Jahrzehnte", true: "Jahrzehnte und Jahre" },
         wheelPositionLine: (state) => `Position im Wheel: ${state}`,
         favoriteHeartLine: (state) => `Favoritenherz: ${state}`,
+        // How attract mode moves through the tables.
         attractOrderLine: (orderName) => `Attraktionsmodus: ${orderName}`,
         attractOrderNames: { pinballY: "Wie PinballY", inOrder: "Der Reihe nach", wholeWheel: "Ganzes Wheel" },
         offlineMode: "Offline-Modus",
