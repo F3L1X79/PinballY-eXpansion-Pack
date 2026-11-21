@@ -45,7 +45,7 @@ test("a fresh install leaves Guest's shipped avatar.jpg as its Own Picture", () 
     assertNoErrorLogged(fake);
 });
 
-test("without the shipped avatar.jpg, Guest keeps its old avatar.png and the log says why it has no Own Picture", () => {
+test("without the shipped avatar.jpg, Guest keeps its old avatar.png as its Own Picture, and the log says why", () => {
     const fake = createFakePinballYHost();
     fake.addFile(OLD_PNG, OLD_SHIPPED_PICTURE);
 
@@ -53,6 +53,7 @@ test("without the shipped avatar.jpg, Guest keeps its old avatar.png and the log
 
     assert.equal(fake.files.readText(OLD_PNG), OLD_SHIPPED_PICTURE);
     assert.equal(guestAvatarOf(store), OLD_PNG);
+    assert.deepEqual(store.getOwnPictureOf("Guest"), { path: OLD_PNG, isInUse: true }, "no pack portrait: a picture to keep");
     assert.ok(fake.logLines().some(line => line.includes("avatar.jpg") && line.includes("missing")));
     assertNoErrorLogged(fake);
 });

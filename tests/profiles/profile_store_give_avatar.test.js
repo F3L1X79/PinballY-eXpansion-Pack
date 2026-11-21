@@ -12,19 +12,22 @@ import { createProfileStore } from "../../common/profiles/profile_store.js";
 
 const PROFILES = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 const PORTRAIT = "C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images\\avatar_choice\\avatar_choice_07.png";
+const OTHER_PORTRAIT = "C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images\\avatar_choice\\avatar_choice_03.png";
 
-test("an image given to a Profile becomes its avatar.png, replacing the one there, and its Avatar", () => {
+test("an image given to a Profile becomes its avatar.png, replacing a portrait there, and its Avatar", () => {
     const fake = createFakePinballYHost();
     fake.addFolder(`${PROFILES}\\Max`);
-    fake.addFile(`${PROFILES}\\Zoe\\avatar.png`, "Zoe's own");
+    fake.addFile(`${PROFILES}\\Zoe\\avatar.png`, "portrait 3");
     fake.addFile(PORTRAIT, "portrait 7");
+    fake.addFile(OTHER_PORTRAIT, "portrait 3");
     const store = createProfileStore(fake);
 
     store.giveAvatar("max", PORTRAIT);
     store.giveAvatar("Zoe", PORTRAIT);
 
     assert.equal(fake.files.readText(`${PROFILES}\\Max\\avatar.png`), "portrait 7");
-    assert.equal(fake.files.readText(`${PROFILES}\\Zoe\\avatar.png`), "portrait 7", "the copy overwrites");
+    assert.equal(fake.files.readText(`${PROFILES}\\Zoe\\avatar.png`), "portrait 7", "the copy overwrites a portrait");
+    assert.equal(fake.files.fileExists(`${PROFILES}\\Zoe\\avatar.png.bak`), false, "a pack portrait is not set aside");
     assert.equal(fake.files.fileExists(PORTRAIT), true, "the pack keeps its portrait");
     assert.equal(store.listProfiles().find(profile => profile.name === "Max").avatarPath, `${PROFILES}\\Max\\avatar.png`);
     assert.equal(fake.files.fileExists(`${PROFILES}\\Max\\profile.json`), false, "nothing records the portrait taken");
@@ -112,6 +115,7 @@ test("the set-aside Own Picture taken back becomes avatar.jpg again, worn at onc
     fake.addFile(`${PROFILES}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: "Max" }));
     fake.addFile(`${PROFILES}\\Max\\avatar.png`, "portrait 7");
     fake.addFile(`${PROFILES}\\Max\\avatar.jpg.bak`, "Max's photo");
+    fake.addFile(PORTRAIT, "portrait 7");
     const store = createProfileStore(fake);
     const told = [];
     store.onAvatarChange(profileName => told.push([profileName, store.getActiveProfile().avatarPath]));
@@ -162,6 +166,61 @@ test("a failed rename keeps the older avatar.jpg.bak it would have replaced", ()
     assert.equal(fake.files.readText(`${PROFILES}\\Max\\avatar.jpg`), "newer photo");
     assert.equal(fake.files.readText(`${PROFILES}\\Max\\avatar.jpg.bak`), "older photo", "the older photo is not lost");
     assert.deepEqual(fake.files.listFiles(`${PROFILES}\\Max`).sort(), ["avatar.jpg", "avatar.jpg.bak", "avatar.png"], "nothing left over");
+});
+
+test("a photo dropped as avatar.png is set aside as avatar.png.bak before the copy, then offered and worn again", () => {
+    const fake = createFakePinballYHost();
+    fake.addFile(`${PROFILES}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: "Max" }));
+    fake.addFile(`${PROFILES}\\Max\\avatar.png`, "Max's own photo");
+    fake.addFile(PORTRAIT, "portrait 7");
+    const store = createProfileStore(fake);
+    const told = [];
+    store.onAvatarChange(profileName => told.push([profileName, store.getActiveProfile().avatarPath]));
+
+    assert.deepEqual(store.getOwnPictureOf("Max"), { path: `${PROFILES}\\Max\\avatar.png`, isInUse: true }, "a photo, not a portrait");
+    store.giveAvatar("Max", PORTRAIT);
+
+    assert.equal(fake.files.readText(`${PROFILES}\\Max\\avatar.png.bak`), "Max's own photo", "the photo is kept");
+    assert.equal(fake.files.readText(`${PROFILES}\\Max\\avatar.png`), "portrait 7");
+    assert.deepEqual(store.getOwnPictureOf("Max"), { path: `${PROFILES}\\Max\\avatar.png.bak`, isInUse: false });
+    assert.ok(fake.logLines().some(line => line.includes("Max\\avatar.png was set aside as avatar.png.bak")), "logged");
+
+    store.wearOwnPicture("Max");
+
+    assert.equal(fake.files.readText(`${PROFILES}\\Max\\avatar.png`), "Max's own photo", "worn again, over the portrait's copy");
+    assert.equal(fake.files.fileExists(`${PROFILES}\\Max\\avatar.png.bak`), false);
+    assert.deepEqual(told, [["Max", `${PROFILES}\\Max\\avatar.png`], ["Max", `${PROFILES}\\Max\\avatar.png`]]);
+});
+
+test("a newer photo dropped as avatar.png replaces the older avatar.png.bak; a failed set-aside changes nothing", () => {
+    const fake = createFakePinballYHost();
+    fake.addFile(`${PROFILES}\\Max\\avatar.png`, "newer photo");
+    fake.addFile(`${PROFILES}\\Max\\avatar.png.bak`, "older photo");
+    fake.addFile(PORTRAIT, "portrait 7");
+    const store = createProfileStore(fake);
+
+    fake.lockFile(`${PROFILES}\\Max\\avatar.png`);
+    assert.throws(() => store.giveAvatar("Max", PORTRAIT), /Permission denied/);
+    assert.equal(fake.files.readText(`${PROFILES}\\Max\\avatar.png`), "newer photo", "the photo stays worn");
+    assert.equal(fake.files.readText(`${PROFILES}\\Max\\avatar.png.bak`), "older photo", "the older photo is not lost");
+    assert.deepEqual(fake.files.listFiles(`${PROFILES}\\Max`).sort(), ["avatar.png", "avatar.png.bak"], "nothing left over");
+
+    fake.unlockFile(`${PROFILES}\\Max\\avatar.png`);
+    store.giveAvatar("Max", PORTRAIT);
+    assert.equal(fake.files.readText(`${PROFILES}\\Max\\avatar.png.bak`), "newer photo");
+    assert.equal(fake.files.readText(`${PROFILES}\\Max\\avatar.png`), "portrait 7");
+});
+
+test("a failed copy after the photo is set aside puts avatar.png back", () => {
+    const fake = createFakePinballYHost();
+    fake.addFile(`${PROFILES}\\Max\\avatar.png`, "Max's own photo");
+    fake.addFile(PORTRAIT, "portrait 7");
+    const store = createProfileStore(fake);
+
+    fake.failNextCopy();
+    assert.throws(() => store.giveAvatar("Max", PORTRAIT), /Permission denied/);
+    assert.equal(fake.files.readText(`${PROFILES}\\Max\\avatar.png`), "Max's own photo");
+    assert.deepEqual(fake.files.listFiles(`${PROFILES}\\Max`), ["avatar.png"], "nothing left over");
 });
 
 test("an image given to no Profile throws, copying nothing", () => {

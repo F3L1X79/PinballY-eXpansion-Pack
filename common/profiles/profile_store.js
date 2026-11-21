@@ -28,10 +28,13 @@ const PLAY_LOG_VERSION = 1;
 // Still images only: PinballY keeps an animated image locked while it shows it.
 // avatar.jpg first, so that an image the owner drops wins over the avatar.png Avatar Choice copies.
 const AVATAR_FILES = ["avatar.jpg", "avatar.png"];
-// The Own Picture: the photo the owner drops, set aside under the second name while a portrait is worn.
+// The Own Picture: the photo the owner drops, as avatar.jpg or as an avatar.png that is
+// no copy of a pack portrait; set aside as its ".bak" while a portrait is worn.
 const OWN_PICTURE_FILE = "avatar.jpg";
 const SET_ASIDE_OWN_PICTURE_FILE = "avatar.jpg.bak";
-const OLDER_OWN_PICTURE_FILE = "avatar.jpg.older.bak";
+const PORTRAIT_COPY_FILE = "avatar.png";
+const OWN_PICTURE_PLACES = [OWN_PICTURE_FILE, PORTRAIT_COPY_FILE].map(inUse => ({ inUse, setAside: `${inUse}.bak`, older: `${inUse}.older.bak` }));
+const PACK_PORTRAIT_FILE = /^avatar_choice_\d+\.png$/i;
 // Guest's avatar.png shipped up to v1.7.3, known by its size: the same picture as the avatar.jpg shipped since.
 const OLD_GUEST_AVATAR_SIZE = 1210489;
 
@@ -81,6 +84,7 @@ export function createProfileStore(host) {
     const projectFolder = host.getProjectFolder();
     const profilesFolder = `${projectFolder}\\profiles`;
     const defaultAvatarPath = `${projectFolder}\\assets\\images\\default_avatar.png`;
+    const packPortraitsFolder = `${projectFolder}\\assets\\images\\avatar_choice`;
     const files = host.files;
     const switchListeners = [];
     const updateListeners = [];
@@ -254,7 +258,7 @@ export function createProfileStore(host) {
             if (!info || info.size !== OLD_GUEST_AVATAR_SIZE) return;
             if (files.fileExists(`${folder}\\${SET_ASIDE_OWN_PICTURE_FILE}`)) return;
             if (!files.fileExists(`${folder}\\${OWN_PICTURE_FILE}`)) {
-                log(`Guest's shipped ${OWN_PICTURE_FILE} is missing: Guest keeps its old avatar.png and has no Own Picture.`);
+                log(`Guest's shipped ${OWN_PICTURE_FILE} is missing: Guest keeps its old avatar.png as its Own Picture.`);
                 return;
             }
             files.deleteFile(oldAvatar);
@@ -520,55 +524,110 @@ export function createProfileStore(host) {
         tellListeners(avatarListeners, folderName);
     }
 
-    // Copies imagePath as the named Profile's avatar.png, replacing it;
-    // nothing records which image it was. Then its Own Picture in use, which
-    // would hide the copy, is set aside as avatar.jpg.bak, replacing an older
-    // one. Throws when a step fails: a failed copy changes nothing, a failed
-    // rename leaves the Own Picture worn.
+    // An avatar.png records nothing: a copy of a pack portrait is known by
+    // its file's size, as Avatar Choice knows it. Anything else is a photo.
+    function isPortraitCopy(path) {
+        const info = files.getFileInfo(path);
+        if (!info) return false;
+        return files.listFiles(packPortraitsFolder).filter(name => PACK_PORTRAIT_FILE.test(name)).some(name => {
+            const portrait = files.getFileInfo(`${packPortraitsFolder}\\${name}`);
+            return Boolean(portrait) && portrait.size === info.size;
+        });
+    }
+
+    const isOwnPictureInUse = (folder, place) => {
+        const path = `${folder}\\${place.inUse}`;
+        return files.fileExists(path) && (place.inUse !== PORTRAIT_COPY_FILE || !isPortraitCopy(path));
+    };
+
+    // The photo in use renamed to its ".bak", replacing an older one, then
+    // step() run. When the rename or step throws, every file is put back.
+    function setAsideAround(folderName, place, step) {
+        const folder = `${profilesFolder}\\${folderName}`;
+        const [inUse, setAside, older] = [place.inUse, place.setAside, place.older].map(name => `${folder}\\${name}`);
+        // Moved out of the way, not deleted, until the photo in use is set aside.
+        const replacesOlder = files.fileExists(setAside);
+        if (replacesOlder) files.renameFile(setAside, older);
+        let isSetAside = false;
+        try {
+            files.renameFile(inUse, setAside);
+            isSetAside = true;
+            step();
+        } catch (error) {
+            if (isSetAside) files.renameFile(setAside, inUse);
+            if (replacesOlder) files.renameFile(older, setAside);
+            throw error;
+        }
+        if (replacesOlder) files.deleteFile(older);
+        log(`${folderName}\\${place.inUse} was set aside as ${place.setAside}`
+            + `${replacesOlder ? `, replacing the older ${place.setAside}` : ""}.`);
+    }
+
+    // Copies imagePath as the named Profile's avatar.png; nothing records
+    // which image it was. A photo there is set aside first, as
+    // avatar.png.bak; a portrait's copy is replaced. Then the avatar.jpg in
+    // use, which would hide the copy, is set aside as avatar.jpg.bak. Each
+    // ".bak" replaces an older one. Throws when a step fails: a failed copy
+    // changes nothing, a failed rename leaves the photo worn.
     function giveAvatar(profileName, imagePath) {
         const folderName = listedFolderOf(profileName);
         const folder = `${profilesFolder}\\${folderName}`;
-        files.copyFile(imagePath, `${folder}\\avatar.png`);
+        const [jpegPlace, pngPlace] = OWN_PICTURE_PLACES;
+        const copy = () => files.copyFile(imagePath, `${folder}\\${PORTRAIT_COPY_FILE}`);
+        if (isOwnPictureInUse(folder, pngPlace)) setAsideAround(folderName, pngPlace, copy);
+        else copy();
         log(`The Profile "${folderName}" was given the Avatar ${imagePath}.`);
-        const ownPicture = `${folder}\\${OWN_PICTURE_FILE}`;
-        if (files.fileExists(ownPicture)) {
-            const setAsidePicture = `${folder}\\${SET_ASIDE_OWN_PICTURE_FILE}`;
-            // Moved out of the way, not deleted, until the photo in use is set aside.
-            const olderPicture = `${folder}\\${OLDER_OWN_PICTURE_FILE}`;
-            const replacesOlder = files.fileExists(setAsidePicture);
-            if (replacesOlder) files.renameFile(setAsidePicture, olderPicture);
-            try {
-                files.renameFile(ownPicture, setAsidePicture);
-            } catch (error) {
-                if (replacesOlder) files.renameFile(olderPicture, setAsidePicture);
-                throw error;
-            }
-            if (replacesOlder) files.deleteFile(olderPicture);
-            log(`${folderName}\\${OWN_PICTURE_FILE} was set aside as ${SET_ASIDE_OWN_PICTURE_FILE}`
-                + `${replacesOlder ? `, replacing the older ${SET_ASIDE_OWN_PICTURE_FILE}` : ""}.`);
-        }
+        if (isOwnPictureInUse(folder, jpegPlace)) setAsideAround(folderName, jpegPlace, () => {});
         tellAvatarChanged(folderName);
     }
 
-    // The named Profile's photo: avatar.jpg in use, or else the one set
-    // aside; null when it has no readable one.
-    function getOwnPictureOf(profileName) {
-        const folder = listedFolderPathOf(profileName);
-        for (const [name, isInUse] of [[OWN_PICTURE_FILE, true], [SET_ASIDE_OWN_PICTURE_FILE, false]]) {
-            const path = `${folder}\\${name}`;
-            if (files.fileExists(path) && files.isImageReadable(path)) return { path, isInUse };
+    // The readable photo in use, avatar.jpg first, or else a set-aside one;
+    // null when there is none.
+    function ownPictureIn(folder) {
+        const readable = path => files.fileExists(path) && files.isImageReadable(path);
+        for (const place of OWN_PICTURE_PLACES) {
+            const path = `${folder}\\${place.inUse}`;
+            if (isOwnPictureInUse(folder, place) && readable(path)) return { path, isInUse: true, place };
+        }
+        for (const place of OWN_PICTURE_PLACES) {
+            const path = `${folder}\\${place.setAside}`;
+            if (readable(path)) return { path, isInUse: false, place };
         }
         return null;
     }
 
-    // The set-aside Own Picture renamed back to avatar.jpg, which wins over
-    // avatar.png; nothing when avatar.jpg is there already. Throws when the rename fails.
+    // The named Profile's photo as { path, isInUse }; null when it has no readable one.
+    function getOwnPictureOf(profileName) {
+        const ownPicture = ownPictureIn(listedFolderPathOf(profileName));
+        return ownPicture ? { path: ownPicture.path, isInUse: ownPicture.isInUse } : null;
+    }
+
+    // The set-aside photo renamed back to its own name: avatar.jpg wins over
+    // avatar.png, and avatar.png.bak replaces the portrait's copy, which the
+    // pack still has. Nothing when a photo is in use; throws when a rename fails.
     function wearOwnPicture(profileName) {
         const folderName = listedFolderOf(profileName);
         const folder = `${profilesFolder}\\${folderName}`;
-        if (files.fileExists(`${folder}\\${OWN_PICTURE_FILE}`)) return;
-        files.renameFile(`${folder}\\${SET_ASIDE_OWN_PICTURE_FILE}`, `${folder}\\${OWN_PICTURE_FILE}`);
-        log(`${folderName}\\${SET_ASIDE_OWN_PICTURE_FILE} is worn again as ${OWN_PICTURE_FILE}.`);
+        const ownPicture = ownPictureIn(folder);
+        if (ownPicture && ownPicture.isInUse) return;
+        if (!ownPicture) throw new Error(`The Profile "${folderName}" has no set-aside Own Picture to wear.`);
+        const { place } = ownPicture;
+        const inUse = `${folder}\\${place.inUse}`;
+        if (files.fileExists(inUse)) {
+            // The portrait's copy waits under the older name until the photo is back.
+            const portraitCopy = `${folder}\\${place.older}`;
+            files.renameFile(inUse, portraitCopy);
+            try {
+                files.renameFile(ownPicture.path, inUse);
+            } catch (error) {
+                files.renameFile(portraitCopy, inUse);
+                throw error;
+            }
+            files.deleteFile(portraitCopy);
+        } else {
+            files.renameFile(ownPicture.path, inUse);
+        }
+        log(`${folderName}\\${place.setAside} is worn again as ${place.inUse}.`);
         tellAvatarChanged(folderName);
     }
 
