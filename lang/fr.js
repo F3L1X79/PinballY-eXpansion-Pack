@@ -711,7 +711,7 @@ export default {
             done: name => `Déjà repris par ${name}`,
             nothingLeft: "Rien à reprendre",
         },
-        historyConfirm: (name, games, hours, tables) => `Donner l'historique de PinballY à ${name} ? Parties : ${games}, heures : ${hours}, tables : ${tables}. Une seule fois sur cette borne.`,
+        historyConfirm: (name, games, hours, tables) => `Donner l'historique de PinballY à ${name} ? Parties : ${games}, heures : ${hours}, tables : ${tables}. Attention : une seule fois sur cette borne, et pour de bon. Ce n'est plus jamais proposé, même après une réinitialisation.`,
         historyYes: "Oui, le reprendre",
         historyDone: (name, games, hours, tables) => `${name} a repris parties : ${games}, heures : ${hours}, tables : ${tables}. Les succès atteints sont débloqués sans être annoncés.`,
         historyFailed: name => `${name} n'a pas pu reprendre l'historique de PinballY. Voir le journal pour les détails.`,

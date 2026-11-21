@@ -151,7 +151,9 @@ An Admin Profile also finds **Manage profiles** in two places: in the Exit menu 
 
 ### History Import
 
-PinballY counts, for each table, the games played, the time played and the last game's date, since long before the pack. **Take over PinballY's history**, in a Profile's own menu just before "Reset", hands that history to this Profile, once per cabinet: pick the Profile that actually played.
+PinballY counts, for each table, the games played, the time played and the last game's date, since long before the pack, in `GameStats.csv` in its install folder. **Take over PinballY's history**, in a Profile's own menu just before "Reset", hands that history to this Profile: pick the Profile that actually played. The pack only reads PinballY's stats, never changes them.
+
+**Warning: once per cabinet, for good.** Once done, the History Import is never offered again, on any Profile, even after a Profile Reset of the one that received it.
 
 - A confirmation (the cursor starts on "No") tells how many games, hours and tables would be added; a message then tells what was taken over, or that it failed (the cause in the log), in which case nothing changed.
 - What every Profile, Guest included, already played with the pack is taken off PinballY's counts, so no game counts twice. Untracked Tables are left out.
