@@ -1,9 +1,9 @@
 // ============================================================
-// The History Import from Manage profiles as Drawn Menus, through main.js
-// on the fake PinballY globals: an Admin Profile hands PinballY's history to
+// The History Import from Manage profiles as Drawn Menus, through main.js on
+// the fake PinballY globals: an Admin Profile hands PinballY's history to
 // another Profile after a confirmation on "No"; the outcome names what was
-// added, and the line is then greyed on every Profile, even after a Profile
-// Reset of the one that received it. Guest's line is always greyed.
+// added. The line is greyed for Guest, when nothing is left, and once done
+// on every Profile, even after a Profile Reset of the one that received it.
 // ============================================================
 
 import { test } from "node:test";
@@ -69,6 +69,19 @@ test("the line sits just before Reset, greyed on Guest with its reason", () => {
     assert.deepEqual(drawnMenuLines(fake).slice(-3), [TEXT.historyLine, TEXT.reset, TEXT.back]);
     assert.equal(historyRow().reason, TEXT.historyRefusals.guest);
     closeProfileMenu();
+});
+
+test("the line is greyed when the Profiles already counted everything PinballY did", () => {
+    fake.setTables([{ ...MEDIEVAL, playCount: 2, playTime: 300 }]);
+    try {
+        openProfileMenu("Bob");
+        assert.equal(historyRow().reason, TEXT.historyRefusals.nothingLeft);
+        chooseEntry(fake, TEXT.historyLine);
+        assert.equal(readDrawnMenu(fake).rows[0].title, "Bob".toUpperCase(), "choosing it changes nothing");
+        closeProfileMenu();
+    } finally {
+        fake.setTables([MEDIEVAL, MARS]);
+    }
 });
 
 test("the confirmation names the Profile and what would be added, on No, which writes nothing", () => {
