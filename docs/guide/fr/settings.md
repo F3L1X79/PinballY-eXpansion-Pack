@@ -48,7 +48,7 @@ Sous « Roue », **Repères de la roue** montre où vous en êtes sur la roue : 
 Tant que « Repères de la roue » est enregistré activé, la page « Roue » liste quatre lignes de plus après son séparateur, au-dessus de la ligne « Mode attraction », pour ne garder que les repères voulus ; chacune s'applique au redémarrage de PinballY :
 
 - **Rail de la roue** Activé ou Désactivé (`WHEEL_RAIL`) ;
-- **Rail par année**, affichée tant que le rail de la roue est enregistré activé : **Décennies** (par défaut) ou **Décennies et années**, les années de chaque décennie dessous quand la roue est par année (`WHEEL_RAIL_YEARS` ; les lettres de la roue alphabétique restent les mêmes) ;
+- **Rail par année**, affichée tant que le rail de la roue est enregistré activé : **Décennies seules** (par défaut) ou **Décennies et années**, les années de chaque décennie dessous quand la roue est par année (`WHEEL_RAIL_YEARS` ; les lettres de la roue alphabétique restent les mêmes) ;
 - **Position dans la roue** Activé ou Désactivé : désactivée, « Table n/total » revient dans la ligne d'état du bas (`WHEEL_POSITION`) ;
 - **Cœur des favoris** Activé ou Désactivé (`FAVORITE_HEART`).
 

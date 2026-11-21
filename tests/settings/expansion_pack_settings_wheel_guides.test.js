@@ -43,19 +43,19 @@ test("setup", async () => {
 test("with Wheel Guides and the Wheel Rail on, the four lines sit between the separator and the Attract Order", () => {
     assert.deepEqual(settingLines(), [
         "Wheel Rail: On",
-        "Rail by year: Decades",
+        "Rail by year: Decades only",
         "Wheel Position: On",
         "Favorite Heart: On",
         "Attract Order: As PinballY",
     ]);
 });
 
-test("Rail by year's page offers Decades and Decades and years, the cursor on the saved one", () => {
-    choose("Rail by year: Decades");
+test("Rail by year's page offers Decades only and Decades and years, the cursor on the saved one", () => {
+    choose("Rail by year: Decades only");
 
-    assert.deepEqual(drawnMenuLines(fake), ["Decades", "Decades and years", "---", "Cancel"]);
-    assert.deepEqual(markedEntries(fake, "radio"), ["Decades"]);
-    assert.equal(highlightedEntry(fake), "Decades");
+    assert.deepEqual(drawnMenuLines(fake), ["Decades only", "Decades and years", "---", "Cancel"]);
+    assert.deepEqual(markedEntries(fake, "radio"), ["Decades only"]);
+    assert.equal(highlightedEntry(fake), "Decades only");
 });
 
 test("choosing Decades and years writes only WHEEL_RAIL_YEARS, shown on restart on its line", () => {

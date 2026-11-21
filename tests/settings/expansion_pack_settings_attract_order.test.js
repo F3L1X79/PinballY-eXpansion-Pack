@@ -45,7 +45,7 @@ test("the Attract Order line is on the Wheel page, after its Add-ons, a separato
 
     assert.deepEqual(drawnMenuLines(fake).slice(-9), [
         "Wheel Order: On", "---",
-        "Wheel Rail: On", "Rail by year: Decades", "Wheel Position: On", "Favorite Heart: On",
+        "Wheel Rail: On", "Rail by year: Decades only", "Wheel Position: On", "Favorite Heart: On",
         "Attract Order: As PinballY", "---", "Back",
     ]);
 });

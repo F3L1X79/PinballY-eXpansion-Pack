@@ -55,6 +55,7 @@ const SHOT_Z_INDEX = 7545;
 const BEAM_Z_INDEX = 7546;
 const FLAME_Z_INDEX = 7550;
 const SHIP_Z_INDEX = 7560;
+const ORB_Z_INDEX = 7565;
 const EXPLOSION_Z_INDEX = 7570;
 const TEXT_Z_INDEX = 7580;
 const SPLASH_Z_INDEX = 7590;
@@ -83,8 +84,16 @@ const POINTS_PER_BREAK = 5;
 // An asteroid breaks at its fourth shot; the shots before make it blink.
 const SHOTS_TO_BREAK = 4;
 // Select or Launch held this long fires the charged shot: a beam up the ship's
-// lane that breaks every asteroid shown in it, then fades.
-const CHARGE_MS = 3000;
+// lane that breaks every asteroid shown in it, then fades. Never named on screen.
+const CHARGE_MS = 2000;
+// While it charges, an orb grows at the ship's nose; a plain shot's tap never shows it.
+const CHARGE_SHOWN_AFTER_MS = 200;
+const ORB_CANVAS = 64;
+const ORB_START_SHARE = 0.15;
+const ORB_END_SHARE = 0.7;
+const ORB_START_ALPHA = 0.5;
+// Halo to core, each a disc: radius in canvas pixels, ARGB colour.
+const ORB_DISCS = [{ radius: 32, color: 0x40E8B84A }, { radius: 22, color: 0x90E8B84A }, { radius: 12, color: 0xFFFFF1C8 }];
 const BEAM_WIDTH_SHARE = 0.5;
 const BEAM_MS = 300;
 const HIT_BLINK_MS = 240;
@@ -346,6 +355,41 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         const beamLayer = newLayer(run, BEAM_Z_INDEX);
         beamLayer.draw(dc => dc.fillRect(0, 0, 4, 16, COLORS.gold), 4, 16);
         run.beamSprite = spriteOf(beamLayer, run.laneWidth * BEAM_WIDTH_SHARE, run.shipCentreY - run.ship.h / 2, true);
+        const orbLayer = newLayer(run, ORB_Z_INDEX);
+        orbLayer.draw(paintOrb, ORB_CANVAS, ORB_CANVAS);
+        run.orbSprite = spriteOf(orbLayer, 0, 0);
+    }
+
+    // PinballY's drawing context has no circle: each disc is drawn one row at a time.
+    function paintOrb(dc) {
+        const centre = ORB_CANVAS / 2;
+        for (const { radius, color } of ORB_DISCS) {
+            for (let row = -radius; row < radius; row++) {
+                const half = Math.round(Math.sqrt(radius * radius - (row + 0.5) * (row + 0.5)));
+                dc.fillRect(centre - half, centre + row, half * 2, 1, color);
+            }
+        }
+    }
+
+    function hideOrb(run) {
+        if (!run.isOrbShown) return;
+        hide(run, run.orbSprite);
+        run.isOrbShown = false;
+    }
+
+    // Grows, eased out, from a spark to most of a lane, following the ship across lanes.
+    function updateOrb(run, heldMs) {
+        if (heldMs < CHARGE_SHOWN_AFTER_MS) return;
+        const share = Math.min(1, (heldMs - CHARGE_SHOWN_AFTER_MS) / (CHARGE_MS - CHARGE_SHOWN_AFTER_MS));
+        const eased = 1 - (1 - share) * (1 - share);
+        const size = run.laneWidth * lerp(ORB_START_SHARE, ORB_END_SHARE, eased);
+        run.orbSprite.w = size;
+        run.orbSprite.h = size;
+        const nose = run.shipCentreY - run.ship.h / 2;
+        if (run.isOrbShown) place(run, run.orbSprite, run.shipX, nose);
+        else show(run, run.orbSprite, run.shipX, nose);
+        run.isOrbShown = true;
+        run.orbSprite.layer.alpha = lerp(ORB_START_ALPHA, 1, share);
     }
 
     // Every layer drawn at once behind the opaque backdrop, which hides the table's
@@ -519,17 +563,20 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
     }
 
     // From the ship's nose, up its lane; nothing while a shot still rises, but
-    // the press, held, still charges.
+    // the press, held, still charges. A second press with no release between
+    // is the same hold, whatever its repeat flag: it never restarts the charge.
     function fire(run, command) {
         if (!run.shooting || run.phase !== "playing") return;
-        run.charge = { command, startMs: run.playMs };
+        if (!run.charge || run.charge.command !== command) run.charge = { command, startMs: run.playMs };
         if (run.shot) return;
         run.shot = { x: laneX(run, run.lane), tip: run.shipCentreY - run.ship.h / 2 };
         show(run, run.shotSprite, run.shot.x, run.shot.tip + run.shotSprite.h / 2);
     }
 
     function onRelease(run, command) {
-        if (run.charge && run.charge.command === command) run.charge = null;
+        if (!run.charge || run.charge.command !== command) return;
+        run.charge = null;
+        hideOrb(run);
     }
 
     function breakAsteroid(run, row, asteroid, y) {
@@ -565,7 +612,10 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
     function chargeStep(run) {
         if (run.charge && run.playMs - run.charge.startMs >= CHARGE_MS) {
             run.charge = null;
+            hideOrb(run);
             fireBeam(run);
+        } else if (run.charge) {
+            updateOrb(run, run.playMs - run.charge.startMs);
         }
         if (!run.beam) return;
         const shownMs = run.playMs - run.beam.startMs;
@@ -647,6 +697,7 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         run.flameShown = null;
         removeShot(run);
         run.charge = null;
+        hideOrb(run);
         if (run.beam) hide(run, run.beamSprite);
         run.beam = null;
         startBreakUp(run, asteroid.x, row.y - asteroid.trailPx);
@@ -770,12 +821,12 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
     // intro: the commands named under the opening word, and how long it stays;
     // exitGivesUp: Exit ends the game before its crash, with no score;
     // onCrashed(score, end): replaces the 2 s score panel, the game kept still until end();
-    // shooting: Select and Launch fire at the asteroids, held 3 s the charged shot.
+    // shooting: Select and Launch fire at the asteroids, held 2 s the charged shot.
     function start({ texts, onEnd, intro = { commands: [], ms: SPLASH_MS }, exitGivesUp = false, onCrashed = null, shooting = false }) {
         const run = {
             placed: createPlacedLayers(host), texts, onEnd, intro, exitGivesUp, onCrashed, shooting, commandsSprite: null, phase: "preparing", opening: null, frameTimer: null, prepareTimer: null, music: null,
             layers: [], scrolling: [], laneLines: [], freeAsteroids: [], rows: [], queue: [], flameShown: null, hasCrashed: false,
-            shotSprite: null, shot: null, breakUp: null, breakShown: -1, beamSprite: null, beam: null, charge: null,
+            shotSprite: null, shot: null, breakUp: null, breakShown: -1, beamSprite: null, beam: null, charge: null, orbSprite: null, isOrbShown: false,
             width: 0, height: 0, score: 0, playMs: 0, nextEventInMs: 0, phaseStartMs: 0, lastFrameMs: 0, glideStartMs: 0,
         };
         running = run;

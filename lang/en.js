@@ -792,7 +792,7 @@ export default {
         // The Wheel Guides' own switches, on the Wheel page.
         wheelRailLine: (state) => `Wheel Rail: ${state}`,
         wheelRailYearsLine: (choiceName) => `Rail by year: ${choiceName}`,
-        wheelRailYearsNames: { false: "Decades", true: "Decades and years" },
+        wheelRailYearsNames: { false: "Decades only", true: "Decades and years" },
         wheelPositionLine: (state) => `Wheel Position: ${state}`,
         favoriteHeartLine: (state) => `Favorite Heart: ${state}`,
         // How attract mode moves through the tables.
@@ -1102,10 +1102,9 @@ export default {
     },
     // The Rocket Game: its main menu entry, the intro's commands (the cabinet's buttons), the score screen.
     rocketGame: {
-        menuEntry: "Aviator game",
+        menuEntry: "Rocket Game",
         changeLane: "Left / right flipper: change lane",
         shoot: "Launch: shoot",
-        chargedShot: "Hold Launch 3 s: charged shot",
         yourScore: "Your score",
     },
     // The Fake Blue Screen: title and errorCode stay the same in every language.

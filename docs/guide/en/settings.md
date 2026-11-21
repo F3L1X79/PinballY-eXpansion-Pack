@@ -48,7 +48,7 @@ Under "Wheel", **Wheel Guides** shows where you are on the wheel: the Wheel Rail
 While Wheel Guides is saved on, the "Wheel" page lists four more lines after its separator, above the Attract Order line, to keep only the guides you want; each applies when PinballY restarts:
 
 - **Wheel Rail** On or Off (`WHEEL_RAIL`);
-- **Rail by year**, shown while the Wheel Rail is saved on: **Decades** (the default) or **Decades and years**, each decade's years under it when the wheel is by year (`WHEEL_RAIL_YEARS`; the letters of the alphabetical wheel stay as they are);
+- **Rail by year**, shown while the Wheel Rail is saved on: **Decades only** (the default) or **Decades and years**, each decade's years under it when the wheel is by year (`WHEEL_RAIL_YEARS`; the letters of the alphabetical wheel stay as they are);
 - **Wheel Position** On or Off: turned off, "Table n/total" comes back to the lower status line (`WHEEL_POSITION`);
 - **Favorite Heart** On or Off (`FAVORITE_HEART`).
 

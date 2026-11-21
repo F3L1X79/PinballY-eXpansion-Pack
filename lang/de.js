@@ -869,7 +869,7 @@ export default {
         // The Wheel Guides' own switches, on the Wheel page.
         wheelRailLine: (state) => `Wheel-Leiste: ${state}`,
         wheelRailYearsLine: (choiceName) => `Leiste nach Jahr: ${choiceName}`,
-        wheelRailYearsNames: { false: "Jahrzehnte", true: "Jahrzehnte und Jahre" },
+        wheelRailYearsNames: { false: "Nur Jahrzehnte", true: "Jahrzehnte und Jahre" },
         wheelPositionLine: (state) => `Position im Wheel: ${state}`,
         favoriteHeartLine: (state) => `Favoritenherz: ${state}`,
         // How attract mode moves through the tables.
@@ -1148,10 +1148,9 @@ export default {
         score: "PUNKTE",
     },
     rocketGame: {
-        menuEntry: "Aviator game",
+        menuEntry: "Rocket Game",
         changeLane: "Linker / rechter Flipper: Spur wechseln",
         shoot: "Start-Taste: schießen",
-        chargedShot: "3 s gedrückt halten: geladener Schuss",
         yourScore: "Ihre Punkte",
     },
     fakeBlueScreen: {

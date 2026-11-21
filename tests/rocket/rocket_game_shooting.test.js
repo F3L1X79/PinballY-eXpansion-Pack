@@ -36,7 +36,10 @@ test("Launch fires one shot at a time, and a shot that breaks an asteroid adds 5
     let sawBreakUp = false;
     let sawBlink = false;
     for (let elapsed = 0; elapsed < 60000 && scoreScreenLayerCount(fake) === 0; elapsed += 16) {
-        if (elapsed % 160 === 0) press(fake, "Launch");
+        if (elapsed % 160 === 0) {
+            press(fake, "Launch");
+            fake.fire("commandbuttonup", { command: "Launch", repeat: false });
+        }
         fake.advanceTime(16);
         sawBlink = sawBlink || blinkingAsteroids(fake).length > 0;
         const score = gameScore(fake, lang);
