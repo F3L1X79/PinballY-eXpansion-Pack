@@ -286,6 +286,14 @@ _Avoid_: session (the session stats count only Plays, except the Rage Quit flag)
 The dated list of a Profile's Plays: when each started, which table, and how long it lasted. Earlier games are known only by their totals.
 _Avoid_: Game Log, play history, journal
 
+**PinballY History**:
+The totals PinballY keeps per table for the whole cabinet, from before the pack as well as since: how many games, how long, and the last one's date. It belongs to no Profile.
+_Avoid_: GameStats, GameInfo, PinballY stats, play history (that is the Play Log)
+
+**History Import**:
+The single, chosen hand-over of the PinballY History to one Profile, once per cabinet, keeping only what no Profile has already counted. It adds to the Profile's totals, never to its Play Log. Shown as "reprise de l'historique" in French.
+_Avoid_: migration, sync, history copy
+
 **Daily Streak**:
 The number of consecutive calendar days, up to today, in which the active Profile started at least one Play, on any table. Shown as "Jours d'affilée sur la borne" in French.
 _Avoid_: Streak (alone: a Period Table Streak belongs to a Period Table), login streak, visit streak
