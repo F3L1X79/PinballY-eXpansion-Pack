@@ -1164,6 +1164,10 @@ export default {
         restarting: "Reiniciando",
     },
     releaseHighlights: {
+        "1.8.0": [
+            "Cambia tu avatar desde Mi perfil, o usa tu propia foto.",
+            "Un perfil Admin puede recuperar el historial de PinballY para un perfil, en Gestionar perfiles: una sola vez por máquina.",
+        ],
         "1.7.4": [
             "Por año, un filtro por década muestra ahora solo sus propias mesas, y la rueda conserva tu filtro tras reiniciar.",
         ],

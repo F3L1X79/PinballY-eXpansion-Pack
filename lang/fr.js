@@ -1167,6 +1167,10 @@ export default {
         restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
+        "1.8.0": [
+            "Changez d'Avatar depuis Mon profil, ou portez votre propre photo.",
+            "Un profil Admin peut reprendre l'historique de PinballY pour un profil, dans Gérer les profils : une seule fois par borne.",
+        ],
         "1.7.4": [
             "Par année, un filtre par décennie ne montre plus que ses propres tables, et la roue garde votre filtre après un redémarrage.",
         ],

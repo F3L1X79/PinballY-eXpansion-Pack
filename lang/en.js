@@ -1120,6 +1120,10 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.8.0": [
+            "Change your Avatar from My Profile, or wear your own picture.",
+            "An Admin Profile can take over PinballY's history for one Profile, under Manage profiles: once per cabinet.",
+        ],
         "1.7.4": [
             "By year, a decade filter now shows only its own tables, and the wheel keeps your filter after a restart.",
         ],

@@ -1162,6 +1162,10 @@ export default {
         restarting: "Riavvio in corso",
     },
     releaseHighlights: {
+        "1.8.0": [
+            "Cambia il tuo avatar da Il mio profilo, o usa la tua foto.",
+            "Un profilo Admin può riprendere la cronologia di PinballY per un profilo, in Gestisci i profili: una sola volta per cabinato.",
+        ],
         "1.7.4": [
             "Per anno, un filtro per decennio ora mostra solo i suoi tavoli, e la ruota mantiene il tuo filtro dopo un riavvio.",
         ],

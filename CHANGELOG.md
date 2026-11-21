@@ -2,6 +2,14 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.8.0 (2026-11-21)
+
+- **Change the Avatar**: on **My Profile**, the Avatar is now a choice right after the Exit Button: Select opens Avatar Choice for the active Profile, Guest included, on the portrait worn. Portraits another Profile wears are greyed and skipped. The last place holds the Profile's Own Picture (a photo dropped as `avatar.jpg` or `avatar.png`, set aside as `.bak` when a portrait is chosen, never overwritten), or a "?" that gives a random free portrait. Guest now ships its picture as `avatar.jpg`, its Own Picture.
+- **History Import**: an Admin Profile finds **Take over PinballY's history** in a Profile's own menu, under **Manage profiles**. It hands PinballY's own counts (games, time played, last game's date per table, from `GameStats.csv`) to the Profile that actually played, minus what every Profile already played with the pack, so no game counts twice. A confirmation tells what would be added. Once per cabinet, for good: it is never offered again, even after a Profile Reset. It goes into the Profile's per-table totals only, without toasts, Daily Streaks or Profile Rewards.
+- **Wheel Guides**: the eXpansion Pack Settings' "Wheel" page switches the Wheel Rail, its years (**Rail by year**), the Wheel Position and the Favorite Heart one by one.
+- **Main menu**: entries grouped by kind: play first, then the selected table, the pack's screens, what to change (Change Player, Welcome Screen, Change Filter last), Return alone. The by-year Wheel Order is now named **Chronological**.
+- **Small touches**: the button hints under the drawn screens name the keys L. Flipper, R. Flipper and Launcher; the History Import's hours are rounded up; the Easter Eggs Add-on has its own name in the Settings; the Rocket Game hides something new, and its asteroids break at their fourth shot.
+
 ## v1.7.4 (2026-11-20)
 
 - **Wheel Order**: by year, a decade filter (Era) now shows only its own tables instead of the whole wheel, and the chosen filter is kept after a restart instead of going back to All Tables.

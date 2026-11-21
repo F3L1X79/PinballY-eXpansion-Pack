@@ -1163,6 +1163,10 @@ export default {
         restarting: "Neustart läuft",
     },
     releaseHighlights: {
+        "1.8.0": [
+            "Ändere deinen Avatar unter Mein Profil, oder trage dein eigenes Bild.",
+            "Ein Admin-Profil kann unter Profile verwalten PinballYs Verlauf für ein Profil übernehmen: nur einmal pro Automat.",
+        ],
         "1.7.4": [
             "Nach Jahr zeigt ein Jahrzehnt-Filter jetzt nur noch seine eigenen Tische, und das Rad behält deinen Filter nach einem Neustart.",
         ],
