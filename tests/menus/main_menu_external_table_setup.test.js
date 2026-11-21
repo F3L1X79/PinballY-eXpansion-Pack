@@ -44,7 +44,7 @@ test("an earlier script's Table setup entry replaces the pack's own", async () =
     const lines = drawnMenuLines(fake);
     assert.deepEqual(lines.filter(isTableSetup), ["Table setup"], "the other script's entry, once");
     assert.ok(!lines.includes(lang.customMenuLabels.tableSetup), "the pack's own entry gives way");
-    assert.equal(lines.indexOf("Table setup"), lines.indexOf("Play") + 1, "in the place of the pack's entry, under Play");
+    assert.equal(lines.indexOf("Table setup"), lines.indexOf("Instruction Card") + 2, "in the place of the pack's entry, at the end of the selected table's section");
 
     chooseEntry(fake, "Table setup");
     assert.deepEqual(externalRuns, [externalCmd], "the other script's command runs");

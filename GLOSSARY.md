@@ -153,7 +153,7 @@ The filter the wheel applies right now, a wheel selection or a filter from one o
 _Avoid_: current filter, current selection
 
 **Wheel Order**:
-The order in which the wheel lists the tables of the Active Filter: alphabetical, or by year from the oldest. It stays when the Active Filter changes. A wheel selection with its own ranking keeps that ranking. Shown as "Ordre de la roue" in French.
+The order in which the wheel lists the tables of the Active Filter: alphabetical, or chronological (by year, from the oldest). It stays when the Active Filter changes. A wheel selection with its own ranking keeps that ranking. Shown as "Ordre de la roue" in French, its two orders as "Alphabétique" and "Chronologique".
 _Avoid_: sort, sort filter, sorted filter
 
 **Attract Order**:

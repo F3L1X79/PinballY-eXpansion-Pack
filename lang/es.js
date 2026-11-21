@@ -311,11 +311,11 @@ export default {
         activeFilter: (name) => `Filtro activo: ${name}`,
         // The Filter Picker's entry before Back, naming the current Wheel Order.
         wheelOrderAlphabetical: "Orden: alfabético",
-        wheelOrderByYear: "Orden: por año",
+        wheelOrderByYear: "Orden: cronológico",
         // The Wheel Order page that entry opens: its title and its two orders.
         wheelOrderPage: "Orden de la rueda",
         wheelOrderPageAlphabetical: "Alfabético",
-        wheelOrderPageByYear: "Por año",
+        wheelOrderPageByYear: "Cronológico",
         // The Drawn main menu's "Change Filter" entry, and its footer's label before the Active Filter.
         changeFilter: "Cambiar filtro",
         activeFilterLabel: "Filtro activo:",
@@ -1017,7 +1017,7 @@ export default {
             },
             wheelOrder: {
                 name: "Orden de la rueda",
-                whenOn: "Una entrada de Cambiar filtro permite a los jugadores ordenar la rueda por año, de la más antigua. Hasta entonces sigue en orden alfabético.",
+                whenOn: "Una entrada de Cambiar filtro permite a los jugadores ordenar la rueda cronológicamente, de la más antigua. Hasta entonces sigue en orden alfabético.",
                 whenOff: "La rueda sigue en orden alfabético.",
             },
             menuCleanup: {
@@ -1152,6 +1152,7 @@ export default {
         menuEntry: "Aviator game",
         changeLane: "Flipper izquierdo / derecho: cambiar de carril",
         shoot: "Botón de lanzamiento: disparar",
+        chargedShot: "Mantenido 3 s: disparo cargado",
         yourScore: "Tu puntuación",
     },
     fakeBlueScreen: {

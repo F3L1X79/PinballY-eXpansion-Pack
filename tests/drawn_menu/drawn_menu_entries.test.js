@@ -42,12 +42,13 @@ test("a non-admin Profile's main menu shows the final entries, translated and cl
     assert.equal(fake.currentMenu(), null);
     const section = entry => sectionHolding(drawnMenuLines(fake), entry);
     assert.deepEqual(section("Jouer"), ["Jouer"]);
+    assert.deepEqual(section("Noter la table"), ["Ajouter aux favoris", "Noter la table"]);
     assert.deepEqual(section("Mes succès"), ["Mon profil", "Mes succès"]);
-    assert.deepEqual(section("Noter la table"), ["Noter la table", "Ajouter aux favoris", "Changer de filtre"]);
+    assert.deepEqual(section("Changer de filtre"), ["Changer de filtre"]);
     assert.deepEqual(section("Retour"), ["Retour"]);
     assert.deepEqual(drawnMenuLines(fake), [
-        "Jouer", "---", "Mon profil", "Mes succès", "---",
-        "Noter la table", "Ajouter aux favoris", "Changer de filtre", "---", "Retour",
+        "Jouer", "---", "Ajouter aux favoris", "Noter la table", "---",
+        "Mon profil", "Mes succès", "---", "Changer de filtre", "---", "Retour",
     ], "the same order as the native main menu");
     assert.equal(section(lang.customMenuLabels.tableSetup), null, "no Table Setup for a non-admin Profile");
 });

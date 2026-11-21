@@ -1,7 +1,7 @@
 // ============================================================
 // The main menu's sections in French with Menu Cleanup on, for a non-Admin
 // Profile: information entries and Table Setup gone, selections and groups
-// behind "Filtre actif : Toutes les tables" at the end of the table block,
+// behind "Filtre actif : Toutes les tables" at the end of what to change,
 // "Retour" alone, no doubled separator.
 // ============================================================
 
@@ -35,11 +35,11 @@ test("a non-Admin Profile's cleaned main menu runs in its sections, in French", 
 
     const section = entry => mainMenuSection(fake, entry);
 
-    assert.deepEqual(section("Jouer"), ["Jouer", lang.profiles.menuEntry]);
-    assert.deepEqual(section("Mes succès"), ["Mon profil", "Mes succès"]);
+    assert.deepEqual(section("Jouer"), ["Jouer"]);
+    assert.deepEqual(section("Noter la table"), ["Ajouter aux favoris", "Noter la table"]);
+    assert.deepEqual(section("Mes succès"), ["Mon profil", "Mes succès", lang.highScores.board.menuEntry]);
     const filterPicker = "Filtre actif : Toutes les tables";
-    assert.deepEqual(section(lang.highScores.board.menuEntry),
-        [lang.highScores.board.menuEntry, "Noter la table", "Ajouter aux favoris", filterPicker]);
+    assert.deepEqual(section(lang.profiles.menuEntry), [lang.profiles.menuEntry, filterPicker]);
     assert.deepEqual(section("Retour"), ["Retour"]);
     assert.equal(section(LABELS.tableSetup), null, "no Table Setup for a non-Admin Profile");
 

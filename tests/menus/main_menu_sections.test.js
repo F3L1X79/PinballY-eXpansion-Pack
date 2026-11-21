@@ -1,8 +1,8 @@
 // ============================================================
-// The main menu's sections through main.js, Menu Cleanup off: Play and the
-// player's starting points, the player's own screens, the wheel and its
-// selected table with the Filter Picker, unknown entries, then Return alone;
-// an empty section goes with its separator.
+// The main menu's sections through main.js, Menu Cleanup off: what to play,
+// the selected table with Table Setup, the pack's screens, unknown entries,
+// what to change with the Filter Picker last, then Return alone; an empty
+// section goes with its separator.
 // - The one test of the whole order: others read their own section (support/main_menu_reader.js).
 // ============================================================
 
@@ -49,32 +49,42 @@ test("setup", async () => {
     store.switchTo("Alice");
 });
 
-const startingPoints = () => ["Play", lang.customMenuLabels.randomTable, lang.customMenuLabels.tableSetup, lang.profiles.menuEntry, lang.welcomeScreen.menuEntry];
+const toPlay = () => ["Play", lang.customMenuLabels.randomTable];
+const selectedTable = () => ["Add to Favorites", "Rate Table", "Information", "Flyer", "Instruction Card"];
 // Written out: the menu must read these exact names (#274).
-const player = () => ["My Profile", "My Achievements"];
+const screens = () => ["My Profile", "My Achievements", lang.highScores.board.menuEntry];
 const changeFilter = () => lang.customMenuLabels.activeFilter("All Tables");
+const toChange = () => [lang.profiles.menuEntry, lang.welcomeScreen.menuEntry];
+// The titles of the section at this place, counted from 0.
+const section = (titles, place) => {
+    const sections = [[]];
+    for (const title of titles) {
+        if (title === SEPARATOR) sections.push([]);
+        else sections[sections.length - 1].push(title);
+    }
+    return sections[place];
+};
 
-test("the main menu runs starting points, player, the wheel and its table, then Return alone", () => {
+test("the main menu runs what to play, the selected table, the pack's screens, what to change, then Return alone", () => {
     assert.deepEqual(mainMenuTitles(), [
-        ...startingPoints(), SEPARATOR,
-        ...player(), SEPARATOR,
-        lang.highScores.board.menuEntry, "Information", "Flyer", "Instruction Card", "Rate Table", "Add to Favorites",
-        changeFilter(), SEPARATOR,
+        ...toPlay(), SEPARATOR,
+        ...selectedTable(), lang.customMenuLabels.tableSetup, SEPARATOR,
+        ...screens(), SEPARATOR,
+        ...toChange(), changeFilter(), SEPARATOR,
         "Return",
     ]);
 });
 
-test("once the household has an Admin Profile, Table Setup is offered under Play to it only", () => {
+test("once the household has an Admin Profile, Table Setup ends the selected table's section for it only", () => {
     fake.addFile(`${PROFILES}\\Bob\\profile.json`, JSON.stringify({ version: 1, isAdmin: true }));
-    const firstBlock = titles => titles.slice(0, titles.indexOf(SEPARATOR));
 
-    assert.deepEqual(firstBlock(mainMenuTitles()), ["Play", lang.customMenuLabels.randomTable, lang.profiles.menuEntry, lang.welcomeScreen.menuEntry]);
+    assert.deepEqual(section(mainMenuTitles(), 1), selectedTable());
     store.switchTo("Bob");
-    assert.deepEqual(firstBlock(mainMenuTitles()), startingPoints());
+    assert.deepEqual(section(mainMenuTitles(), 1), [...selectedTable(), lang.customMenuLabels.tableSetup]);
     store.switchTo("Alice");
 });
 
-test("PinballY's table entries keep its order wherever it lists them, Remove from Favorites included", () => {
+test("PinballY's table entries take their places in the selected table's section, Remove from Favorites included", () => {
     const { PlayGame, GameInfo, Flyer, Instructions, RateGame, RemoveFavorite, MenuReturn } = globalThis.command;
     const titles = mainMenuTitles(() => fake.openMenu("main", [
         { title: "Play", cmd: PlayGame },
@@ -86,13 +96,10 @@ test("PinballY's table entries keep its order wherever it lists them, Remove fro
         { title: "Information", cmd: GameInfo },
         { title: "Return", cmd: MenuReturn },
     ]));
-    assert.deepEqual(titles.slice(titles.indexOf(lang.highScores.board.menuEntry)), [
-        lang.highScores.board.menuEntry, "Information", "Flyer", "Instruction Card", "Rate Table", "Remove from Favorites",
-        SEPARATOR, "Return",
-    ]);
+    assert.deepEqual(section(titles, 1), ["Remove from Favorites", "Rate Table", "Information", "Flyer", "Instruction Card"]);
 });
 
-test("entries the pack does not know keep their order in their own section, just above Return", () => {
+test("entries the pack does not know keep their order in their own section, between the pack's screens and what to change", () => {
     const { PlayGame, Quit, FilterByEra, MenuReturn } = globalThis.command;
     const titles = mainMenuTitles(() => fake.openMenu("main", [
         { title: "Play", cmd: PlayGame },
@@ -102,8 +109,8 @@ test("entries the pack does not know keep their order in their own section, just
         { title: "Another script's entry", cmd: OTHER_SCRIPT_CMD },
         { title: "Return", cmd: MenuReturn },
     ]));
-    assert.deepEqual(titles.slice(titles.indexOf(changeFilter()) + 1),
-        [SEPARATOR, "Quit PinballY", "Another script's entry", SEPARATOR, "Return"]);
+    assert.deepEqual(titles.slice(titles.indexOf(lang.highScores.board.menuEntry) + 1),
+        [SEPARATOR, "Quit PinballY", "Another script's entry", SEPARATOR, ...toChange(), changeFilter(), SEPARATOR, "Return"]);
 });
 
 test("no section leaves a doubled, leading or trailing separator when PinballY lists nothing but Play", () => {
@@ -114,9 +121,9 @@ test("no section leaves a doubled, leading or trailing separator when PinballY l
         { title: "", cmd: -1 },
     ]));
     assert.deepEqual(titles, [
-        "Play", lang.customMenuLabels.randomTable, lang.profiles.menuEntry, lang.welcomeScreen.menuEntry, SEPARATOR,
-        ...player(), SEPARATOR,
-        lang.highScores.board.menuEntry,
+        ...toPlay(), SEPARATOR,
+        ...screens(), SEPARATOR,
+        ...toChange(),
     ]);
     assertNoErrorLogged(fake);
 });

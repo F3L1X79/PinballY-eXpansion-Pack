@@ -2,8 +2,8 @@
 // The main menu with no selected-table entry shown, through main.js on the
 // fake PinballY globals: Menu Cleanup on, no High Score Board, a non-Admin
 // Profile once the household has an Admin, and PinballY offering neither
-// Rate Table nor Add to Favorites (an empty wheel selection): the table
-// block keeps only the Filter Picker's entry, "Return" alone after it.
+// Rate Table nor Add to Favorites (an empty wheel selection): the selected
+// table's section is gone, "Return" alone after what to change.
 // ============================================================
 
 import { test } from "node:test";
@@ -16,7 +16,7 @@ import { mainMenuSection, mainMenuHasStraySeparator } from "../support/main_menu
 const ADD_ONS_UNDER_TEST = ["uiTranslation", "customMenuCommands", "menuCleanup", "profilePicker"];
 const PROFILES = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 
-test("with no selected-table entry shown, the table block keeps only the Filter Picker's entry", async () => {
+test("with no selected-table entry shown, the selected table's section is gone with its separator", async () => {
     const fake = createFakePinballYHost({ now: new Date(2026, 8, 30, 20, 0, 0) });
     fake.addFolder(`${PROFILES}\\Alice`);
     fake.addFile(`${PROFILES}\\Bob\\profile.json`, JSON.stringify({ version: 1, isAdmin: true }));
@@ -52,8 +52,8 @@ test("with no selected-table entry shown, the table block keeps only the Filter 
     for (const entry of ["Information", "Flyer", "Table Scores", "Instruction Card", LABELS.tableSetup]) {
         assert.equal(section(entry), null, entry);
     }
-    assert.deepEqual(section(lang.profiles.menuEntry), ["Play", lang.profiles.menuEntry]);
-    assert.deepEqual(section(LABELS.activeFilter("All Tables")), [LABELS.activeFilter("All Tables")]);
+    assert.deepEqual(section("Play"), ["Play"]);
+    assert.deepEqual(section(lang.profiles.menuEntry), [lang.profiles.menuEntry, LABELS.activeFilter("All Tables")]);
     assert.deepEqual(section("Return"), ["Return"]);
     assert.equal(mainMenuHasStraySeparator(fake, openMainMenu), false);
     assertNoErrorLogged(fake);

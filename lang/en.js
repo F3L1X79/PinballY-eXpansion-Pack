@@ -199,11 +199,11 @@ export default {
         activeFilter: (name) => `Active filter: ${name}`,
         // The Filter Picker's entry before Back, naming the current Wheel Order.
         wheelOrderAlphabetical: "Order: alphabetical",
-        wheelOrderByYear: "Order: by year",
+        wheelOrderByYear: "Order: chronological",
         // The Wheel Order page that entry opens: its title and its two orders.
         wheelOrderPage: "Wheel Order",
         wheelOrderPageAlphabetical: "Alphabetical",
-        wheelOrderPageByYear: "By year",
+        wheelOrderPageByYear: "Chronological",
         // The Drawn main menu's "Change Filter" entry, and its footer's label before the Active Filter.
         changeFilter: "Change Filter",
         activeFilterLabel: "Active filter:",
@@ -952,7 +952,7 @@ export default {
             },
             wheelOrder: {
                 name: "Wheel Order",
-                whenOn: "An entry of Change Filter lets players switch the wheel to by year, oldest first. It is alphabetical until they do.",
+                whenOn: "An entry of Change Filter lets players switch the wheel to chronological, oldest first. It is alphabetical until they do.",
                 whenOff: "The wheel stays alphabetical.",
             },
             menuCleanup: {
@@ -1105,6 +1105,7 @@ export default {
         menuEntry: "Aviator game",
         changeLane: "Left / right flipper: change lane",
         shoot: "Launch: shoot",
+        chargedShot: "Hold Launch 3 s: charged shot",
         yourScore: "Your score",
     },
     // The Fake Blue Screen: title and errorCode stay the same in every language.

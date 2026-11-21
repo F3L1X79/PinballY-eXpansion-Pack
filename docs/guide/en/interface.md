@@ -16,6 +16,7 @@ PinballY's menus and other scripts' menus are drawn in the pack's Steamball look
 - At the foot of a drawn screen, the button hints name the cabinet's buttons: "L Flipper" and "R Flipper" (the Prev and Next buttons of PinballY) to browse or scroll, "Select" to choose, "Exit" to go back or close.
 - On every drawn menu and screen, a held Select, Launch or Exit counts once, while a held flipper keeps going.
 - Drawn menus and screens play PinballY's button sounds, like the wheel: your own if they are in `Media\Button Sounds`, at PinballY's button volume. **Mute Buttons** in the Operator Menu silences them all; a copy of `Silence.wav` (in PinballY's `Assets` folder) named after one sound silences only that one, such as `Next.wav` and `Prev.wav` for moves.
+- The main menu is sorted into sections: playing (Play, Launch a random table); the selected table (Add to Favorites, Rate Table, then Set Up Table for an Admin Profile); the pack's screens (My Profile, My Achievements, High Score Boards); what to change (Change Player, Back to the Welcome Screen, Change Filter); then Return, alone. Change Filter is two presses of L Flipper away from Play.
 - A shorter main menu gathers every wheel selection and filter group behind one "Change Filter" entry, and names the filter you chose under its list ("Active filter: All Tables"), then the [Wheel Order](choosing_a_table.md#wheel-order) ("Wheel Order: Alphabetical"), for information only.
 
 ## Menu Cleanup

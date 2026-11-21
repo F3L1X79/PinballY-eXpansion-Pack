@@ -77,6 +77,10 @@ export const gameImages = fake => shownIn(fake, GAME_Z_INDEX.backdrop, GAME_Z_IN
 // The shot's own layer, while one rises.
 export const SHOT_Z_INDEX = 7545;
 export const shownShots = fake => shownIn(fake, SHOT_Z_INDEX, SHOT_Z_INDEX);
+// The charged shot's beam, while it fades.
+export const BEAM_Z_INDEX = 7546;
+export const shownBeams = fake => shownIn(fake, BEAM_Z_INDEX, BEAM_Z_INDEX);
+export const shownAsteroids = fake => shownIn(fake, ASTEROID_Z_INDEX.first, ASTEROID_Z_INDEX.last);
 // The asteroids' pool, and those dimmed by their blink after a shot that did not break them.
 export const ASTEROID_Z_INDEX = { first: 7510, last: 7537 };
 export const blinkingAsteroids = fake => shownIn(fake, ASTEROID_Z_INDEX.first, ASTEROID_Z_INDEX.last).filter(layer => layer.alpha < 1);

@@ -1,7 +1,7 @@
 // ============================================================
 // The Rocket Game's shooting through main.js: Launch fires one shot at a
 // time up the ship's lane, a press during its flight fires nothing more,
-// an asteroid blinks under a shot and breaks at its fifth, adding 5 points.
+// an asteroid blinks under a shot and breaks at its fourth, adding 5 points.
 // ============================================================
 
 import { test } from "node:test";

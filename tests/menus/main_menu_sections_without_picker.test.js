@@ -1,7 +1,7 @@
 // ============================================================
 // The main menu without the Profile picker, the Achievements and the High
-// Scores Add-ons: no Change Player, the player's section empty and gone with
-// its separator, and PinballY's own High Scores after the Instruction Card.
+// Scores Add-ons: no Change Player, the pack's screens' section empty and gone
+// with its separator, and PinballY's own High Scores after the Instruction Card.
 // ============================================================
 
 import { test } from "node:test";
@@ -27,8 +27,9 @@ test("without the player's Add-ons, the main menu leaves out their entries and t
     const titles = fake.currentMenu().items.map(item => (item.cmd === -1 && !item.title ? SEPARATOR : item.title));
     fake.closeMenu();
     assert.deepEqual(titles, [
-        "Play", lang.customMenuLabels.tableSetup, SEPARATOR,
-        "Information", "Flyer", "Instruction Card", "Table Scores", "Rate Table", "Add to Favorites",
+        "Play", SEPARATOR,
+        "Add to Favorites", "Rate Table", "Information", "Flyer", "Instruction Card", "Table Scores",
+        lang.customMenuLabels.tableSetup, SEPARATOR,
         lang.customMenuLabels.activeFilter("All Tables"), SEPARATOR,
         "Return",
     ]);

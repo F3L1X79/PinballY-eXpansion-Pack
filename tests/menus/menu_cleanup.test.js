@@ -31,11 +31,12 @@ function titlesOf(open) {
     fake.closeMenu();
     return titles;
 }
-// The main menu's sections Menu Cleanup leaves, around the Filter Picker's entry.
-function assertCleanedMainMenu(firstBlock) {
+// The main menu's sections Menu Cleanup leaves; tableSection: the selected table's.
+function assertCleanedMainMenu(tableSection) {
     assert.deepEqual(INFORMATION_ENTRIES.filter(entry => mainMenuSection(fake, entry) !== null), [], "no information entry");
-    assert.deepEqual(mainMenuSection(fake, "Play"), firstBlock);
-    assert.deepEqual(mainMenuSection(fake, "Rate Table"), ["Rate Table", "Add to Favorites", FILTER_PICKER]);
+    assert.deepEqual(mainMenuSection(fake, "Play"), ["Play"]);
+    assert.deepEqual(mainMenuSection(fake, "Rate Table"), tableSection);
+    assert.deepEqual(mainMenuSection(fake, FILTER_PICKER), [FILTER_PICKER]);
     assert.deepEqual(mainMenuSection(fake, "Return"), ["Return"]);
     assert.equal(mainMenuHasStraySeparator(fake), false);
 }
@@ -64,11 +65,11 @@ test("turned on, Menu Cleanup lightens the menus for every Profile, Admin includ
     markAdmin(fake, "Bob");
 
     store.switchTo("Alice");
-    assertCleanedMainMenu(["Play"]);
+    assertCleanedMainMenu(["Add to Favorites", "Rate Table"]);
     assert.deepEqual(exitMenuTitles(), CLEANED_EXIT_MENU_WITHOUT_OPERATOR_MENU);
 
     store.switchTo("Bob");
-    assertCleanedMainMenu(["Play", LABELS.tableSetup]);
+    assertCleanedMainMenu(["Add to Favorites", "Rate Table", LABELS.tableSetup]);
     assert.deepEqual(exitMenuTitles(), CLEANED_ADMIN_EXIT_MENU);
 
     assertNoErrorLogged(fake);

@@ -1,6 +1,6 @@
 // ============================================================
 // Drawn Screen controls tests on the fake host: how a press is routed to
-// the opening on top, held buttons, getting ready, children set aside and
+// the opening on top, held and released buttons, getting ready, children set aside and
 // given up, attract mode, and each screen's isOpen() and onClosed().
 // ============================================================
 
@@ -72,6 +72,24 @@ test("a held Select, Launch or Exit counts once; held flippers repeat", () => {
     assert.ok(isHeldSelectLaunchOrExit({ command: "Exit", repeat: true }));
     assert.ok(!isHeldSelectLaunchOrExit({ command: "Exit", repeat: false }));
     assert.ok(!isHeldSelectLaunchOrExit({ command: "Next", repeat: true }));
+});
+
+test("a ready opening on top hears which of Select or Launch was pressed, then let go", () => {
+    const { fake, controls } = setUp();
+    const calls = [];
+    const a = recordingScreen(controls, "A", calls);
+    const record = { onChoose: command => calls.push(`A choose ${command}`), onRelease: command => calls.push(`A release ${command}`) };
+    const opening = a.open(record);
+    fake.fire("commandbuttonup", { command: "Launch", repeat: false });
+    assert.deepEqual(calls, [], "not while getting ready");
+    opening.ready();
+    press(fake, "Launch");
+    for (const command of ["Launch", "Select", "Next", "Exit"]) fake.fire("commandbuttonup", { command, repeat: false });
+    assert.deepEqual(calls, ["A choose Launch", "A release Launch", "A release Select"]);
+    // A screen without onRelease is not told.
+    recordingScreen(controls, "B", calls).open().ready();
+    fake.fire("commandbuttonup", { command: "Launch", repeat: false });
+    assert.equal(calls.length, 3);
 });
 
 test("while getting ready, only Exit acts", () => {

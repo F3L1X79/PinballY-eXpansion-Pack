@@ -26,17 +26,20 @@ const builtIn = (...names) => ({ matches: (cmd, host) => names.some(name => host
 // Where an item no other slot matches goes.
 const UNKNOWN = { matches: () => false };
 
-// Sections from the top down, each listing its slots in menu order.
+// Sections from the top down, each listing its slots in menu order: what to
+// play, the selected table, the pack's screens, the unknown items, what to
+// change. The Filter Picker stays last, next to the footer naming the filter,
+// two Prev presses from Play as PinballY's own filters were.
 const SECTIONS = [
-    [builtIn("PlayGame"), packEntry("RANDOM_GAME"), packEntry("TABLE_SETUP"), packEntry("PROFILE_PICKER"), packEntry("WELCOME_SCREEN")],
-    [packEntry("PROFILE_STATS"), packEntry("ACHIEVEMENT_LIST"), packEntry("ROCKET_GAME")],
+    [builtIn("PlayGame"), packEntry("RANDOM_GAME")],
     [
-        packEntry("HIGH_SCORE_BOARD"),
+        builtIn("AddFavorite", "RemoveFavorite"), builtIn("RateGame"),
         builtIn("GameInfo"), builtIn("Flyer"), builtIn("Instructions"), builtIn("HighScores"),
-        builtIn("RateGame"), builtIn("AddFavorite", "RemoveFavorite"),
-        packEntry("FILTER_PICKER"),
+        packEntry("TABLE_SETUP"),
     ],
+    [packEntry("PROFILE_STATS"), packEntry("ACHIEVEMENT_LIST"), packEntry("HIGH_SCORE_BOARD"), packEntry("ROCKET_GAME")],
     [UNKNOWN],
+    [packEntry("PROFILE_PICKER"), packEntry("WELCOME_SCREEN"), packEntry("FILTER_PICKER")],
     // Alone, so it never reads as one of the filter's entries.
     [builtIn("MenuReturn")],
 ];

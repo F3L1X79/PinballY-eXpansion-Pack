@@ -2,7 +2,7 @@
 // Drawn Screen controls: the player's buttons once a Drawn Screen is open,
 // attract mode, and the screens set aside under one another, for the whole
 // pack. A stack of openings (one screen can be on it twice); a press acts on
-// the top one only, once. Listens to "commandbuttondown" and
+// the top one only, once. Listens to "commandbuttondown", "commandbuttonup" and
 // "attractmodestart", from the first screen registered on; an opening may hold attract mode off.
 // - Swallows every press while a ready or getting-ready opening is on top.
 // - An opening set aside under a child outside the module neither acts nor swallows.
@@ -53,9 +53,18 @@ export function createDrawnScreenControls(host) {
         // isRepeat: an auto-repeat of a held flipper, which most screens follow.
         if (ev.command === "Next" || ev.command === "Prev") return handlers.onMove(ev.command === "Next" ? 1 : -1, ev.repeat === true);
         // Launch is the plunger, which selects in PinballY's own menus too.
-        if (ev.command === "Select" || ev.command === "Launch") return handlers.onChoose();
+        if (ev.command === "Select" || ev.command === "Launch") return handlers.onChoose(ev.command);
         if (ev.command === "Exit") return handlers.onExit();
         return undefined;
+    }
+
+    // Fires when a mapped button is let go: only a ready screen on top that
+    // follows a held Select or Launch hears it; nothing is swallowed.
+    function onRelease(ev) {
+        const entry = top();
+        if (!entry || !entry.isReady || entry.isSetAside || !entry.handlers.onRelease) return;
+        if (ev.command !== "Select" && ev.command !== "Launch") return;
+        safeHandler(entry.screen.scriptName, entry.handlers.onRelease)(ev.command);
     }
 
     // Fires when the cabinet sits idle: no screen stays over attract mode
@@ -75,6 +84,7 @@ export function createDrawnScreenControls(host) {
         if (isListening) return;
         isListening = true;
         host.on("commandbuttondown", safeHandler(SCRIPT_NAME, onPress));
+        host.on("commandbuttonup", safeHandler(SCRIPT_NAME, onRelease));
         host.on("attractmodestart", safeHandler(SCRIPT_NAME, onAttractModeStart));
     }
 
@@ -118,8 +128,9 @@ export function createDrawnScreenControls(host) {
         const screen = { scriptName, closedListeners: createClosedListeners(scriptName) };
         const openingsOf = () => stack.filter(entry => entry.screen === screen);
         return {
-            // handlers: onMove(direction, isRepeat), onChoose(), onExit(), close(), and
-            // setAside() and showAgain() for a screen that opens children.
+            // handlers: onMove(direction, isRepeat), onChoose(command), onExit(), close(),
+            // onRelease(command) for a screen that follows a held Select or Launch,
+            // and setAside() and showAgain() for a screen that opens children.
             // onFailed: what fail() carries the failure on to; holdsAttractMode:
             // attract mode cannot start while it is on top. Getting ready until ready().
             open(handlers, { onFailed = () => {}, holdsAttractMode = false } = {}) {

@@ -27,7 +27,7 @@ test("no Achievement List or Profile Stats entry when the achievements Add-on is
     const openMainMenu = () => fake.openMenu("main", [{ title: "Play", cmd: globalThis.command.PlayGame }]);
     assert.equal(mainMenuSection(fake, lang.achievementList.menuEntry, openMainMenu), null);
     assert.equal(mainMenuSection(fake, lang.profileStats.menuEntry, openMainMenu), null);
-    assert.deepEqual(mainMenuSection(fake, "Play", openMainMenu),
-        ["Play", MENU_LABELS.tableSetup]);
+    assert.deepEqual(mainMenuSection(fake, "Play", openMainMenu), ["Play"]);
+    assert.deepEqual(mainMenuSection(fake, MENU_LABELS.tableSetup, openMainMenu), [MENU_LABELS.tableSetup]);
     assertNoErrorLogged(fake);
 });

@@ -46,9 +46,10 @@ test("the main menu is drawn instead of the native one, with the pack's sections
     assert.equal(fake.currentMenu(), null, "no native menu");
     assert.ok(isDrawnMenuShown(fake));
     const section = entry => sectionHolding(drawnMenuLines(fake), entry);
-    assert.deepEqual(section("Play"), ["Play", LABELS.tableSetup]);
+    assert.deepEqual(section("Play"), ["Play"]);
     assert.deepEqual(section("Information"),
-        ["Information", "Flyer", "Instruction Card", "Table Scores", "Rate Table", "Add to Favorites", LABELS.changeFilter]);
+        ["Add to Favorites", "Rate Table", "Information", "Flyer", "Instruction Card", "Table Scores", LABELS.tableSetup]);
+    assert.deepEqual(section(LABELS.changeFilter), [LABELS.changeFilter]);
     assert.deepEqual(section("Return"), ["Return"]);
     assert.equal(readDrawnMenu(fake).message, null);
     assert.equal(highlightedEntry(fake), "Play", "the cursor opens on the first entry");
@@ -61,7 +62,7 @@ test("Next and Prev move the cursor over the entries only, wrapping, with their 
     press(fake, "Next");
     assert.equal(highlightedEntry(fake), "Play", "Next from the last entry wraps to the first");
     for (let count = 0; count < 2; count++) press(fake, "Next");
-    assert.equal(highlightedEntry(fake), "Information", "the separator is skipped");
+    assert.equal(highlightedEntry(fake), "Rate Table", "the separator is skipped");
     assert.deepEqual(fake.soundsPlayed().slice(soundsBefore), [PREV_SOUND, NEXT_SOUND, NEXT_SOUND, NEXT_SOUND]);
 });
 

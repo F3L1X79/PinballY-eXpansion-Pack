@@ -1,7 +1,7 @@
 // ============================================================
 // The Wheel Order saved as "by year" in cabinet.json, through main.js in
 // French: the wheel starts by year on the filter PinballY restored, and the
-// Filter Picker's entry reads "Ordre : par année".
+// Filter Picker's entry reads "Ordre : chronologique".
 // ============================================================
 
 import { test } from "node:test";
@@ -33,7 +33,7 @@ test("saved by year, the wheel starts by year and the entry reads it in French",
     fake.selectMenuItem(lang.customMenuLabels.activeFilter("Toutes les tables"));
     const titles = fake.currentMenu().items.map(item => item.title);
 
-    assert.equal(lang.customMenuLabels.wheelOrderByYear, "Ordre : par année");
-    assert.equal(titles.at(-2), "Ordre : par année");
+    assert.equal(lang.customMenuLabels.wheelOrderByYear, "Ordre : chronologique");
+    assert.equal(titles.at(-2), "Ordre : chronologique");
     assertNoErrorLogged(fake);
 });

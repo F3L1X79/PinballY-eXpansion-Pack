@@ -146,7 +146,7 @@ test("the submenu's Back entry goes back to the main menu, drawn", () => {
 
     assert.equal(fake.currentMenu(), null);
     assert.equal(drawnMenuLines(fake)[0], "Play");
-    assert.equal(drawnMenuLines(fake).at(-1), "Filter by Era");
+    assert.ok(drawnMenuLines(fake).includes("Filter by Era"), drawnMenuLines(fake).join(" | "));
     press(fake, "Exit");
 });
 

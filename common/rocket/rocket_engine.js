@@ -52,6 +52,7 @@ const ASTEROID_Z_INDEX = 7510;
 const BREAK_Z_INDEX = 7540;
 // Past the last break-up frame's z.
 const SHOT_Z_INDEX = 7545;
+const BEAM_Z_INDEX = 7546;
 const FLAME_Z_INDEX = 7550;
 const SHIP_Z_INDEX = 7560;
 const EXPLOSION_Z_INDEX = 7570;
@@ -79,8 +80,13 @@ const JITTER_LANES = 0.28;
 const SWAY_MS = 1100;
 const POINTS_PER_ROW = 10;
 const POINTS_PER_BREAK = 5;
-// An asteroid breaks at its fifth shot; the shots before make it blink.
-const SHOTS_TO_BREAK = 5;
+// An asteroid breaks at its fourth shot; the shots before make it blink.
+const SHOTS_TO_BREAK = 4;
+// Select or Launch held this long fires the charged shot: a beam up the ship's
+// lane that breaks every asteroid shown in it, then fades.
+const CHARGE_MS = 3000;
+const BEAM_WIDTH_SHARE = 0.5;
+const BEAM_MS = 300;
 const HIT_BLINK_MS = 240;
 const HIT_BLINK_STEP_MS = 60;
 const HIT_BLINK_ALPHA = 0.25;
@@ -337,6 +343,9 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         const layer = newLayer(run, SHOT_Z_INDEX);
         layer.draw(dc => dc.fillRect(0, 0, 4, 16, COLORS.gold), 4, 16);
         run.shotSprite = spriteOf(layer, run.laneWidth * SHOT_WIDTH_SHARE, run.laneWidth * SHOT_LENGTH_SHARE, true);
+        const beamLayer = newLayer(run, BEAM_Z_INDEX);
+        beamLayer.draw(dc => dc.fillRect(0, 0, 4, 16, COLORS.gold), 4, 16);
+        run.beamSprite = spriteOf(beamLayer, run.laneWidth * BEAM_WIDTH_SHARE, run.shipCentreY - run.ship.h / 2, true);
     }
 
     // Every layer drawn at once behind the opaque backdrop, which hides the table's
@@ -509,11 +518,63 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         run.shot = null;
     }
 
-    // From the ship's nose, up its lane; nothing while a shot still rises.
-    function fire(run) {
-        if (!run.shooting || run.phase !== "playing" || run.shot) return;
+    // From the ship's nose, up its lane; nothing while a shot still rises, but
+    // the press, held, still charges.
+    function fire(run, command) {
+        if (!run.shooting || run.phase !== "playing") return;
+        run.charge = { command, startMs: run.playMs };
+        if (run.shot) return;
         run.shot = { x: laneX(run, run.lane), tip: run.shipCentreY - run.ship.h / 2 };
         show(run, run.shotSprite, run.shot.x, run.shot.tip + run.shotSprite.h / 2);
+    }
+
+    function onRelease(run, command) {
+        if (run.charge && run.charge.command === command) run.charge = null;
+    }
+
+    function breakAsteroid(run, row, asteroid, y) {
+        // The row stays, even empty: it still scores as it passes.
+        row.asteroids = row.asteroids.filter(other => other !== asteroid);
+        releaseAsteroid(run, asteroid);
+        startBreakUp(run, asteroid.x, y);
+        run.score += POINTS_PER_BREAK;
+    }
+
+    // Every asteroid shown, even in part, up the lane from the ship's nose, whatever its shots so far.
+    function fireBeam(run) {
+        removeShot(run);
+        const x = laneX(run, run.lane);
+        const nose = run.shipCentreY - run.ship.h / 2;
+        const radius = run.asteroidHitRadius;
+        const reach = radius + run.beamSprite.w / 2;
+        // Highest first, so the break-up shows on the nearest.
+        const targets = [];
+        for (const row of run.rows) {
+            for (const asteroid of row.asteroids) {
+                const y = row.y - asteroid.trailPx;
+                if (Math.abs(asteroid.x - x) < reach && y - radius <= nose && y + radius >= 0) targets.push({ row, asteroid, y });
+            }
+        }
+        targets.sort((a, b) => a.y - b.y);
+        for (const { row, asteroid, y } of targets) breakAsteroid(run, row, asteroid, y);
+        if (targets.length > 0) drawScore(run);
+        run.beam = { x, startMs: run.playMs };
+        show(run, run.beamSprite, x, nose / 2);
+    }
+
+    function chargeStep(run) {
+        if (run.charge && run.playMs - run.charge.startMs >= CHARGE_MS) {
+            run.charge = null;
+            fireBeam(run);
+        }
+        if (!run.beam) return;
+        const shownMs = run.playMs - run.beam.startMs;
+        if (shownMs < BEAM_MS) {
+            run.beamSprite.layer.alpha = 1 - shownMs / BEAM_MS;
+            return;
+        }
+        hide(run, run.beamSprite);
+        run.beam = null;
     }
 
     // The lowest asteroid the shot swept through since its last step, so that a fast shot never jumps one.
@@ -541,13 +602,8 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
             target.asteroid.hitMs = run.playMs;
             removeShot(run);
         } else if (target) {
-            const { row, asteroid, y } = target;
-            // The row stays, even empty: it still scores as it passes.
-            row.asteroids = row.asteroids.filter(other => other !== asteroid);
-            releaseAsteroid(run, asteroid);
             removeShot(run);
-            startBreakUp(run, asteroid.x, y);
-            run.score += POINTS_PER_BREAK;
+            breakAsteroid(run, target.row, target.asteroid, target.y);
             drawScore(run);
         } else if (run.shot.tip + run.shotSprite.h < 0) {
             removeShot(run);
@@ -575,6 +631,7 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
             }
         }
         moveShot(run, stepMs);
+        if (run.shooting) chargeStep(run);
         breakUpStep(run, now);
         const hit = findHit(run);
         if (hit) crash(run, hit);
@@ -589,6 +646,9 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
         if (run.flameShown) hide(run, run.flameShown);
         run.flameShown = null;
         removeShot(run);
+        run.charge = null;
+        if (run.beam) hide(run, run.beamSprite);
+        run.beam = null;
         startBreakUp(run, asteroid.x, row.y - asteroid.trailPx);
         run.explosionShown = -1;
         enterPhase(run, "crash");
@@ -710,17 +770,17 @@ export function createRocketEngine(host, { controls, quietWheel, musicFile }) {
     // intro: the commands named under the opening word, and how long it stays;
     // exitGivesUp: Exit ends the game before its crash, with no score;
     // onCrashed(score, end): replaces the 2 s score panel, the game kept still until end();
-    // shooting: Select and Launch fire at the asteroids.
+    // shooting: Select and Launch fire at the asteroids, held 3 s the charged shot.
     function start({ texts, onEnd, intro = { commands: [], ms: SPLASH_MS }, exitGivesUp = false, onCrashed = null, shooting = false }) {
         const run = {
             placed: createPlacedLayers(host), texts, onEnd, intro, exitGivesUp, onCrashed, shooting, commandsSprite: null, phase: "preparing", opening: null, frameTimer: null, prepareTimer: null, music: null,
             layers: [], scrolling: [], laneLines: [], freeAsteroids: [], rows: [], queue: [], flameShown: null, hasCrashed: false,
-            shotSprite: null, shot: null, breakUp: null, breakShown: -1,
+            shotSprite: null, shot: null, breakUp: null, breakShown: -1, beamSprite: null, beam: null, charge: null,
             width: 0, height: 0, score: 0, playMs: 0, nextEventInMs: 0, phaseStartMs: 0, lastFrameMs: 0, glideStartMs: 0,
         };
         running = run;
         run.opening = screen.open(
-            { onMove: (direction, isRepeat) => onMove(run, direction, isRepeat), onChoose: () => fire(run), onExit: () => onExit(run), close: () => finish(run) },
+            { onMove: (direction, isRepeat) => onMove(run, direction, isRepeat), onChoose: command => fire(run, command), onRelease: command => onRelease(run, command), onExit: () => onExit(run), close: () => finish(run) },
             { holdsAttractMode: true },
         );
         run.opening.ready();

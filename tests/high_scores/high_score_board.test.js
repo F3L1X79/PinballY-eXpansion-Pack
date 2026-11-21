@@ -1,6 +1,6 @@
 // ============================================================
-// The High Score Board through main.js: the "High Score Boards" entry heads the
-// table's section and opens the last known board, the podium (2nd, 1st, 3rd)
+// The High Score Board through main.js: the "High Score Boards" entry ends the
+// pack's screens and opens the last known board, the podium (2nd, 1st, 3rd)
 // with names and Avatars or "Default score", then the rows below.
 // ============================================================
 
@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { startHighScores, board, FACTORY, MEDIEVAL, avatarOf, avatarFiles } from "./high_scores_scenario.js";
 import { mainMenuTitles, openBoard, isBoardOpen, title, podium, rows, message } from "./high_score_board_reader.js";
 
-test("the entry heads the selected table's section and opens the podium with each place's owner", async () => {
+test("the entry ends the pack's screens and opens the podium with each place's owner", async () => {
     const { fake, setBoard, play, switchTo } = await startHighScores({
         addOns: ["highScores", "customMenuCommands"], profiles: { Alice: {}, Bob: {} }, active: "Alice", files: avatarFiles("Alice", "Bob"),
     });
@@ -22,7 +22,7 @@ test("the entry heads the selected table's section and opens the podium with eac
     const { titles, boardEntry } = mainMenuTitles(fake);
     assert.equal(titles[boardEntry], "High Score Boards");
     assert.equal(titles[boardEntry - 1], undefined, "a separator before it");
-    assert.deepEqual(titles.slice(boardEntry + 1, boardEntry + 3), ["Information", "Flyer"]);
+    assert.equal(titles[boardEntry + 1], undefined, "a separator after it");
 
     openBoard(fake, lang);
     assert.ok(isBoardOpen(fake));
