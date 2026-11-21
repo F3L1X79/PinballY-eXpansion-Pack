@@ -30,14 +30,34 @@ test("an image given to a Profile becomes its avatar.png, replacing the one ther
     assert.ok(fake.logLines().some(line => line.includes("Max") && line.includes(PORTRAIT)), "the copy is logged");
 });
 
+test("a given image is told to the listeners, and the active Profile wears it at once", () => {
+    const fake = createFakePinballYHost();
+    fake.addFile(`${PROFILES}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: "Max" }));
+    fake.addFolder(`${PROFILES}\\Max`);
+    fake.addFolder(`${PROFILES}\\Zoe`);
+    fake.addFile(PORTRAIT, "portrait 7");
+    const store = createProfileStore(fake);
+    const told = [];
+    store.onAvatarChange(profileName => told.push([profileName, store.getActiveProfile().avatarPath]));
+
+    store.giveAvatar("max", PORTRAIT);
+    store.giveAvatar("Zoe", PORTRAIT);
+
+    const maxAvatar = `${PROFILES}\\Max\\avatar.png`;
+    assert.deepEqual(told, [["Max", maxAvatar], ["Zoe", maxAvatar]], "told by folder name, the active Profile's Avatar already new");
+});
+
 test("a failed copy throws and leaves the Profile with the Default Avatar", () => {
     const fake = createFakePinballYHost();
     fake.addFolder(`${PROFILES}\\Max`);
     fake.addFile(PORTRAIT, "portrait 7");
     const store = createProfileStore(fake);
+    const told = [];
+    store.onAvatarChange(profileName => told.push(profileName));
 
     fake.failNextCopy();
     assert.throws(() => store.giveAvatar("Max", PORTRAIT));
+    assert.deepEqual(told, [], "nothing to tell");
 
     assert.equal(fake.files.fileExists(`${PROFILES}\\Max\\avatar.png`), false);
     assert.match(store.listProfiles().find(profile => profile.name === "Max").avatarPath, /default_avatar\.png$/);

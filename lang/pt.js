@@ -554,6 +554,8 @@ export default {
 
     profileStats: {
         menuEntry: "Meu perfil",
+        // The tooltip of the card's Avatar, which opens Avatar Choice.
+        changeAvatar: "Mudar avatar",
         // The buttons at the card's foot.
         buttons: {
             achievements: "Conquistas",

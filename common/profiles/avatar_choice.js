@@ -1,9 +1,9 @@
 // ============================================================
-// Avatar Choice: the drawn screen, over the Profile picker, where a Profile
-// Name Entry just created takes one of the pack's readable portraits, copied
-// as its avatar.png by Select or Launch; Exit asks, on a panel, before keeping
-// the Default Avatar. Both hand back to the picker, as does having no portrait;
-// attract mode closes everything, copying nothing. Plays its sound as it shows; redrawn on a resize.
+// Avatar Choice: the drawn screen where a Profile takes one of the pack's
+// readable portraits, copied as its avatar.png by Select or Launch. At creation
+// (after Name Entry) Exit asks, on a panel, before keeping the Default Avatar;
+// from My Profile it closes at once. It opens on the portrait worn, known by its
+// file size, hands back on close; attract mode copies nothing. Sound on show; redrawn on a resize.
 // - Exit while still opening leaves at once, unasked: no choice can be lost yet.
 // - Moving only moves the Selection Marker: the portraits are drawn once, at opening.
 // - Buttons and attract mode, its confirmation's too, go through the Drawn Screen controls, set up before the Profile picker's listener.
@@ -34,6 +34,12 @@ const AVATAR_CHOICE_FOLDER ="assets\\images\\avatar_choice";
 const CHOICE = Object.freeze({ CHOOSE_AVATAR: 0, KEEP_DEFAULT: 1 });
 // Any other file there is left out.
 const PORTRAIT_FILE = /^avatar_choice_(\d+)\.png$/i;
+// The copy of a portrait Avatar Choice gave the Profile.
+const GIVEN_AVATAR_FILE = /\\avatar\.png$/i;
+
+// CREATION: right after Name Entry, Exit asks before keeping the Default
+// Avatar; CHANGE: from My Profile, Exit closes at once, changing nothing.
+export const AVATAR_CHOICE_MODE = Object.freeze({ CREATION: "creation", CHANGE: "change" });
 
 // The paths of the pack's readable portraits, in their numbers' order;
 // logs each unreadable one, left out.
@@ -49,6 +55,21 @@ function readPortraits(host, folder) {
         else logError(SCRIPT_NAME, `ERROR ${path} is unreadable; Avatar Choice shows without it.`, host);
     }
     return portraits;
+}
+
+// The index of the portrait the Profile wears, 0 when none: an avatar.png
+// records nothing, so a portrait is known by its file's size. An Own
+// Picture or the Default Avatar matches none.
+function wornPortraitIndex(host, profileStore, profileName, portraits) {
+    const avatarPath = profileStore.getAvatarPathOf(profileName);
+    if (!avatarPath || !GIVEN_AVATAR_FILE.test(avatarPath)) return 0;
+    const sizeOf = path => {
+        const info = host.files.getFileInfo(path);
+        return info ? info.size : null;
+    };
+    const wornSize = sizeOf(avatarPath);
+    if (wornSize === null) return 0;
+    return Math.max(0, portraits.findIndex(path => sizeOf(path) === wornSize));
 }
 
 // drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js);
@@ -223,24 +244,25 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
         onClosed();
     }
 
-    // profileName: the Profile just created; onClosed(): called once the
-    // screen is closed by a choice, Exit or a failed opening, or at once when
-    // no portrait is readable; never by attract mode.
-    function open(profileName, onClosed) {
+    // profileName: the Profile choosing; onClosed(): called once the screen
+    // is closed by a choice, Exit or a failed opening, or at once when no
+    // portrait is readable; never by attract mode. mode: an AVATAR_CHOICE_MODE.
+    function open(profileName, onClosed, { mode = AVATAR_CHOICE_MODE.CREATION } = {}) {
         if (shown) return;
         opening.begin();
         const folder = `${host.getProjectFolder()}\\${AVATAR_CHOICE_FOLDER}`;
         const portraits = opening.read(() => readPortraits(host, folder));
-        // Before any veil: the picker comes straight back.
+        // Before any veil: what it was opened from comes straight back.
         if (portraits.length === 0) {
             logError(SCRIPT_NAME, `ERROR No readable portrait in ${folder}; Avatar Choice is skipped.`, host);
             onClosed();
             return;
         }
+        const selected = opening.read(() => wornPortraitIndex(host, profileStore, profileName, portraits));
         // Here rather than on the first move, which it would slow down.
         navigationSound.load();
         shown = {
-            profileName, portraits, onClosed, selected: 0, isPreparing: true, opacity: 0,
+            profileName, portraits, onClosed, mode, selected, isPreparing: true, opacity: 0,
             controlled: controls.open({ onMove: move, onChoose: choose, onExit: exit, close: remove }),
             referenceWidth: 0, geometry: null, backdrop: null, layers: [], tooltip: null, marker: null, confirmation: null,
         };
@@ -279,9 +301,10 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
         setOpacity(shown.opacity);
     }
 
-    // Before the grid shows there is no choice to lose: Exit leaves at once.
+    // Before the grid shows there is no choice to lose: Exit leaves at once,
+    // as it always does when changing an Avatar already chosen.
     function exit() {
-        if (shown.isPreparing) leave();
+        if (shown.isPreparing || shown.mode === AVATAR_CHOICE_MODE.CHANGE) leave();
         else if (shown.confirmation) backToGrid();
         else askToConfirm();
     }
@@ -291,7 +314,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
         const { confirmation } = shown;
         if (confirmation && confirmation.selected === CHOICE.KEEP_DEFAULT) return leave();
         if (confirmation) return backToGrid();
-        if (shown.selected === EXIT_BUTTON) return askToConfirm();
+        if (shown.selected === EXIT_BUTTON) return exit();
         try {
             profileStore.giveAvatar(shown.profileName, shown.portraits[shown.selected]);
         } catch (error) {

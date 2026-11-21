@@ -1,9 +1,9 @@
 ﻿// ============================================================
 // Profile Stats: the drawn screen summing up the active Profile's plays
 // (card with Player Level and Collection Mastery, GAME, PROGRESSION and
-// TASTES sections). Its buttons open the Achievement List, the Avatar Frame
-// list, the filters and the Household Stats; this screen waits set aside
-// meanwhile. openReadOnly() shows another Profile's, readStats() reads any.
+// TASTES sections). Its Avatar opens Avatar Choice, its buttons the Achievement
+// List, the Avatar Frame list, the filters and the Household Stats; this screen
+// waits set aside meanwhile. openReadOnly() shows another Profile's, readStats() any.
 // - Read again on each opening, one section per step (docs/adr/0014).
 // - Its buttons and attract mode go through the Drawn Screen controls.
 // - A null dependency (disabled Add-on) hides its line or button.
@@ -27,6 +27,7 @@ import { prepareDrawnScreen } from "./drawn_screen.js";
 import { playerLevelColorOf } from "../drawing/steamball_drawing.js";
 import { exitButtonLookOf, exitButtonWordOf, buttonHintGroupsOf, FLIPPER_HINT } from "../drawing/button_hints.js";
 import { createSelectionMarker } from "../drawing/selection_marker.js";
+import { createAvatarChoice, AVATAR_CHOICE_MODE } from "../profiles/avatar_choice.js";
 import { PROFILE_STATS_Z_INDEX, REFERENCE_HEIGHT, CHOICE, AVATAR_FRAME_WIDTH, drawBackdrop, layoutProfileStats } from "./profile_stats_painter.js";
 
 const SCRIPT_NAME = "ProfileStats";
@@ -52,6 +53,8 @@ export function createProfileStats(host, {
     // screen, set aside under the Household Stats, comes back as it was left
     // over another Profile's opened from them.
     const controls = drawnScreenControls.register(SCRIPT_NAME);
+    // Its own, for the active Profile, sounding as at a Profile's creation.
+    const avatarChoice = createAvatarChoice(host, { profileStore, drawingAhead, drawnScreenControls, soundFile: config.avatarChoiceSoundFile });
 
     // Over every table the Profile played, hidden or no longer listed ones
     // included (hiding a table never erases a player's history), Untracked
@@ -336,8 +339,10 @@ export function createProfileStats(host, {
                 // Read-only, the Exit Button is the only choice: the flippers
                 // do nothing and Select does what Exit does, so Exit says it all.
                 buttonHints: buttonHintGroupsOf({ flippers: isReadOnly ? null : FLIPPER_HINT.BROWSE, select: !isReadOnly, exitLook }),
-                // The flippers' loop, the Exit Button first.
-                choices: [CHOICE.EXIT_BUTTON, ...buttons.map(entry => entry.choice)],
+                // Nobody changes another Profile's Avatar.
+                avatarTooltip: isReadOnly ? null : TEXT.changeAvatar,
+                // The flippers' loop, the Exit Button first, then the Avatar.
+                choices: [CHOICE.EXIT_BUTTON, ...(isReadOnly ? [] : [CHOICE.AVATAR]), ...buttons.map(entry => entry.choice)],
             },
         };
     }
@@ -501,11 +506,11 @@ export function createProfileStats(host, {
         if (screen.onReturn) screen.onReturn();
     }
 
-    // A new frame worn changes the card: the screen set aside is closed,
-    // then read and drawn again, on the Frame button.
-    function openAgainOnFrame(screen) {
+    // A new frame or Avatar worn changes the card: the screen set aside is
+    // closed, then read and drawn again, on the choice it was changed from.
+    function openAgainOn(screen, choice) {
         screen.controlled.close();
-        open(CHOICE.FRAME, { onReturn: screen.onReturn });
+        open(choice, { onReturn: screen.onReturn });
     }
 
     function choose(screen) {
@@ -519,7 +524,11 @@ export function createProfileStats(host, {
         if (choice === CHOICE.ACHIEVEMENTS) return openChild((onExit, onFailed) => achievementList.open(onExit, { onFailed }));
         if (choice === CHOICE.HOUSEHOLD) return openChild((onExit, onFailed) => householdStats.open(onExit, { onFailed }));
         if (choice === CHOICE.FRAME) return openChild((onExit, onFailed) => frameList.open(
-            isWornChanged => (isWornChanged ? openAgainOnFrame(screen) : onExit()), { onFailed }));
+            isWornChanged => (isWornChanged ? openAgainOn(screen, CHOICE.FRAME) : onExit()), { onFailed }));
+        // A choice, Exit or a failed opening all come back here, read again;
+        // attract mode closes both, changing nothing.
+        if (choice === CHOICE.AVATAR) return openChild(() => avatarChoice.open(profileStore.getActiveProfile().name,
+            () => openAgainOn(screen, CHOICE.AVATAR), { mode: AVATAR_CHOICE_MODE.CHANGE }));
         screen.controlled.close();
         if (entry) showFilter(entry.filterId);
         return undefined;

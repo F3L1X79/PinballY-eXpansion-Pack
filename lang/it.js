@@ -553,6 +553,8 @@ export default {
 
     profileStats: {
         menuEntry: "Il mio profilo",
+        // The tooltip of the card's Avatar, which opens Avatar Choice.
+        changeAvatar: "Cambia avatar",
         // The buttons at the card's foot.
         buttons: {
             achievements: "Obiettivi",

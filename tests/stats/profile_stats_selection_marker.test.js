@@ -1,6 +1,6 @@
 // ============================================================
-// Profile Stats' Selection Marker: on the Exit Button at opening, the first
-// button on Next, a single marker on the button reopened from a child
+// Profile Stats' Selection Marker: on the Exit Button at opening, the Avatar
+// then the first button on Next, a single marker on the button reopened from a child
 // screen, gone with its timer at close.
 // ============================================================
 
@@ -22,7 +22,9 @@ test("the Selection Marker surrounds the Exit Button, jumps on Next, follows the
     assert.ok(isMarkerOnExitButton(fake), "round the Exit Button");
     assert.equal(highlighted(fake), lang.buttonHints.back, "with its tooltip");
     press(fake, "Next");
-    assert.equal(highlighted(fake), buttons(fake)[0].label, "on the first button after Next");
+    assert.equal(highlighted(fake), TEXT.changeAvatar, "on the Avatar after Next");
+    press(fake, "Next");
+    assert.equal(highlighted(fake), buttons(fake)[0].label, "then on the first button");
 
     choose(fake, TEXT.buttons.achievements);
     press(fake, "Exit");

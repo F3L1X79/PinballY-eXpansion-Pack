@@ -47,7 +47,7 @@ Ouvrez **Changer de joueur** : sa dernière place, après le dernier Profil, est
 
 <img src="../../images/avatar_choice.png" alt="Le Choix de l'Avatar : 24 portraits, 4 colonnes sur 6 rangées, sous le nom du nouveau Profil, le marqueur sur l'un d'eux" width="400">
 
-Dans la saisie du nom, Exit revient sur le « + » sans rien créer. Sur une borne laissée inactive, le mode attract ferme la saisie du nom et « Changer de joueur », sans rien créer non plus ; pendant le Choix de l'Avatar, même quand il demande de confirmer, il les ferme aussi sans rien demander, et le Profil déjà créé garde l'Avatar par défaut. Deux Profils peuvent prendre le même portrait. Un fichier de portrait abîmé est écarté du Choix de l'Avatar et journalisé ; si aucun n'est lisible, le Choix de l'Avatar est sauté et le nouveau Profil garde l'Avatar par défaut. Une fois créé, un Profil ne change d'Avatar que depuis Windows.
+Dans la saisie du nom, Exit revient sur le « + » sans rien créer. Sur une borne laissée inactive, le mode attract ferme la saisie du nom et « Changer de joueur », sans rien créer non plus ; pendant le Choix de l'Avatar, même quand il demande de confirmer, il les ferme aussi sans rien demander, et le Profil déjà créé garde l'Avatar par défaut. Deux Profils peuvent prendre le même portrait. Un fichier de portrait abîmé est écarté du Choix de l'Avatar et journalisé ; si aucun n'est lisible, le Choix de l'Avatar est sauté et le nouveau Profil garde l'Avatar par défaut. Une fois créé, un Profil change d'Avatar depuis [Mon profil](#mon-profil).
 
 Un nom compte 12 caractères au maximum, sans accents, espaces ni chiffres. Pour un nom plus long ou accentué, renommez le dossier du Profil dans Windows, **avant de jouer** : renommer garde les parties et les Succès du Profil, mais ses meilleurs scores et ses records perdus suivent le nom, et renommer le dossier du Profil actif repart sur Invité.
 
@@ -80,6 +80,8 @@ Configurer le pack ne demande pas de Profil admin : tant qu'aucun Profil n'est m
 - les meilleurs scores et records que vous détenez encore ;
 - le cadre que porte votre Avatar (à choisir sous **Cadre**, voir [Maîtrise des tables](choosing_a_table.md#maîtrise-des-tables)) ;
 - et le chemin vers vos tables les plus jouées et celles qui restent à découvrir.
+
+Pour changer d'Avatar, appuyez une fois sur le flipper droit depuis le bouton Exit : le marqueur passe sur votre Avatar, en haut à gauche, avec l'infobulle « Changer d'Avatar ». Appuyez sur Select : le Choix de l'Avatar s'ouvre, le marqueur sur le portrait que vous portez (sur le premier si vous portez une photo ou l'Avatar par défaut). Select ou Launch prend un portrait aussitôt, et Mon profil revient en le portant ; votre badge en haut à droite et « Changer de joueur » le montrent aussi. Exit, ou le bouton Exit, revient à Mon profil sans rien demander et ne change rien. Invité peut aussi changer d'Avatar. La fiche d'un autre Profil, ouverte depuis les Stats de la maison, ne propose pas de changer d'Avatar.
 
 ## Stats de la maison
 

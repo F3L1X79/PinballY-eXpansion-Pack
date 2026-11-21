@@ -2,7 +2,7 @@
 // Profile store: the only module that knows the Profiles folder (one sub-folder
 // per Profile: Avatar, profile.json, Play Log; cabinet.json for the household).
 // Decides which game is a Play (ADR 0007) and tells its listeners of each
-// switch, update and Play (onPlay, ADR 0008). Handles the Profile Reset.
+// switch, update, Avatar given and Play (onPlay, ADR 0008). Handles the Profile Reset.
 // Listens to "gamestarted" / "gameover"; tells of a Play it could not save or log (onPlayFailed).
 // - Every write is whole: tmp, backup, rename; a broken or newer file comes back from its backup, the recovery written to the Error Log.
 // - isAdmin and isChild: by hand or setMark, which writes true or removes the key (ADR 0020); a first Profile created gets isAdmin (ADR 0023).
@@ -74,6 +74,7 @@ export function createProfileStore(host) {
     const updateListeners = [];
     const playListeners = [];
     const playFailedListeners = [];
+    const avatarListeners = [];
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
     // A file that could not be read, and what was kept aside or restored:
     // in the Error Log too, the file an owner attaches to a report.
@@ -477,11 +478,15 @@ export function createProfileStore(host) {
     }
 
     // Copies imagePath as the named Profile's avatar.png, replacing it;
-    // nothing records which image it was. Throws when the copy fails.
+    // nothing records which image it was. Throws when the copy fails. The
+    // listeners hear of it by the folder's name: the file name may not change.
     function giveAvatar(profileName, imagePath) {
         const folderName = listedFolderOf(profileName);
         files.copyFile(imagePath, `${profilesFolder}\\${folderName}\\avatar.png`);
         log(`The Profile "${folderName}" was given the Avatar ${imagePath}.`);
+        // A Profile on the Default Avatar now wears its avatar.png.
+        if (sameName(folderName, activeProfile.name)) activeProfile = profileAt(folderName);
+        tellListeners(avatarListeners, folderName);
     }
 
     // A mark that cannot be saved keeps the Profile: with no Admin Profile,
@@ -567,6 +572,11 @@ export function createProfileStore(host) {
         createProfile,
         // The named Profile's avatar.png becomes a copy of the image.
         giveAvatar,
+        // The image the named Profile wears, checking its Avatar only; null when not listed.
+        getAvatarPathOf: (profileName) => {
+            const profile = findProfile(profileName);
+            return profile ? profile.avatarPath : null;
+        },
         switchTo,
         getProfileData: () => activeData,
         // The named Profile's data, to read only: change it with updateProfileData.
@@ -628,6 +638,8 @@ export function createProfileStore(host) {
         // listener(profileName, { isReset }): after any change of a Profile's
         // data is saved; isReset when the Profile was reset.
         onUpdate: (listener) => { updateListeners.push(listener); },
+        // listener(profileName): after the named Profile was given an Avatar.
+        onAvatarChange: (listener) => { avatarListeners.push(listener); },
         // listener(): after a Profile Reset of the active Profile is saved.
         onActiveProfileReset: (listener) => {
             updateListeners.push((profileName, { isReset }) => {

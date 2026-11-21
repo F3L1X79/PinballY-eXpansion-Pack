@@ -39,13 +39,14 @@ const ALL_PORTRAITS = Array.from({ length: PORTRAIT_COUNT }, (_, index) => index
 
 // profiles: the Household's folders; admins, children: those of them
 // marked. portraits: the numbers of the portraits seeded. addOns: the
-// Add-ons on, the Profile picker alone by default.
+// Add-ons on, the Profile picker alone by default. portraitText: each
+// portrait's file content by number (its size recognises a portrait worn).
 export async function startOnWheel({
     profiles = ["Alice", "Bob"], admins = [], children = [], activeProfile = "Bob", language = "en", portraits = ALL_PORTRAITS, fakeOptions = {},
-    addOns = ["profilePicker"],
+    addOns = ["profilePicker"], portraitText = number => `portrait ${number}`,
 } = {}) {
     const fake = createFakePinballYHost(fakeOptions);
-    for (const number of portraits) fake.addFile(portraitOf(number), `portrait ${number}`);
+    for (const number of portraits) fake.addFile(portraitOf(number), portraitText(number));
     for (const name of profiles) fake.addFolder(`${PROFILES_FOLDER}\\${name}`);
     for (const name of admins) fake.addFile(`${PROFILES_FOLDER}\\${name}\\profile.json`, markedProfile({ isAdmin: true }));
     for (const name of children) fake.addFile(`${PROFILES_FOLDER}\\${name}\\profile.json`, markedProfile({ isChild: true }));

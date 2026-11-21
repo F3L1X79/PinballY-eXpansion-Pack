@@ -1,6 +1,6 @@
 // ============================================================
 // Another Profile's Profile Stats from its Household Stats column: its own
-// values, read-only (no foot buttons, Exit alone); Exit goes back to the
+// values, read-only (no foot buttons nor Avatar choice, Exit alone); Exit goes back to the
 // Household Stats on that column, then to one's own Profile Stats.
 // ============================================================
 
@@ -33,7 +33,7 @@ test("Select on another Profile's column opens its Profile Stats, read-only", as
     assert.equal(highlighted(fake), lang.buttonHints.back, "only the Exit Button, which goes back");
     assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { flippers: null, select: false, exit: "back" }));
     press(fake, "Next");
-    assert.equal(highlighted(fake), lang.buttonHints.back);
+    assert.equal(highlighted(fake), lang.buttonHints.back, "no Avatar to change on another Profile's card");
 
     const exit = press(fake, "Exit");
     fake.advanceTime(PROFILE_STATS_OPEN_MS);

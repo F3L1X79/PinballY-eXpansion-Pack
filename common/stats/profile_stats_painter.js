@@ -9,7 +9,7 @@
 import { STEAMBALL_COLORS as COLORS, STEAMBALL_FONTS as FONTS } from "../drawing/steamball_palette.js";
 import { metalOf, tierMetalOf, tierOf, mix, MAX_MASTERY_LEVEL } from "../mastery/table_mastery.js";
 import {
-    text, oneLine, fillGradient, fillRounded, glow, drawAvatar, drawAvatarFrame, avatarFrameSide, avatarFrameInset, drawExitButton, exitTooltipRectOf, drawExitTooltip,
+    text, oneLine, fillGradient, fillRounded, glow, tooltip, drawAvatar, drawAvatarFrame, avatarFrameSide, avatarFrameInset, drawExitButton, exitTooltipRectOf, drawExitTooltip,
     drawButtonHintsBand, buttonHintsFooterRectOf, EXIT_AND_HINTS_METRICS as EXIT_AND_HINTS, drawBackdrop as drawPanelBackdrop, drawWheelLogo,
     measureWidth,
 } from "../drawing/steamball_drawing.js";
@@ -21,7 +21,7 @@ export const PROFILE_STATS_Z_INDEX = Object.freeze({ backdrop: 6120, card: 6121,
 
 export const REFERENCE_HEIGHT = 1920;
 
-export const CHOICE = Object.freeze({ EXIT_BUTTON: "exitButton", ACHIEVEMENTS: "achievements", FRAME: "frame", MOST_PLAYED: "mostPlayed", TO_DISCOVER: "toDiscover", HOUSEHOLD: "household" });
+export const CHOICE = Object.freeze({ EXIT_BUTTON: "exitButton", AVATAR: "avatar", ACHIEVEMENTS: "achievements", FRAME: "frame", MOST_PLAYED: "mostPlayed", TO_DISCOVER: "toDiscover", HOUSEHOLD: "household" });
 
 
 const LOOK = Object.freeze({
@@ -35,6 +35,8 @@ const LOOK = Object.freeze({
     // so the column's stats have room), its inset, the gap to the column.
     cardShare: 0.4, portraitCardShare: 0.35, cardInset: 20, columnGap: 36,
     avatar: 190, avatarGap: 12, nameH: 66, nameSize: 34, minNameSize: 24, buttonsGap: 40,
+    // The Avatar's tooltip layer, on its right: room for the longest translation.
+    avatarTooltipRoom: 400,
     // The name drawn that much higher than its box, closer to the Avatar.
     nameLift: 12,
     // The card's soft glow, in rings around its frame.
@@ -321,7 +323,8 @@ function drawSection(host, dc, blocks, top, columnW) {
 // or a string }; none on another Profile's read-only card), sections (each { title, rows: [[{ label, value, pill
 // (optional { text, isLit }), share (optional, 0 to 1: a thin gold bar) }]],
 // strips (optional: [{ label, hasTable, title, logoPath, pill (null or as a stat's) }]) }),
-// exitLook (an EXIT_BUTTON_LOOK), buttonHints (the footer's groups) };
+// exitLook (an EXIT_BUTTON_LOOK), buttonHints (the footer's groups),
+// avatarTooltip (the Avatar's tooltip when it is a choice, else null) };
 // exitWord: the Exit Button's tooltip, given apart since the painter
 // reads no text of its own. Returns the pieces, each { zIndex, rect, draw(dc) } drawn
 // in its rect's own coordinates, and the highlight of each choice:
@@ -332,6 +335,13 @@ export function layoutProfileStats(host, screen, referenceWidth, exitWord) {
     const cardX = panel.x + LOOK.pad;
     // Wider than the card by its glow, on every side.
     const G = LOOK.cardGlow;
+    // The Avatar with its frame's margin, where it is drawn and highlighted.
+    const avatarBox = {
+        x: cardX + Math.round((cardW - avatar.size) / 2) - avatar.inset,
+        y: top + LOOK.cardInset,
+        w: avatar.size + 2 * avatar.inset,
+        h: avatar.size + 2 * avatar.inset,
+    };
     const pieces = [{
         zIndex: PROFILE_STATS_Z_INDEX.card,
         rect: { x: cardX - G, y: top - G, w: cardW + 2 * G, h: innerH + 2 * G },
@@ -340,9 +350,9 @@ export function layoutProfileStats(host, screen, referenceWidth, exitWord) {
             glow(dc, G, G, cardW, innerH, screen.playerLevel.color, G, LOOK.cardGlowPeak);
             dc.frameRect(G, G, cardW, innerH, 2, screen.playerLevel.color);
             const contentX = G + LOOK.cardInset;
-            let y = G + LOOK.cardInset;
-            const avatarX = G + Math.round((cardW - avatar.size) / 2);
-            y += avatar.inset;
+            // In the card's own pixels, which start G before cardX and top.
+            const avatarX = avatarBox.x - cardX + G + avatar.inset;
+            let y = avatarBox.y - top + G + avatar.inset;
             drawAvatar(dc, screen.avatarPath, avatarX, y, avatar.size);
             drawAvatarFrame(dc, screen.framePath, avatarX, y, avatar.size);
             y += avatar.size + avatar.inset + LOOK.avatarGap;
@@ -365,6 +375,18 @@ export function layoutProfileStats(host, screen, referenceWidth, exitWord) {
 
     const choiceAt = (target, tooltipShown = null) => ({ target, tooltip: tooltipShown });
     const highlights = {};
+
+    // The Avatar, its frame included, with a tooltip on its right like the
+    // Exit Button's; a choice only when the screen gives its tooltip.
+    if (screen.avatarTooltip) {
+        const margin = EXIT_AND_HINTS.tooltipMargin;
+        const tooltipRect = { x: avatarBox.x + avatarBox.w, y: avatarBox.y, w: LOOK.avatarTooltipRoom, h: avatarBox.h };
+        highlights[CHOICE.AVATAR] = choiceAt(avatarBox, {
+            zIndex: PROFILE_STATS_Z_INDEX.tooltips,
+            rect: tooltipRect,
+            draw: dc => tooltip(host, dc, screen.avatarTooltip, margin, tooltipRect.h / 2, "right"),
+        });
+    }
 
     // At the card's foot, whatever the panel's height.
     const { button } = LOOK;

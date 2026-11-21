@@ -805,6 +805,13 @@ export default function init() {
         if (framePaths.has(profileName)
             && profileRewards.wornImageOf(profileName, FRAMED_AVATAR_SIDE) !== framePaths.get(profileName)) markAheadStale();
     }));
+    // Fires when a Profile was given an Avatar: the badge and carousel show it.
+    profileStore.onAvatarChange(safeHandler(SCRIPT_NAME, profileName => {
+        if (profileName === profileStore.getActiveProfile().name) drawBadge();
+        // Its file keeps its name (avatar.png): only a forgotten signature draws it again.
+        if (avatarLayers.has(profileName)) avatarLayers.get(profileName).signature = null;
+        markAheadStale();
+    }));
 
     // The badge and the greeting must never cover a game; a player who
     // started one from the Welcome Screen was greeted by it already.
