@@ -16,7 +16,8 @@ const CONFIRM_MENU_ID = "historyImportConfirm";
 const OUTCOME_MENU_ID = "historyImportOutcome";
 const SEPARATOR = { cmd: -1 };
 
-const hoursOf = seconds => Math.round(seconds / 3600);
+// Rounded up: a few minutes taken over never read as "hours: 0".
+const hoursOf = seconds => Math.ceil(seconds / 3600);
 
 // menus: what shows the menus (common/drawn_menu/drawn_menu.js).
 export function createHistoryImportMenu(host, profileStore, menus = createNativeMenus(host)) {

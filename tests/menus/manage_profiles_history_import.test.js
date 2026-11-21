@@ -84,6 +84,19 @@ test("the line is greyed when the Profiles already counted everything PinballY d
     }
 });
 
+test("less than an hour left to take over counts as one hour, never zero", () => {
+    fake.setTables([{ ...MEDIEVAL, playCount: 3, playTime: 1500 }]);
+    try {
+        openProfileMenu("Bob");
+        chooseEntry(fake, TEXT.historyLine);
+        assert.equal(squeezed(readDrawnMenu(fake).message), squeezed(TEXT.historyConfirm("Bob", 1, 1, 1)));
+        press(fake, "Select");
+        assert.ok(!isDrawnMenuShown(fake), "No closes");
+    } finally {
+        fake.setTables([MEDIEVAL, MARS]);
+    }
+});
+
 test("the confirmation names the Profile and what would be added, on No, which writes nothing", () => {
     const bobBefore = fake.readFile(profileFile("Bob"));
     openProfileMenu("Bob");
