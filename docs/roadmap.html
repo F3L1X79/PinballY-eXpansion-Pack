@@ -218,7 +218,6 @@
 
         <div class="ax row">Moyen</div>
         <div class="cell sweet">
-          <a class="chip tr-profiles" href="#avatar-change"><b></b>Changer d'Avatar</a>
         </div>
         <div class="cell">
           <a class="chip tr-profiles" href="#pinbally-play-history"><b></b>Historique PinballY</a>
@@ -300,31 +299,6 @@
               <li>Add-on à part (<code>addOns.householdChallenge</code>), indépendant des Challenges.</li>
             </ul>
             <p class="ctx">Idée externe du 29/10/2026. Seuls les modèles recalculables depuis le Play Log (début, table, durée) sont calibrés ; les autres gardent leurs plages fixes.</p>
-          </details>
-        </div>
-      </li>
-
-      <li draggable="true" tabindex="0" class="item tr-profiles" id="avatar-change" data-track="profiles" data-rank="silver">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Changer d'Avatar depuis la borne</h3>
-            <div class="tags"><span class="tag track">Profiles</span><span class="tag">petit-moyen</span><span class="tag">UI</span></div>
-          </div>
-          <p>Aujourd'hui, Avatar Choice ne s'ouvre qu'à la création d'un Profile : ensuite, l'Avatar se change seulement depuis Windows (<code>avatar.png</code> / <code>avatar.jpg</code> dans le dossier du Profile). Rouvrir Avatar Choice pour un Profile existant.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/567">#567</a>, tickets #568 à #573 ; reste le ticket humain <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/573">#573</a> (capture d'Avatar Choice). Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>common/profiles/avatar_choice.js</code> et de la page <code>docs/guide/en/profiles.md</code></div>
-          <details>
-            <summary>Décisions du grill (20/11/2026)</summary>
-            <ul>
-              <li>Ouvert en sélectionnant l'Avatar de « Mon Profile » (juste après l'Exit Button dans la boucle, infobulle « Changer d'Avatar ») ; retour sur « Mon Profile », sélection sur l'Avatar. Seul le Profile actif, Guest compris ; pas sur une page en lecture seule.</li>
-              <li>23 portraits (le 24 est retiré) ; la 24ᵉ place est l'Own Picture (<code>avatar.jpg</code> ou son <code>.bak</code>) ou, sans elle, un « ? » qui tire un portrait libre au hasard.</li>
-              <li>Choisir un portrait renomme <code>avatar.jpg</code> en <code>.bak</code> ; un portrait précédent est écrasé. Exit ne change rien (le panneau « Garder l'Avatar par défaut » reste propre à la création).</li>
-              <li>Les portraits pris par un autre Profile listé sont grisés et sautés (rien de grisé si tous sont pris). Portrait actuel retrouvé par taille de fichier, sinon sélection sur la première place.</li>
-              <li>Guest livré avec <code>profiles/guest/avatar.jpg</code> (vrai JPEG) ; migration : l'ancien <code>avatar.png</code> livré, reconnu par sa taille, est remplacé si Guest n'a pas d'<code>avatar.jpg</code>.</li>
-            </ul>
-            <p class="ctx">Question de csdf sur le forum (18/11/2026) : « How do you change the Profile picture, once selected? »</p>
           </details>
         </div>
       </li>
