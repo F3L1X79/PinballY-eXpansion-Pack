@@ -29,6 +29,7 @@ profiles/*
 !profiles/guest/
 profiles/guest/*
 !profiles/guest/avatar.png
+!profiles/guest/avatar.jpg
 
 # The quiet wheel's original table volume, kept while it is lowered
 quiet_wheel_pending.json
