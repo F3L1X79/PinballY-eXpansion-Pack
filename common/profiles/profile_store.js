@@ -572,11 +572,6 @@ export function createProfileStore(host) {
         createProfile,
         // The named Profile's avatar.png becomes a copy of the image.
         giveAvatar,
-        // The image the named Profile wears, checking its Avatar only; null when not listed.
-        getAvatarPathOf: (profileName) => {
-            const profile = findProfile(profileName);
-            return profile ? profile.avatarPath : null;
-        },
         switchTo,
         getProfileData: () => activeData,
         // The named Profile's data, to read only: change it with updateProfileData.

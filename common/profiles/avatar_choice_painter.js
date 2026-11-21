@@ -78,8 +78,14 @@ export function drawHint(host, dc, hint, w, h) {
     text(host, dc, hint, { x: 0, y: 0, width: w, height: h, size: LOOK.hintSize, color: COLORS.description, align: "center" });
 }
 
-export function drawPortrait(dc, path, side) {
+// Drawn over a portrait another Profile wears: the drawing context has no
+// grey filter, so a dark veil greys it.
+export const GREYED_PORTRAIT_COVER = 0xB4080A0E;
+
+// isTaken: worn by another Profile, drawn greyed.
+export function drawPortrait(dc, path, side, isTaken = false) {
     drawAvatar(dc, path, 0, 0, side);
+    if (isTaken) dc.fillRect(0, 0, side, side, GREYED_PORTRAIT_COVER);
 }
 
 const CONFIRMATION = Object.freeze({

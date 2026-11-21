@@ -2,8 +2,8 @@
 // Avatar Choice: the drawn screen where a Profile takes one of the pack's
 // readable portraits, copied as its avatar.png by Select or Launch. At creation
 // (after Name Entry) Exit asks, on a panel, before keeping the Default Avatar;
-// from My Profile it closes at once. It opens on the portrait worn, known by its
-// file size, hands back on close; attract mode copies nothing. Sound on show; redrawn on a resize.
+// from My Profile it closes at once. Portraits other Profiles wear are greyed and
+// skipped. Hands back on close; attract mode copies nothing. Sound on show; redrawn on a resize.
 // - Exit while still opening leaves at once, unasked: no choice can be lost yet.
 // - Moving only moves the Selection Marker: the portraits are drawn once, at opening.
 // - Buttons and attract mode, its confirmation's too, go through the Drawn Screen controls, set up before the Profile picker's listener.
@@ -14,6 +14,7 @@ import lang from "../core/i18n.js";
 import { safeHandler, logHandlerError } from "../core/safe_handler.js";
 import { logError } from "../core/error_log.js";
 import { createNavigationSound } from "../core/navigation_sound.js";
+import { sameName } from "./profile_name_rules.js";
 import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
 import { createSelectionMarker } from "../drawing/selection_marker.js";
 import { createScreenOpening } from "../drawing/screen_opening.js";
@@ -57,20 +58,36 @@ function readPortraits(host, folder) {
     return portraits;
 }
 
-// The index of the portrait the Profile wears, 0 when none: an avatar.png
-// records nothing, so a portrait is known by its file's size. An Own
-// Picture or the Default Avatar matches none.
-function wornPortraitIndex(host, profileStore, profileName, portraits) {
-    const avatarPath = profileStore.getAvatarPathOf(profileName);
-    if (!avatarPath || !GIVEN_AVATAR_FILE.test(avatarPath)) return 0;
+// The chooser's portrait index (null when none) and those the others wear:
+// an avatar.png records nothing, so a portrait is known by its file's size.
+function readWornPortraits(host, profileStore, profileName, portraits) {
     const sizeOf = path => {
         const info = host.files.getFileInfo(path);
         return info ? info.size : null;
     };
-    const wornSize = sizeOf(avatarPath);
-    if (wornSize === null) return 0;
-    return Math.max(0, portraits.findIndex(path => sizeOf(path) === wornSize));
+    const portraitSizes = portraits.map(sizeOf);
+    const indexOf = avatarPath => {
+        if (!avatarPath || !GIVEN_AVATAR_FILE.test(avatarPath)) return null;
+        const size = sizeOf(avatarPath);
+        const index = size === null ? -1 : portraitSizes.indexOf(size);
+        return index >= 0 ? index : null;
+    };
+    let worn = null;
+    const taken = new Set();
+    for (const profile of profileStore.listProfiles()) {
+        const index = indexOf(profile.avatarPath);
+        if (sameName(profile.name, profileName)) worn = index;
+        else if (index !== null) taken.add(index);
+    }
+    // Counted before the chooser's own portrait, which stays free even if
+    // another wears it too, is set free.
+    if (taken.size === portraits.length) taken.clear();
+    taken.delete(worn);
+    return { worn, taken };
 }
+
+// The first portrait not taken; taken never holds them all.
+const firstFreePortrait = (portraitCount, taken) => Array.from({ length: portraitCount }, (_, index) => index).find(index => !taken.has(index));
 
 // drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js);
 // drawnScreenControls: the shared Drawn Screen controls (common/core/drawn_screen_controls.js);
@@ -129,7 +146,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
             },
             ...shown.portraits.map((path, index) => () => {
                 const rect = portraitRectOf(geometry(), index);
-                drawPiece(Z_INDEX.portraits, rect, dc => drawPortrait(dc, path, rect.w));
+                drawPiece(Z_INDEX.portraits, rect, dc => drawPortrait(dc, path, rect.w, shown.taken.has(index)));
             }),
         ];
     }
@@ -258,11 +275,12 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
             onClosed();
             return;
         }
-        const selected = opening.read(() => wornPortraitIndex(host, profileStore, profileName, portraits));
+        const { worn, taken } = opening.read(() => readWornPortraits(host, profileStore, profileName, portraits));
         // Here rather than on the first move, which it would slow down.
         navigationSound.load();
         shown = {
-            profileName, portraits, onClosed, mode, selected, isPreparing: true, opacity: 0,
+            profileName, portraits, worn, taken, onClosed, mode, selected: worn ?? firstFreePortrait(portraits.length, taken),
+            isPreparing: true, opacity: 0,
             controlled: controls.open({ onMove: move, onChoose: choose, onExit: exit, close: remove }),
             referenceWidth: 0, geometry: null, backdrop: null, layers: [], tooltip: null, marker: null, confirmation: null,
         };
@@ -287,7 +305,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
     }
 
     // direction: 1 for Next, -1 for Prev, through the Exit Button then each
-    // portrait; on the confirmation, round both choices.
+    // portrait not taken; on the confirmation, round both choices.
     function move(direction, isRepeat) {
         navigationSound.play(direction, isRepeat);
         const { confirmation } = shown;
@@ -296,7 +314,9 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
             confirmation.marker.moveTo(confirmation.layout.choices[confirmation.selected]);
             return;
         }
-        shown.selected = stepThroughExitButton(shown.selected, direction, shown.portraits.length);
+        // Ends: the Exit Button is never taken, and taken never holds every portrait.
+        do shown.selected = stepThroughExitButton(shown.selected, direction, shown.portraits.length);
+        while (shown.taken.has(shown.selected));
         shown.marker.moveTo(selectedRect());
         setOpacity(shown.opacity);
     }
@@ -309,12 +329,14 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
         else askToConfirm();
     }
 
-    // A portrait is taken at once; a copy that fails keeps the Default Avatar.
+    // A portrait is taken at once, the one worn already changing nothing; a
+    // copy that fails keeps the Avatar worn.
     function choose() {
         const { confirmation } = shown;
         if (confirmation && confirmation.selected === CHOICE.KEEP_DEFAULT) return leave();
         if (confirmation) return backToGrid();
         if (shown.selected === EXIT_BUTTON) return exit();
+        if (shown.selected === shown.worn) return leave();
         try {
             profileStore.giveAvatar(shown.profileName, shown.portraits[shown.selected]);
         } catch (error) {

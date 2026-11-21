@@ -12,7 +12,7 @@ import { shownLayers } from "../support/shown_layers.js";
 import { layerUnderMarker } from "../support/selection_marker_reader.js";
 import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 import { NAME_ENTRY_Z_INDEX as Z } from "../../common/profiles/name_entry_painter.js";
-import { AVATAR_CHOICE_Z_INDEX as AVATAR_Z } from "../../common/profiles/avatar_choice_painter.js";
+import { AVATAR_CHOICE_Z_INDEX as AVATAR_Z, GREYED_PORTRAIT_COVER } from "../../common/profiles/avatar_choice_painter.js";
 import config from "../../common/core/config.js";
 
 export const PROFILES_FOLDER = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
@@ -160,6 +160,12 @@ export function openNameEntry(fake) {
 export const isAvatarChoiceOpen = fake => shownLayers(fake, AVATAR_Z.backdrop).length > 0;
 export const avatarChoiceTexts = fake => shownLayers(fake, AVATAR_Z.texts).flatMap(layer => layer.texts());
 export const portraitLayers = fake => shownLayers(fake, AVATAR_Z.portraits);
+// The paths of the portraits drawn greyed, worn by another Profile.
+export const greyedPortraits = fake => portraitLayers(fake)
+    .filter(layer => layer.fills().includes(GREYED_PORTRAIT_COVER))
+    .map(layer => layer.images()[0]);
+// A size of its own for each portrait, for startOnWheel's portraitText: a portrait worn is known by its size.
+export const sizedPortraitText = number => `portrait ${"#".repeat(number)}`;
 // The portrait's path the Selection Marker surrounds, or "exit" on the Exit Button.
 export function currentPortrait(fake) {
     const exitButton = shownLayers(fake, AVATAR_Z.exitButton);
