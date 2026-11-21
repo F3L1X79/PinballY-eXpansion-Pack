@@ -5,7 +5,7 @@
 // Player Level rises. Also adds Achievement List and Profile Stats to the
 // main menu, and starts the World Tour and Surprises trackers.
 // - An Achievement becomes Notified when its toast starts, not when it unlocks; a silent one, when it is found Unlocked.
-// - The level at startup, at a switch or after a Profile Reset is a baseline, never announced.
+// - The level at startup, at a switch or after a Profile Reset is a baseline; the check after a History Import announces nothing (ADR 0025).
 // - The startup check's toasts are dropped if the Startup Screen picks another Profile.
 // - A Child Profile's level scales its points by the set a non-child Profile would have.
 // - The Challenges / High Scores / Ratings families exist only while their Add-on is on.
@@ -261,10 +261,15 @@ export default function init() {
     // isBaseline: the check at startup or at a Profile switch, whose level,
     // toasts included, is never announced. isStartup: the startup check,
     // whose toasts are dropped if the Startup Screen picks another Profile.
+    // The first check after a History Import is unannounced (ADR 0025).
     function checkForNewAchievements({ isBaseline = false, isStartup = false } = {}) {
         // A toast may start after a switch: it is credited to the Profile
         // active when it was unlocked.
         const profileName = profileStore.getActiveProfile().name;
+        if (profileStore.isUnannouncedCheckDue(profileName)) {
+            checkUnannounced(profileName);
+            return;
+        }
         const profileKey = profileName.toLowerCase();
         if (!submittedIdsByProfile.has(profileKey)) submittedIdsByProfile.set(profileKey, new Set());
         const submittedIds = submittedIdsByProfile.get(profileKey);
@@ -304,6 +309,17 @@ export default function init() {
         else if (levelAfter > levelBefore) submitLevelToast(profileKey, levelAfter, resetCount);
     }
 
+    // Every Achievement unlocked and not yet Notified becomes Notified in one
+    // save, without a toast, and the level is a baseline; the next checks are announced.
+    function checkUnannounced(profileName) {
+        const achievements = getAllAchievements();
+        const ids = [];
+        evaluateAchievements(achievements, profileStore, achievement => ids.push(achievement.id));
+        profileStore.endUnannouncedCheck(profileName, ids);
+        const submittedIds = submittedIdsByProfile.get(profileName.toLowerCase()) || new Set();
+        shownPlayerLevel.set(profileName, levelOnceShown(submittedIds, achievements, nonChildAchievementsFor(profileStore)));
+    }
+
     // The timer callback runs outside the event handler's call stack, so it
     // needs its own guard.
     const safeCheckForNewAchievements = safeHandler(SCRIPT_NAME, () => checkForNewAchievements());
@@ -321,11 +337,30 @@ export default function init() {
         setTimeout(safeCheckForNewAchievements, 0);
     }));
 
+    // Whether an unannounced check of the active Profile waits for its tick.
+    let isUnannouncedCheckWaiting = false;
+    const safeCheckUnannounced = safeHandler(SCRIPT_NAME, () => {
+        isUnannouncedCheckWaiting = false;
+        checkForNewAchievements();
+    });
+
+    // A History Import into the active Profile is checked a tick later,
+    // outside the store's save; once, whatever saves follow before it.
+    function scheduleUnannouncedCheck(profileName) {
+        if (isUnannouncedCheckWaiting || !sameName(profileName, profileStore.getActiveProfile().name)
+            || !profileStore.isUnannouncedCheckDue(profileName)) return;
+        isUnannouncedCheckWaiting = true;
+        setTimeout(safeCheckUnannounced, 0);
+    }
+
     // Fires after any change of a Profile's data: a reset Profile starts
     // over, so its Achievements are announced again once unlocked again,
     // and its toasts still waiting never show.
     profileStore.onUpdate(safeHandler(SCRIPT_NAME, (profileName, { isReset }) => {
-        if (!isReset) return;
+        if (!isReset) {
+            scheduleUnannouncedCheck(profileName);
+            return;
+        }
         const profileKey = profileName.toLowerCase();
         submittedIdsByProfile.delete(profileKey);
         resetCountByProfile.set(profileKey, resetCountOf(profileKey) + 1);

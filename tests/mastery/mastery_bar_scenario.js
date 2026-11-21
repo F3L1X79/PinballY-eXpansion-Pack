@@ -51,7 +51,7 @@ export const ADULT_TABLES = [
 // A Profile's earlier Plays on a table, as its profile.json keeps them.
 export const playedFor = seconds => ({ count: 1, seconds, lastPlayed: "2026-09-01T20:00:00" });
 
-// addOns: the Add-ons on; profiles: { name: { plays, isChild, collectionTier, notified, avatarFrame } }, Guest's
+// addOns: the Add-ons on; profiles: { name: { plays, isChild, isAdmin, collectionTier, notified, avatarFrame } }, Guest's
 // under "guest"; active: the Profile in cabinet.json; challenge: the week's
 // lock in cabinet.json (undefined lets the Challenges draw one); settings:
 // config keys to change; soundFiles: the files that exist; frameImages:
@@ -63,9 +63,10 @@ export async function startScenario({
     const fake = createFakePinballYHost({ now, tables });
     for (const file of soundFiles) fake.addFile(file);
     if (frameImages) for (const file of AVATAR_FRAME_IMAGES) fake.addFile(file);
-    for (const [name, { plays = {}, isChild = false, collectionTier, notified = [], ...rest }] of Object.entries(profiles)) {
+    for (const [name, { plays = {}, isChild = false, isAdmin = false, collectionTier, notified = [], ...rest }] of Object.entries(profiles)) {
         fake.addFile(profileFile(name), JSON.stringify({
-            version: 1, plays, notified, ...(isChild ? { isChild } : {}), ...(collectionTier ? { collectionTier } : {}),
+            version: 1, plays, notified, ...(isChild ? { isChild } : {}), ...(isAdmin ? { isAdmin } : {}),
+            ...(collectionTier ? { collectionTier } : {}),
             ...("avatarFrame" in rest ? { avatarFrame: rest.avatarFrame } : {}),
         }));
     }

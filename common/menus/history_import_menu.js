@@ -4,12 +4,15 @@
 // a one-line outcome (ADR 0025). Opens directly through the Drawn Menu
 // module. Listens to "command".
 // - The line is greyed with its reason: done (naming who), Guest, nothing left.
+// - The import keeps the Collection Tier its totals reach, for no Play to announce it.
 // ============================================================
 
 import lang from "../core/i18n.js";
 import { displayNameOf } from "../profiles/profile_name.js";
 import { logHandlerError, safeHandler } from "../core/safe_handler.js";
 import { createNativeMenus } from "../drawn_menu/drawn_menu.js";
+import { collectionMasteryOfProfile } from "../mastery/table_mastery.js";
+import { tablesVisibleTo } from "../tables/visible_tables.js";
 
 const SCRIPT_NAME = "HistoryImport";
 const CONFIRM_MENU_ID = "historyImportConfirm";
@@ -63,7 +66,9 @@ export function createHistoryImportMenu(host, profileStore, menus = createNative
     function importAndReport(profile) {
         let message;
         try {
-            const { tableCount, games, seconds } = profileStore.importHistory(profile.name, host.getAllTables());
+            const { tableCount, games, seconds } = profileStore.importHistory(profile.name, host.getAllTables(), {
+                collectionTierOf: data => collectionMasteryOfProfile(tablesVisibleTo(host.getVisibleTables(), profileStore, profile.name), data).tier,
+            });
             message = TEXT.historyDone(displayNameOf(profile), games, hoursOf(seconds), tableCount);
         } catch (error) {
             logHandlerError(SCRIPT_NAME, error);

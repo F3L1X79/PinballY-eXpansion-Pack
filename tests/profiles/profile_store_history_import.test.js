@@ -84,6 +84,39 @@ test("the import is recorded with its date, once per cabinet, and kept through a
     assert.throws(() => store.importHistory("Alice", TABLES), /already/);
 });
 
+test("the import raises the kept Collection Tier to the one its new totals reach, never lowers it", () => {
+    // The tier reader sees the totals with the history already in them.
+    const tierOf = data => (data.plays[MEDIEVAL.configId] ? 3 : 0);
+    const savedAfterImport = (profileData, collectionTierOf) => {
+        const { fake, store } = createStore({ Alice: profileData });
+        store.importHistory("Alice", TABLES, { collectionTierOf });
+        return JSON.parse(fake.readFile(profileFile("Alice")));
+    };
+
+    assert.equal(savedAfterImport({}, tierOf).collectionTier, 3);
+    assert.equal(savedAfterImport({ collectionTier: 5 }, tierOf).collectionTier, 5, "a higher kept tier stays");
+    assert.equal("collectionTier" in savedAfterImport({}, () => 0), false, "no key before a tier is reached");
+});
+
+test("the import leaves an unannounced Achievements check due, which ends by marking its Achievements Notified", () => {
+    const { fake, store } = createStore({ Alice: { notified: ["first"] } });
+    assert.equal(store.isUnannouncedCheckDue("Alice"), false);
+
+    store.importHistory("Alice", TABLES);
+    assert.equal(store.isUnannouncedCheckDue("Alice"), true);
+
+    store.endUnannouncedCheck("Alice", ["first", "playTime10h"]);
+    assert.equal(store.isUnannouncedCheckDue("Alice"), false);
+    assert.deepEqual(JSON.parse(fake.readFile(profileFile("Alice"))).notified, ["first", "playTime10h"]);
+});
+
+test("a Profile Reset before that check leaves nothing due", () => {
+    const { store } = createStore({ Alice: {} });
+    store.importHistory("Alice", TABLES);
+    store.resetProfile("Alice");
+    assert.equal(store.isUnannouncedCheckDue("Alice"), false);
+});
+
 test("Guest never takes over the history", () => {
     const { store } = createStore({ Alice: {} });
     assert.throws(() => store.importHistory("Guest", TABLES), /Guest/);

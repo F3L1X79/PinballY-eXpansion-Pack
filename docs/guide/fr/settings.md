@@ -157,6 +157,7 @@ PinballY compte, pour chaque table, les parties jouées, le temps de jeu et la d
 - Ce que chaque Profil, Invité compris, a déjà joué avec le pack est retiré des comptes de PinballY : aucune partie ne compte deux fois. Les tables non suivies sont laissées de côté.
 - La date de dernière partie de PinballY n'est reprise que pour une table que le Profil n'a jamais jouée avec le pack.
 - Les parties vont dans les totaux par table du Profil (maîtrise des tables, temps de jeu, tables favorites et poussiéreuses), jamais dans son journal des parties : séries quotidiennes et récompenses de Profil restent intactes.
+- Les succès, niveaux de maîtrise et paliers de collection que l'historique atteint sont débloqués sans toast, même quand le Profil est choisi plus tard : pas de déluge de toasts, et la partie suivante n'annonce que ce qu'elle atteint elle-même.
 - Le compte peut être un peu élevé : PinballY compte aussi les lancements de moins d'une minute.
 - La ligne est grisée avec sa raison pour Invité, une fois l'historique de la borne repris (en nommant le Profil qui l'a reçu), et quand il ne reste rien à reprendre.
 

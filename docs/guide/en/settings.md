@@ -157,6 +157,7 @@ PinballY counts, for each table, the games played, the time played and the last 
 - What every Profile, Guest included, already played with the pack is taken off PinballY's counts, so no game counts twice. Untracked Tables are left out.
 - PinballY's last-played date is taken only for a table the Profile never played with the pack.
 - The games go into the Profile's per-table totals (Table Mastery, play time, favourite and dusty tables), never into its Play Log: Daily Streaks and Profile Rewards are untouched.
+- The Achievements, Mastery Levels and Collection Tiers the history reaches are unlocked without a toast, even when the Profile is picked later: no flood of toasts, and the next game announces only what it reaches itself.
 - The count may be slightly high: PinballY also counts launches shorter than a minute.
 - The line is greyed with its reason for Guest, once the cabinet's history was taken over (naming the Profile that received it), and when nothing is left to take over.
 

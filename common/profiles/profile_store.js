@@ -72,6 +72,9 @@ const MARK_NAMES = ["isAdmin", "isChild"];
 // The History Import's record is kept too, for the import never to be offered again (ADR 0025).
 const HISTORY_IMPORT_KEY = "historyImport";
 const KEPT_THROUGH_RESET = [...MARK_NAMES, HISTORY_IMPORT_KEY];
+// Set by the History Import, until the Profile's next Achievements check
+// marks what it reached Notified without a toast; dropped by a Profile Reset.
+const UNANNOUNCED_CHECK_KEY = "unannouncedCheckDue";
 const NO_PLAY = Object.freeze({ count: 0, seconds: 0, lastPlayed: "" });
 
 // A shorter game is a launch by mistake, not a Play.
@@ -663,9 +666,11 @@ export function createProfileStore(host) {
     // The History Import into the named Profile, in one save with its record:
     // it fully happens or not at all. PinballY's last-played date is taken
     // only for a table the Profile had never played. Never writes the Play Log.
-    // Returns { tableCount, games, seconds } added; throws, writing nothing,
-    // for Guest or once the cabinet's import is done.
-    function importHistory(profileName, tables) {
+    // The same save leaves the Profile silent (ADR 0025): its kept Collection
+    // Tier raised to collectionTierOf(its new data), and an unannounced
+    // Achievements check due. Returns { tableCount, games, seconds } added;
+    // throws, writing nothing, for Guest or once the cabinet's import is done.
+    function importHistory(profileName, tables, { collectionTierOf = () => 0 } = {}) {
         const profile = profileNamed(profileName);
         if (profile.isGuest) throw new Error("Guest never takes over the PinballY History.");
         const importer = historyImportProfile();
@@ -680,6 +685,10 @@ export function createProfileStore(host) {
                     count: (Number(play.count) || 0) + count, seconds: (Number(play.seconds) || 0) + seconds, lastPlayed,
                 };
             }
+            // Kept only once a tier is reached, as the Table Mastery Add-on does.
+            const tier = collectionTierOf(data);
+            if (tier > (data.collectionTier || 0)) data.collectionTier = tier;
+            data[UNANNOUNCED_CHECK_KEY] = true;
             data[HISTORY_IMPORT_KEY] = { date: toLocalIsoString(host.now()) };
         }, profile.name);
         const summary = summaryOf(leftOver);
@@ -819,6 +828,13 @@ export function createProfileStore(host) {
         importHistory,
         // The name of the Profile that took over the PinballY History, null before the import.
         getHistoryImportProfile: historyImportProfile,
+        // Whether the named Profile's next Achievements check is unannounced (after a History Import).
+        isUnannouncedCheckDue: (profileName) => profileWithData(profileName).data[UNANNOUNCED_CHECK_KEY] === true,
+        // Ends that check in one save: these Achievement IDs become Notified.
+        endUnannouncedCheck: (profileName, ids) => updateProfileData(data => {
+            for (const id of ids) if (!data.notified.includes(id)) data.notified.push(id);
+            delete data[UNANNOUNCED_CHECK_KEY];
+        }, profileName),
         getCabinetData: () => cabinet,
         // Another module's cabinet-level file, "<baseName>.json" next to
         // cabinet.json: its data, or null when it was never saved. Its
