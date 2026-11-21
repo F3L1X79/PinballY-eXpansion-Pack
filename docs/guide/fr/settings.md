@@ -7,7 +7,7 @@ Pour le propriétaire de la borne :
 - **Réglages de l'eXpansion pack** : depuis le menu opérateur, activer ou désactiver chaque Add-on par catégorie, choisir l'écran de démarrage et la langue, puis redémarrer PinballY d'une pression.
 - **Profil admin** : les entrées de configuration pour vous seul.
 - **Profil enfant** : une roue sans tables pour adultes.
-- **Gérer les profils** : marquer un Profil admin ou un Profil enfant, ou faire repartir de zéro un Profil ou toute la maison d'un coup.
+- **Gérer les profils** : marquer un Profil admin ou un Profil enfant, donner l'historique de jeu de PinballY à un Profil (reprise de l'historique), ou faire repartir de zéro un Profil ou toute la maison d'un coup.
 - **Nettoyage des menus** : des menus PinballY allégés (voir [Interface](interface.md#nettoyage-des-menus)).
 
 Tout tient dans un seul dossier, sans modifier PinballY.
@@ -141,12 +141,24 @@ Ce Profil marque ensuite les autres depuis la borne : ouvrez **Gérer les profil
 
 ## Réinitialiser un profil
 
-Un Profil admin trouve aussi **Gérer les profils** à deux endroits : dans le menu de sortie (Échap), juste après « Changer de joueur », au-dessus de « Menu opérateur » ; et dans le menu opérateur, juste après **Réglages de l'eXpansion pack**, dans leur propre groupe sous « Capture par lot ». Les autres Profils ne le voient jamais, même quand le bouton de service de la porte du monnayeur ouvre le menu opérateur. Il liste tous les Profils, Invité et vous-même compris, plus « Réinitialiser tous les profils », dès qu'il y en a au moins deux, pour remettre toute la maison à zéro d'un coup. Choisir un Profil ouvre son propre menu : ses marques admin et enfant (voir [Profil admin](#profil-admin) et [Profil enfant](#profil-enfant)) et **Réinitialiser**. Avec les [menus dessinés](interface.md#menus-dessinés), Échap ou « Retour » y ramène à la liste ; sans eux, les deux ferment le menu.
+Un Profil admin trouve aussi **Gérer les profils** à deux endroits : dans le menu de sortie (Échap), juste après « Changer de joueur », au-dessus de « Menu opérateur » ; et dans le menu opérateur, juste après **Réglages de l'eXpansion pack**, dans leur propre groupe sous « Capture par lot ». Les autres Profils ne le voient jamais, même quand le bouton de service de la porte du monnayeur ouvre le menu opérateur. Il liste tous les Profils, Invité et vous-même compris, plus « Réinitialiser tous les profils », dès qu'il y en a au moins deux, pour remettre toute la maison à zéro d'un coup. Choisir un Profil ouvre son propre menu : ses marques admin et enfant (voir [Profil admin](#profil-admin) et [Profil enfant](#profil-enfant)), **Reprendre l'historique de PinballY** (voir [Reprise de l'historique](#reprise-de-lhistorique)) et **Réinitialiser**. Avec les [menus dessinés](interface.md#menus-dessinés), Échap ou « Retour » y ramène à la liste ; sans eux, les deux ferment le menu.
 
 - Après une confirmation (le curseur part sur « Non »), « Réinitialiser » ou « Réinitialiser tous les profils » fait repartir le Profil de zéro : ses parties, ses séries, ses records de session, ses parties aléatoires, sa progression aux défis, ses succès annoncés, sa maîtrise des tables, son palier de collection et ses cadres d'Avatar sont effacés, tandis que son nom, son avatar, ses marques et les meilleurs scores qu'il a gagnés restent.
 - Un message indique ensuite si l'opération a réussi.
 - Ses anciens fichiers sont gardés à côté, sous les noms `profile.reset-<date>.json` et `play-log-<année>.reset-<date>.json` : pour annuler une réinitialisation, fermez PinballY et renommez chaque copie sans sa partie `.reset-<date>`.
 - Si vous avez désactivé le menu de sortie dans les options de PinballY, le bouton de service de la porte du monnayeur ouvre toujours le menu opérateur, et « Gérer les profils » avec lui.
+- Une réinitialisation efface aussi ce que le Profil a repris de l'historique de PinballY, et la reprise n'est plus proposée.
+
+### Reprise de l'historique
+
+PinballY compte, pour chaque table, les parties jouées, le temps de jeu et la date de la dernière partie, depuis bien avant le pack. **Reprendre l'historique de PinballY**, dans le propre menu d'un Profil juste avant « Réinitialiser », donne cet historique à ce Profil, une seule fois par borne : choisissez le Profil qui a vraiment joué.
+
+- Une confirmation (le curseur part sur « Non ») indique combien de parties, d'heures et de tables seraient ajoutées ; un message dit ensuite ce qui a été repris, ou que l'opération a échoué (la cause est dans le journal), auquel cas rien n'a changé.
+- Ce que chaque Profil, Invité compris, a déjà joué avec le pack est retiré des comptes de PinballY : aucune partie ne compte deux fois. Les tables non suivies sont laissées de côté.
+- La date de dernière partie de PinballY n'est reprise que pour une table que le Profil n'a jamais jouée avec le pack.
+- Les parties vont dans les totaux par table du Profil (maîtrise des tables, temps de jeu, tables favorites et poussiéreuses), jamais dans son journal des parties : séries quotidiennes et récompenses de Profil restent intactes.
+- Le compte peut être un peu élevé : PinballY compte aussi les lancements de moins d'une minute.
+- La ligne est grisée avec sa raison pour Invité, une fois l'historique de la borne repris (en nommant le Profil qui l'a reçu), et quand il ne reste rien à reprendre.
 
 ## Profil enfant
 

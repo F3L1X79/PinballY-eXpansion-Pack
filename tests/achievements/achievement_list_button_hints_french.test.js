@@ -19,8 +19,8 @@ test("the Achievement List speaks French: the footer's words, and Retour", async
     untilListShown(fake);
 
     assert.deepEqual(footerHints(fake), [
-        { keys: ["GAUCHE", "DROITE"], label: "PARCOURIR" },
-        { keys: ["SELECT"], label: "CHOISIR" },
+        { keys: ["FLIPPER G.", "FLIPPER D."], label: "PARCOURIR" },
+        { keys: ["LANCEUR"], label: "CHOISIR" },
         { keys: ["EXIT"], label: "RETOUR" },
     ]);
     assert.equal(exitButtonTooltip(fake), "Retour", "on the Exit Button, where the list opens");

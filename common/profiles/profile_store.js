@@ -2,7 +2,7 @@
 // Profile store: the only module that knows the Profiles folder (one sub-folder
 // per Profile: Avatar, profile.json, Play Log; cabinet.json for the household).
 // Decides which game is a Play (ADR 0007) and tells its listeners of each
-// switch, update, Avatar given and Play (onPlay, ADR 0008). Handles the Profile Reset.
+// switch, update, Avatar given and Play (onPlay, ADR 0008). Handles the Profile Reset and the History Import (ADR 0025).
 // Listens to "gamestarted" / "gameover"; tells of a Play it could not save or log (onPlayFailed).
 // - Every write is whole: tmp, backup, rename; a broken or newer file comes back from its backup, the recovery written to the Error Log.
 // - isAdmin and isChild: by hand or setMark, which writes true or removes the key (ADR 0020); a first Profile created gets isAdmin (ADR 0023).
@@ -40,6 +40,8 @@ const isGuestName = name => sameName(name, GUEST_NAME);
 const isIgnoredFolder = name => name.startsWith(".") || name.startsWith("_");
 const isRecord = value => value !== null && typeof value === "object" && !Array.isArray(value);
 const pad = number => String(number).padStart(2, "0");
+// By its methods rather than instanceof: a Date may come from another realm's Date.
+const isValidDate = value => Boolean(value) && typeof value.getTime === "function" && !isNaN(value.getTime());
 
 // Local time, readable in the file: "2026-09-24T21:10:00".
 export function toLocalIsoString(date) {
@@ -64,6 +66,9 @@ const emptyProfileData = () => ({
 });
 // Set by hand or from Manage profiles (ADR 0020): kept through a Profile Reset.
 const MARK_NAMES = ["isAdmin", "isChild"];
+// The History Import's record is kept too, for the import never to be offered again (ADR 0025).
+const HISTORY_IMPORT_KEY = "historyImport";
+const KEPT_THROUGH_RESET = [...MARK_NAMES, HISTORY_IMPORT_KEY];
 const NO_PLAY = Object.freeze({ count: 0, seconds: 0, lastPlayed: "" });
 
 // A shorter game is a launch by mistake, not a Play.
@@ -416,8 +421,8 @@ export function createProfileStore(host) {
         }
         const keptFiles = [...(copyName ? [copyName] : []), ...keepPlayLogAsResetCopies(profile)];
         const freshData = emptyProfileData();
-        for (const markName of MARK_NAMES) {
-            if (markName in data) freshData[markName] = data[markName];
+        for (const key of KEPT_THROUGH_RESET) {
+            if (key in data) freshData[key] = data[key];
         }
         saveProfileData(profile, freshData);
         forgetCachedRead(profile.name);
@@ -567,6 +572,62 @@ export function createProfileStore(host) {
         tellAvatarChanged(folderName);
     }
 
+    // The listed Profile holding the History Import's record, null while none does.
+    function historyImportProfile() {
+        return withCachedReads(() => listProfileNames().find(name => isRecord(profileWithData(name).data[HISTORY_IMPORT_KEY])) || null);
+    }
+
+    // What the PinballY History adds to each table (ADR 0025): PinballY's
+    // count and seconds minus every listed Profile's, Guest's included, never
+    // below zero; Untracked Tables left out. Only the tables with something left.
+    function historyLeftOver(tables) {
+        return withCachedReads(() => {
+            const everyPlays = listProfileNames().map(name => profileWithData(name).data.plays);
+            const counted = (configId, field) => everyPlays.reduce((sum, plays) => sum + (Number((plays[configId] || NO_PLAY)[field]) || 0), 0);
+            const leftOver = [];
+            for (const game of tables) {
+                if (!game.configId || isUntrackedTable(game)) continue;
+                const count = Math.max(0, Math.round(Number(game.playCount) || 0) - counted(game.configId, "count"));
+                const seconds = Math.max(0, Math.round(Number(game.playTime) || 0) - counted(game.configId, "seconds"));
+                if (count > 0 || seconds > 0) leftOver.push({ game, count, seconds });
+            }
+            return leftOver;
+        });
+    }
+
+    const summaryOf = leftOver => ({
+        tableCount: leftOver.length,
+        games: leftOver.reduce((sum, { count }) => sum + count, 0),
+        seconds: leftOver.reduce((sum, { seconds }) => sum + seconds, 0),
+    });
+
+    // The History Import into the named Profile, in one save with its record:
+    // it fully happens or not at all. PinballY's last-played date is taken
+    // only for a table the Profile had never played. Never writes the Play Log.
+    // Returns { tableCount, games, seconds } added; throws, writing nothing,
+    // for Guest or once the cabinet's import is done.
+    function importHistory(profileName, tables) {
+        const profile = profileNamed(profileName);
+        if (profile.isGuest) throw new Error("Guest never takes over the PinballY History.");
+        const importer = historyImportProfile();
+        if (importer) throw new Error(`The PinballY History was already taken over by ${importer}.`);
+        const leftOver = historyLeftOver(tables);
+        updateProfileData(data => {
+            for (const { game, count, seconds } of leftOver) {
+                const play = data.plays[game.configId] || NO_PLAY;
+                const neverPlayed = !(play.count > 0);
+                const lastPlayed = neverPlayed && isValidDate(game.lastPlayed) ? toLocalIsoString(game.lastPlayed) : play.lastPlayed;
+                data.plays[game.configId] = {
+                    count: (Number(play.count) || 0) + count, seconds: (Number(play.seconds) || 0) + seconds, lastPlayed,
+                };
+            }
+            data[HISTORY_IMPORT_KEY] = { date: toLocalIsoString(host.now()) };
+        }, profile.name);
+        const summary = summaryOf(leftOver);
+        log(`${profile.name} took over the PinballY History: ${summary.games} games, ${summary.seconds} seconds on ${summary.tableCount} tables.`);
+        return summary;
+    }
+
     // A mark that cannot be saved keeps the Profile: with no Admin Profile,
     // everyone still sees the setup entries and Manage profiles offers the mark.
     function markFirstProfile(profileName) {
@@ -690,6 +751,15 @@ export function createProfileStore(host) {
         // { isGuest, isAdmin, isChild, isLastAdmin } of the named Profile.
         getMarksOf: marksOf,
         setMark,
+        // { tableCount, games, seconds } the History Import would add from these tables, without writing.
+        previewHistoryImport: (profileName, tables) => withCachedReads(() => {
+            // Throws for an unknown Profile, as importHistory would.
+            profileNamed(profileName);
+            return summaryOf(historyLeftOver(tables));
+        }),
+        importHistory,
+        // The name of the Profile that took over the PinballY History, null before the import.
+        getHistoryImportProfile: historyImportProfile,
         getCabinetData: () => cabinet,
         // Another module's cabinet-level file, "<baseName>.json" next to
         // cabinet.json: its data, or null when it was never saved. Its

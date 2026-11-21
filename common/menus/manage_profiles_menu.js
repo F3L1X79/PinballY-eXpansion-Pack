@@ -1,8 +1,8 @@
 // ============================================================
 // Manage profiles, opened from the Exit menu: the list of Profiles (and
 // "Every profile"), then a Profile's own menu, where a mark line flips the
-// mark at once and "Reset" leads to the Profile Reset; while no Profile is
-// marked, only "Become admin". Opens directly through the Drawn Menu module.
+// mark at once, then the History Import's line and "Reset"; while no Profile
+// is marked, only "Become admin". Opens directly through the Drawn Menu module.
 // Listens to "command".
 // - A line the mark rules forbid stays, greyed with its reason (setup_entries.js, ADR 0020).
 // - Exit and Back go from a Profile's menu to the list only when drawn: natively, they close.
@@ -15,6 +15,7 @@ import { markRefusal } from "../profiles/setup_entries.js";
 import { logHandlerError, safeHandler } from "../core/safe_handler.js";
 import { createNativeMenus } from "../drawn_menu/drawn_menu.js";
 import { createProfileResetMenu } from "./profile_reset_menu.js";
+import { createHistoryImportMenu } from "./history_import_menu.js";
 
 const SCRIPT_NAME = "ManageProfiles";
 const LIST_MENU_ID = "manageProfilesList";
@@ -27,6 +28,7 @@ const SEPARATOR = { cmd: -1 };
 export function createManageProfilesMenu(host, profileStore, menus = createNativeMenus(host)) {
     const { profileReset: TEXT } = lang;
     const profileReset = createProfileResetMenu(host, profileStore, menus);
+    const historyImport = createHistoryImportMenu(host, profileStore, menus);
     const everyProfileCommand = host.allocateCommand("manageProfilesEveryProfile");
     const adminCommand = host.allocateCommand("manageProfilesAdmin");
     const childCommand = host.allocateCommand("manageProfilesChild");
@@ -107,6 +109,7 @@ export function createManageProfilesMenu(host, profileStore, menus = createNativ
             markLine(profile, marks, "isAdmin", TEXT.adminLine(marks.isAdmin), adminCommand),
             markLine(profile, marks, "isChild", TEXT.childLine(marks.isChild), childCommand),
             SEPARATOR,
+            historyImport.lineFor(profile),
             { title: TEXT.reset, cmd: resetCommand },
             { title: TEXT.back, cmd: menuReturnCommand },
         ], selectedCmd), { onBack: () => backToList(profile) });

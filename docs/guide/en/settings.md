@@ -7,7 +7,7 @@ For the cabinet owner:
 - **eXpansion Pack Settings**: from the Operator Menu, turn each Add-on on or off by category, pick the startup screen and the language, then restart PinballY in one press.
 - **Admin Profile**: the setup entries for you alone.
 - **Child Profile**: a wheel without Adult Tables for the kids.
-- **Manage profiles**: mark an Admin Profile or a Child Profile, or start a Profile over (Profile Reset), alone or the whole household at once.
+- **Manage profiles**: mark an Admin Profile or a Child Profile, hand PinballY's own play history to one Profile (History Import), or start a Profile over (Profile Reset), alone or the whole household at once.
 - **Menu Cleanup**: leaner PinballY menus (see [Interface](interface.md#menu-cleanup)).
 
 Everything stays in one folder, with no change to PinballY itself.
@@ -141,12 +141,24 @@ From then on, that Profile marks the others from the cabinet: open **Manage prof
 
 ## Profile Reset
 
-An Admin Profile also finds **Manage profiles** in two places: in the Exit menu (Escape), right after "Change Player", above "Operator Menu"; and in the Operator Menu, right after **eXpansion Pack Settings**, in their own group below "Batch Capture". Other Profiles never see it, even when the coin door service button opens the Operator Menu. It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)) and **Reset**. With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
+An Admin Profile also finds **Manage profiles** in two places: in the Exit menu (Escape), right after "Change Player", above "Operator Menu"; and in the Operator Menu, right after **eXpansion Pack Settings**, in their own group below "Batch Capture". Other Profiles never see it, even when the coin door service button opens the Operator Menu. It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)), **Take over PinballY's history** (see [History Import](#history-import)) and **Reset**. With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
 
 - After one confirmation (the cursor starts on "No"), "Reset" or "Reset every profile" starts the Profile over: its plays, Streaks, session records, Random Games, Challenge progress, announced Achievements, Table Mastery, Collection Tier and Avatar Frames are erased, while its name, Avatar, marks and the High Scores it won stay.
 - A message then tells whether it worked.
 - Its former files are kept next to them, as `profile.reset-<date>.json` and `play-log-<year>.reset-<date>.json`: to undo a reset, close PinballY and rename each copy back, without its `.reset-<date>` part.
 - If you disabled PinballY's Exit menu in its options, the coin door service button still opens the Operator Menu, and Manage profiles with it.
+- A Profile Reset also erases what the Profile took over from PinballY's history, and the History Import is not offered again.
+
+### History Import
+
+PinballY counts, for each table, the games played, the time played and the last game's date, since long before the pack. **Take over PinballY's history**, in a Profile's own menu just before "Reset", hands that history to this Profile, once per cabinet: pick the Profile that actually played.
+
+- A confirmation (the cursor starts on "No") tells how many games, hours and tables would be added; a message then tells what was taken over, or that it failed (the cause in the log), in which case nothing changed.
+- What every Profile, Guest included, already played with the pack is taken off PinballY's counts, so no game counts twice. Untracked Tables are left out.
+- PinballY's last-played date is taken only for a table the Profile never played with the pack.
+- The games go into the Profile's per-table totals (Table Mastery, play time, favourite and dusty tables), never into its Play Log: Daily Streaks and Profile Rewards are untouched.
+- The count may be slightly high: PinballY also counts launches shorter than a minute.
+- The line is greyed with its reason for Guest, once the cabinet's history was taken over (naming the Profile that received it), and when nothing is left to take over.
 
 ## Child Profile
 

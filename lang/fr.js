@@ -201,7 +201,7 @@ export default {
     // words are shown in capitals.
     buttonHints: {
         // The key caps: Next and Prev are the right and left flipper buttons.
-        keyCaps: { next: "Droite", prev: "Gauche", select: "Select", exit: "Exit" },
+        keyCaps: { next: "Flipper D.", prev: "Flipper G.", select: "Lanceur", exit: "Exit" },
         browse: "Parcourir",
         // The flippers on a High Score Board longer than the window.
         scroll: "Défiler",
@@ -705,6 +705,16 @@ export default {
         confirmEvery: count => `Réinitialiser les ${count} profils ? Leurs parties, séries, défis et succès seront tous effacés.`,
         everyDone: count => `Les ${count} profils repartent de zéro.`,
         everyFailed: (count, names) => `Profils réinitialisés : ${count}. Impossible de réinitialiser ${names.join(", ")}. Voir le journal pour les détails.`,
+        historyLine: "Reprendre l'historique de PinballY",
+        historyRefusals: {
+            guest: "Invité ne le reprend jamais",
+            done: name => `Déjà repris par ${name}`,
+            nothingLeft: "Rien à reprendre",
+        },
+        historyConfirm: (name, games, hours, tables) => `Donner l'historique de PinballY à ${name} ? Parties : ${games}, heures : ${hours}, tables : ${tables}. Une seule fois sur cette borne.`,
+        historyYes: "Oui, le reprendre",
+        historyDone: (name, games, hours, tables) => `${name} a repris parties : ${games}, heures : ${hours}, tables : ${tables}. Les succès atteints sont débloqués sans être annoncés.`,
+        historyFailed: name => `${name} n'a pas pu reprendre l'historique de PinballY. Voir le journal pour les détails.`,
     },
 
     // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).

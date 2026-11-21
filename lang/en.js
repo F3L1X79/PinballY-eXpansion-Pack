@@ -82,7 +82,7 @@ export default {
     // words are shown in capitals.
     buttonHints: {
         // The cabinet's key caps: Prev and Next are the left and right flippers.
-        keyCaps: { next: "R Flipper", prev: "L Flipper", select: "Select", exit: "Exit" },
+        keyCaps: { next: "R. Flipper", prev: "L. Flipper", select: "Launcher", exit: "Exit" },
         browse: "Browse",
         // The flippers on a High Score Board longer than the window.
         scroll: "Scroll",
@@ -599,6 +599,18 @@ export default {
         confirmEvery: count => `Reset all ${count} profiles? All of their plays, streaks, Challenges and achievements will be erased.`,
         everyDone: count => `All ${count} profiles start over.`,
         everyFailed: (count, names) => `Profiles reset: ${count}. ${names.join(", ")} could not be reset. See the log for details.`,
+        // The History Import: PinballY's own counts handed to one Profile, once per cabinet.
+        historyLine: "Take over PinballY's history",
+        // Why the line is greyed out.
+        historyRefusals: {
+            guest: "Guest never takes it over",
+            done: name => `Already taken over by ${name}`,
+            nothingLeft: "Nothing left to take over",
+        },
+        historyConfirm: (name, games, hours, tables) => `Give PinballY's history to ${name}? Games: ${games}, hours: ${hours}, tables: ${tables}. It can be done only once on this cabinet.`,
+        historyYes: "Yes, take it over",
+        historyDone: (name, games, hours, tables) => `${name} took over games: ${games}, hours: ${hours}, tables: ${tables}. The achievements reached are unlocked without being announced.`,
+        historyFailed: name => `${name} could not take over PinballY's history. See the log for details.`,
     },
 
     // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).

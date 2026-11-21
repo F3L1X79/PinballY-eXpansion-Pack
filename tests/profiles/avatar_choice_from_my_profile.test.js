@@ -1,6 +1,6 @@
 // ============================================================
-// Avatar Choice opened from My Profile, through main.js: the Avatar comes
-// right after the Exit Button with its tooltip, Select opens Avatar Choice
+// Avatar Choice opened from My Profile, through main.js: the Avatar is the
+// last choice, Prev from the Exit Button, with its tooltip; Select opens Avatar Choice
 // on the portrait worn (recognised by its size), a portrait taken comes back
 // on My Profile wearing it, the marker on the Avatar, and the Profile Badge
 // and the Change Player carousel show it.
@@ -28,8 +28,9 @@ test("the Avatar on My Profile opens Avatar Choice, and the portrait taken shows
 
     openProfileStats(fake, lang);
     const choices = readChoices(fake);
-    assert.deepEqual(choices.slice(0, 2), [lang.buttonHints.back, TEXT.changeAvatar], "the Avatar right after the Exit Button");
-    assert.ok(choices.includes(TEXT.buttons.achievements), "then the buttons");
+    assert.equal(choices[0], lang.buttonHints.back, "the Exit Button first");
+    assert.ok(choices.indexOf(TEXT.buttons.achievements) > 0, "then the buttons");
+    assert.equal(choices[choices.length - 1], TEXT.changeAvatar, "the Avatar last, Prev from the Exit Button");
     assert.equal(TEXT.changeAvatar, "Change Avatar");
 
     choose(fake, TEXT.changeAvatar);

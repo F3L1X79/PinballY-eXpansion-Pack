@@ -18,8 +18,8 @@ test("the Household Stats speak French: Retour, and the footer's words", async (
     openHouseholdStats(fake, lang);
 
     assert.deepEqual(buttonHints(fake), [
-        { keys: ["GAUCHE", "DROITE"], label: "PARCOURIR" },
-        { keys: ["SELECT"], label: "CHOISIR" },
+        { keys: ["FLIPPER G.", "FLIPPER D."], label: "PARCOURIR" },
+        { keys: ["LANCEUR"], label: "CHOISIR" },
         { keys: ["EXIT"], label: "RETOUR" },
     ]);
     press(fake, "Prev");

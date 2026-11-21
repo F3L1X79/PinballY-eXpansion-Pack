@@ -704,6 +704,16 @@ export default {
         confirmEvery: count => `¿Reiniciar los ${count} perfiles? Se borrarán todas sus partidas, rachas, retos y logros.`,
         everyDone: count => `Los ${count} perfiles empiezan de cero.`,
         everyFailed: (count, names) => `Perfiles reiniciados: ${count}. No se pudo reiniciar: ${names.join(", ")}. Consulta el registro para más detalles.`,
+        historyLine: "Recuperar el historial de PinballY",
+        historyRefusals: {
+            guest: "Invitado nunca lo recupera",
+            done: name => `Ya recuperado por ${name}`,
+            nothingLeft: "Nada que recuperar",
+        },
+        historyConfirm: (name, games, hours, tables) => `¿Dar el historial de PinballY a ${name}? Partidas: ${games}, horas: ${hours}, mesas: ${tables}. Solo se puede hacer una vez en esta máquina.`,
+        historyYes: "Sí, recuperarlo",
+        historyDone: (name, games, hours, tables) => `${name} recuperó partidas: ${games}, horas: ${hours}, mesas: ${tables}. Los logros alcanzados se desbloquean sin anunciarse.`,
+        historyFailed: name => `${name} no pudo recuperar el historial de PinballY. Consulta el registro para más detalles.`,
     },
 
     // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).

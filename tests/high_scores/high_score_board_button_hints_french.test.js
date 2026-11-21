@@ -33,8 +33,8 @@ test("the board's Exit Button and footer speak French", async () => {
     for (let step = 0; step < 3; step++) press(fake, "Next");
     assert.equal(exitButtonTooltip(fake), "Retour");
     assert.deepEqual(buttonHints(fake), [
-        { keys: ["GAUCHE", "DROITE"], label: "PARCOURIR" },
-        { keys: ["SELECT"], label: "CHOISIR" },
+        { keys: ["FLIPPER G.", "FLIPPER D."], label: "PARCOURIR" },
+        { keys: ["LANCEUR"], label: "CHOISIR" },
         { keys: ["EXIT"], label: "RETOUR" },
     ]);
     press(fake, "Exit");
@@ -45,7 +45,7 @@ test("the board's Exit Button and footer speak French", async () => {
     await settle();
     press(fake, "Prev");
     assert.equal(exitButtonTooltip(fake), "Fermer");
-    assert.deepEqual(buttonHints(fake), [{ keys: ["GAUCHE", "DROITE"], label: "PARCOURIR" }, { keys: ["SELECT"], label: "CHOISIR" }, { keys: ["EXIT"], label: "FERMER" }]);
+    assert.deepEqual(buttonHints(fake), [{ keys: ["FLIPPER G.", "FLIPPER D."], label: "PARCOURIR" }, { keys: ["LANCEUR"], label: "CHOISIR" }, { keys: ["EXIT"], label: "FERMER" }]);
     press(fake, "Exit");
     assertNoErrorLogged(fake);
 });

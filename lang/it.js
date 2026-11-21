@@ -702,6 +702,16 @@ export default {
         confirmEvery: count => `Azzerare tutti i ${count} profili? Tutte le loro partite, serie, sfide e obiettivi saranno cancellati.`,
         everyDone: count => `Tutti i ${count} profili ripartono da zero.`,
         everyFailed: (count, names) => `Profili azzerati: ${count}. Impossibile azzerare: ${names.join(", ")}. Consulta il log per i dettagli.`,
+        historyLine: "Riprendi la cronologia di PinballY",
+        historyRefusals: {
+            guest: "Ospite non la riprende mai",
+            done: name => `Già ripresa da ${name}`,
+            nothingLeft: "Niente da riprendere",
+        },
+        historyConfirm: (name, games, hours, tables) => `Dare la cronologia di PinballY a ${name}? Partite: ${games}, ore: ${hours}, tavoli: ${tables}. Si può fare una sola volta su questo cabinato.`,
+        historyYes: "Sì, riprendila",
+        historyDone: (name, games, hours, tables) => `${name} ha ripreso partite: ${games}, ore: ${hours}, tavoli: ${tables}. Gli obiettivi raggiunti vengono sbloccati senza annuncio.`,
+        historyFailed: name => `${name} non ha potuto riprendere la cronologia di PinballY. Consulta il log per i dettagli.`,
     },
 
     // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).

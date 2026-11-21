@@ -18,8 +18,8 @@ test("the Profile Stats speak French: Retour, and the footer's words", async () 
     openProfileStats(fake, lang);
 
     assert.deepEqual(buttonHints(fake), [
-        { keys: ["GAUCHE", "DROITE"], label: "PARCOURIR" },
-        { keys: ["SELECT"], label: "CHOISIR" },
+        { keys: ["FLIPPER G.", "FLIPPER D."], label: "PARCOURIR" },
+        { keys: ["LANCEUR"], label: "CHOISIR" },
         { keys: ["EXIT"], label: "RETOUR" },
     ]);
     assert.equal(highlighted(fake), "Retour");

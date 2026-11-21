@@ -66,7 +66,7 @@ const adminRow = () => readDrawnMenu(fake).rows.find(row => [TEXT.adminLine(fals
 
 test("a Profile's menu shows the Admin line above the Child line", () => {
     openProfileMenu("Bob");
-    assert.deepEqual(drawnMenuLines(fake), ["[BOB]", "---", TEXT.adminLine(false), TEXT.childLine(false), "---", TEXT.reset, TEXT.back]);
+    assert.deepEqual(drawnMenuLines(fake), ["[BOB]", "---", TEXT.adminLine(false), TEXT.childLine(false), "---", TEXT.historyLine, TEXT.reset, TEXT.back]);
     assert.equal(highlightedEntry(fake), TEXT.adminLine(false));
 });
 

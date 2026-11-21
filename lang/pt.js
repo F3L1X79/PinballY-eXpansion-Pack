@@ -703,6 +703,16 @@ export default {
         confirmEvery: count => `Redefinir todos os ${count} perfis? Todas as suas partidas, sequências, desafios e conquistas serão apagados.`,
         everyDone: count => `Todos os ${count} perfis recomeçam do zero.`,
         everyFailed: (count, names) => `Perfis redefinidos: ${count}. Não foi possível redefinir: ${names.join(", ")}. Consulte o log para mais detalhes.`,
+        historyLine: "Assumir o histórico do PinballY",
+        historyRefusals: {
+            guest: "Convidado nunca o assume",
+            done: name => `Já assumido por ${name}`,
+            nothingLeft: "Nada a assumir",
+        },
+        historyConfirm: (name, games, hours, tables) => `Dar o histórico do PinballY a ${name}? Partidas: ${games}, horas: ${hours}, mesas: ${tables}. Só pode ser feito uma vez nesta máquina.`,
+        historyYes: "Sim, assumir",
+        historyDone: (name, games, hours, tables) => `${name} assumiu partidas: ${games}, horas: ${hours}, mesas: ${tables}. As conquistas alcançadas são desbloqueadas sem anúncio.`,
+        historyFailed: name => `${name} não pôde assumir o histórico do PinballY. Consulte o log para mais detalhes.`,
     },
 
     // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).

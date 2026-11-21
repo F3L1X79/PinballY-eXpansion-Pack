@@ -703,6 +703,16 @@ export default {
         confirmEvery: count => `Alle ${count} Profile zurücksetzen? Alle ihre Partien, Serien, Herausforderungen und Erfolge werden gelöscht.`,
         everyDone: count => `Alle ${count} Profile fangen von vorne an.`,
         everyFailed: (count, names) => `Zurückgesetzte Profile: ${count}. Nicht zurückgesetzt: ${names.join(", ")}. Details stehen im Log.`,
+        historyLine: "PinballYs Verlauf übernehmen",
+        historyRefusals: {
+            guest: "Gast übernimmt ihn nie",
+            done: name => `Schon von ${name} übernommen`,
+            nothingLeft: "Nichts mehr zu übernehmen",
+        },
+        historyConfirm: (name, games, hours, tables) => `PinballYs Verlauf an ${name} geben? Partien: ${games}, Stunden: ${hours}, Tische: ${tables}. Das geht nur einmal auf diesem Automaten.`,
+        historyYes: "Ja, übernehmen",
+        historyDone: (name, games, hours, tables) => `${name} hat übernommen: Partien: ${games}, Stunden: ${hours}, Tische: ${tables}. Die erreichten Erfolge werden ohne Ankündigung freigeschaltet.`,
+        historyFailed: name => `${name} konnte PinballYs Verlauf nicht übernehmen. Details stehen im Log.`,
     },
 
     // Discord Rich Presence on the cabinet's Discord account (addons/discord_rich_presence.js).

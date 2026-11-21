@@ -20,8 +20,8 @@ test("the Welcome Screen's footer says Browse, Choose and Close", async () => {
 
     assert.deepEqual(buttonHints(fake), expectedButtonHints(lang, { exit: "close" }));
     assert.deepEqual(buttonHints(fake), [
-        { keys: ["L FLIPPER", "R FLIPPER"], label: "BROWSE" },
-        { keys: ["SELECT"], label: "CHOOSE" },
+        { keys: ["L. FLIPPER", "R. FLIPPER"], label: "BROWSE" },
+        { keys: ["LAUNCHER"], label: "CHOOSE" },
         { keys: ["EXIT"], label: "CLOSE" },
     ]);
     assert.deepEqual(readChoices(fake), [

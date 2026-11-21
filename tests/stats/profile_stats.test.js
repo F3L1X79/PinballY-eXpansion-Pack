@@ -80,10 +80,10 @@ test("the Profile Stats show the Profile, its buttons and its GAME totals, and d
 
     assert.equal(highlighted(fake), lang.buttonHints.back, "the Exit Button is selected on opening");
     assert.deepEqual(readChoices(fake),
-        [lang.buttonHints.back, TEXT.changeAvatar, TEXT.buttons.frame, TEXT.buttons.achievements, TEXT.buttons.tablesToDiscover, TEXT.buttons.mostPlayedTables]);
+        [lang.buttonHints.back, TEXT.buttons.frame, TEXT.buttons.achievements, TEXT.buttons.tablesToDiscover, TEXT.buttons.mostPlayedTables, TEXT.changeAvatar]);
     assert.deepEqual(fake.soundsPlayed(), Array(6).fill(NAVIGATION_SOUND), "each move plays the navigation sound");
     press(fake, "Prev");
-    assert.equal(highlighted(fake), TEXT.buttons.mostPlayedTables, "Prev loops back to the last choice");
+    assert.equal(highlighted(fake), TEXT.changeAvatar, "Prev loops back to the last choice, the Avatar");
     assert.equal(fake.getCurrentTable().configId, MARS.configId, "the wheel never moved");
 
     press(fake, "Exit");

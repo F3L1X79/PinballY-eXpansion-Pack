@@ -14,7 +14,7 @@ With Change Player, each of you picks your own Profile and Avatar, and the Welco
 - Once the cabinet has two Profiles or more besides Guest, PinballY starts on Change Player so that everyone picks their Profile before playing; it can also start on the Welcome Screen or straight on the wheel (`STARTUP_SCREEN`, see [Settings](settings.md)).
 - While Change Player is open, the video sound of the table on the wheel is turned down, and comes back as it closes.
 
-Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. An Admin Profile keeps the setup entries for itself, a Child Profile hides the Adult Tables, and an Admin Profile's **Manage profiles**, in the Exit menu and the Operator Menu, marks a Child Profile or starts a Profile over: see [Settings](settings.md).
+Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. An Admin Profile keeps the setup entries for itself, a Child Profile hides the Adult Tables, and an Admin Profile's **Manage profiles**, in the Exit menu and the Operator Menu, marks a Child Profile, hands PinballY's own play history to one Profile or starts a Profile over: see [Settings](settings.md).
 
 ## Ratings and Favorite Tables
 
@@ -85,7 +85,7 @@ You don't need an Admin Profile to set up the pack: while no Profile is marked, 
 - the Avatar Frame you wear (pick it under **Frame**, see [Table Mastery](choosing_a_table.md#table-mastery));
 - and the way to your most played tables and to the ones still to discover.
 
-To change your Avatar, press the right flipper once from the Exit Button: the marker goes to your Avatar, at the top left, with the tooltip "Change Avatar". Press Select: Avatar Choice opens, the marker on the portrait you wear, on the last place if you wear your Own Picture, or on the first free portrait if you wear the default Avatar or a picture that is no portrait. Your own portrait is never greyed, even if another Profile wears it too, and taking it again changes nothing. Select or Launch takes a portrait at once, and My Profile comes back wearing it; your badge at the top right and Change Player show it too. Exit, or the Exit Button, goes back to My Profile without asking and changes nothing. Guest can change its Avatar too: its shipped picture is its Own Picture, in the last place, so Guest can always get it back. Another Profile's card, opened from the Household Stats, offers no Avatar choice.
+To change your Avatar, press the left flipper once from the Exit Button: the marker goes to your Avatar, at the top left, with the tooltip "Change Avatar". Press Select: Avatar Choice opens, the marker on the portrait you wear, on the last place if you wear your Own Picture, or on the first free portrait if you wear the default Avatar or a picture that is no portrait. Your own portrait is never greyed, even if another Profile wears it too, and taking it again changes nothing. Select or Launch takes a portrait at once, and My Profile comes back wearing it; your badge at the top right and Change Player show it too. Exit, or the Exit Button, goes back to My Profile without asking and changes nothing. Guest can change its Avatar too: its shipped picture is its Own Picture, in the last place, so Guest can always get it back. Another Profile's card, opened from the Household Stats, offers no Avatar choice.
 
 ## Household Stats
 

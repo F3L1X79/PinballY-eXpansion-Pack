@@ -341,8 +341,9 @@ export function createProfileStats(host, {
                 buttonHints: buttonHintGroupsOf({ flippers: isReadOnly ? null : FLIPPER_HINT.BROWSE, select: !isReadOnly, exitLook }),
                 // Nobody changes another Profile's Avatar.
                 avatarTooltip: isReadOnly ? null : TEXT.changeAvatar,
-                // The flippers' loop, the Exit Button first, then the Avatar.
-                choices: [CHOICE.EXIT_BUTTON, ...(isReadOnly ? [] : [CHOICE.AVATAR]), ...buttons.map(entry => entry.choice)],
+                // The flippers' loop: the Exit Button first, the Avatar last,
+                // so Prev from the Exit Button reaches it.
+                choices: [CHOICE.EXIT_BUTTON, ...buttons.map(entry => entry.choice), ...(isReadOnly ? [] : [CHOICE.AVATAR])],
             },
         };
     }

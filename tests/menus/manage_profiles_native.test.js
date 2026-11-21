@@ -36,13 +36,15 @@ test("the same menus show natively, the greyed line in brackets", async () => {
         fake.selectMenuItem(TEXT.menuEntry);
         fake.selectMenuItem(name);
     };
+    // No table has a PinballY History here.
+    const history = lang.drawnMenu.disabledLine(TEXT.historyLine, TEXT.historyRefusals.nothingLeft);
 
     openProfileMenu("Bob");
-    assert.deepEqual(shownTitles(), ["Bob", "", TEXT.adminLine(false), TEXT.childLine(false), "", TEXT.reset, TEXT.back]);
+    assert.deepEqual(shownTitles(), ["Bob", "", TEXT.adminLine(false), TEXT.childLine(false), "", history, TEXT.reset, TEXT.back]);
     fake.selectMenuItem(TEXT.childLine(false));
     assert.equal(JSON.parse(fake.readFile(profileFile("Bob"))).isChild, true);
     const childFirst = lang.drawnMenu.disabledLine(TEXT.adminLine(false), TEXT.refusals.removeChildMarkFirst);
-    assert.deepEqual(shownTitles(), ["Bob", "", childFirst, TEXT.childLine(true), "", TEXT.reset, TEXT.back], "shown again with the new value");
+    assert.deepEqual(shownTitles(), ["Bob", "", childFirst, TEXT.childLine(true), "", history, TEXT.reset, TEXT.back], "shown again with the new value");
     assert.deepEqual(selectedTitles(), [TEXT.childLine(true)], "the cursor on that line");
     fake.selectMenuItem(TEXT.back);
     assert.equal(fake.currentMenu(), null, "natively, Back only closes");
@@ -50,11 +52,11 @@ test("the same menus show natively, the greyed line in brackets", async () => {
     openProfileMenu("Alice");
     const lastAdmin = lang.drawnMenu.disabledLine(TEXT.adminLine(true), TEXT.refusals.lastAdmin);
     const greyed = lang.drawnMenu.disabledLine(TEXT.childLine(false), TEXT.refusals.removeAdminMarkFirst);
-    assert.deepEqual(shownTitles(), ["Alice", "", lastAdmin, greyed, "", TEXT.reset, TEXT.back]);
+    assert.deepEqual(shownTitles(), ["Alice", "", lastAdmin, greyed, "", history, TEXT.reset, TEXT.back]);
     const aliceBefore = fake.readFile(profileFile("Alice"));
     fake.selectMenuItem(lastAdmin);
     fake.selectMenuItem(greyed);
-    assert.deepEqual(shownTitles(), ["Alice", "", lastAdmin, greyed, "", TEXT.reset, TEXT.back], "the same menu again");
+    assert.deepEqual(shownTitles(), ["Alice", "", lastAdmin, greyed, "", history, TEXT.reset, TEXT.back], "the same menu again");
     assert.equal(fake.readFile(profileFile("Alice")), aliceBefore, "nothing changes");
     fake.selectMenuItem(TEXT.back);
     assert.equal(fake.currentMenu(), null);
