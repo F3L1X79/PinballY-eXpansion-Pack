@@ -14,7 +14,7 @@ Tout tient dans un seul dossier, sans modifier PinballY.
 
 ## Réglages de l'eXpansion pack
 
-**Réglages de l'eXpansion pack**, dans le menu opérateur, règle les Add-ons, l'écran de démarrage, la langue, l'ordre du mode attract et le mode hors ligne sans éditer aucun fichier, puis redémarre PinballY d'une pression. On y trouve aussi « Mettre à jour en vX.Y.Z » après avoir répondu « Plus tard » à l'invite de mise à jour (voir [Mises à jour](updates.md)), et, tant que l'Add-on « ROM des tables » est activé, une ligne vpxtool (voir [Installation](install.md#vpxtool) et [Mises à jour](updates.md#garder-vpxtool-à-jour)) :
+**Réglages de l'eXpansion pack**, dans le menu opérateur, règle les Add-ons, l'écran de démarrage, la langue, les repères de la roue, l'ordre du mode attract et le mode hors ligne sans éditer aucun fichier, puis redémarre PinballY d'une pression. On y trouve aussi « Mettre à jour en vX.Y.Z » après avoir répondu « Plus tard » à l'invite de mise à jour (voir [Mises à jour](updates.md)), et, tant que l'Add-on « ROM des tables » est activé, une ligne vpxtool (voir [Installation](install.md#vpxtool) et [Mises à jour](updates.md#garder-vpxtool-à-jour)) :
 
 - « Installer vpxtool v0.38.0 » tant que vpxtool manque ;
 - « Mettre à jour vpxtool (v0.37.1 → v0.38.0) » tant que le vôtre est plus ancien que la version que nomme le pack ;
@@ -25,7 +25,7 @@ Tant que le pack n'a pas lu une fois la version de votre vpxtool (une dizaine de
 La liste, de haut en bas :
 
 - **Langue** et **Écran de démarrage** ;
-- les catégories d'Add-ons, chacune ouvrant sa page : **Joueurs et progression**, **Roue** (les Add-ons de l'écran de la roue, puis la ligne « Mode attraction »), **Menus**, **Filtres** (les filtres qu'ajoute le pack : Tables les plus jouées, Tables à découvrir, Tables cachées, Tables Originales) et **Lancer et jouer une table** ;
+- les catégories d'Add-ons, chacune ouvrant sa page : **Joueurs et progression**, **Roue** (les Add-ons de l'écran de la roue, puis les lignes propres aux repères de la roue et la ligne « Mode attraction »), **Menus**, **Filtres** (les filtres qu'ajoute le pack : Tables les plus jouées, Tables à découvrir, Tables cachées, Tables Originales) et **Lancer et jouer une table** ;
 - le groupe **Mode hors ligne** ;
 - les lignes « Mettre à jour en » et vpxtool quand elles s'appliquent, puis **Retour**.
 
@@ -43,7 +43,16 @@ La ligne **Mode attraction**, en bas de la page « Roue » après un séparateur
 
 Pour cela, le pack prend la main sur les changements de PinballY : enregistrer « Dans l'ordre » ou « Toute la roue » garde la valeur de l'option « Switch games every » de PinballY, met à sa place une valeur d'un jour pour que PinballY ne change plus de table, et change lui-même de table à l'intervalle que vous aviez réglé. Enregistrer « Comme PinballY » rend votre valeur. Si vous changez entre-temps « Switch games every » dans les options de PinballY, le pack retient votre nouvelle valeur au démarrage suivant : PinballY change de table avec elle pendant cette session, le pack à partir du démarrage d'après. Comme les autres lignes, le choix s'applique au redémarrage de PinballY (`ATTRACT_ORDER`). **Avant de retirer le pack, remettez le mode attraction sur « Comme PinballY »** : sinon le mode attract de PinballY garde la valeur d'un jour et ne change plus jamais de table.
 
-Sous « Roue », **Repères de la roue** montre où vous en êtes sur la roue : le rail de la roue, les lettres (ou les décennies) le long du bord droit avec une pastille dorée sur celle de la table sélectionnée, la position dans la roue, la place de la table sélectionnée parmi les tables de la roue, en bas à droite, et le cœur des favoris, rouge sur une table favorite, en bas à gauche (voir [Interface](interface.md#sur-lécran-de-la-roue)). Désactivé, « Table n/total » revient dans la ligne d'état du bas (`ADD_ON_WHEEL_GUIDES=false` ; dans `.env.local`, `WHEEL_RAIL=false` retire le rail de la roue seul, `WHEEL_POSITION=false` retire la position dans la roue seule, `FAVORITE_HEART=false` le cœur des favoris seul). Pour qu'un bouton de flipper gardé enfoncé fasse défiler la roue au rythme réglé sur la borne, mettez l'option « Auto-repeat rate » de PinballY (Options, Game Wheel) à `180ms` : le pack ne la change jamais.
+Sous « Roue », **Repères de la roue** montre où vous en êtes sur la roue : le rail de la roue, les lettres (ou les décennies) le long du bord droit avec une pastille dorée sur celle de la table sélectionnée, la position dans la roue, la place de la table sélectionnée parmi les tables de la roue, en bas à droite, et le cœur des favoris, rouge sur une table favorite, en bas à gauche (voir [Interface](interface.md#sur-lécran-de-la-roue)). Désactivé, « Table n/total » revient dans la ligne d'état du bas (`ADD_ON_WHEEL_GUIDES=false`).
+
+Tant que « Repères de la roue » est enregistré activé, la page « Roue » liste quatre lignes de plus après son séparateur, au-dessus de la ligne « Mode attraction », pour ne garder que les repères voulus ; chacune s'applique au redémarrage de PinballY :
+
+- **Rail de la roue** Activé ou Désactivé (`WHEEL_RAIL`) ;
+- **Rail par année**, affichée tant que le rail de la roue est enregistré activé : **Décennies** (par défaut) ou **Décennies et années**, les années de chaque décennie dessous quand la roue est par année (`WHEEL_RAIL_YEARS` ; les lettres de la roue alphabétique restent les mêmes) ;
+- **Position dans la roue** Activé ou Désactivé : désactivée, « Table n/total » revient dans la ligne d'état du bas (`WHEEL_POSITION`) ;
+- **Cœur des favoris** Activé ou Désactivé (`FAVORITE_HEART`).
+
+Pour qu'un bouton de flipper gardé enfoncé fasse défiler la roue au rythme réglé sur la borne, mettez l'option « Auto-repeat rate » de PinballY (Options, Game Wheel) à `180ms` : le pack ne la change jamais.
 
 Sous « Lancer et jouer une table », **Écran de lancement** évite l'écran noir pendant le chargement d'une table (`ADD_ON_SEAMLESS_LAUNCH_OVERLAY=false` pour le désactiver). Si un autre script que vous faites tourner dans PinballY, comme un script de vidéo de lancement, prend l'écran de lancement avant le pack, celui du pack s'affiche quand même, et un **Avis de conflit** le signale une fois : voir [Avec vos Add-ons externes](external_add_ons.md#ce-que-le-pack-vous-signale--lécran-de-lancement).
 
@@ -98,7 +107,7 @@ Les réglages de l'eXpansion Pack écrivent aussi dans ce fichier. Une clé qu'i
 | `LOG_UNTRANSLATED_MENU_TITLES` | `false` | `true` écrit chaque titre de menu PinballY non traduit dans `PinballY.log`. |
 | `LOG_LAUNCH_EVENTS` | `false` | `true` écrit chaque événement de lancement dans `PinballY.log`, horodaté à la milliseconde, pour vérifier leur ordre sur la borne. Absent des Réglages de l'eXpansion pack. |
 | `WHEEL_RAIL` | `true` | `false` retire le rail de la roue (`#` et A à Z le long du bord droit de l'écran de la roue, ou les décennies avec l'ordre de la roue par année, une pastille dorée sur celle de la table sélectionnée ; voir [Interface](interface.md#sur-lécran-de-la-roue)). |
-| `WHEEL_RAIL_YEARS` | `false` | `true` affiche, par année, les années de chaque décennie dessous sur le rail de la roue, plus petites, sur deux chiffres (`84`), la pastille sur l'année de la table sélectionnée (voir [Choisir une table](choosing_a_table.md#ordre-de-la-roue)). |
+| `WHEEL_RAIL_YEARS` | `false` | `true` affiche, par année, les années de chaque décennie dessous sur le rail de la roue, plus petites, sur deux chiffres (`84`), la pastille sur l'année de la table sélectionnée (voir [Choisir une table](choosing_a_table.md#ordre-de-la-roue)). La ligne « Rail par année » de la page « Roue » des réglages le règle aussi. |
 | `WHEEL_RAIL_SECONDS` | `3` | Secondes pendant lesquelles le rail de la roue reste sans mouvement avant de glisser hors de l'écran ; le mouvement suivant le ramène. Un nombre entier ; `0` le garde toujours affiché. Demande `WHEEL_RAIL=true` (voir [Interface](interface.md#sur-lécran-de-la-roue)). |
 | `WHEEL_POSITION` | `true` | `false` retire la position dans la roue (`17/100`, en bas à droite de l'écran de la roue) et rend « Table n/total » à la ligne d'état du bas (voir [Interface](interface.md#sur-lécran-de-la-roue)). |
 | `FAVORITE_HEART` | `true` | `false` retire le cœur des favoris (en bas à gauche de l'écran de la roue, rouge sur une table favorite ; voir [Interface](interface.md#sur-lécran-de-la-roue)). |

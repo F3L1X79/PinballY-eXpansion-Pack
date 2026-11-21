@@ -776,6 +776,12 @@ export default {
         languageLine: (languageName) => `Language: ${languageName}`,
         startupScreenLine: (screenName) => `Startup screen: ${screenName}`,
         startupScreenNames: { welcome: "Welcome Screen", profilePicker: "Profile picker", wheel: "Wheel" },
+        // The Wheel Guides' own switches, on the Wheel page.
+        wheelRailLine: (state) => `Wheel Rail: ${state}`,
+        wheelRailYearsLine: (choiceName) => `Rail by year: ${choiceName}`,
+        wheelRailYearsNames: { false: "Decades", true: "Decades and years" },
+        wheelPositionLine: (state) => `Wheel Position: ${state}`,
+        favoriteHeartLine: (state) => `Favorite Heart: ${state}`,
         // How attract mode moves through the tables.
         attractOrderLine: (orderName) => `Attract Order: ${orderName}`,
         attractOrderNames: { pinballY: "As PinballY", inOrder: "In Order", wholeWheel: "Whole Wheel" },

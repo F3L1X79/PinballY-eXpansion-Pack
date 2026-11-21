@@ -51,7 +51,7 @@ A cabinet without Internet never sees the Update Prompt: update it by hand with 
 4. Extract the zip into `PinballY\Scripts`: you should get `Scripts\ExpansionPack\main.js`, not `ExpansionPack\ExpansionPack\main.js`.
 5. Copy back from `ExpansionPack.old-<date>` into `ExpansionPack` those of the following that you have, over what the zip holds:
    - `.env.local`: your settings;
-   - `profiles`: the Profiles;
+   - `profiles`: the Profiles (if the old `profiles\guest` holds an `avatar.jpg.bak`, first delete the zip's `profiles\guest\avatar.jpg`, which would hide the portrait Guest chose);
    - `logs`: the pack's logs;
    - `assets\sounds\local`: your own sounds;
    - `assets\images\default_scores\local`: your own Default Score images;

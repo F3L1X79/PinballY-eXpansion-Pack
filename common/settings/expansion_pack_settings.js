@@ -2,7 +2,7 @@
 // eXpansion Pack Settings: their entry in the Operator Menu, in its own group after Batch Capture, for whoever
 // sees the setup entries, opens the list: the Language and Startup screen pages, the Add-on categories (their Add-ons
 // as saved in .env.local, read again on each opening, one page per Add-on whose Save rewrites its one line; the Wheel's
-// Attract Order page), the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
+// Wheel Guides switches, listed while saved on, and Attract Order page), the Offline Mode group's switches, saving at once, and "Update to vX.Y.Z" and the vpxtool line while possible.
 // Listens to "menuopen" and "command"; saves and restarts through save_and_restart.js, and writes PinballY's attract switch time for the Attract Order.
 // - Started by main.js whatever config.addOns says, its "menuopen" listener before the Drawn Menus Add-on's.
 // - Always drawn (getPackMenusForDialogs), even with the Drawn Menus Add-on off.
@@ -37,6 +37,10 @@ const CATEGORY_MENU_ID = "expansionPackSettingsCategory";
 const PAGE_MENU_ID = "expansionPackSettingsPage";
 const LANGUAGE_MENU_ID = "expansionPackSettingsLanguage";
 const STARTUP_SCREEN_MENU_ID = "expansionPackSettingsStartupScreen";
+const WHEEL_RAIL_MENU_ID = "expansionPackSettingsWheelRail";
+const WHEEL_RAIL_YEARS_MENU_ID = "expansionPackSettingsWheelRailYears";
+const WHEEL_POSITION_MENU_ID = "expansionPackSettingsWheelPosition";
+const FAVORITE_HEART_MENU_ID = "expansionPackSettingsFavoriteHeart";
 const ATTRACT_ORDER_MENU_ID = "expansionPackSettingsAttractOrder";
 const OFFLINE_MODE_MENU_ID = "expansionPackSettingsOfflineMode";
 const UPDATE_CHECK_MENU_ID = "expansionPackSettingsUpdateCheck";
@@ -78,10 +82,25 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     // choices are keyed "true" / "false": String turns the saved boolean into
     // one of them. Discord Rich Presence's key only names its commands, the
     // Add-on's own page having that name; keyPath and read are the Add-on's value.
+    // shows(saved): whether the line is listed, the settings as saved; always when absent.
     const ON_OFF = { true: TEXT.on, false: TEXT.off };
+    // The Wheel Guides' own switches would do nothing with the Add-on off.
+    const wheelGuidesSaved = saved => saved.addOns.wheelGuides;
     const choiceSettings = [
         { key: "language", menuId: LANGUAGE_MENU_ID, names: TEXT.languageNames, line: TEXT.languageLine, normalize: value => String(value).toLowerCase(), place: LIST_PLACE },
         { key: "startupScreen", menuId: STARTUP_SCREEN_MENU_ID, names: TEXT.startupScreenNames, line: TEXT.startupScreenLine, normalize: String, place: LIST_PLACE },
+        { key: "wheelRail", menuId: WHEEL_RAIL_MENU_ID, names: ON_OFF, line: TEXT.wheelRailLine, normalize: String, place: "wheel", shows: wheelGuidesSaved },
+        {
+            key: "wheelRailYears",
+            menuId: WHEEL_RAIL_YEARS_MENU_ID,
+            names: TEXT.wheelRailYearsNames,
+            line: TEXT.wheelRailYearsLine,
+            normalize: String,
+            place: "wheel",
+            shows: saved => wheelGuidesSaved(saved) && saved.wheelRail,
+        },
+        { key: "wheelPosition", menuId: WHEEL_POSITION_MENU_ID, names: ON_OFF, line: TEXT.wheelPositionLine, normalize: String, place: "wheel", shows: wheelGuidesSaved },
+        { key: "favoriteHeart", menuId: FAVORITE_HEART_MENU_ID, names: ON_OFF, line: TEXT.favoriteHeartLine, normalize: String, place: "wheel", shows: wheelGuidesSaved },
         {
             key: "attractOrder",
             menuId: ATTRACT_ORDER_MENU_ID,
@@ -107,6 +126,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     ].map(setting => ({
         keyPath: setting.key,
         read: settings => settings[setting.key],
+        shows: () => true,
         ...setting,
         lineCommand: host.allocateCommand(`expansionPackSettings_${setting.key}`),
         choiceCommands: new Map(Object.keys(setting.names)
@@ -148,7 +168,7 @@ export function createExpansionPackSettings(host, profileStore, getMenus, runnin
     };
 
     const settingLinesAt = (place, saved) => choiceSettings
-        .filter(setting => setting.place === place).map(setting => choiceLineOf(saved, setting));
+        .filter(setting => setting.place === place && setting.shows(saved)).map(setting => choiceLineOf(saved, setting));
 
     const releaseToInstall = () => installableRelease(host, getUpdateState());
 

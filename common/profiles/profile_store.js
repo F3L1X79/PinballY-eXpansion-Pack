@@ -8,6 +8,7 @@
 // - isAdmin and isChild: by hand or setMark, which writes true or removes the key (ADR 0020); a first Profile created gets isAdmin (ADR 0023).
 // - Other modules' files sit next to cabinet.json or in a Profile's folder; no Profile Reset touches them.
 // - Another Profile's profile.json is read afresh on each call, but once per withCachedReads run.
+// - At startup, Guest's old shipped avatar.png (by size) goes only next to avatar.jpg and without avatar.jpg.bak.
 // ============================================================
 
 import { safeHandler, logHandlerError } from "../core/safe_handler.js";
@@ -31,6 +32,8 @@ const AVATAR_FILES = ["avatar.jpg", "avatar.png"];
 const OWN_PICTURE_FILE = "avatar.jpg";
 const SET_ASIDE_OWN_PICTURE_FILE = "avatar.jpg.bak";
 const OLDER_OWN_PICTURE_FILE = "avatar.jpg.older.bak";
+// Guest's avatar.png shipped up to v1.7.3, known by its size: the same picture as the avatar.jpg shipped since.
+const OLD_GUEST_AVATAR_SIZE = 1210489;
 
 const isGuestName = name => sameName(name, GUEST_NAME);
 // A player parks or hides a Profile by renaming its folder.
@@ -232,6 +235,30 @@ export function createProfileStore(host) {
     // at startup if a player deleted it.
     files.createFolder(profilesFolder);
     files.createFolder(findProfile(GUEST_NAME).folder);
+    dropOldGuestAvatar();
+
+    // A pack update merges the kept profiles folder into the new one, so the
+    // shipped avatar.jpg lands next to the old avatar.png, which it hides:
+    // that copy goes. Any other avatar.png, or a set-aside avatar.jpg.bak
+    // (Guest chose a portrait since), is left alone.
+    function dropOldGuestAvatar() {
+        try {
+            const folder = listedFolderPathOf(GUEST_NAME);
+            const oldAvatar = `${folder}\\avatar.png`;
+            const info = files.getFileInfo(oldAvatar);
+            if (!info || info.size !== OLD_GUEST_AVATAR_SIZE) return;
+            if (files.fileExists(`${folder}\\${SET_ASIDE_OWN_PICTURE_FILE}`)) return;
+            if (!files.fileExists(`${folder}\\${OWN_PICTURE_FILE}`)) {
+                log(`Guest's shipped ${OWN_PICTURE_FILE} is missing: Guest keeps its old avatar.png and has no Own Picture.`);
+                return;
+            }
+            files.deleteFile(oldAvatar);
+            log(`Guest's old shipped avatar.png was deleted: its shipped ${OWN_PICTURE_FILE} is the same picture.`);
+        } catch (error) {
+            logError(SCRIPT_NAME, `ERROR Guest's old shipped avatar.png cannot be dropped (${error.message});`
+                + " Guest keeps its current Avatar.", host, error);
+        }
+    }
 
     const savedCabinet = loadJson(profilesFolder, "cabinet", "cabinet.json", CABINET_VERSION);
     const cabinet = savedCabinet || { version: CABINET_VERSION, activeProfile: GUEST_NAME };

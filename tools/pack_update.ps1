@@ -111,7 +111,14 @@ $oldPack = Join-Path $scripts $oldName
 $updated = $false
 try {
     foreach ($name in $KeptFiles) { Keep (Join-Path $PackFolder $name) (Join-Path $newPack $name) }
-    # profiles\ whole: the player's Guest Avatar replaces the shipped one.
+    # profiles\ is merged into the release's: Guest's own avatar.jpg replaces the shipped one, but once
+    # Guest has set it aside as avatar.jpg.bak, the shipped one would come back and hide Guest's portrait.
+    $shippedGuestPicture = Join-Path $newPack 'profiles\guest\avatar.jpg'
+    if ((Test-Path -LiteralPath (Join-Path $PackFolder 'profiles\guest\avatar.jpg.bak')) -and (Test-Path -LiteralPath $shippedGuestPicture)) {
+        # A failure only costs Guest its portrait until the next choice: logged, the update goes on.
+        try { Remove-Item -LiteralPath $shippedGuestPicture; Log 'dropped the shipped Guest avatar.jpg' }
+        catch { Log ('ERROR ' + $_ + ', the shipped Guest avatar.jpg stays') }
+    }
     foreach ($name in $KeptFolders) { Keep (Join-Path $PackFolder $name) (Join-Path $newPack $name) }
     $tools = Join-Path $PackFolder 'tools'
     if (Test-Path -LiteralPath $tools) {

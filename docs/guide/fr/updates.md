@@ -51,7 +51,7 @@ Une borne sans Internet ne voit jamais l'invite de mise à jour : mettez-la à j
 4. Extrayez le zip dans `PinballY\Scripts` : vous devez obtenir `Scripts\ExpansionPack\main.js`, et non `ExpansionPack\ExpansionPack\main.js`.
 5. Recopiez de `ExpansionPack.old-<date>` vers `ExpansionPack` ceux des éléments suivants que vous avez, par-dessus ce que contient le zip :
    - `.env.local` : vos réglages ;
-   - `profiles` : vos Profils ;
+   - `profiles` : vos Profils (si l'ancien `profiles\guest` contient un `avatar.jpg.bak`, supprimez d'abord le `profiles\guest\avatar.jpg` du zip, qui cacherait le portrait choisi par Invité) ;
    - `logs` : les journaux du pack ;
    - `assets\sounds\local` : vos propres sons ;
    - `assets\images\default_scores\local` : vos propres images de score par défaut ;

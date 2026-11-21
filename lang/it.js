@@ -855,6 +855,11 @@ export default {
         startupScreenLine: (screenName) => `Schermata iniziale: ${screenName}`,
         startupScreenNames: { welcome: "Benvenuto", profilePicker: "Scelta del profilo", wheel: "Ruota" },
         // How attract mode moves through the tables, shown with the Wheel Order Add-on on.
+        wheelRailLine: (state) => `Barra della ruota: ${state}`,
+        wheelRailYearsLine: (choiceName) => `Barra per anno: ${choiceName}`,
+        wheelRailYearsNames: { false: "Decenni", true: "Decenni e anni" },
+        wheelPositionLine: (state) => `Posizione nella ruota: ${state}`,
+        favoriteHeartLine: (state) => `Cuore dei preferiti: ${state}`,
         attractOrderLine: (orderName) => `Modalità attrazione: ${orderName}`,
         attractOrderNames: { pinballY: "Come PinballY", inOrder: "In ordine", wholeWheel: "Tutta la ruota" },
         offlineMode: "Modalità offline",

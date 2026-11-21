@@ -294,9 +294,11 @@ test("the default Avatar is committed in the assets folder", () => {
     assert.ok(existsSync(fileURLToPath(new URL("../../assets/images/default_avatar.png", import.meta.url))));
 });
 
-test("Guest ships its own picture, not the default Avatar", () => {
-    const shipped = path => readFileSync(fileURLToPath(new URL(`../../${path}`, import.meta.url)));
-    assert.notDeepEqual(shipped("profiles/guest/avatar.png"), shipped("assets/images/default_avatar.png"));
+test("Guest ships its own picture as a JPEG avatar.jpg only, its Own Picture", () => {
+    const shippedPath = path => fileURLToPath(new URL(`../../${path}`, import.meta.url));
+    const picture = readFileSync(shippedPath("profiles/guest/avatar.jpg"));
+    assert.deepEqual([...picture.subarray(0, 3)], [0xFF, 0xD8, 0xFF], "a real JPEG");
+    assert.equal(existsSync(shippedPath("profiles/guest/avatar.png")), false);
 });
 
 test("accented Profile names survive a switch, a save and a restart", () => {

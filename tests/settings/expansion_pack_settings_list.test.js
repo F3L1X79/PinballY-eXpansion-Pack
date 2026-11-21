@@ -33,7 +33,8 @@ const categoryPages = ({ achievements = ON, clock = ON, menuCleanup = "Off" } = 
     "Wheel": [
         "[WHEEL]",
         `Status line: ${ON}`, `Clock: ${clock}`, `Status Icons: ${ON}`, `Wheel Arc: ${ON}`, `Wheel Guides: ${ON}`, `Wheel Order: ${ON}`,
-        "---", "Attract Order: As PinballY", "---", "Back",
+        "---", "Wheel Rail: On", "Rail by year: Decades", "Wheel Position: On", "Favorite Heart: On",
+        "Attract Order: As PinballY", "---", "Back",
     ],
     "Menus": [
         "[MENUS]",

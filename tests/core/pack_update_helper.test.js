@@ -62,6 +62,15 @@ test("waits for PinballY after the ready file, then copies each keep-list entry 
     assert.ok(HELPER.includes("$ShippedTools = @('restart_pinbally.ps1', 'pack_update.ps1', 'script_reader_install.ps1')"), "tools\\ but the shipped helpers");
 });
 
+test("drops the shipped Guest avatar.jpg before keeping profiles when the old Guest set its picture aside", () => {
+    const check = position("Join-Path $PackFolder 'profiles\\guest\\avatar.jpg.bak'");
+    const drop = position("Remove-Item -LiteralPath $shippedGuestPicture");
+    const failure = position("the shipped Guest avatar.jpg stays");
+    const keepFolders = position("foreach ($name in $KeptFolders)");
+    assert.ok(position("$shippedGuestPicture = Join-Path $newPack 'profiles\\guest\\avatar.jpg'") < check);
+    assert.ok(check < drop && drop < failure && failure < keepFolders, "the merged folder must not bring back a picture that hides Guest's portrait");
+});
+
 test("renames old before new, renames back on failure, keeps one old copy and starts PinballY again", () => {
     const renameOld = position("Rename-Item -LiteralPath $PackFolder -NewName $oldName");
     const moveNew = position("Move-Item -LiteralPath $newPack -Destination $PackFolder");
