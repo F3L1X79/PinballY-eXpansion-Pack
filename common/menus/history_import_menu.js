@@ -13,6 +13,7 @@ import { logHandlerError, safeHandler } from "../core/safe_handler.js";
 import { createNativeMenus } from "../drawn_menu/drawn_menu.js";
 import { collectionMasteryOfProfile } from "../mastery/table_mastery.js";
 import { tablesVisibleTo } from "../tables/visible_tables.js";
+import { STEAMBALL_COLORS } from "../drawing/steamball_palette.js";
 
 const SCRIPT_NAME = "HistoryImport";
 const CONFIRM_MENU_ID = "historyImportConfirm";
@@ -53,8 +54,14 @@ export function createHistoryImportMenu(host, profileStore, menus = createNative
     function confirm(profile) {
         profileToImport = profile;
         const { tableCount, games, seconds } = profileStore.previewHistoryImport(profile.name, host.getAllTables());
+        const question = TEXT.historyConfirm(displayNameOf(profile), games, hoursOf(seconds), tableCount);
         menus.show(CONFIRM_MENU_ID, [
-            { title: TEXT.historyConfirm(displayNameOf(profile), games, hoursOf(seconds), tableCount), cmd: -1 },
+            // A native menu shows the title; a Drawn Menu the runs, the warning on its own line, in gold.
+            {
+                title: `${question} ${TEXT.historyWarning}`,
+                runs: [question, { text: `\n${TEXT.historyWarning}`, color: STEAMBALL_COLORS.gold }],
+                cmd: -1,
+            },
             SEPARATOR,
             { title: TEXT.historyYes, cmd: yesCommand },
             { title: TEXT.no, cmd: cancelCommand, selected: true },

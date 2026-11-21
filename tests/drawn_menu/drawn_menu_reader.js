@@ -28,7 +28,7 @@ export const isAnythingDrawn = fake => fake.drawingLayers()
 
 // A dialog's gold title and its message above the list (null when none;
 // their wrapped lines joined as drawn, without the spaces between them),
-// the message's parts drawn bolder than it, trimmed, and the rows from top to
+// the message's parts drawn bolder than it and those drawn in gold, trimmed, and the rows from top to
 // bottom: { kind: "entry", title, mark } (mark: "check", "radio",
 // "submenu" or null; a disabled entry with its reason too),
 // { kind: "heading", title } or { kind: "separator" };
@@ -40,6 +40,7 @@ export function readDrawnMenu(fake) {
     let message = null;
     let messageTop = null;
     const messageBold = [];
+    const messageGold = [];
     let footer = null;
     const rows = [];
     let inSeparator = false;
@@ -72,6 +73,7 @@ export function readDrawnMenu(fake) {
             message = message === null ? stroke.text : `${message}${joint}${stroke.text}`;
             messageTop = stroke.rect.y;
             if (stroke.weight > DRAWN_MENU_LOOK.message.weight) messageBold.push(stroke.text.trim());
+            if (stroke.color === COLORS.gold) messageGold.push(stroke.text.trim());
         }
         else if (stroke.color === COLORS.heading) rows.push({ kind: "heading", title: stroke.text });
         else if (stroke.color === COLORS.gold) rows.at(-1).mark = MARK_NAMES.get(stroke.text);
@@ -83,7 +85,7 @@ export function readDrawnMenu(fake) {
         else if (stroke.color === COLORS.disabledEntry) rows.push({ kind: "entry", title: stroke.text, mark: null, reason: null });
         else rows.push({ kind: "entry", title: stroke.text, mark: null });
     }
-    return { title, message, messageBold, rows, footer };
+    return { title, message, messageBold, messageGold, rows, footer };
 }
 
 // A dialog's title and message as drawn on the texts' canvas, each

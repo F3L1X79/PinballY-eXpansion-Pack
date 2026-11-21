@@ -59,7 +59,7 @@ test("the History Import shows natively, fails without writing, then works once"
     openProfileMenu("Bob");
     fake.selectMenuItem(TEXT.historyLine);
     assert.deepEqual(shownMessage(), {
-        titles: [TEXT.historyConfirm("Bob", 7, 2, 1), "", TEXT.historyYes, TEXT.no], selected: [TEXT.no], dialogStyle: true,
+        titles: [`${TEXT.historyConfirm("Bob", 7, 2, 1)} ${TEXT.historyWarning}`, "", TEXT.historyYes, TEXT.no], selected: [TEXT.no], dialogStyle: true,
     });
     fake.selectMenuItem(TEXT.historyYes);
     assert.deepEqual(shownMessage(), { titles: [TEXT.historyFailed("Bob"), "", TEXT.ok], selected: [TEXT.ok], dialogStyle: true });

@@ -1,7 +1,7 @@
 // ============================================================
 // The History Import from Manage profiles as Drawn Menus, through main.js on
 // the fake PinballY globals: an Admin Profile hands PinballY's history to
-// another Profile after a confirmation on "No"; the outcome names what was
+// another Profile after a confirmation on "No", its warning in gold; the outcome names what was
 // added. The line is greyed for Guest, when nothing is left, and once done
 // on every Profile, even after a Profile Reset of the one that received it.
 // ============================================================
@@ -89,7 +89,7 @@ test("less than an hour left to take over counts as one hour, never zero", () =>
     try {
         openProfileMenu("Bob");
         chooseEntry(fake, TEXT.historyLine);
-        assert.equal(squeezed(readDrawnMenu(fake).message), squeezed(TEXT.historyConfirm("Bob", 1, 1, 1)));
+        assert.equal(squeezed(readDrawnMenu(fake).message), squeezed(TEXT.historyConfirm("Bob", 1, 1, 1) + TEXT.historyWarning));
         press(fake, "Select");
         assert.ok(!isDrawnMenuShown(fake), "No closes");
     } finally {
@@ -102,7 +102,9 @@ test("the confirmation names the Profile and what would be added, on No, which w
     openProfileMenu("Bob");
     assert.equal(historyRow().reason, undefined, "offered to Bob");
     chooseEntry(fake, TEXT.historyLine);
-    assert.equal(squeezed(readDrawnMenu(fake).message), squeezed(TEXT.historyConfirm("Bob", 13, 6, 2)));
+    const { message, messageGold } = readDrawnMenu(fake);
+    assert.equal(message, `${TEXT.historyConfirm("Bob", 13, 6, 2)}\n${TEXT.historyWarning}`, "the warning on its own line");
+    assert.deepEqual(messageGold, [TEXT.historyWarning], "in gold");
     assert.deepEqual(drawnMenuLines(fake), [TEXT.historyYes, TEXT.no]);
     assert.equal(highlightedEntry(fake), TEXT.no);
     press(fake, "Select");
