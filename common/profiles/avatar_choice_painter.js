@@ -7,7 +7,7 @@
 
 import { STEAMBALL_COLORS as COLORS, STEAMBALL_FONTS as FONTS } from "../drawing/steamball_palette.js";
 import {
-    text, oneLine, drawAvatar, glow, fillGradient, buttonHintsFooterRectOf, DIMMED_WHEEL, EXIT_AND_HINTS_METRICS as EXIT_AND_HINTS,
+    text, oneLine, drawAvatar, glow, fillGradient, tooltip, buttonHintsFooterRectOf, DIMMED_WHEEL, EXIT_AND_HINTS_METRICS as EXIT_AND_HINTS,
 } from "../drawing/steamball_drawing.js";
 
 // Above Name Entry's layers, which close as it opens, and the Profile
@@ -86,6 +86,29 @@ export const GREYED_PORTRAIT_COVER = 0xB4080A0E;
 export function drawPortrait(dc, path, side, isTaken = false) {
     drawAvatar(dc, path, 0, 0, side);
     if (isTaken) dc.fillRect(0, 0, side, side, GREYED_PORTRAIT_COVER);
+}
+
+// The grid's places, both shapes alike; the last one is kept for the Own
+// Picture or the "?", so a pack still holding more portraits shows the first ones only.
+export const PORTRAIT_PLACES = GRID.wide.columns * GRID.wide.rows - 1;
+
+// The last place's mark when the Profile has no Own Picture: a sign, not a word.
+const RANDOM_MARK = "?";
+
+export function drawRandomPlace(host, dc, side) {
+    drawAvatar(dc, null, 0, 0, side);
+    oneLine(host, dc, RANDOM_MARK, {
+        x: 0, y: 0, width: side, height: side, size: Math.round(side / 2), weight: 700, color: COLORS.gold, font: FONTS.display, align: "center",
+    });
+}
+
+// The "?"'s tooltip layer, on the place's left, room for the longest translation.
+const PLACE_TOOLTIP_ROOM = 400;
+export const placeTooltipRectOf = place => ({ x: place.x - PLACE_TOOLTIP_ROOM, y: place.y, w: PLACE_TOOLTIP_ROOM, h: place.h });
+
+// On that layer, its tip at the place's left edge.
+export function drawPlaceTooltip(host, dc, word, h) {
+    tooltip(host, dc, word, PLACE_TOOLTIP_ROOM, h / 2, "left");
 }
 
 const CONFIRMATION = Object.freeze({

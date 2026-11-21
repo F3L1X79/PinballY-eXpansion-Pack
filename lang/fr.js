@@ -666,6 +666,7 @@ export default {
             keepDefaultQuestion: "Garder l'Avatar par défaut ?",
             chooseAvatar: "Choisir un Avatar",
             keepDefault: "Garder l'Avatar par défaut",
+            randomPortrait: "Un portrait au hasard",
         },
         greeting: name => `Salut ${name} !`,
     },

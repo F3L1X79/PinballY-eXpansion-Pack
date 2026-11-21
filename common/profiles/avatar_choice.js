@@ -1,8 +1,8 @@
 // ============================================================
-// Avatar Choice: the drawn screen where a Profile takes one of the pack's
-// readable portraits, copied as its avatar.png by Select or Launch. At creation
-// (after Name Entry) Exit asks, on a panel, before keeping the Default Avatar;
-// from My Profile it closes at once. Portraits other Profiles wear are greyed and
+// Avatar Choice: the drawn screen where a Profile takes one of the pack's readable
+// portraits (copied as its avatar.png) or, in the last place, its Own Picture back or a
+// random free portrait ("?"). At creation Exit asks, on a panel, before keeping the Default
+// Avatar; from My Profile it closes at once. Portraits other Profiles wear are greyed and
 // skipped. Hands back on close; attract mode copies nothing. Sound on show; redrawn on a resize.
 // - Exit while still opening leaves at once, unasked: no choice can be lost yet.
 // - Moving only moves the Selection Marker: the portraits are drawn once, at opening.
@@ -24,8 +24,8 @@ import { drawExitButton, exitTooltipRectOf, drawExitTooltip, drawButtonHintsBand
 import { buttonHintGroupsOf, exitButtonWordOf, FLIPPER_HINT } from "../drawing/button_hints.js";
 import { EXIT_BUTTON, stepThroughExitButton } from "../drawing/exit_button_loop.js";
 import {
-    AVATAR_CHOICE_Z_INDEX as Z_INDEX, REFERENCE_HEIGHT, layoutAvatarChoice, portraitRectOf, drawTitle, drawName, drawHint, drawPortrait,
-    layoutConfirmation, drawConfirmationPanel, drawConfirmationChoice,
+    AVATAR_CHOICE_Z_INDEX as Z_INDEX, REFERENCE_HEIGHT, PORTRAIT_PLACES, layoutAvatarChoice, portraitRectOf, drawTitle, drawName, drawHint, drawPortrait,
+    drawRandomPlace, placeTooltipRectOf, drawPlaceTooltip, layoutConfirmation, drawConfirmationPanel, drawConfirmationChoice,
 } from "./avatar_choice_painter.js";
 
 const SCRIPT_NAME = "AvatarChoice";
@@ -47,9 +47,11 @@ export const AVATAR_CHOICE_MODE = Object.freeze({ CREATION: "creation", CHANGE: 
 function readPortraits(host, folder) {
     const numberOf = name => Number(PORTRAIT_FILE.exec(name)[1]);
     const portraits = [];
+    // A portrait the pack no longer ships, left by an update, is never shown.
     const numbered = host.files.listFiles(folder)
         .filter(name => PORTRAIT_FILE.test(name))
         .sort((a, b) => numberOf(a) - numberOf(b))
+        .slice(0, PORTRAIT_PLACES)
         .map(name => `${folder}\\${name}`);
     for (const path of numbered) {
         if (host.files.isImageReadable(path)) portraits.push(path);
@@ -86,8 +88,24 @@ function readWornPortraits(host, profileStore, profileName, portraits) {
     return { worn, taken };
 }
 
-// The first portrait not taken; taken never holds them all.
-const firstFreePortrait = (portraitCount, taken) => Array.from({ length: portraitCount }, (_, index) => index).find(index => !taken.has(index));
+// What the grid's last place shows.
+const LAST_PLACE = Object.freeze({ OWN_PICTURE_WORN: "ownPictureWorn", OWN_PICTURE_SET_ASIDE: "ownPictureSetAside", RANDOM: "random" });
+
+function lastPlaceOf(ownPicture) {
+    if (!ownPicture) return LAST_PLACE.RANDOM;
+    return ownPicture.isInUse ? LAST_PLACE.OWN_PICTURE_WORN : LAST_PLACE.OWN_PICTURE_SET_ASIDE;
+}
+
+const freePortraits = (portraitCount, taken) => Array.from({ length: portraitCount }, (_, index) => index).filter(index => !taken.has(index));
+
+// The "?"'s draw among the free portraits but the one worn, which would
+// change nothing; that one only when no other is free.
+function randomFreePortrait(host, { portraits, taken, worn }) {
+    const free = freePortraits(portraits.length, taken);
+    const others = free.filter(index => index !== worn);
+    const candidates = others.length > 0 ? others : free;
+    return candidates[Math.floor(host.random() * candidates.length)];
+}
 
 // drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js);
 // drawnScreenControls: the shared Drawn Screen controls (common/core/drawn_screen_controls.js);
@@ -138,7 +156,8 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
             () => drawPiece(Z_INDEX.texts, geometry().hint, dc => drawHint(host, dc, TEXT.line, geometry().hint.w, geometry().hint.h)),
             () => drawPiece(Z_INDEX.exitButton, geometry().exitButton, dc => drawExitButton(dc, EXIT_BUTTON_LOOK.BACK)),
             () => {
-                shown.tooltip = drawPiece(Z_INDEX.tooltip, exitTooltipRectOf(geometry().exitButton), dc => drawExitTooltip(host, dc, exitWord));
+                const layer = drawPiece(Z_INDEX.tooltip, exitTooltipRectOf(geometry().exitButton), dc => drawExitTooltip(host, dc, exitWord));
+                shown.tooltips.set(EXIT_BUTTON, layer);
             },
             () => {
                 const rect = geometry().buttonHints;
@@ -148,8 +167,24 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
                 const rect = portraitRectOf(geometry(), index);
                 drawPiece(Z_INDEX.portraits, rect, dc => drawPortrait(dc, path, rect.w, shown.taken.has(index)));
             }),
+            () => {
+                const rect = portraitRectOf(geometry(), lastPlace());
+                const { ownPicture } = shown;
+                if (shown.lastPlaceShows !== LAST_PLACE.RANDOM) {
+                    drawPiece(Z_INDEX.portraits, rect, dc => drawPortrait(dc, ownPicture.path, rect.w));
+                    return;
+                }
+                drawPiece(Z_INDEX.portraits, rect, dc => drawRandomPlace(host, dc, rect.w));
+                const tooltipRect = placeTooltipRectOf(rect);
+                const layer = drawPiece(Z_INDEX.tooltip, tooltipRect, dc => drawPlaceTooltip(host, dc, TEXT.randomPortrait, tooltipRect.h));
+                shown.tooltips.set(lastPlace(), layer);
+            },
         ];
     }
+
+    // Right after the portraits: the Own Picture, or the "?".
+    const lastPlace = () => shown.portraits.length;
+    const isTooltip = layer => [...shown.tooltips.values()].includes(layer);
 
     const selectedRect = () => (shown.selected === EXIT_BUTTON ? shown.geometry.exitButton : portraitRectOf(shown.geometry, shown.selected));
 
@@ -160,14 +195,17 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
         }
     }
 
-    // Each frame of the fade in, and each move. The Exit Button's tooltip
-    // shows only while it is selected; the confirmation, when shown, hides it
-    // and takes the marker's place, the grid's set aside under it.
+    // Each frame of the fade in, and each move. A tooltip (the Exit
+    // Button's, the "?"'s) shows only while its place is selected; the
+    // confirmation, when shown, hides it and takes the marker's place, the
+    // grid's set aside under it.
     function setOpacity(opacity) {
         shown.opacity = opacity;
-        showWithOpacity([shown.backdrop, ...shown.layers.filter(layer => layer !== shown.tooltip)], opacity);
-        if (shown.selected === EXIT_BUTTON && !shown.confirmation) showWithOpacity([shown.tooltip], opacity);
-        else if (placed.isShown(shown.tooltip)) placed.hide(shown.tooltip);
+        showWithOpacity([shown.backdrop, ...shown.layers.filter(layer => !isTooltip(layer))], opacity);
+        for (const [place, layer] of shown.tooltips) {
+            if (place === shown.selected && !shown.confirmation) showWithOpacity([layer], opacity);
+            else if (placed.isShown(layer)) placed.hide(layer);
+        }
         const { confirmation } = shown;
         if (!confirmation) {
             shown.marker.setOpacity(opacity);
@@ -194,7 +232,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
         if (shown.marker) shown.marker.remove();
         if (shown.backdrop) placed.remove(shown.backdrop);
         for (const layer of shown.layers) placed.remove(layer);
-        Object.assign(shown, { marker: null, backdrop: null, layers: [], tooltip: null });
+        Object.assign(shown, { marker: null, backdrop: null, layers: [], tooltips: new Map() });
     }
 
     // Redrawn for a new window size and grid shape: the current portrait stays
@@ -276,13 +314,17 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
             return;
         }
         const { worn, taken } = opening.read(() => readWornPortraits(host, profileStore, profileName, portraits));
+        const ownPicture = opening.read(() => profileStore.getOwnPictureOf(profileName));
+        const lastPlaceShows = lastPlaceOf(ownPicture);
+        const wornPlace = lastPlaceShows === LAST_PLACE.OWN_PICTURE_WORN ? portraits.length : worn;
         // Here rather than on the first move, which it would slow down.
         navigationSound.load();
         shown = {
-            profileName, portraits, worn, taken, onClosed, mode, selected: worn ?? firstFreePortrait(portraits.length, taken),
+            profileName, portraits, worn, taken, ownPicture, lastPlaceShows, onClosed, mode,
+            selected: wornPlace ?? freePortraits(portraits.length, taken)[0],
             isPreparing: true, opacity: 0,
             controlled: controls.open({ onMove: move, onChoose: choose, onExit: exit, close: remove }),
-            referenceWidth: 0, geometry: null, backdrop: null, layers: [], tooltip: null, marker: null, confirmation: null,
+            referenceWidth: 0, geometry: null, backdrop: null, layers: [], tooltips: new Map(), marker: null, confirmation: null,
         };
         const pending = [() => useBackdrop(windowRedraw.drawOpeningBackdrop()), ...pieceSteps()];
         opening.runVeiled(() => {
@@ -304,8 +346,8 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
         });
     }
 
-    // direction: 1 for Next, -1 for Prev, through the Exit Button then each
-    // portrait not taken; on the confirmation, round both choices.
+    // direction: 1 for Next, -1 for Prev, through the Exit Button, each
+    // portrait not taken and the last place; on the confirmation, round both choices.
     function move(direction, isRepeat) {
         navigationSound.play(direction, isRepeat);
         const { confirmation } = shown;
@@ -315,7 +357,7 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
             return;
         }
         // Ends: the Exit Button is never taken, and taken never holds every portrait.
-        do shown.selected = stepThroughExitButton(shown.selected, direction, shown.portraits.length);
+        do shown.selected = stepThroughExitButton(shown.selected, direction, lastPlace() + 1);
         while (shown.taken.has(shown.selected));
         shown.marker.moveTo(selectedRect());
         setOpacity(shown.opacity);
@@ -329,16 +371,29 @@ export function createAvatarChoice(host, { profileStore, drawingAhead, drawnScre
         else askToConfirm();
     }
 
-    // A portrait is taken at once, the one worn already changing nothing; a
-    // copy that fails keeps the Avatar worn.
+    // What choosing the place changes, null for nothing: a portrait is
+    // given, the "?" drawing one; the set-aside Own Picture is worn again.
+    function changeOf(place) {
+        const { profileName, worn } = shown;
+        if (place !== lastPlace()) return place === worn ? null : () => profileStore.giveAvatar(profileName, shown.portraits[place]);
+        switch (shown.lastPlaceShows) {
+            case LAST_PLACE.OWN_PICTURE_WORN: return null;
+            case LAST_PLACE.OWN_PICTURE_SET_ASIDE: return () => profileStore.wearOwnPicture(profileName);
+            default: return changeOf(randomFreePortrait(host, shown));
+        }
+    }
+
+    // Taken at once; the Avatar worn already changes nothing, and a copy or
+    // a rename that fails keeps it.
     function choose() {
         const { confirmation } = shown;
         if (confirmation && confirmation.selected === CHOICE.KEEP_DEFAULT) return leave();
         if (confirmation) return backToGrid();
         if (shown.selected === EXIT_BUTTON) return exit();
-        if (shown.selected === shown.worn) return leave();
+        const change = changeOf(shown.selected);
+        if (!change) return leave();
         try {
-            profileStore.giveAvatar(shown.profileName, shown.portraits[shown.selected]);
+            change();
         } catch (error) {
             // It answers what the player just chose, on the screen: no Error Toast.
             logHandlerError(SCRIPT_NAME, error);

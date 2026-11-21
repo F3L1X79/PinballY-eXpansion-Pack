@@ -31,8 +31,10 @@ const PICKER_AVATAR_Z_INDEX = 6501;
 
 const markedProfile = marks => JSON.stringify({ version: 1, plays: {}, notified: [], ...marks });
 
-// The pack's portraits of Avatar Choice, by number (1 for avatar_choice_01.png).
-export const PORTRAIT_COUNT = 24;
+// The pack's portraits of Avatar Choice, by number (1 for avatar_choice_01.png);
+// the grid's last place, after them, holds the Own Picture or the "?".
+export const PORTRAIT_COUNT = 23;
+export const RANDOM_PLACE = "?";
 export const PORTRAITS_FOLDER = "C:\\PinballY\\Scripts\\ExpansionPack\\assets\\images\\avatar_choice";
 export const portraitOf = number => `${PORTRAITS_FOLDER}\\avatar_choice_${String(number).padStart(2, "0")}.png`;
 const ALL_PORTRAITS = Array.from({ length: PORTRAIT_COUNT }, (_, index) => index + 1);
@@ -159,20 +161,26 @@ export function openNameEntry(fake) {
 // Avatar Choice, which opens once Name Entry's OK created the Profile.
 export const isAvatarChoiceOpen = fake => shownLayers(fake, AVATAR_Z.backdrop).length > 0;
 export const avatarChoiceTexts = fake => shownLayers(fake, AVATAR_Z.texts).flatMap(layer => layer.texts());
+// The grid's places, the last one included.
 export const portraitLayers = fake => shownLayers(fake, AVATAR_Z.portraits);
+// What a place shows: a portrait's or the Own Picture's path, or RANDOM_PLACE.
+const placeShown = layer => layer.images()[0] ?? layer.texts()[0];
+export const placesShown = fake => portraitLayers(fake).map(placeShown);
 // The paths of the portraits drawn greyed, worn by another Profile.
 export const greyedPortraits = fake => portraitLayers(fake)
     .filter(layer => layer.fills().includes(GREYED_PORTRAIT_COVER))
     .map(layer => layer.images()[0]);
 // A size of its own for each portrait, for startOnWheel's portraitText: a portrait worn is known by its size.
 export const sizedPortraitText = number => `portrait ${"#".repeat(number)}`;
-// The portrait's path the Selection Marker surrounds, or "exit" on the Exit Button.
+// What the place the Selection Marker surrounds shows, or "exit" on the Exit Button.
 export function currentPortrait(fake) {
     const exitButton = shownLayers(fake, AVATAR_Z.exitButton);
     const layer = layerUnderMarker(fake, AVATAR_Z.marker, [...portraitLayers(fake), ...exitButton]);
     assert.ok(layer, "the Selection Marker surrounds a portrait or the Exit Button");
-    return exitButton.includes(layer) ? "exit" : layer.images()[0];
+    return exitButton.includes(layer) ? "exit" : placeShown(layer);
 }
+// The tooltips shown on Avatar Choice: the Exit Button's or the "?"'s.
+export const avatarChoiceTooltips = fake => shownLayers(fake, AVATAR_Z.tooltip).flatMap(layer => layer.texts());
 
 // The grid's portraits as the player sees them: rows top to bottom, each left to right.
 export function portraitRows(fake) {
@@ -180,28 +188,29 @@ export function portraitRows(fake) {
     for (const layer of portraitLayers(fake)) {
         const { x, y } = layer.position();
         if (!rows.has(y)) rows.set(y, []);
-        rows.get(y).push({ x, path: layer.images()[0] });
+        rows.get(y).push({ x, path: placeShown(layer) });
     }
     // A layer's y grows upwards.
     return [...rows.entries()].sort(([a], [b]) => b - a).map(([, row]) => row.sort((a, b) => a.x - b.x).map(cell => cell.path));
 }
 
-// The portraits' paths, by number, cut in rows of that many.
+// The portraits' paths, by number, then the "?", cut in rows of that many.
 export function portraitsInRows(columns) {
+    const places = [...ALL_PORTRAITS.map(portraitOf), RANDOM_PLACE];
     const rows = [];
-    for (let number = 1; number <= PORTRAIT_COUNT; number += columns) {
-        rows.push(Array.from({ length: columns }, (_, offset) => portraitOf(number + offset)));
-    }
+    for (let index = 0; index < places.length; index += columns) rows.push(places.slice(index, index + columns));
     return rows;
 }
 
-// Next from the first portrait: every portrait in turn, then the Exit Button, then the first again.
+// Next from the first portrait: every portrait in turn, the "?", then the Exit Button, then the first again.
 export function assertNextGoesInOrder(fake) {
     assert.equal(currentPortrait(fake), portraitOf(1));
     for (let number = 2; number <= PORTRAIT_COUNT; number++) {
         press(fake, "Next");
         assert.equal(currentPortrait(fake), portraitOf(number));
     }
+    press(fake, "Next");
+    assert.equal(currentPortrait(fake), RANDOM_PLACE);
     press(fake, "Next");
     assert.equal(currentPortrait(fake), "exit");
     press(fake, "Next");

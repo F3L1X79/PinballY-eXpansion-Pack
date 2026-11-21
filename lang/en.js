@@ -558,6 +558,8 @@ export default {
             keepDefaultQuestion: "Keep the default Avatar?",
             chooseAvatar: "Choose an Avatar",
             keepDefault: "Keep the default Avatar",
+            // The tooltip of the "?" in the last place, which takes a free portrait at random.
+            randomPortrait: "A random portrait",
         },
         greeting: name => `Hi ${name}!`,
     },

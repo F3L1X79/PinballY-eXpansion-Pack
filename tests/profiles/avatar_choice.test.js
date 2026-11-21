@@ -1,7 +1,7 @@
 // ============================================================
-// Avatar Choice through main.js: Name Entry's OK opens it on the 24
-// portraits; the flippers move only the Selection Marker, looping through
-// the Exit Button; the press that closed Name Entry does nothing; Launch
+// Avatar Choice through main.js: Name Entry's OK opens it on the 23
+// portraits and the "?"; the flippers move only the Selection Marker,
+// looping through the Exit Button; the press that closed Name Entry does nothing; Launch
 // takes a portrait at once, as avatar.png, and the picker comes back on
 // the new Profile wearing it.
 // ============================================================
@@ -13,7 +13,7 @@ import { expectedButtonHints, buttonHintsOn } from "../support/button_hints_read
 import { AVATAR_CHOICE_Z_INDEX } from "../../common/profiles/avatar_choice_painter.js";
 import {
     startOnWheel, press, step, highlighted, openNameEntry, isNameEntryOpen, enterName, moveTo, pickerAvatars,
-    isAvatarChoiceOpen, avatarChoiceTexts, portraitLayers, currentPortrait, portraitOf, PROFILES_FOLDER, PORTRAIT_COUNT, AVATAR_CHOICE_OPEN_MS,
+    isAvatarChoiceOpen, avatarChoiceTexts, placesShown, currentPortrait, portraitOf, PROFILES_FOLDER, PORTRAIT_COUNT, RANDOM_PLACE, AVATAR_CHOICE_OPEN_MS,
 } from "./name_entry_scenario.js";
 
 test("a portrait taken on Avatar Choice becomes the new Profile's Avatar in the picker", async () => {
@@ -38,7 +38,7 @@ test("a portrait taken on Avatar Choice becomes the new Profile's Avatar in the 
     // What the screen shows.
     assert.deepEqual(avatarChoiceTexts(fake), [lang.profiles.avatarChoice.title, "Maxx", lang.profiles.avatarChoice.line]);
     assert.equal(lang.profiles.avatarChoice.title, "Choose your Avatar");
-    assert.deepEqual(portraitLayers(fake).map(layer => layer.images()[0]), Array.from({ length: PORTRAIT_COUNT }, (_, index) => portraitOf(index + 1)));
+    assert.deepEqual(placesShown(fake), [...Array.from({ length: PORTRAIT_COUNT }, (_, index) => portraitOf(index + 1)), RANDOM_PLACE]);
     assert.deepEqual(buttonHintsOn(fake, AVATAR_CHOICE_Z_INDEX.buttonHints), expectedButtonHints(lang, { exit: "back" }));
     assert.equal(fake.files.fileExists(avatarPath), false, "the press that closed Name Entry takes nothing");
     assert.equal(currentPortrait(fake), portraitOf(1), "the marker starts on the first portrait");
@@ -49,7 +49,10 @@ test("a portrait taken on Avatar Choice becomes the new Profile's Avatar in the 
     press(fake, "Prev");
     assert.equal(currentPortrait(fake), "exit", "before the first portrait, the Exit Button");
     press(fake, "Prev");
+    assert.equal(currentPortrait(fake), RANDOM_PLACE, "then the last place");
+    press(fake, "Prev");
     assert.equal(currentPortrait(fake), portraitOf(PORTRAIT_COUNT), "then the last portrait");
+    press(fake, "Next");
     press(fake, "Next");
     assert.equal(currentPortrait(fake), "exit");
     press(fake, "Next");
@@ -59,7 +62,7 @@ test("a portrait taken on Avatar Choice becomes the new Profile's Avatar in the 
     assert.equal(currentPortrait(fake), portraitOf(3));
     assert.deepEqual(fake.drawings().slice(drawingsBefore).filter(drawing => drawing.zIndex !== AVATAR_CHOICE_Z_INDEX.marker), [],
         "moving draws nothing but the marker");
-    assert.equal(fake.soundsPlayed().length, soundsBefore + 6, "each move plays the navigation sound");
+    assert.equal(fake.soundsPlayed().length, soundsBefore + 8, "each move plays the navigation sound");
 
     // Launch takes the portrait at once.
     assert.equal(press(fake, "Launch").defaultPrevented, true);

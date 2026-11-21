@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import {
     startOnWheel, press, step, openNameEntry, createThroughNameEntry, isAvatarChoiceOpen, currentPortrait, portraitOf, greyedPortraits,
-    sizedPortraitText, PROFILES_FOLDER, PORTRAIT_COUNT,
+    sizedPortraitText, PROFILES_FOLDER, RANDOM_PLACE,
 } from "./name_entry_scenario.js";
 
 test("portraits worn by other listed Profiles are greyed and skipped by the marker", async () => {
@@ -34,7 +34,7 @@ test("portraits worn by other listed Profiles are greyed and skipped by the mark
     press(fake, "Prev");
     assert.equal(currentPortrait(fake), "exit", "Prev skips the greyed first portrait to the Exit Button");
     press(fake, "Prev");
-    assert.equal(currentPortrait(fake), portraitOf(PORTRAIT_COUNT));
+    assert.equal(currentPortrait(fake), RANDOM_PLACE, "the last place is never greyed");
     press(fake, "Next", true);
     press(fake, "Next", true);
     assert.equal(currentPortrait(fake), portraitOf(2), "a held flipper skips them too");
