@@ -13,9 +13,9 @@ import { createPinballYHost } from "../core/pinbally_host.js";
 import { getProfileStore } from "../profiles/profile_store.js";
 import { getTableOfTheDay, getTableOfTheWeek, formatDateKey, getWeekKey } from "../tables/period_table.js";
 import { getRandomGame } from "../tables/random_game.js";
-import { getDecadeStartYear } from "../achievements/decade.js";
 import { isVisibleTo, tablesVisibleTo } from "../tables/visible_tables.js";
 import { getAchievementToasts, TOAST_KIND } from "../achievements/achievement_toast.js";
+import { createCalibration, manufacturerOf, decadeOf } from "./calibration.js";
 import config from "../core/config.js";
 import lang from "../core/i18n.js";
 
@@ -63,8 +63,6 @@ const wholeMinutes = seconds => Math.floor(seconds / 60);
 // A table without a manufacturer or a year has no value to count.
 const isKnown = value => value !== "" && value !== null;
 const distinctKnown = values => distinct(values.filter(isKnown));
-const manufacturerOf = table => table.manufacturer || "";
-const decadeOf = table => getDecadeStartYear(table.year);
 // A single option without a parameter, its target capped at max.
 const cappedOptions = max => [{ param: null, max }];
 // Without a visible table there is no Period Table and no game that counts.
@@ -92,6 +90,9 @@ function leastAcrossProfiles(context, matches) {
 
 // Template ids are players' saved data (cabinet.json, history): never rename one.
 // range: the target's { min, max }, counts, or minutes for endurance and marathon.
+// calibrated: progress reads only a game's table, manufacturer, decade, day
+// and seconds, which the Play Log can rebuild (calibration.js): the target
+// follows the last weeks once there is enough of it.
 // options(context): the { param, max } choices, max capping the target; an
 // option whose cap is below range.min is not feasible.
 // progress(games, param): the value compared with the target.
@@ -101,11 +102,13 @@ function leastAcrossProfiles(context, matches) {
 const TEMPLATES = Object.freeze({
     differentTables: {
         range: MANY,
+        calibrated: true,
         options: context => cappedOptions(context.visibleTables.length),
         progress: games => distinctTables(games),
     },
     manufacturerTables: {
         range: SOME,
+        calibrated: true,
         // The community tables' manufacturer is not a real one.
         options: context => groupOptions(
             context.visibleTables.filter(table => manufacturerOf(table) !== config.communityTablesManufacturer), manufacturerOf),
@@ -115,6 +118,7 @@ const TEMPLATES = Object.freeze({
     },
     decadeTables: {
         range: SOME,
+        calibrated: true,
         options: context => groupOptions(context.visibleTables, decadeOf),
         progress: (games, decade) => distinctTables(games.filter(game => game.decade === decade)),
         tablesToPlay: ({ visibleTables, games, param }) =>
@@ -122,11 +126,13 @@ const TEMPLATES = Object.freeze({
     },
     differentManufacturers: {
         range: SOME,
+        calibrated: true,
         options: context => cappedOptions(distinctKnown(context.visibleTables.map(manufacturerOf))),
         progress: games => distinctKnown(games.map(game => game.manufacturer)),
     },
     differentDecades: {
         range: FEW,
+        calibrated: true,
         options: context => cappedOptions(distinctKnown(context.visibleTables.map(decadeOf))),
         progress: games => distinctKnown(games.map(game => game.decade)),
     },
@@ -160,17 +166,20 @@ const TEMPLATES = Object.freeze({
     },
     activeDays: {
         range: FEW,
+        calibrated: true,
         options: context => optionsWhenPlayable(context, context.daysLeft),
         progress: games => distinctDays(games),
     },
     // The table of the player's choice: the one with the most minutes.
     endurance: {
         range: ENDURANCE_MINUTES,
+        calibrated: true,
         options: context => optionsWhenPlayable(context),
         progress: games => wholeMinutes(bestTableTotal(games, totalSeconds)),
     },
     marathon: {
         range: MARATHON_MINUTES,
+        calibrated: true,
         options: context => optionsWhenPlayable(context),
         progress: games => wholeMinutes(totalSeconds(games)),
     },
@@ -182,6 +191,7 @@ const TEMPLATES = Object.freeze({
     // The table of the player's choice: the one with the most games.
     sameTableGames: {
         range: MANY,
+        calibrated: true,
         options: context => optionsWhenPlayable(context),
         progress: games => bestTableTotal(games, tableGames => tableGames.length),
     },
@@ -200,37 +210,46 @@ export function createChallenges(host, profileStore, { tableOfTheDay, tableOfThe
     const randomIndex = length => Math.floor(random() * length);
     const randomInt = (min, max) => min + randomIndex(max - min + 1);
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
+    const calibration = createCalibration(host, profileStore);
 
     const getLocks = () => ({ ...NO_CHALLENGE, ...profileStore.getCabinetData()[CABINET_KEY] });
     const isChallenge = challenge => Boolean(challenge && challenge.template in TEMPLATES);
     const progressOf = (challenge, games) => TEMPLATES[challenge.template].progress(games, challenge.param);
 
+    // The target of the drawn option: calibrated on the bar-setting
+    // Profiles' last weeks, at least the range's minimum and at most the
+    // option's cap; else drawn in the range.
+    function targetOf(template, option, barSetters, now) {
+        const { range } = template;
+        const calibrated = template.calibrated
+            ? calibration.targetFor(barSetters, games => template.progress(games, option.param), { range, cap: option.max }, now)
+            : null;
+        return calibrated === null ? randomInt(range.min, Math.min(range.max, option.max)) : calibrated;
+    }
+
     // Every template but the previous Challenge's with a feasible option;
-    // one of them, then one of its feasible options, then a target in the
-    // template's range, at most the option's cap.
+    // one of them, then one of its feasible options, then its target.
     function draw(week, previous) {
         const profiles = profileStore.listProfiles();
         // Guest is the visitors' seat and may draw a target it cannot reach,
         // unless it is the only one playing: no other Profile, or no picker
         // to switch away from it.
         const guestSetsTheBar = profiles.every(profile => profile.isGuest) || config.addOns.profilePicker === false;
-        const profilePlays = profiles
-            .filter(profile => guestSetsTheBar || !profile.isGuest)
-            .map(profile => profileStore.getPlaysOf(profile.name));
+        const barSetters = profiles.filter(profile => guestSetsTheBar || !profile.isGuest).map(profile => profile.name);
+        const profilePlays = barSetters.map(name => profileStore.getPlaysOf(name));
         const now = host.now();
         const context = { visibleTables: host.getVisibleTables(), profilePlays, now, daysLeft: daysLeftInWeek(now) };
         const candidates = Object.entries(TEMPLATES)
             .filter(([id]) => !previous || previous.template !== id)
             .map(([id, template]) => ({
                 id,
-                range: template.range,
                 options: template.options(context).filter(option => option.max >= template.range.min),
             }))
             .filter(candidate => candidate.options.length > 0);
         if (candidates.length === 0) return { week, template: NO_TEMPLATE, param: null, target: 0 };
-        const { id, range: { min, max }, options } = candidates[randomIndex(candidates.length)];
+        const { id, options } = candidates[randomIndex(candidates.length)];
         const option = options[randomIndex(options.length)];
-        return { week, template: id, param: option.param, target: randomInt(min, Math.min(max, option.max)) };
+        return { week, template: id, param: option.param, target: targetOf(TEMPLATES[id], option, barSetters, now) };
     }
 
     // The week's Challenge, drawn on its first need in the week; null when

@@ -8,6 +8,8 @@
 
 A new Challenge comes every Monday, the same for the whole household: five different Stern tables, three tables you have never played, half an hour on a single table...
 
+Once the cabinet has a month of games behind it, most targets follow the household's recent weeks: a Challenge asks a bit more than a very good week of the last two months, so it is missed sometimes. Guest's games are left out when setting the target. Until then, and for the goals tied to the Table of the Day, the Table of the Week, Random Games, never played or dusty tables, the target stays a casual one.
+
 - Its card on the wheel screen tracks your progress. A game on a hidden or unconfigured table does not count.
 - **Challenge Tables**, right under "All Tables" behind "Change Filter" in the main menu, keeps only the tables that would move it forward, and leaves the list once there are none.
 - The Welcome Screen also shows one of your Challenge Tables (see [Choosing a table](choosing_a_table.md)).

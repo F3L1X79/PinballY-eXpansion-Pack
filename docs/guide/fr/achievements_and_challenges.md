@@ -8,6 +8,8 @@
 
 Chaque lundi arrive un nouveau Défi, le même pour toute la maison : cinq tables Stern différentes, trois tables jamais jouées, une demi-heure sur une même table…
 
+Dès que la borne a un mois de parties derrière elle, la plupart des objectifs suivent les dernières semaines de la maison : un Défi demande un peu plus qu'une très bonne semaine des deux derniers mois, si bien qu'il est parfois manqué. Les parties d'Invité ne comptent pas dans le calcul de l'objectif. D'ici là, et pour les objectifs liés à la table du jour, à la table de la semaine, aux tables au hasard, aux tables jamais jouées ou poussiéreuses, l'objectif reste à portée de main.
+
 - Sa carte suit votre progression sur l'écran de la roue. Une partie sur une table masquée ou non configurée ne compte pas.
 - **Tables du défi**, juste sous « Toutes les tables » derrière « Changer de filtre » dans le menu principal, ne garde que les tables qui le font avancer, et quitte la liste quand il n'y en a plus.
 - L'écran d'accueil montre aussi l'une de vos tables du défi (voir [Choisir une table](choosing_a_table.md)).

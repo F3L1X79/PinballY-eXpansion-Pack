@@ -406,7 +406,7 @@ The distinct non-empty manufacturers of the tables of the Plays started during o
 ### Challenges
 
 **Challenge**:
-A casual play goal set for one week, the same for every Profile, such as playing five different Stern tables; it is completed or missed when the week ends. Shown as "Défi" in French.
+A play goal set for one week, the same for every Profile, such as playing five different Stern tables, asking a bit more than a very good recent week; it is completed or missed when the week ends. Shown as "Défi" in French.
 _Avoid_: quest, goal, mission, Achievement (an Achievement is a permanent milestone)
 
 **Household Challenge**:
