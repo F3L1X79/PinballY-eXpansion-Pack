@@ -1156,7 +1156,7 @@ export default {
     },
     fakeBlueScreen: {
         title: "Windows",
-        errorCode: "0E : 016F : BFF9B3D4",
+        errorCode: "1T'5 JU57 4 J0K3!",
         intro: "Se ha producido un error. Para continuar:",
         enter: "Presione Entrar para volver a Windows, o",
         restart: "Presione BLOQ MAYÚS+TAB+RETROCESO+BLOQ DESPL para reiniciar el equipo. Si lo hace, perderá toda la información no guardada en las aplicaciones abiertas.",

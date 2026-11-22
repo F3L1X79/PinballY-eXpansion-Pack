@@ -37,7 +37,7 @@ test("back from a table, the Fake Blue Screen shows for 10 s, then cuts to the w
     assert.equal(blueScreenSounds(fake).length, 1, "with its sound");
     const texts = shownTexts(fake);
     assert.ok(texts.includes("Windows"), "the title unchanged");
-    assert.ok(texts.includes("Error: 0E : 016F : BFF9B3D4"), "the error code unchanged");
+    assert.ok(texts.includes("Error: 1T'5 JU57 4 J0K3!"), "the error code unchanged");
     assert.ok(texts.includes(lang.fakeBlueScreen.restarting), "the restarting line");
     assert.ok(texts.some(text => text.includes("CAPS LOCK+TAB+BACKSPACE+SCROLL LOCK")), "the absurd key combination");
     assert.ok(texts.every(text => text.length <= 60), "lines cut at 60 characters");

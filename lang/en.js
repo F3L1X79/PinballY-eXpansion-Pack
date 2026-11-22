@@ -1107,10 +1107,11 @@ export default {
         shoot: "Launch: shoot",
         yourScore: "Your score",
     },
-    // The Fake Blue Screen: title and errorCode stay the same in every language.
+    // The Fake Blue Screen: title and errorCode stay the same in every language;
+    // the code, in l33tspeak, tells the attentive reader it's a joke.
     fakeBlueScreen: {
         title: "Windows",
-        errorCode: "0E : 016F : BFF9B3D4",
+        errorCode: "1T'5 JU57 4 J0K3!",
         intro: "An error has occurred. To continue:",
         enter: "Press Enter to return to Windows, or",
         restart: "Press CAPS LOCK+TAB+BACKSPACE+SCROLL LOCK to restart your computer. If you do this, you will lose any unsaved information in all open applications.",
