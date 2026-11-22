@@ -78,7 +78,7 @@ function setUp({
         ? createChallenges(fake, store, { tableOfTheDay, tableOfTheWeek, randomGame, toasts, random: scripted([...challengeRandoms]) })
         : null;
     const household = createHouseholdChallenge(fake, store,
-        { challenges: challengeModule, tableOfTheDay, tableOfTheWeek, randomGame, random: scripted([...randoms]) });
+        { challenges: challengeModule, tableOfTheDay, tableOfTheWeek, randomGame, toasts, random: scripted([...randoms]) });
     // The cards as the pack wires them: Wheel Marks, their tops from the stack.
     const marks = createWheelMarks(fake, { attractOrder: { onMove: () => {} }, profileStore: store, underBadge });
     if (challengeModule) {

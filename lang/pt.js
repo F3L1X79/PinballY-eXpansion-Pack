@@ -791,6 +791,9 @@ export default {
         cardHeader: "Desafio da casa",
         completed: "Desafio da casa concluído!",
         verdictHeader: "Desafio da casa anterior",
+        // The Household Challenge Toast, for each Profile that helped.
+        toastHeader: "Desafio da casa concluído",
+        toastDescription: (count) => (count === 1 ? "Primeiro desafio da casa vencido juntos" : `${count} desafios da casa vencidos juntos`),
     },
 
     // The Mastery Bar, under the Challenge Card (see common/mastery/mastery_bar.js), and the

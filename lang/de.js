@@ -791,6 +791,9 @@ export default {
         cardHeader: "Familien-Herausforderung",
         completed: "Familien-Herausforderung geschafft!",
         verdictHeader: "Vorherige Familien-Herausforderung",
+        // The Household Challenge Toast, for each Profile that helped.
+        toastHeader: "Familien-Herausforderung geschafft",
+        toastDescription: (count) => (count === 1 ? "Erste Familien-Herausforderung gemeinsam geschafft" : `${count} Familien-Herausforderungen gemeinsam geschafft`),
     },
 
     // The Mastery Bar, under the Challenge Card (see common/mastery/mastery_bar.js), and the

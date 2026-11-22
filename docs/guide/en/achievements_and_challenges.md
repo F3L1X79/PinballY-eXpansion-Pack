@@ -23,6 +23,7 @@ Once the cabinet has a month of games behind it, a second goal comes every Monda
 - Its target asks a bit more than a very good week of the whole household together over the last two months, Guest's games left out; the goals that keep a casual target for the Challenge keep one here too, within what the household can reach together.
 - "Never played" and "dusty" are judged for the player at the controls: a table your parent already knows can still be new to you.
 - Its pink card sits right under the Challenge Card on the wheel screen (see [Interface](interface.md)), the same for every Profile.
+- The game that completes it is celebrated at once, with a toast and confetti, for the player at the controls. Every other player who helped that week gets the same celebration once, the next time they become the active Profile, even the week after. A player who did not help gets no celebration, only the completed card. A Profile Reset clears that player's completed Household Challenges, never the other players'.
 - It can be turned off on its own with `ADD_ON_HOUSEHOLD_CHALLENGE` (see [Settings](settings.md)).
 
 ## Achievements

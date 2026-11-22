@@ -1,7 +1,7 @@
 ﻿// ============================================================
 // Achievement Toast: announces each unlocked Achievement with a small card
 // in the bottom-right corner, on a non-blocking drawing layer (see
-// docs/adr/0003). Also shows the Challenge, Mastery, Level, High Score,
+// docs/adr/0003). Also shows the (Household) Challenge, Mastery, Level, High Score,
 // Frame, Error and Warning Toasts, which share its queue. Cards stack, at most five on screen.
 // - Toasts wait during a game and while a drawn dialog is open (docs/adr/0011).
 // - A celebrated toast starts the Confetti Shower, a Level Toast the Fireworks.
@@ -79,7 +79,7 @@ const COLORS = Object.freeze({
 });
 
 export const TOAST_KIND = Object.freeze({
-    ACHIEVEMENT: "achievement", CHALLENGE: "challenge", MASTERY: "mastery", LEVEL: "level", HIGH_SCORE: "highScore", FRAME: "frame",
+    ACHIEVEMENT: "achievement", CHALLENGE: "challenge", HOUSEHOLD_CHALLENGE: "householdChallenge", MASTERY: "mastery", LEVEL: "level", HIGH_SCORE: "highScore", FRAME: "frame",
     ERROR: "error", WARNING: "warning",
 });
 
@@ -98,6 +98,12 @@ const KIND_LOOKS = Object.freeze({
         accent: STEAMBALL_COLORS.challengeAccent,
         iconFile: "assets\\images\\challenge_target.png",
         header: () => lang.challenges.toastHeader,
+    },
+    // The Challenge Toast's twin in the Household Challenge Card's pink.
+    [TOAST_KIND.HOUSEHOLD_CHALLENGE]: {
+        accent: STEAMBALL_COLORS.householdAccent,
+        iconFile: "assets\\images\\challenge_target.png",
+        header: () => lang.householdChallenge.toastHeader,
     },
     // No icon: each toast brings its accent and the number its tile shows.
     [TOAST_KIND.MASTERY]: {

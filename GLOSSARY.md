@@ -433,6 +433,10 @@ _Avoid_: challenge filter, eligible tables
 A toast with its own colour and no trophy, that announces that the active Profile completed the week's Challenge.
 _Avoid_: challenge popup, challenge achievement
 
+**Household Challenge Toast**:
+The Challenge Toast's twin that celebrates a completed Household Challenge with each Profile that helped, once; a Profile is credited for that Household Challenge when its toast shows.
+_Avoid_: household popup, Challenge Toast (that one is for the Profile's own Challenge)
+
 ### Table Mastery
 
 **Table Mastery**:

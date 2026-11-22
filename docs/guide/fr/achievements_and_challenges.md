@@ -23,6 +23,7 @@ Dès que la borne a un mois de parties derrière elle, un second objectif arrive
 - Son objectif demande un peu plus qu'une très bonne semaine de toute la maison ensemble sur les deux derniers mois, sans les parties de l'Invité ; les objectifs qui restent tranquilles pour le Défi le restent ici aussi, dans ce que la maison peut atteindre ensemble.
 - « Jamais jouée » et « poussiéreuse » s'apprécient pour le joueur aux commandes : une table que vos parents connaissent déjà peut rester nouvelle pour vous.
 - Sa carte rose se place juste sous la carte du Défi sur l'écran de la roue (voir [Interface](interface.md)), la même pour tous les profils.
+- La partie qui le réussit est fêtée aussitôt, avec une annonce et des confettis, pour le joueur aux commandes. Chaque autre joueur qui a aidé cette semaine-là a droit à la même fête une fois, la prochaine fois qu'il devient le Profil actif, même la semaine suivante. Un joueur qui n'a pas aidé n'a pas de fête, seulement la carte réussie. Faire repartir un Profil de zéro efface ses Défis de la maison réussis, jamais ceux des autres.
 - Il se désactive à part avec `ADD_ON_HOUSEHOLD_CHALLENGE` (voir [Réglages](settings.md)).
 
 ## Succès
