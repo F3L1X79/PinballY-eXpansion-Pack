@@ -13,12 +13,12 @@ import { createPinballYHost } from "../core/pinbally_host.js";
 import { getProfileStore } from "../profiles/profile_store.js";
 import { getTableOfTheDay, getTableOfTheWeek, getWeekKey } from "../tables/period_table.js";
 import { getRandomGame } from "../tables/random_game.js";
-import { isVisibleTo, tablesVisibleTo } from "../tables/visible_tables.js";
+import { isVisibleTo } from "../tables/visible_tables.js";
 import { getAchievementToasts, TOAST_KIND } from "../achievements/achievement_toast.js";
 import { createCalibration } from "./calibration.js";
 import {
-    CHALLENGE_TEMPLATES as TEMPLATES, NO_PLAY, NO_TEMPLATE, createStartedFacts, daysLeftInWeek, drawTemplate,
-    isDrawnChallenge as isChallenge, progressOf, targetOfDrawn,
+    NO_PLAY, NO_TEMPLATE, createStartedFacts, daysLeftInWeek, drawTemplate,
+    isDrawnChallenge as isChallenge, progressOf, tablesToPlayOf, targetOfDrawn,
 } from "./challenge_templates.js";
 import config from "../core/config.js";
 import lang from "../core/i18n.js";
@@ -170,18 +170,8 @@ export function createChallenges(host, profileStore, { tableOfTheDay, tableOfThe
     function getTablesToPlay() {
         const view = getActiveView();
         if (!view || view.completed) return [];
-        const { tablesToPlay } = TEMPLATES[view.challenge.template];
-        if (!tablesToPlay) return [];
-        return tablesToPlay({
-            visibleTables: tablesVisibleTo(host.getVisibleTables(), profileStore),
-            games: readProfileChallenge(profileStore.getActiveProfile().data).games,
-            param: view.challenge.param,
-            playOf: table => profileStore.getPlay(table.configId),
-            now: host.now(),
-            // Only when needed: getTable() locks a new period's table in cabinet.json.
-            getDayTable: () => tableOfTheDay.getTable(),
-            getWeekTable: () => tableOfTheWeek.getTable(),
-        });
+        const { games } = readProfileChallenge(profileStore.getActiveProfile().data);
+        return tablesToPlayOf(host, profileStore, view.challenge, games, { tableOfTheDay, tableOfTheWeek });
     }
 
     // Fires on "gameover" for a Play only (ADR 0008); the first Play to reach

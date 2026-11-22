@@ -295,6 +295,7 @@ export default {
     // Labels for menu items this project adds itself (see custom_menu_commands.js, random_game.js, custom_filter.js, hall_of_fame.js and tables_to_discover.js).
     customMenuLabels: {
         challengeTables: "Tavoli della sfida",
+        householdChallengeTables: "Tavoli della sfida di casa",
         hallOfFameFilter: "Tavoli più giocati",
         myHighScoresFilter: "I miei punteggi",
         hiddenTablesFilter: "Tavoli nascosti",

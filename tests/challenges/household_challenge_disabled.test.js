@@ -1,7 +1,7 @@
 // ============================================================
 // Through main.js with the Household Challenge off: nothing drawn, nothing
-// written to cabinet.json, no card, and the Wheel Rail stays at its place,
-// even with enough Play Log for one.
+// written to cabinet.json, no card nor wheel selection, and the Wheel Rail
+// stays at its place, even with enough Play Log for one.
 // ============================================================
 
 import { test } from "node:test";
@@ -38,5 +38,6 @@ test("with the Household Challenge off, nothing is drawn nor written, and the Wh
     assert.equal(JSON.parse(fake.readFile(CABINET_FILE)).householdChallenge, undefined);
     assert.equal(fake.drawingLayers().filter(layer => layer.zIndex === HOUSEHOLD_CHALLENGE_CARD_Z_INDEX).length, 0);
     assert.equal(railCentre(fake), 960);
+    assert.equal(fake.scriptFilters().filter(({ id }) => id === "project.HouseholdChallengeTables").length, 0, "no wheel selection");
     assertNoErrorLogged(fake);
 });

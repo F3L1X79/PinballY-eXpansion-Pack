@@ -22,7 +22,7 @@ import { createCalibration } from "./calibration.js";
 import { challengeTitleOf, getChallenges } from "./challenge.js";
 import config from "../core/config.js";
 import {
-    NO_PLAY, NO_TEMPLATE, createStartedFacts, daysLeftInWeek, drawTemplate, isDrawnChallenge, meetsCondition, progressOf, targetOfDrawn,
+    NO_PLAY, NO_TEMPLATE, createStartedFacts, tablesToPlayOf, daysLeftInWeek, drawTemplate, isDrawnChallenge, meetsCondition, progressOf, targetOfDrawn,
 } from "./challenge_templates.js";
 
 const SCRIPT_NAME = "HouseholdChallenge";
@@ -213,6 +213,13 @@ export function createHouseholdChallenge(host, profileStore, { challenges, table
         return current ? contributorsOf(current, current.games) : [];
     }
 
+    // The active Profile's Household Challenge Tables; none once it is completed.
+    function getTablesToPlay() {
+        const view = getActiveView();
+        if (!view || view.completed) return [];
+        return tablesToPlayOf(host, profileStore, view.challenge, view.challenge.games, { tableOfTheDay, tableOfTheWeek });
+    }
+
     // Fires on "gameover" for a Play only (ADR 0008): recorded for the
     // week it started in, by whichever Profile played.
     profileStore.onPlay(safeHandler(SCRIPT_NAME, ({ profileName, configId, start, seconds }) => {
@@ -246,7 +253,7 @@ export function createHouseholdChallenge(host, profileStore, { challenges, table
     }));
 
     return {
-        getCurrent, showUp, getActiveView, getContributors,
+        getCurrent, showUp, getActiveView, getContributors, getTablesToPlay,
         // The Household Challenges the active Profile was credited for.
         getCreditedCount: () => householdCreditsIn(profileStore.getProfileData()),
         // listener(profileName, count) runs once a Profile is credited, inside its toast's start.

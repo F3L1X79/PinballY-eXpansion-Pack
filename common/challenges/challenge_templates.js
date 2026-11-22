@@ -9,6 +9,7 @@
 
 import { safeHandler } from "../core/safe_handler.js";
 import { formatDateKey } from "../tables/period_table.js";
+import { tablesVisibleTo } from "../tables/visible_tables.js";
 import { manufacturerOf, decadeOf } from "./calibration.js";
 import config from "../core/config.js";
 
@@ -125,14 +126,15 @@ const TEMPLATES = Object.freeze({
         options: context => cappedOptions(context.reachableCount(wasNeverPlayed)),
         matches: game => game.wasNeverPlayed,
         progress: games => distinctTables(games.filter(game => game.wasNeverPlayed)),
-        tablesToPlay: ({ visibleTables, playOf }) => visibleTables.filter(table => wasNeverPlayed(playOf(table))),
+        // Counted already: another Profile's Play, for the Household Challenge.
+        tablesToPlay: ({ visibleTables, playOf, games }) => notCounted(visibleTables.filter(table => wasNeverPlayed(playOf(table))), games),
     },
     dustyTables: {
         range: FEW,
         options: context => cappedOptions(context.reachableCount(play => wasDusty(play, context.now))),
         matches: game => game.wasDusty,
         progress: games => distinctTables(games.filter(game => game.wasDusty)),
-        tablesToPlay: ({ visibleTables, playOf, now }) => visibleTables.filter(table => wasDusty(playOf(table), now)),
+        tablesToPlay: ({ visibleTables, playOf, now, games }) => notCounted(visibleTables.filter(table => wasDusty(playOf(table), now)), games),
     },
     tableOfTheDayDays: {
         range: FEW,
@@ -194,6 +196,23 @@ export const progressOf = (challenge, games) => TEMPLATES[challenge.template].pr
 export function meetsCondition(challenge, game) {
     const { matches } = TEMPLATES[challenge.template];
     return matches ? Boolean(matches(game, challenge.param)) : true;
+}
+
+// The active Profile's tables that would move the challenge forward, given
+// the games it counted, in collection order; none for a template without any.
+export function tablesToPlayOf(host, profileStore, challenge, games, { tableOfTheDay, tableOfTheWeek }) {
+    const { tablesToPlay } = TEMPLATES[challenge.template];
+    if (!tablesToPlay) return [];
+    return tablesToPlay({
+        visibleTables: tablesVisibleTo(host.getVisibleTables(), profileStore),
+        games,
+        param: challenge.param,
+        playOf: table => profileStore.getPlay(table.configId),
+        now: host.now(),
+        // Only when needed: getTable() locks a new period's table in cabinet.json.
+        getDayTable: () => tableOfTheDay.getTable(),
+        getWeekTable: () => tableOfTheWeek.getTable(),
+    });
 }
 
 // One of the templates not excluded with a feasible option, and one of its
