@@ -253,6 +253,7 @@ export default {
                 period: "UN TAVOLO DELLA SFIDA",
                 progress: (title, value, target) => `${title} · ${value}/${target}`,
                 lastStep: "Ancora una partita per completare la sfida!",
+                anyTable: "Un tavolo qualsiasi: una partita a caso",
             },
         },
     },

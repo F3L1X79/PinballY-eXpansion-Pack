@@ -100,14 +100,17 @@ function drawGlow(dc, cardHeight, accent) {
     }
 }
 
+// "value/target, days left" for a Challenge view, from the Challenges' texts;
+// the Welcome Screen's "?" card shows it too.
+export function progressTextOf(texts, { challenge, value, daysLeft }) {
+    const daysText = daysLeft === 1 ? texts.lastDay : texts.daysLeft(daysLeft);
+    return texts.progress(value, challenge.target, daysText);
+}
+
 // What the card shows: the week's challenge or the previous one's verdict.
-function currentFace(texts, { challenge, value, daysLeft, completed }) {
-    const TEXT = texts;
-    const daysText = daysLeft === 1 ? TEXT.lastDay : TEXT.daysLeft(daysLeft);
-    return {
-        header: TEXT.cardHeader, challenge, value, completed,
-        status: completed ? TEXT.completed : TEXT.progress(value, challenge.target, daysText),
-    };
+function currentFace(texts, view) {
+    const { challenge, value, completed } = view;
+    return { header: texts.cardHeader, challenge, value, completed, status: completed ? texts.completed : progressTextOf(texts, view) };
 }
 
 function verdictFace(texts, { challenge, reached, completed }) {

@@ -8,7 +8,7 @@
 
 Chaque jour une table que personne à la maison n'a encore jouée, ou celle délaissée depuis le plus longtemps, chaque semaine une table au hasard. L'écran d'accueil vous les présente au démarrage, après chaque « Changer de joueur », et chaque fois que vous choisissez **Revenir à l'écran d'accueil** dans le menu principal, avec ce qu'elles représentent pour vous.
 
-- Tant que votre défi de la semaine a des tables du défi, il montre aussi l'une d'elles, tirée au hasard. Cette table du défi n'est jamais l'une des deux tables déjà présentées, sauf quand une partie de plus termine votre défi.
+- Tant que votre défi de la semaine est en cours, il montre aussi une carte du défi, qui disparaît une fois le défi réussi. Avec des tables du défi, la carte présente l'une d'elles, tirée au hasard, jamais l'une des deux tables déjà présentées sauf s'il n'en reste pas d'autre. Pour un objectif sans table particulière (jours actifs, endurance, marathon…), la carte montre un « ? » doré à la place de la table, le défi, votre progression et « N'importe quelle table : une partie au hasard » : la choisir lance une partie au hasard, qui compte comme telle, même quand l'Add-on de partie au hasard est désactivé.
 - De là, lancez l'une d'elles, restez sur la table de la roue, changez de joueur ou tentez une table au hasard. La carte d'une table se choisit en entier : amenez la sélection sur la carte avec les flippers, puis Select (ou Launch) lance sa table.
 - Jouez-les plusieurs jours ou plusieurs semaines d'affilée pour faire une série.
 - Ni l'une ni l'autre n'est jamais une table masquée ou non configurée (un fichier de table trouvé par PinballY mais jamais configuré), même quand votre roue l'affiche.

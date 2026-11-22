@@ -254,6 +254,7 @@ export default {
                 period: "UNE TABLE DU DÉFI",
                 progress: (title, value, target) => `${title} · ${value}/${target}`,
                 lastStep: "Plus qu'une partie pour finir le défi !",
+                anyTable: "N'importe quelle table : une partie au hasard",
             },
         },
     },

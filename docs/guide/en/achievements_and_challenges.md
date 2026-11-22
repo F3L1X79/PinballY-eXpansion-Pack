@@ -12,7 +12,7 @@ Once the cabinet has a month of games behind it, most targets follow the househo
 
 - Its card on the wheel screen tracks your progress. A game on a hidden or unconfigured table does not count.
 - **Challenge Tables**, right under "All Tables" behind "Change Filter" in the main menu, keeps only the tables that would move it forward, and leaves the list once there are none.
-- The Welcome Screen also shows one of your Challenge Tables (see [Choosing a table](choosing_a_table.md)).
+- While the Challenge is under way, the Welcome Screen also shows a Challenge card: one of your Challenge Tables, or a "?" launching a Random Game for a goal without particular tables (see [Choosing a table](choosing_a_table.md)).
 - Completing it brings a shower of confetti across the wheel screen.
 
 ## Household Challenge

@@ -2,7 +2,7 @@
 // Welcome Screen: at startup (alone or after the startup Profile picker), after
 // Change Player and from its main menu entry, a drawn panel greets the active
 // Profile (Daily Streak, Lost Records, Collection Mastery) and offers a Period
-// Table, a Challenge Table drawn at each opening, a Random Game, or to stay.
+// Table, the Challenge's table (or a "?" Random Game), a Random Game, or to stay.
 // A drawn dialog of the wheel dialog module at the startup priority (docs/adr/0011).
 // - At startup only, the startup veil dims the wheel until the panel is in.
 // - Drawn at its turn, then redrawn in place when PinballY lays the window out while it is open.
@@ -31,6 +31,7 @@ import { getHighScoreStore } from "../common/high_scores/high_score_store.js";
 import { getTableOfTheDay, getTableOfTheWeek } from "../common/tables/period_table.js";
 import { launchShownTable } from "../common/tables/table_launch.js";
 import { getChallenges, challengeTitleOf } from "../common/challenges/challenge.js";
+import { progressTextOf } from "../common/challenges/challenge_card.js";
 import { masteryOf, collectionMasteryOfProfile } from "../common/mastery/table_mastery.js";
 import { tablesVisibleTo } from "../common/tables/visible_tables.js";
 import { masteryHeadOf, collectionTextsOf } from "../common/mastery/mastery_bar.js";
@@ -162,27 +163,39 @@ export default function init() {
     }
 
     // One of the active Profile's Challenge Tables, each with the same
-    // chance, drawn anew at each opening, with its card's line. Never an
-    // offered Period Table, unless one more Play completes the Challenge and
-    // nothing else is left; never the Last Played Table, unless it is the
-    // only one. Null without any.
+    // chance, drawn anew at each opening. Never an offered Period Table nor
+    // the Last Played Table, unless nothing else is left. Null without any.
     function drawChallengeTable(offeredTables) {
-        if (!challenges) return null;
         const tables = challenges.getTablesToPlay();
-        if (tables.length === 0) return null;
-        const { challenge, value } = challenges.getActiveView();
-        const isLastStep = value === challenge.target - 1;
         const unoffered = tables.filter(game => !offeredTables.some(offered => offered.configId === game.configId));
-        const fresh = unoffered.length > 0 || !isLastStep ? unoffered : tables;
+        const fresh = unoffered.length > 0 ? unoffered : tables;
         const lastPlayed = randomGame.getLastPlayedTable();
         const others = fresh.filter(game => !lastPlayed || game.configId !== lastPlayed.configId);
         const candidates = others.length > 0 ? others : fresh;
-        if (candidates.length === 0) return null;
+        return candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : null;
+    }
+
+    // The Challenge Table card while the week's Challenge is under way, with
+    // its drawn table (null for a "?" card, which launches a Random Game);
+    // null without a Challenge to follow or once it is completed.
+    function readChallengeTableCard(offeredTables) {
+        const view = challenges ? challenges.getActiveView() : null;
+        if (!view || view.completed) return null;
+        const { challenge, value } = view;
         const texts = TEXT.periodCards.challenge;
-        return {
-            game: candidates[Math.floor(Math.random() * candidates.length)],
-            line: { plain: true, text: isLastStep ? texts.lastStep : texts.progress(challengeTitleOf(challenge), value, challenge.target) },
-        };
+        const title = challengeTitleOf(challenge);
+        const game = drawChallengeTable(offeredTables);
+        if (!game) {
+            const card = {
+                choice: CHOICE.CHALLENGE, period: texts.period, title,
+                progress: { text: progressTextOf(lang.challenges, view), share: value / challenge.target },
+                line: { plain: true, text: texts.anyTable },
+            };
+            return { card, game: null };
+        }
+        const isLastStep = value === challenge.target - 1;
+        const line = { plain: true, text: isLastStep ? texts.lastStep : texts.progress(title, value, challenge.target) };
+        return { card: cardOf(CHOICE.CHALLENGE, game, texts.period, line), game };
     }
 
     function cardOf(choice, game, period, line) {
@@ -199,8 +212,8 @@ export default function init() {
     }
 
     // A card per Period Table offered to the active Profile, then the
-    // drawn Challenge Table's, if any; reading them picks and locks this
-    // Period's tables when nobody did yet.
+    // Challenge's, if any; reading them picks and locks this Period's tables
+    // when nobody did yet.
     function readCards() {
         const cards = [];
         const offeredTables = [];
@@ -212,9 +225,9 @@ export default function init() {
             offeredTables.push(game);
             cards.push(cardOf(choice, game, texts.period, greyLineOf(periodTable, texts)));
         }
-        const drawn = drawChallengeTable(offeredTables);
-        if (drawn) cards.push(cardOf(CHOICE.CHALLENGE, drawn.game, TEXT.periodCards.challenge.period, drawn.line));
-        return { cards, challengeTable: drawn ? drawn.game : null };
+        const challengeCard = readChallengeTableCard(offeredTables);
+        if (challengeCard) cards.push(challengeCard.card);
+        return { cards, challengeTable: challengeCard ? challengeCard.game : null };
     }
 
     // Over the tables the active Profile can see; a tier it reached stays.
@@ -424,8 +437,12 @@ export default function init() {
         if (choice === CHOICE.RANDOM) return randomGame.launch();
         if (choice === CHOICE.AVATAR) getChangePlayer()();
         // Launched as shown, without checking again: only a new week starting
-        // while the screen is open could change the Challenge Tables.
-        if (choice === CHOICE.CHALLENGE) launchShownTable(host, challengeTable);
+        // while the screen is open could change the Challenge Tables. The
+        // "?" card's is the random choice's launch, whatever addOns.randomGame says.
+        if (choice === CHOICE.CHALLENGE) {
+            if (!challengeTable) return randomGame.launch();
+            launchShownTable(host, challengeTable);
+        }
         // Locked when the screen was read; a new Period since may have
         // picked an Adult Table, never launched for a Child Profile.
         if (choice in periodTables) {

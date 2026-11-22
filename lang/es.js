@@ -254,6 +254,7 @@ export default {
                 period: "UNA MESA DEL DESAFÍO",
                 progress: (title, value, target) => `${title} · ${value}/${target}`,
                 lastStep: "¡Una partida más para superar el desafío!",
+                anyTable: "Cualquier mesa: una partida al azar",
             },
         },
     },

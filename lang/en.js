@@ -141,6 +141,8 @@ export default {
                 period: "A CHALLENGE TABLE",
                 progress: (title, value, target) => `${title} · ${value}/${target}`,
                 lastStep: "One more game to finish the Challenge!",
+                // The "?" card's line, for a Challenge without tables to offer.
+                anyTable: "Any table: a random game",
             },
         },
     },

@@ -13,6 +13,7 @@ import {
     drawExitButton, exitTooltipRectOf, drawExitTooltip, drawButtonHintsBand, buttonHintsFooterRectOf, EXIT_AND_HINTS_METRICS as EXIT_AND_HINTS,
 } from "../drawing/steamball_drawing.js";
 import { drawMasterySquare, masterySquareSize } from "../mastery/mastery_square.js";
+import { drawRandomPlace } from "../profiles/avatar_choice_painter.js";
 
 // Above the Achievement List (6000 to 6010), under the toasts and the
 // Profile picker. Exported for the tests' reader.
@@ -41,6 +42,10 @@ const LOOK = Object.freeze({
     cardTop: 18, nameY: 58, masteryY: 104, lineGap: 10, lineH: 34, cardBottom: 16,
     periodSize: 21, nameSize: 22, minNameSize: 18, lineSize: 18, minLineSize: 15, lineTile: 28,
     cardK: 1.25, masteryCardH: 74,
+    // A "?" card: its progress block in the Mastery card's place, and the
+    // Avatar Choice's "?" tile about a wheel logo's height in the logo column.
+    progressHeadY: 16, progressHeadSize: 17, minProgressHeadSize: 14, progressBarY: 58, progressBarH: 12, progressInset: 18,
+    mysteryTile: 96,
     // The logo column, narrower inside a window under narrowBelow (a
     // portrait playfield), then the details at most detailsMaxW wide, short
     // of the card's right edge by detailsRight.
@@ -157,6 +162,20 @@ function drawCollectionCard(host, dc, collection, x, y, w) {
     });
 }
 
+// A "?" card's progress, in its Mastery card's place: the progress text
+// over a bar, both in the Challenge's colour; share from 0 to 1.
+function drawProgressBlock(host, dc, x, y, w, { text: progressText, share }) {
+    const h = Math.round(LOOK.masteryCardH * LOOK.cardK);
+    dc.fillRect(x, y, w, h, COLORS.panelTranslucent);
+    dc.frameRect(x, y, w, h, 1, COLORS.border);
+    const barX = x + LOOK.progressInset;
+    const barW = w - 2 * LOOK.progressInset;
+    oneLine(host, dc, progressText, { x: barX, y: y + LOOK.progressHeadY, width: barW, size: LOOK.progressHeadSize, minSize: LOOK.minProgressHeadSize, color: COLORS.challengeAccent });
+    dc.fillRect(barX, y + LOOK.progressBarY, barW, LOOK.progressBarH, COLORS.track);
+    const filled = Math.round(barW * Math.min(1, share));
+    if (filled > 0) dc.fillRect(barX, y + LOOK.progressBarY, filled, LOOK.progressBarH, COLORS.challengeAccent);
+}
+
 // ---------- Bottom row icons, drawn in a size x size box ----------
 
 // The square the "go back" arrow sits in, like the mystery box.
@@ -243,8 +262,19 @@ export function drawBackdrop(dc, size, referenceWidth, screen) {
     drawPanelBackdrop(dc, size, REFERENCE_HEIGHT, geometry(referenceWidth, screen).panel);
 }
 
-// The period's colour by card: the Week's pastel blue, gold for the others.
-const periodColorOf = card => (card.choice === CHOICE.WEEK ? COLORS.weekPeriod : COLORS.gold);
+// The period's colour by card: the Day's gold, the Week's pastel blue, the Challenge's green.
+const PERIOD_COLORS = Object.freeze({ [CHOICE.DAY]: COLORS.gold, [CHOICE.WEEK]: COLORS.weekPeriod, [CHOICE.CHALLENGE]: COLORS.challengeAccent });
+
+// The logo column's piece: the table's wheel logo, or a "?" card's tile,
+// centred and at most LOOK.mysteryTile high.
+function logoPieceOf(host, card, rect) {
+    if (!card.progress) {
+        return { zIndex: WELCOME_SCREEN_Z_INDEX.logos, rect, draw: dc => drawWheelLogo(host, dc, card, { x: 0, y: 0, w: rect.w, h: rect.h }, 30) };
+    }
+    const side = Math.min(LOOK.mysteryTile, rect.w, rect.h);
+    const tile = { x: rect.x + Math.round((rect.w - side) / 2), y: rect.y + Math.round((rect.h - side) / 2), w: side, h: side };
+    return { zIndex: WELCOME_SCREEN_Z_INDEX.logos, rect: tile, draw: dc => drawRandomPlace(host, dc, side) };
+}
 
 // The table cards, top to bottom, each chosen whole: its highlight is the card.
 function layoutCards(host, screen, { inner, cardHs, lineY, logoW, detailsX }, cardsTop, choiceAt) {
@@ -260,20 +290,16 @@ function layoutCards(host, screen, { inner, cardHs, lineY, logoW, detailsX }, ca
             draw: dc => {
                 fillGradient(dc, 0, 0, inner.w, cardH, COLORS.panelTop, COLORS.panel);
                 dc.frameRect(0, 0, inner.w, cardH, 1, COLORS.border);
-                text(host, dc, card.period, { x: detailsX, y: LOOK.cardTop, width: detailsW, size: LOOK.periodSize, weight: 700, color: periodColorOf(card), font: FONTS.display });
+                text(host, dc, card.period, { x: detailsX, y: LOOK.cardTop, width: detailsW, size: LOOK.periodSize, weight: 700, color: PERIOD_COLORS[card.choice], font: FONTS.display });
                 oneLine(host, dc, card.title, { x: detailsX, y: LOOK.nameY, width: detailsW, size: LOOK.nameSize, minSize: LOOK.minNameSize });
-                drawTableMasteryCard(host, dc, card.mastery, card.masteryHead, detailsX, LOOK.masteryY, detailsW);
+                if (card.progress) drawProgressBlock(host, dc, detailsX, LOOK.masteryY, detailsW, card.progress);
+                else drawTableMasteryCard(host, dc, card.mastery, card.masteryHead, detailsX, LOOK.masteryY, detailsW);
                 if (card.line && card.line.plain) drawPlainLine(host, dc, card.line.text, detailsX, lineY, detailsW);
                 else if (card.line) drawGreyLine(host, dc, card.line.played ? null : card.line.streak, card.line.text, detailsX, lineY, detailsW);
             },
         });
         // On a layer of its own, above the card's.
-        const logoH = cardH - 2 * LOOK.logoTop;
-        pieces.push({
-            zIndex: WELCOME_SCREEN_Z_INDEX.logos,
-            rect: { x: inner.x + LOOK.logoInset, y: cardY + LOOK.logoTop, w: logoW, h: logoH },
-            draw: dc => drawWheelLogo(host, dc, card, { x: 0, y: 0, w: logoW, h: logoH }, 30),
-        });
+        pieces.push(logoPieceOf(host, card, { x: inner.x + LOOK.logoInset, y: cardY + LOOK.logoTop, w: logoW, h: cardH - 2 * LOOK.logoTop }));
         highlights[card.choice] = choiceAt({ x: inner.x, y: cardY, w: inner.w, h: cardH });
         cardY += cardH + LOOK.gap;
     });
@@ -289,7 +315,8 @@ function layoutCards(host, screen, { inner, cardHs, lineY, logoW, detailsX }, ca
 // (each { choice, period, title, logoPath, mastery, masteryHead ({ text,
 // color }, as the Mastery Bar's), line
 // (null, { played, streak, text }, or { plain: true, text } without the
-// square) }), choices, labels (by
+// square); a "?" card has progress ({ text, share }) in place of logoPath
+// and mastery }), choices, labels (by
 // choice), exitLook (the Exit Button's EXIT_BUTTON_LOOK), buttonHints
 // (the footer's groups) }. Returns the pieces, each { zIndex, rect, draw(dc) } drawn in
 // its rect's own coordinates, and the highlight of each choice.

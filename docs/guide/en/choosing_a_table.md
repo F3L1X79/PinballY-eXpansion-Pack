@@ -8,7 +8,7 @@
 
 Every day there is a table nobody in the house has played yet, or the one left alone the longest, and every week a random one. The Welcome Screen greets you with both at startup, again after Change Player, and whenever you pick **Back to the Welcome Screen** in the main menu, with what they mean for you.
 
-- While your weekly Challenge has Challenge Tables, it also shows one of them, drawn at random. That Challenge Table is never one of the two tables already shown, unless one more game finishes your Challenge.
+- While your weekly Challenge is under way, it also shows a Challenge card, gone once the Challenge is completed. With Challenge Tables, the card shows one of them, drawn at random, never one of the two tables already shown unless no other one is left. For a goal without particular tables (active days, endurance, marathon…), the card shows a gold "?" in place of the table, the Challenge, your progress and "Any table: a random game": choosing it launches a Random Game, which counts as one, even when the Random Game Add-on is off.
 - From there, launch one of them, stay on the table on the wheel, change player or spin a Random Game. A table's card is chosen whole: move the selection onto the card with the flippers, then Select (or Launch) launches its table.
 - Play them several days or weeks in a row to build a Streak.
 - Neither is ever a hidden table or an unconfigured one (a table file PinballY found but that was never set up), even when your wheel shows it.

@@ -12,7 +12,7 @@ Dès que la borne a un mois de parties derrière elle, la plupart des objectifs 
 
 - Sa carte suit votre progression sur l'écran de la roue. Une partie sur une table masquée ou non configurée ne compte pas.
 - **Tables du défi**, juste sous « Toutes les tables » derrière « Changer de filtre » dans le menu principal, ne garde que les tables qui le font avancer, et quitte la liste quand il n'y en a plus.
-- L'écran d'accueil montre aussi l'une de vos tables du défi (voir [Choisir une table](choosing_a_table.md)).
+- Tant que le défi est en cours, l'écran d'accueil montre aussi une carte du défi : l'une de vos tables du défi, ou un « ? » qui lance une partie au hasard pour un objectif sans table particulière (voir [Choisir une table](choosing_a_table.md)).
 - Le réussir fait pleuvoir des confettis sur tout l'écran de la roue.
 
 ## Défi de la maison

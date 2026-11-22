@@ -112,6 +112,17 @@ export const periodCards = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_
     return { period, name, mastery, line: lineTexts.length > 0 ? lineTexts.join(" ") : null };
 });
 
+// Each card's texts as drawn, top to bottom: a "?" card's are its
+// period, the Challenge's title, its progress and its line.
+export const cardTexts = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)).map(layer => layer.texts());
+
+// Each card's fill colours, top to bottom: a "?" card's progress bar among them.
+export const cardFills = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)).map(layer => layer.fills());
+
+// Each card's logo layer height, in reference pixels, top to bottom.
+export const periodCardLogoHeights = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.logos))
+    .map(layer => layer.canvasSize().height);
+
 // Each card's period colour, top to bottom.
 export const periodColors = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards))
     .map(layer => layer.strokes().find(stroke => "text" in stroke).color);
