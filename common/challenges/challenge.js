@@ -18,7 +18,7 @@ import { getAchievementToasts, TOAST_KIND } from "../achievements/achievement_to
 import { createCalibration } from "./calibration.js";
 import {
     CHALLENGE_TEMPLATES as TEMPLATES, NO_PLAY, NO_TEMPLATE, createStartedFacts, daysLeftInWeek, drawTemplate,
-    isDrawnChallenge as isChallenge, progressOf,
+    isDrawnChallenge as isChallenge, progressOf, targetOfDrawn,
 } from "./challenge_templates.js";
 import config from "../core/config.js";
 import lang from "../core/i18n.js";
@@ -47,17 +47,6 @@ export function createChallenges(host, profileStore, { tableOfTheDay, tableOfThe
 
     const getLocks = () => ({ ...NO_CHALLENGE, ...profileStore.getCabinetData()[CABINET_KEY] });
 
-    // The target of the drawn option: calibrated on the bar-setting
-    // Profiles' last weeks, at least the range's minimum and at most the
-    // option's cap; else drawn in the range.
-    function targetOf(template, option, barSetters, now) {
-        const { range } = template;
-        const calibrated = template.calibrated
-            ? calibration.targetFor(barSetters, games => template.progress(games, option.param), { range, cap: option.max }, now)
-            : null;
-        return calibrated === null ? randomInt(range.min, Math.min(range.max, option.max)) : calibrated;
-    }
-
     // Every template but the previous Challenge's with a feasible option;
     // one of them, then one of its feasible options, then its target.
     function draw(week, previous) {
@@ -78,8 +67,9 @@ export function createChallenges(host, profileStore, { tableOfTheDay, tableOfThe
         };
         const drawn = drawTemplate(context, previous ? [previous.template] : [], randomIndex);
         if (!drawn) return { week, template: NO_TEMPLATE, param: null, target: 0 };
-        const { id, template, option } = drawn;
-        return { week, template: id, param: option.param, target: targetOf(template, option, barSetters, now) };
+        // Calibrated on the bar-setting Profiles' last weeks.
+        const target = targetOfDrawn(drawn, (valueOf, bounds) => calibration.targetFor(barSetters, valueOf, bounds, now), randomInt);
+        return { week, template: drawn.id, param: drawn.option.param, target };
     }
 
     // The week's Challenge, drawn on its first need in the week; null when

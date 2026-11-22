@@ -20,6 +20,7 @@ Dès que la borne a un mois de parties derrière elle, la plupart des objectifs 
 Dès que la borne a un mois de parties derrière elle, un second objectif arrive chaque lundi : le **Défi de la maison**, que tous les joueurs atteignent ensemble. Il est tiré parmi les mêmes sortes d'objectifs que le Défi, jamais le même que le Défi de la semaine ni que le Défi de la maison de la semaine passée.
 
 - Chaque partie le fait avancer, quel que soit le joueur, Invité compris. Aucun nombre minimum de joueurs : un joueur seul y gagne un second objectif de la semaine.
+- Son objectif demande un peu plus qu'une très bonne semaine de toute la maison ensemble sur les deux derniers mois, sans les parties de l'Invité ; les objectifs qui restent tranquilles pour le Défi le restent ici aussi, dans ce que la maison peut atteindre ensemble.
 - « Jamais jouée » et « poussiéreuse » s'apprécient pour le joueur aux commandes : une table que vos parents connaissent déjà peut rester nouvelle pour vous.
 - Sa carte rose se place juste sous la carte du Défi sur l'écran de la roue (voir [Interface](interface.md)), la même pour tous les profils.
 - Il se désactive à part avec `ADD_ON_HOUSEHOLD_CHALLENGE` (voir [Réglages](settings.md)).

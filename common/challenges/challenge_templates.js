@@ -212,6 +212,17 @@ export function drawTemplate(context, excludedIds, randomIndex) {
     return { id, template, option: options[randomIndex(options.length)] };
 }
 
+// The drawn option's target: calibrate(valueOf, { range, cap }) for a
+// calibrated template, else (or when it gives null) drawn in the range,
+// capped by the option.
+export function targetOfDrawn({ template, option }, calibrate, randomInt) {
+    const { range } = template;
+    const calibrated = template.calibrated
+        ? calibrate(games => template.progress(games, option.param), { range, cap: option.max })
+        : null;
+    return calibrated === null ? randomInt(range.min, Math.min(range.max, option.max)) : calibrated;
+}
+
 // The started game's facts, noted at "gamestarted" because by its Play the
 // Profile store has recorded it (a never played table stops being one, for
 // the Profile who plays) and the Period may have changed; by table, until

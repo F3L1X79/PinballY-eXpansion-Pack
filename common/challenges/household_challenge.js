@@ -16,7 +16,7 @@ import { getRandomGame } from "../tables/random_game.js";
 import { isVisibleTo } from "../tables/visible_tables.js";
 import { createCalibration } from "./calibration.js";
 import {
-    NO_PLAY, NO_TEMPLATE, createStartedFacts, daysLeftInWeek, drawTemplate, isDrawnChallenge, meetsCondition, progressOf,
+    NO_PLAY, NO_TEMPLATE, createStartedFacts, daysLeftInWeek, drawTemplate, isDrawnChallenge, meetsCondition, progressOf, targetOfDrawn,
 } from "./challenge_templates.js";
 
 const SCRIPT_NAME = "HouseholdChallenge";
@@ -39,8 +39,9 @@ export function createHouseholdChallenge(host, profileStore, { challenges, table
     });
     const isCompleted = challenge => progressOf(challenge, challenge.games) >= challenge.target;
 
-    // A template not excluded with a feasible option, its target drawn in
-    // its range, capped by what the Household can reach together.
+    // A template not excluded with a feasible option, its target calibrated
+    // on the Household's last weeks together, else drawn in its range; both
+    // capped by what the Household can reach together.
     function draw(week, previous) {
         const none = { week, template: NO_TEMPLATE, param: null, target: 0, games: [] };
         const now = host.now();
@@ -57,8 +58,8 @@ export function createHouseholdChallenge(host, profileStore, { challenges, table
         };
         const drawn = drawTemplate(context, excluded, randomIndex);
         if (!drawn) return none;
-        const { id, template: { range }, option } = drawn;
-        return { week, template: id, param: option.param, target: randomInt(range.min, Math.min(range.max, option.max)), games: [] };
+        const target = targetOfDrawn(drawn, (valueOf, bounds) => calibration.householdTargetFor(valueOf, bounds, now), randomInt);
+        return { week, template: drawn.id, param: drawn.option.param, target, games: [] };
     }
 
     // Set by a drawn week or a counted Play that moved the Household

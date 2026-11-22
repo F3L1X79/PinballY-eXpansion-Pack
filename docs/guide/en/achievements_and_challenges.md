@@ -20,6 +20,7 @@ Once the cabinet has a month of games behind it, most targets follow the househo
 Once the cabinet has a month of games behind it, a second goal comes every Monday: the **Household Challenge**, which all the players reach together. It is drawn from the same kinds of goals as the Challenge, never the same one as the week's Challenge nor as last week's Household Challenge.
 
 - Every game counts towards it, whoever plays, Guest included. There is no minimum number of players: a player alone gets a second goal of the week.
+- Its target asks a bit more than a very good week of the whole household together over the last two months, Guest's games left out; the goals that keep a casual target for the Challenge keep one here too, within what the household can reach together.
 - "Never played" and "dusty" are judged for the player at the controls: a table your parent already knows can still be new to you.
 - Its pink card sits right under the Challenge Card on the wheel screen (see [Interface](interface.md)), the same for every Profile.
 - It can be turned off on its own with `ADD_ON_HOUSEHOLD_CHALLENGE` (see [Settings](settings.md)).

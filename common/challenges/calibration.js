@@ -1,7 +1,8 @@
 // ============================================================
 // Calibration: rebuilds each Profile's last 8 complete weeks from its Play
-// Log as Challenge game records, so that a draw targets a bit more than a
-// very good week (the second best week plus 1). Reads Play Log files only.
+// Log as game records, so that a Challenge or Household Challenge draw targets
+// a bit more than a very good week (the second best week plus 1), per Profile
+// or for the Household together. Reads Play Log files only.
 // - Guest's Plays never count, nor make the Play Log old enough.
 // - A Play on a table gone from the collection has no manufacturer nor decade.
 // - A Play on a table the Profile can no longer see counts nowhere, as in a Challenge.
@@ -115,5 +116,16 @@ export function createCalibration(host, profileStore) {
         return values.length > 0 ? clampTarget(median(values), range, cap) : null;
     }
 
-    return { hasEnoughPlayLog, weeklyGamesOf, targetFor };
+    // The Household's target: each week's value over every Profile's game
+    // records together (Guest left out), as the Household Challenge counts
+    // them; its second best week plus 1, clamped. Null as for targetFor.
+    function householdTargetFor(valueOf, { range, cap }, now = host.now()) {
+        if (!hasEnoughPlayLog(now)) return null;
+        const profileWeeks = playerNames().map(name => weeklyGamesOf(name, now)).filter(weeks => weeks !== null);
+        if (profileWeeks.length === 0) return null;
+        const weeks = Array.from({ length: CALIBRATION_WEEKS }, (_, index) => profileWeeks.flatMap(games => games[index]));
+        return clampTarget(secondBestPlusOne(weeks.map(valueOf)), range, cap);
+    }
+
+    return { hasEnoughPlayLog, weeklyGamesOf, targetFor, householdTargetFor };
 }

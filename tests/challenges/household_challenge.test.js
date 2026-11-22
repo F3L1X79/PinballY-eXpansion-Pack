@@ -114,18 +114,18 @@ function play(fake, game, seconds = 90) {
 
 test("the week's Household Challenge is drawn once, locked in cabinet.json, never with the week's Challenge template", () => {
     // The Challenge draws differentTables; the Household Challenge the first
-    // template left, then the highest target: min(6, 4 manufacturers).
+    // template left, calibrated on Alice's single Play: the range's minimum.
     const { fake } = setUp({ randoms: [0, 0, 0.99] });
 
     assert.equal(readJson(fake, CABINET_FILE).challenge.current.template, "differentTables");
-    assert.deepEqual(cabinetLocks(fake), { current: lockOf("differentManufacturers", 4), previous: null });
+    assert.deepEqual(cabinetLocks(fake), { current: lockOf("differentManufacturers", 3), previous: null });
     assert.ok(cardShows(fake, HOUSE_TEXT.cardHeader.toLocaleUpperCase()));
-    assert.ok(cardShows(fake, TEXT.titles.differentManufacturers(4)));
-    assert.ok(cardShows(fake, TEXT.progress(0, 4, TEXT.daysLeft(7))));
+    assert.ok(cardShows(fake, TEXT.titles.differentManufacturers(3)));
+    assert.ok(cardShows(fake, TEXT.progress(0, 3, TEXT.daysLeft(7))));
 
     fake.setNow(SUNDAY_NIGHT);
     fake.fire("wheelmode");
-    assert.deepEqual(cabinetLocks(fake), { current: lockOf("differentManufacturers", 4), previous: null }, "the same all week");
+    assert.deepEqual(cabinetLocks(fake), { current: lockOf("differentManufacturers", 3), previous: null }, "the same all week");
     assertNoErrorLogged(fake);
 });
 
@@ -134,7 +134,7 @@ test("a new week's Household Challenge never has last week's template", () => {
     const { fake } = setUp({ challenges: false, saved: { current: lastWeek, previous: null }, randoms: [0, 0, 0.99] });
 
     assert.deepEqual(cabinetLocks(fake), {
-        current: lockOf("differentManufacturers", 4),
+        current: lockOf("differentManufacturers", 3),
         previous: { ...lastWeek, verdictSeenBy: ["Alice"] },
     }, "last week's verdict shown to Alice at startup");
 });
