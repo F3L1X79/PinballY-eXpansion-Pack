@@ -196,7 +196,7 @@
         <span class="recap" id="recap" aria-label="Chantiers par effort"></span>
       </div>
       <div class="gauge" aria-hidden="true"><i id="hero-gauge" style="width:0"></i></div>
-      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 19.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
+      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 22.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
     </div>
   </header>
 
@@ -218,8 +218,10 @@
 
         <div class="ax row">Moyen</div>
         <div class="cell sweet">
+          <a class="chip tr-play" href="#wheel-arrival-sound"><b></b>Son d'arrivée sur la roue</a>
         </div>
         <div class="cell">
+          <a class="chip tr-play" href="#closing-curtains"><b></b>Rideaux de fermeture</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
         </div>
         <div class="cell">
@@ -276,6 +278,53 @@
     </div>
 
     <ol class="queue">
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="wheel-arrival-sound" data-track="play" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Un son à l'arrivée sur la roue, après le Welcome Screen</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">son</span></div>
+          </div>
+          <p>Quand le joueur quitte le Welcome Screen et arrive sur la roue, un son marque l'arrivée. Uniquement à ce moment-là : ni au retour d'une partie, ni à la fermeture d'un menu ou d'un autre écran.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>addons/welcome_screen.js</code> (qui joue déjà <code>profileGreetingSoundFile</code>) et de <code>host.playSound</code> ; voisin du <a href="#sound-design">sound design (n° <span data-ref="sound-design"></span>)</a></div>
+          <details>
+            <summary>Questions ouvertes (3)</summary>
+            <ul>
+              <li>Quel son, et sous quelle licence ? Un réglage <code>wheelArrivalSoundFile</code> dans <code>common/core/config.js</code>, comme les autres sons ?</li>
+              <li>Le Welcome Screen désactivé, ou fermé vers un autre écran (Profile Picker, Random Game) : le son joue-t-il quand même à la première arrivée sur la roue ?</li>
+              <li>Avec le salut du Profile, un toast ou le Crow juste après : le son attend-il, ou passe-t-il par-dessus ?</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 22/11/2026, haute priorité.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="closing-curtains" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Des rideaux qui se ferment, avec un son, quand PinballY quitte</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span><span class="tag">son</span></div>
+          </div>
+          <p>À la fermeture de PinballY, deux rideaux de théâtre se ferment sur la roue avec un son, puis PinballY quitte. Mouvement unique, qui finit seul.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (les rideaux sur un calque, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Calques créés par <code>common/drawing/placed_layers.js</code> ; la commande <code>Quit</code> est dans <code>docs/pinbally/pinbally-help.md</code></div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Peut-on retenir la fermeture le temps des rideaux : annuler la commande <code>Quit</code> (et celles d'extinction du menu Exit), jouer les rideaux, puis la relancer ? À vérifier dans <code>docs/pinbally/</code>, puis sur la borne.</li>
+              <li>Quelles sorties : Quit seul, ou aussi l'extinction de la borne depuis le menu Exit ? Et une fermeture par Windows (Alt+F4, arrêt du PC), qu'un script ne voit sans doute pas ?</li>
+              <li>Le look : rideaux de velours peints (PNG), ou dessinés en Steamball (cuivre, rivets) ? Sur l'écran principal seul, ou aussi le backglass ?</li>
+              <li>Quel son (rideau qui glisse, coup de gong ?) et quelle durée, pour que quitter ne paraisse pas lent ?</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 22/11/2026, haute priorité.</p>
+          </details>
+        </div>
+      </li>
 
       <li draggable="true" tabindex="0" class="item tr-play" id="household-mission" data-track="play" data-rank="platinum">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
