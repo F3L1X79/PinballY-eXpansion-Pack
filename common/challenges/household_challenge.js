@@ -19,7 +19,8 @@ import { sameName } from "../profiles/profile_name_rules.js";
 import { getAchievementToasts, TOAST_KIND } from "../achievements/achievement_toast.js";
 import lang from "../core/i18n.js";
 import { createCalibration } from "./calibration.js";
-import { challengeTitleOf } from "./challenge.js";
+import { challengeTitleOf, getChallenges } from "./challenge.js";
+import config from "../core/config.js";
 import {
     NO_PLAY, NO_TEMPLATE, createStartedFacts, daysLeftInWeek, drawTemplate, isDrawnChallenge, meetsCondition, progressOf, targetOfDrawn,
 } from "./challenge_templates.js";
@@ -31,6 +32,9 @@ const CABINET_KEY = "householdChallenge";
 // Players' saved data: the profile.json key, holding the credited count.
 const PROFILE_KEY = "householdChallenge";
 const NO_LOCKS = Object.freeze({ current: null, previous: null });
+
+// The Household Challenges a Profile was credited for, from its profile.json data.
+export const householdCreditsIn = data => (data[PROFILE_KEY] && data[PROFILE_KEY].creditedCount > 0 ? data[PROFILE_KEY].creditedCount : 0);
 
 // challenges: the Challenge module, null with the Challenges off.
 export function createHouseholdChallenge(host, profileStore, { challenges, tableOfTheDay, tableOfTheWeek, randomGame, toasts, random = Math.random }) {
@@ -50,7 +54,7 @@ export function createHouseholdChallenge(host, profileStore, { challenges, table
     const contributorsOf = (challenge, games) =>
         [...new Set(games.filter(game => meetsCondition(challenge, game)).map(game => game.profile))];
 
-    const creditedIn = data => (data[PROFILE_KEY] && data[PROFILE_KEY].creditedCount > 0 ? data[PROFILE_KEY].creditedCount : 0);
+    const creditedListeners = [];
 
     // Whether the named Profile helped complete that lock's week and was not credited yet.
     const awaitsCredit = (challenge, name) => isDrawnChallenge(challenge) && Array.isArray(challenge.toCredit)
@@ -89,7 +93,7 @@ export function createHouseholdChallenge(host, profileStore, { challenges, table
         for (const challenge of [locks.previous, locks.current]) {
             if (!awaitsCredit(challenge, name) || waiting.has(challenge.week)) continue;
             // The waiting toasts show first, each one credit more.
-            const count = creditedIn(profileStore.getProfileDataOf(name)) + waiting.size + 1;
+            const count = householdCreditsIn(profileStore.getProfileDataOf(name)) + waiting.size + 1;
             const { week } = challenge;
             waiting.add(week);
             toasts.submit({
@@ -113,9 +117,11 @@ export function createHouseholdChallenge(host, profileStore, { challenges, table
         waitingWeeksOf(name).delete(week);
         forgetHelper(name, week);
         profileStore.updateProfileData(data => {
-            data[PROFILE_KEY] = { ...data[PROFILE_KEY], creditedCount: creditedIn(data) + 1 };
+            data[PROFILE_KEY] = { ...data[PROFILE_KEY], creditedCount: householdCreditsIn(data) + 1 };
         }, name);
         log(`${name} credited for the week ${week} Household Challenge.`);
+        const count = householdCreditsIn(profileStore.getProfileDataOf(name));
+        for (const listener of creditedListeners) listener(name, count);
     }
 
     // A template not excluded with a feasible option, its target calibrated
@@ -239,18 +245,25 @@ export function createHouseholdChallenge(host, profileStore, { challenges, table
         if (isReset) forgetHelper(profileName, null);
     }));
 
-    return { getCurrent, showUp, getActiveView, getContributors };
+    return {
+        getCurrent, showUp, getActiveView, getContributors,
+        // The Household Challenges the active Profile was credited for.
+        getCreditedCount: () => householdCreditsIn(profileStore.getProfileData()),
+        // listener(profileName, count) runs once a Profile is credited, inside its toast's start.
+        onCredited: listener => creditedListeners.push(listener),
+    };
 }
 
 let sharedHouseholdChallenge = null;
 
 // One instance for every Add-on. The Random Game module is created first,
 // so its "gamestarted" listener has settled whether the game is a Random
-// Game before this one notes it. challenges: the shared Challenge module,
-// null with the Challenges off.
-export function getHouseholdChallenge({ challenges }) {
+// Game before this one notes it. The Challenge module is never created with
+// the Challenges off: it would follow their games.
+export function getHouseholdChallenge() {
     if (!sharedHouseholdChallenge) {
         const randomGame = getRandomGame();
+        const challenges = config.addOns.challenges === false ? null : getChallenges();
         sharedHouseholdChallenge = createHouseholdChallenge(createPinballYHost(), getProfileStore(),
             { challenges, tableOfTheDay: getTableOfTheDay(), tableOfTheWeek: getTableOfTheWeek(), randomGame, toasts: getAchievementToasts() });
     }

@@ -41,6 +41,7 @@ There are dozens of Achievements, from Bronze to Platinum: manufacturers and dec
 - A category needs at least two tables you can see to have its Achievement. When a category drops to one table (a table hidden, or its category removed), its Achievement goes, even if you had it, and its points leave your Player Level.
 - A few stay secret, shown as "???" with a hint, until you stumble upon them.
 - The Ratings family rewards rating tables: First Verdict for 1 table rated, Armchair Critic for 5, Grand Inquisitor for 10, Oracle of the Playfield for 25. Every Rating you gave counts, a 0-star one too, even for a table no longer on the cabinet; removing a Rating can take a step away again. A step shows as soon as you close the rating dialog, whether you opened it from the main menu or from the prompt after a game. It exists only while Ratings per Profile is on (see [Settings](settings.md)).
+- The Household family rewards the Household Challenges you helped win: Under One Roof for 1, Family Spirit for 5, Pillar of the House for 15, Great House for 30. Each one counts once its celebration has shown to you; a Profile Reset starts it over. The 15th also brings the Household Avatar Frame (see [Profiles](profiles.md)). It exists only while the Household Challenge is on.
 - A Child Profile has three more of its own: Snack Time, Wednesday Off and Beat the Grown-Ups, a Table Record taken from a grown-up.
 
 The toast's time on screen and size, the sound, and the confetti can be changed in [Settings](settings.md).

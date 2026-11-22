@@ -1,5 +1,5 @@
 // ============================================================
-// Avatar Frame images tests: the ten frames ship with the pack, each at
+// Avatar Frame images tests: the ten tier frames and the Household one ship with the pack, each at
 // 384 px, at 192 px and greyed at 192 px for a locked frame, as painted by
 // maintainer/avatar_frames/generate_frames.mjs. Reads the files only.
 // ============================================================
@@ -12,10 +12,11 @@ const FRAME_COUNT = 10;
 const VARIANTS = [{ suffix: "384", size: 384 }, { suffix: "192", size: 192 }, { suffix: "192_locked", size: 192 }];
 const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
-test("each of the thirty Avatar Frame images ships with the pack, as a square PNG of its size", () => {
-    for (let tier = 1; tier <= FRAME_COUNT; tier++) {
+test("each of the thirty Avatar Frame images, and the Household frame's, ships with the pack, as a square PNG of its size", () => {
+    const labels = [...Array.from({ length: FRAME_COUNT }, (_, index) => String(index + 1).padStart(2, "0")), "household"];
+    for (const label of labels) {
         for (const { suffix, size } of VARIANTS) {
-            const path = `assets/images/avatar_frames/frame_${String(tier).padStart(2, "0")}_${suffix}.png`;
+            const path = `assets/images/avatar_frames/frame_${label}_${suffix}.png`;
             const url = new URL(`../../${path}`, import.meta.url);
             assert.ok(existsSync(url), `${path} exists`);
             const bytes = readFileSync(url);

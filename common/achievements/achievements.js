@@ -8,7 +8,7 @@
 // - The caller marks an Achievement Notified when its toast starts, or at once for a silent one.
 // ============================================================
 
-// The kind of an Achievement; the Challenges, High Scores and Ratings ones
+// The kind of an Achievement; the Challenges, Household, High Scores and Ratings ones
 // exist only while their Add-on is enabled, Surprises whenever the Achievements do,
 // Young Players only for a Child Profile, Systems only when the Profile's
 // tables use two Systems or more.
@@ -23,6 +23,7 @@ export const ACHIEVEMENT_FAMILY = Object.freeze({
     DECADES: "decades",
     CATEGORIES: "categories",
     CHALLENGES: "challenges",
+    HOUSEHOLD: "household",
     HIGH_SCORES: "highScores",
     SURPRISES: "surprises",
     RATINGS: "ratings",

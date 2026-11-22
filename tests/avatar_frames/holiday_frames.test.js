@@ -27,7 +27,9 @@ function rewardsWith(plays, { profileData = {}, isEnabled = () => true, withProf
     }
     const profileStore = createProfileStore(fake);
     const wheelDialogs = { submit() {}, wake() {} };
-    return { fake, profileStore, rewards: createProfileRewards(fake, { profileStore, isEnabled, withProfiles: () => withProfiles, wheelDialogs }) };
+    // Without the Household frame, which household_frame.test.js covers.
+    const rewards = createProfileRewards(fake, { profileStore, isEnabled, withProfiles: () => withProfiles, withHousehold: () => false, wheelDialogs });
+    return { fake, profileStore, rewards };
 }
 
 const unlockedHolidays = rewards => rewards.framesOf()

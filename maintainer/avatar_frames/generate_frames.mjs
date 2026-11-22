@@ -9,19 +9,19 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Canvas, writePNG } from "./frame_kit.mjs";
-import { FRAMES, HOLIDAY_FRAMES } from "./designs.mjs";
+import { FRAMES, HOLIDAY_FRAMES, REWARD_FRAMES } from "./designs.mjs";
 
 const OUTPUT = fileURLToPath(new URL("../../assets/images/avatar_frames/", import.meta.url));
 const MASTER = 768;
-// Each frame with the label of its files: its tier on two digits, or its holiday's id.
+// Each frame with the label of its files: its tier on two digits, or its id.
 const ALL = [
     ...FRAMES.map((frame, index) => ({ ...frame, label: String(index + 1).padStart(2, "0") })),
-    ...HOLIDAY_FRAMES.map(frame => ({ ...frame, label: frame.id })),
+    ...[...HOLIDAY_FRAMES, ...REWARD_FRAMES].map(frame => ({ ...frame, label: frame.id })),
 ];
 const isAsked = (frame, wanted) => wanted === frame.label || (/^\d+$/.test(wanted) && Number(wanted) === Number(frame.label));
 const only = process.argv[2] ? process.argv[2].split(",") : null;
 if (only && only.some(wanted => !ALL.some(frame => isAsked(frame, wanted)))) {
-    console.error(`Frames go from 1 to ${FRAMES.length}, or ${HOLIDAY_FRAMES.map(frame => frame.id).join(", ")}, comma-separated: ${process.argv[2]}`);
+    console.error(`Frames go from 1 to ${FRAMES.length}, or ${[...HOLIDAY_FRAMES, ...REWARD_FRAMES].map(frame => frame.id).join(", ")}, comma-separated: ${process.argv[2]}`);
     process.exit(1);
 }
 

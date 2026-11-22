@@ -1,5 +1,5 @@
 // ============================================================
-// The Avatar Frames (Collection Tiers, then Holiday Frames), one theme each, painted with frame_kit.mjs
+// The Avatar Frames (Collection Tiers, Holiday Frames, then other rewards'), one theme each, painted with frame_kit.mjs
 // around the Avatar's image box [-1, 1]: each keeps the bottom-right corner
 // light, where the Player Level pip sits. A maintainer's tool, run by
 // generate_frames.mjs, never loaded by PinballY.
@@ -1779,6 +1779,48 @@ function chineseNewYear(cv) {
     dragon(cv);
     twinkles(cv, 120, 12, "#ffe8a0");
 }
+
+// ============================================================
+// Household: the house's pastel pink band between rose-gold trims, little
+// houses with a lit window along it, a bigger one on top, its window a heart.
+// ============================================================
+const BLUSH = ramp([[0, "#4a1a30"], [0.25, "#a8527a"], [0.45, "#e48fb3"], [0.62, "#f4a7c6"], [0.8, "#ffdceb"], [1, "#ffffff"]]);
+const ROOF = ramp([[0, "#2a0712"], [0.35, "#7e1f3c"], [0.6, "#c2456a"], [0.82, "#ef8aa6"], [1, "#ffe2ea"]]);
+const WALL = ramp([[0, "#3a2a2e"], [0.4, "#c9b3ba"], [0.7, "#f6e9ee"], [1, "#ffffff"]]);
+
+// A little house at (x, y), size its width, its roof along angle.
+function house(cv, x, y, size, angle, { heartWindow = false } = {}) {
+    const turn = angle + Math.PI / 2;
+    const at = pts => placed(pts.map(([u, v]) => [u * size, v * size]), x, y, turn);
+    polygon(cv, at([[-0.4, 0.45], [-0.4, -0.08], [0.4, -0.08], [0.4, 0.45]]), sdf => metal(sdf, WALL, { bevel: size * 0.12, spec: 0.5 }), { shadow: { opacity: 0.5 } });
+    polygon(cv, at([[-0.55, -0.02], [0, -0.55], [0.55, -0.02]]), sdf => metal(sdf, ROOF, { bevel: size * 0.14, contrast: 1.5, spec: 0.8 }), { shadow: { opacity: 0.4 } });
+    const [cx, cy] = at([[0, 0.17]])[0];
+    if (heartWindow) {
+        const pts = heartPoints(cx, cy, size * 0.17, turn);
+        const sdf = (px, py) => sdPolygon(px, py, pts);
+        cv.glow(sdf, "#ffd36b", size * 0.35, 0.6, { bbox: around(cx, cy, size * 0.6) });
+        cv.shape(sdf, metal(sdf, WARM, { bevel: size * 0.08 }), { bbox: bboxOf(pts, 0.02) });
+        return;
+    }
+    const pane = at([[-0.13, 0.04], [0.13, 0.04], [0.13, 0.3], [-0.13, 0.3]]);
+    const sdf = (px, py) => sdPolygon(px, py, pane);
+    cv.glow(sdf, "#ffd36b", size * 0.3, 0.5, { bbox: around(cx, cy, size * 0.5) });
+    cv.shape(sdf, metal(sdf, WARM, { bevel: size * 0.06 }), { bbox: bboxOf(pane, 0.02) });
+}
+
+function household(cv) {
+    // Faint checks, like a tablecloth.
+    holidayBand(cv, BLUSH, RAMPS.copper, (x, y) => 0.05 * smoothstep(0.8, 1, Math.max(Math.sin(x * 30), Math.sin(y * 30))));
+    // Upright everywhere: a house on its side reads as an arrow.
+    for (const { x, y, size } of ornamentSpots(0.3, 0.24)) house(cv, x, y - size * 0.1, size, -Math.PI / 2);
+    house(cv, 0, -1.24, 0.5, -Math.PI / 2, { heartWindow: true });
+    twinkles(cv, 130, 12, "#ffe2ee");
+}
+
+// The frames of other rewards, by their id in the Profile Rewards module.
+export const REWARD_FRAMES = [
+    { id: "household", name: "Household", draw: household },
+];
 
 // The Holiday Frames, by their id in the Profile Rewards module.
 export const HOLIDAY_FRAMES = [

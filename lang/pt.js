@@ -472,6 +472,13 @@ export default {
             100: "Lenda da semana",
         },
         challengesCompletedDescription: (count) => (count === 1 ? "Concluir um desafio." : `Concluir ${count} desafios.`),
+        householdCompletedTitles: {
+            1: "Sob o mesmo teto",
+            5: "Espírito de família",
+            15: "Pilar da casa",
+            30: "Grande Casa",
+        },
+        householdCompletedDescription: (count) => (count === 1 ? "Ajudar a vencer um desafio da casa." : `Ajudar a vencer ${count} desafios da casa.`),
         highScoreTablesTitles: {
             1: "Iniciais na pedra",
             3: "Três estandartes erguidos",
@@ -837,6 +844,11 @@ export default {
             deadDay: { name: "Día de los Muertos", condition: "Uma partida em 1º ou 2 de novembro" },
             thanksgiving: { name: "Ação de Graças", condition: "Uma partida no Dia de Ação de Graças, a quarta quinta-feira de novembro" },
             christmas: { name: "Natal", condition: "Uma partida em 24 ou 25 de dezembro" },
+        },
+        household: {
+            name: "Casa",
+            condition: (count) => `${count} desafios da casa vencidos juntos`,
+            toastHeader: "Moldura da casa",
         },
         // The Reward Prompt, after a Profile's first frame: the frame's name,
         // then the main menu entry and the Profile Stats button to equip it from.

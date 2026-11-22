@@ -18,6 +18,7 @@ import { createWheelOrder } from "../../common/tables/wheel_order.js";
 import { saveAttractOrderSwitches } from "../../common/tables/attract_order.js";
 import { createChallenges, CHALLENGE_TEMPLATE_IDS } from "../../common/challenges/challenge.js";
 import { buildChallengeAchievements } from "../../achievements/challenges.js";
+import { buildHouseholdAchievements } from "../../achievements/household.js";
 import { buildWorldTourAchievements } from "../../achievements/world_tour.js";
 import { createWorldTour } from "../../common/achievements/world_tour.js";
 import { createProfileRewards } from "../../common/avatar_frames/profile_rewards.js";
@@ -518,6 +519,15 @@ test("the Challenges Achievement IDs stay byte-identical", () => {
     ]);
 });
 
+test("the Household Achievement IDs stay byte-identical", () => {
+    assert.deepEqual(buildHouseholdAchievements({ getCreditedCount: () => 0 }).map(achievement => achievement.id), [
+        "householdCompleted:1",
+        "householdCompleted:5",
+        "householdCompleted:15",
+        "householdCompleted:30",
+    ]);
+});
+
 test("the World Tour keeps its key in profile.json and its Achievement ID", () => {
     const fake = createFakePinballYHost({ now: NOW, tables: TABLES });
     const store = createProfileStore(fake);
@@ -549,6 +559,15 @@ test("a Holiday Frame choice keeps its text id in avatarFrame", () => {
 
     profileRewards.choose("christmas");
     assert.equal(JSON.parse(fake.readFile(GUEST_PROFILE_FILE)).avatarFrame, "christmas");
+});
+
+test("the Household frame choice keeps its text id in avatarFrame", () => {
+    const fake = createFakePinballYHost({ now: NOW, tables: TABLES });
+    fake.addFile(GUEST_PROFILE_FILE, JSON.stringify({ version: 1, householdChallenge: { creditedCount: 15 } }));
+    const profileRewards = createProfileRewards(fake, { profileStore: createProfileStore(fake) });
+
+    profileRewards.choose("household");
+    assert.equal(JSON.parse(fake.readFile(GUEST_PROFILE_FILE)).avatarFrame, "household");
 });
 
 test("the Table ROM record keeps its file name and keys", () => {

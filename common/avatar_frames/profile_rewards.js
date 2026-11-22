@@ -1,11 +1,11 @@
 // ============================================================
-// Profile Rewards: the only module that knows the Avatar Frames, in two
-// families: one per Collection Tier (id 1 to 10, from the tier kept in
-// profile.json), then the Holiday Frames (a text id each, read from the
-// Play Log, never stored). Writes the active Profile's choice ("avatarFrame"),
-// toasts each new Holiday Frame and submits the Reward Prompt for a first frame.
+// Profile Rewards: the only module that knows the Avatar Frames: one per
+// Collection Tier (id 1 to 10, tier kept in profile.json), the Holiday Frames
+// (read from the Play Log, never stored), then the Household frame (15
+// credited Household Challenges). Writes the active Profile's choice
+// ("avatarFrame"), toasts each new Holiday or Household frame, submits the Reward Prompt.
 // - A frame never locks again short of a Profile Reset.
-// - No Collection frames while Table Mastery is off; no Holiday Frames without the Profile picker.
+// - Each family exists only with its Add-on: Table Mastery, Profile picker, Household Challenge.
 // - The prompt sets "avatarFrame" to null when shown, so it never comes back.
 // ============================================================
 
@@ -15,11 +15,15 @@ import { getWheelDialogs, DIALOG_PRIORITY } from "../core/wheel_dialog.js";
 import { TOAST_KIND } from "../achievements/achievement_toast.js";
 import { safeHandler } from "../core/safe_handler.js";
 import { chineseNewYear } from "./chinese_calendar.js";
+import { householdCreditsIn } from "../challenges/household_challenge.js";
 import lang from "../core/i18n.js";
 import config from "../core/config.js";
 
 const FRAME_COUNT = 10;
-const FRAME_FAMILY = Object.freeze({ COLLECTION: "collection", HOLIDAY: "holiday" });
+const FRAME_FAMILY = Object.freeze({ COLLECTION: "collection", HOLIDAY: "holiday", HOUSEHOLD: "household" });
+// The Household frame's id, and the credited Household Challenges that unlock it.
+const HOUSEHOLD_FRAME_ID = "household";
+const HOUSEHOLD_FRAME_CREDITS = 15;
 // Whether a local date is on one of those days of that month (1 to 12).
 const onDays = (month, ...days) => date => date.getMonth() === month - 1 && days.includes(date.getDate());
 // Whether a local date is the day holidayDateIn(year) gives, a Date at local midnight.
@@ -84,8 +88,10 @@ function localDateOf(text) {
     return new Date(year, month - 1, day, hours, minutes, seconds);
 }
 
-// withProfiles: whether the Profile picker is on, without which there are no Holiday Frames.
-export function createProfileRewards(host, { profileStore, isEnabled = () => true, withProfiles = () => true, wheelDialogs = null }) {
+// withProfiles: whether the Profile picker is on, without which there are no
+// Holiday Frames; withHousehold: whether the Household Challenge is on,
+// without which there is no Household frame.
+export function createProfileRewards(host, { profileStore, isEnabled = () => true, withProfiles = () => true, withHousehold = () => true, wheelDialogs = null }) {
     const projectFolder = host.getProjectFolder();
     // Each image's path, or null when its file is missing: checked once per session.
     const imagePaths = new Map();
@@ -99,17 +105,26 @@ export function createProfileRewards(host, { profileStore, isEnabled = () => tru
         return imagePaths.get(path);
     }
 
-    // id: a tier from 1 to FRAME_COUNT, or a holiday's. The images are drawn
-    // by absolute path: drawImage resolves relative paths from the PinballY folder.
+    // Each family's texts for a frame of that id.
+    const textsOf = (family, id) => {
+        const TEXT = lang.profileRewards;
+        if (family === FRAME_FAMILY.COLLECTION) return { name: TEXT.frameNames[id - 1], unlockCondition: lang.profileStats.frameList.unlockCondition(id) };
+        if (family === FRAME_FAMILY.HOUSEHOLD) return { name: TEXT.household.name, unlockCondition: TEXT.household.condition(HOUSEHOLD_FRAME_CREDITS) };
+        return { name: TEXT.holidays[id].name, unlockCondition: TEXT.holidays[id].condition };
+    };
+
+    // id: a tier from 1 to FRAME_COUNT, a holiday's, or the Household
+    // frame's. The images are drawn by absolute path: drawImage resolves
+    // relative paths from the PinballY folder.
     function frameOf(id) {
         const isTier = typeof id === "number";
+        const family = isTier ? FRAME_FAMILY.COLLECTION : (id === HOUSEHOLD_FRAME_ID ? FRAME_FAMILY.HOUSEHOLD : FRAME_FAMILY.HOLIDAY);
         const base = `${projectFolder}\\${FRAMES_FOLDER}\\frame_${isTier ? String(id).padStart(2, "0") : id}`;
         return {
             id,
-            family: isTier ? FRAME_FAMILY.COLLECTION : FRAME_FAMILY.HOLIDAY,
-            ...(isTier ? {} : { holiday: id }),
-            name: isTier ? lang.profileRewards.frameNames[id - 1] : lang.profileRewards.holidays[id].name,
-            unlockCondition: isTier ? lang.profileStats.frameList.unlockCondition(id) : lang.profileRewards.holidays[id].condition,
+            family,
+            ...(family === FRAME_FAMILY.HOLIDAY ? { holiday: id } : {}),
+            ...textsOf(family, id),
             images: { large: `${base}_384.png`, small: `${base}_192.png`, locked: `${base}_192_locked.png` },
         };
     }
@@ -154,6 +169,9 @@ export function createProfileRewards(host, { profileStore, isEnabled = () => tru
         if (withProfiles()) {
             const counts = holidayCountsOf(profileName);
             for (const { id } of HOLIDAYS) frames.push({ ...frameOf(id), isUnlocked: counts.has(id) });
+        }
+        if (withHousehold()) {
+            frames.push({ ...frameOf(HOUSEHOLD_FRAME_ID), isUnlocked: householdCreditsIn(dataOf(profileName)) >= HOUSEHOLD_FRAME_CREDITS });
         }
         return frames;
     }
@@ -220,9 +238,10 @@ export function createProfileRewards(host, { profileStore, isEnabled = () => tru
         };
     }
 
-    // The toast of a Holiday Frame the Profile's Play just unlocked, dropped
-    // when that Profile is reset or no longer active at its turn.
-    function announceHoliday(toasts, profileName, id) {
+    // The toast of a Holiday or Household frame the Profile just unlocked,
+    // dropped when that Profile is reset or no longer active at its turn;
+    // header (optional) replaces the Holiday Frame one.
+    function announceFrame(toasts, profileName, id, header) {
         const profileKey = profileName.toLowerCase();
         const resetCount = resetCountOf(profileKey);
         const isStale = () => resetCountOf(profileKey) !== resetCount
@@ -230,13 +249,17 @@ export function createProfileRewards(host, { profileStore, isEnabled = () => tru
         const frame = frameOf(id);
         toasts.submit({
             kind: TOAST_KIND.FRAME,
+            ...(header ? { header } : {}),
             imagePath: existingImage(frame.images.small),
             title: lang.profileRewards.toastLine([frame.name]),
-            description: lang.profileRewards.holidays[id].condition,
+            description: frame.unlockCondition,
             onShown: promptAfterToast(profileName, isStale, id),
             isStale,
         });
     }
+
+    // The Achievement Toast module, once enablePrompts gave it.
+    let frameToasts = null;
 
     return {
         framesOf,
@@ -274,6 +297,7 @@ export function createProfileRewards(host, { profileStore, isEnabled = () => tru
         // Profile switch; toasts each Holiday Frame a Play newly unlocks.
         enablePrompts(opener, toasts) {
             openFrameList = opener;
+            frameToasts = toasts;
             profileStore.onUpdate(safeHandler(SCRIPT_NAME, (profileName, { isReset }) => {
                 if (isReset) resetCounts.set(profileName.toLowerCase(), resetCountOf(profileName.toLowerCase()) + 1);
             }));
@@ -283,9 +307,16 @@ export function createProfileRewards(host, { profileStore, isEnabled = () => tru
             profileStore.onPlay(safeHandler(SCRIPT_NAME, ({ profileName, start, seconds }) => {
                 if (!withProfiles()) return;
                 const counts = holidayCountsOf(profileName);
-                for (const id of holidaysOfPlay(start, seconds)) if (counts.get(id) === 1) announceHoliday(toasts, profileName, id);
+                for (const id of holidaysOfPlay(start, seconds)) if (counts.get(id) === 1) announceFrame(toasts, profileName, id);
             }));
             submitForActive();
+        },
+        // For the Household Challenge module's credit: toasts the Household
+        // frame when that Profile's credited count just reached it (credits
+        // rise one at a time, one per toast); nothing before enablePrompts.
+        householdCredited(profileName, count) {
+            if (!frameToasts || !withHousehold() || count !== HOUSEHOLD_FRAME_CREDITS) return;
+            announceFrame(frameToasts, profileName, HOUSEHOLD_FRAME_ID, lang.profileRewards.household.toastHeader);
         },
         // For the Mastery Toast of a Collection Tier that unlocks frames, as
         // for the Holiday Frame toasts.
@@ -301,6 +332,7 @@ export function getProfileRewards() {
             profileStore: getProfileStore(),
             isEnabled: () => config.addOns.tableMastery !== false,
             withProfiles: () => config.addOns.profilePicker !== false,
+            withHousehold: () => config.addOns.householdChallenge !== false,
             wheelDialogs: getWheelDialogs(),
         });
     }

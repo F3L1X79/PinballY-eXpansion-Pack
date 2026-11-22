@@ -363,6 +363,13 @@ export default {
             100: "Legend of the Week",
         },
         challengesCompletedDescription: (count) => (count === 1 ? "Complete a Challenge." : `Complete ${count} Challenges.`),
+        householdCompletedTitles: {
+            1: "Under One Roof",
+            5: "Family Spirit",
+            15: "Pillar of the House",
+            30: "Great House",
+        },
+        householdCompletedDescription: (count) => (count === 1 ? "Help win a Household Challenge." : `Help win ${count} Household Challenges.`),
         highScoreTablesTitles: {
             1: "Initials in Stone",
             3: "Three Banners Raised",
@@ -748,6 +755,13 @@ export default {
             deadDay: { name: "Día de los Muertos", condition: "A Play on 1 or 2 November" },
             thanksgiving: { name: "Thanksgiving", condition: "A Play on Thanksgiving, the fourth Thursday of November" },
             christmas: { name: "Christmas", condition: "A Play on 24 or 25 December" },
+        },
+        // The Household frame: its name, what unlocks it (that many credited
+        // Household Challenges) and its toast's header.
+        household: {
+            name: "Household",
+            condition: (count) => `${count} Household Challenges won together`,
+            toastHeader: "Household Frame",
         },
         // The Reward Prompt, after a Profile's first frame: the frame's name,
         // then the main menu entry and the Profile Stats button to equip it from.

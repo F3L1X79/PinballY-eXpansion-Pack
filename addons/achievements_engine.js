@@ -8,7 +8,7 @@
 // - The level at startup, at a switch or after a Profile Reset is a baseline; the check after a History Import announces nothing (ADR 0025).
 // - The startup check's toasts are dropped if the Startup Screen picks another Profile.
 // - A Child Profile's level scales its points by the set a non-child Profile would have.
-// - The Challenges / High Scores / Ratings families exist only while their Add-on is on.
+// - The Challenges / Household / High Scores / Ratings families exist only while their Add-on is on.
 // ============================================================
 
 import { evaluateAchievements, markNotified, ACHIEVEMENT_RANK } from "../common/achievements/achievements.js";
@@ -23,6 +23,7 @@ import { buildCategoryCompletionAchievements } from "../achievements/category_co
 import { buildSessionMilestoneAchievements } from "../achievements/session_milestones.js";
 import { buildRandomGameFanAchievements } from "../achievements/random_game_fans.js";
 import { buildChallengeAchievements } from "../achievements/challenges.js";
+import { buildHouseholdAchievements } from "../achievements/household.js";
 import { buildHighScoreAchievements } from "../achievements/high_scores.js";
 import { getHighScoreStore } from "../common/high_scores/high_score_store.js";
 import { buildWorldTourAchievements } from "../achievements/world_tour.js";
@@ -54,6 +55,7 @@ import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { sameName } from "../common/profiles/profile_name_rules.js";
 import { getChallenges } from "../common/challenges/challenge.js";
+import { getHouseholdChallenge } from "../common/challenges/household_challenge.js";
 import config from "../common/core/config.js";
 import lang from "../common/core/i18n.js";
 import { safeHandler } from "../common/core/safe_handler.js";
@@ -65,6 +67,10 @@ const PROFILE_STATS_ENTRY = "profileStats";
 // Null when the Challenges Add-on is disabled: then neither the Challenges
 // family nor the Profile Stats line exists.
 const getEnabledChallenges = () => (config.addOns.challenges === false ? null : getChallenges());
+
+// Null when the Household Challenge Add-on is disabled: then the Household
+// family does not exist.
+const getEnabledHouseholdChallenge = () => (config.addOns.householdChallenge === false ? null : getHouseholdChallenge());
 
 // Null when the High Scores Add-on is disabled: then neither the High Scores
 // family nor the stats lines exist.
@@ -81,6 +87,7 @@ const getEnabledSessionMilestones = () => (config.addOns.sessionStatsTracker ===
 // Notified).
 export function getAllAchievements({ asNonChild = false, profileName } = {}) {
     const challenges = getEnabledChallenges();
+    const householdChallenge = getEnabledHouseholdChallenge();
     const highScores = getEnabledHighScores();
     const seenBy = { asNonChild, profileName };
     return [
@@ -96,6 +103,7 @@ export function getAllAchievements({ asNonChild = false, profileName } = {}) {
         ...getEnabledSessionMilestones(),
         ...buildRandomGameFanAchievements(),
         ...(challenges ? buildChallengeAchievements(challenges) : []),
+        ...(householdChallenge ? buildHouseholdAchievements(householdChallenge) : []),
         ...(highScores ? buildHighScoreAchievements(highScores, seenBy) : []),
         ...buildSurprisesAchievements(seenBy),
         ...buildEasterEggAchievements(),
@@ -385,6 +393,10 @@ export default function init() {
     // the store's answer, shows before the Achievements it brought.
     const highScores = getEnabledHighScores();
     if (highScores) highScores.onCredited(safeHandler(SCRIPT_NAME, () => setTimeout(safeCheckForNewAchievements, 0)));
+    // Fires when a Household Challenge Toast starts and credits its Profile.
+    // A tick later, so the Household family's toasts follow it.
+    const householdChallenge = getEnabledHouseholdChallenge();
+    if (householdChallenge) householdChallenge.onCredited(safeHandler(SCRIPT_NAME, () => setTimeout(safeCheckForNewAchievements, 0)));
     // Fires once an Easter Egg has gone. A tick later: at a launch it ends on
     // "prelaunch", when a toast would not see the game yet and would show under it.
     getEasterEggRules().onFinished(() => setTimeout(safeCheckForNewAchievements, 0));

@@ -311,7 +311,7 @@ Something a Profile unlocks through play and then chooses to wear; today only Av
 _Avoid_: cosmetic, unlockable, skin
 
 **Avatar Frame**:
-A themed frame drawn around the Avatar wherever it is shown, unlocked by reaching a Collection Tier or as a Holiday Frame. It is not the gold ring that marks the selected Avatar in the Profile Picker. Shown as "cadre" in French.
+A themed frame drawn around the Avatar wherever it is shown, unlocked by reaching a Collection Tier, as a Holiday Frame, or as the Household frame, at 15 credited Household Challenges. It is not the gold ring that marks the selected Avatar in the Profile Picker. Shown as "cadre" in French.
 _Avoid_: skin, border, badge (the Profile Badge is the Avatar at the top right of the wheel screen), gold frame
 
 **Holiday Frame**:
@@ -547,7 +547,7 @@ The screen that shows every Achievement in one scrolling list: the Unlocked ones
 _Avoid_: My Achievements, trophy room
 
 **Achievement Family**:
-A kind of Achievement, absent as a whole when the Add-on it depends on is turned off: Collection, Play Time, Period Tables, Sessions, Random Game, Manufacturers, Systems, Decades, Categories, Challenges, High Scores, Surprises, Ratings, Young Players. Young Players exists only for Child Profiles, in place of the Achievements a child never gets.
+A kind of Achievement, absent as a whole when the Add-on it depends on is turned off: Collection, Play Time, Period Tables, Sessions, Random Game, Manufacturers, Systems, Decades, Categories, Challenges, Household (credited Household Challenges, "Maison" in French), High Scores, Surprises, Ratings, Young Players. Young Players exists only for Child Profiles, in place of the Achievements a child never gets.
 _Avoid_: group (a group is the set of tables a completion Achievement covers, such as one manufacturer's tables), category (a PinballY table category)
 
 **Notified**:
