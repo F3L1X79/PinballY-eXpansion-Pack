@@ -44,15 +44,17 @@ const isNumber = value => typeof value === "number" && Number.isFinite(value);
 const unique = list => [...new Set(list)];
 
 // What one answer's values make impossible: a player count outside 1..slots,
-// a non-zero score that is not a multiple of 10.
+// a non-zero score that is not a multiple of 10. Data East and Whitestar
+// ROMs set the player count to 0 once the game is over: 0 is fine then.
 function impossibleValuesOf(gameState) {
     if (gameState === null) return [];
     const scores = slotValues(gameState.scores) || [];
     const finalScores = slotValues(gameState.final_scores) || [];
     const slotCount = scores.length || finalScores.length;
     const playerCount = valueOf(gameState.player_count);
+    const lowest = valueOf(gameState.game_over) === true ? 0 : 1;
     const found = [];
-    if (isNumber(playerCount) && slotCount > 0 && (playerCount < 1 || playerCount > slotCount)) found.push(`player_count ${playerCount} for ${slotCount} slots`);
+    if (isNumber(playerCount) && slotCount > 0 && (playerCount < lowest || playerCount > slotCount)) found.push(`player_count ${playerCount} for ${slotCount} slots`);
     for (const score of [...scores, ...finalScores]) {
         if (isNumber(score) && score !== 0 && score % 10 !== 0) found.push(`score ${score}`);
     }
