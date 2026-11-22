@@ -7,7 +7,7 @@ For the cabinet owner:
 - **eXpansion Pack Settings**: from the Operator Menu, turn each Add-on on or off by category, pick the startup screen and the language, then restart PinballY in one press.
 - **Admin Profile**: the setup entries for you alone.
 - **Child Profile**: a wheel without Adult Tables for the kids.
-- **Manage profiles**: mark an Admin Profile or a Child Profile, hand PinballY's own play history to one Profile (History Import), or start a Profile over (Profile Reset), alone or the whole household at once.
+- **Manage profiles**: mark an Admin Profile or a Child Profile, give a Profile its Initials, hand PinballY's own play history to one Profile (History Import), or start a Profile over (Profile Reset), alone or the whole household at once.
 - **Menu Cleanup**: leaner PinballY menus (see [Interface](interface.md#menu-cleanup)).
 
 Everything stays in one folder, with no change to PinballY itself.
@@ -141,13 +141,24 @@ From then on, that Profile marks the others from the cabinet: open **Manage prof
 
 ## Profile Reset
 
-An Admin Profile also finds **Manage profiles** in two places: in the Exit menu (Escape), right after "Change Player", above "Operator Menu"; and in the Operator Menu, right after **eXpansion Pack Settings**, in their own group below "Batch Capture". Other Profiles never see it, even when the coin door service button opens the Operator Menu. It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)), **Take over PinballY's history** (see [History Import](#history-import)) and **Reset**. With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
+An Admin Profile also finds **Manage profiles** in two places: in the Exit menu (Escape), right after "Change Player", above "Operator Menu"; and in the Operator Menu, right after **eXpansion Pack Settings**, in their own group below "Batch Capture". Other Profiles never see it, even when the coin door service button opens the Operator Menu. It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)), its **Initials** (see [Initials](#initials)), **Take over PinballY's history** (see [History Import](#history-import)) and **Reset**. With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
 
 - After one confirmation (the cursor starts on "No"), "Reset" or "Reset every profile" starts the Profile over: its plays, Streaks, session records, Random Games, Challenge progress, announced Achievements, Table Mastery, Collection Tier and Avatar Frames are erased, while its name, Avatar, marks and the High Scores it won stay.
 - A message then tells whether it worked.
 - Its former files are kept next to them, as `profile.reset-<date>.json` and `play-log-<year>.reset-<date>.json`: to undo a reset, close PinballY and rename each copy back, without its `.reset-<date>` part.
 - If you disabled PinballY's Exit menu in its options, the coin door service button still opens the Operator Menu, and Manage profiles with it.
 - A Profile Reset also erases what the Profile took over from PinballY's history, and the History Import is not offered again.
+
+### Initials
+
+A Profile's **Initials** are the three letters that stand for it on tables' high score boards, such as "FEL": the high scores bearing them that belong to no Profile, made before the pack for instance, become this Profile's. The line, in a Profile's own menu right after its marks, shows them ("Initials: FEL"), or "Initials: none".
+
+- Choosing it opens Name Entry with the current Initials already entered: capital letters A to Z only, erase and OK, three letters at most.
+- OK saves them; OK with every letter erased clears them; Exit changes nothing. The Profile's menu then comes back, on its Initials.
+- Initials another Profile already has are refused, naming it, and OK stays greyed until three letters are entered (unless you are clearing them).
+- Guest never has Initials: its line is greyed. The line is missing while the High Scores Add-on is off.
+- A Profile Reset keeps the Initials, like the name, Avatar and marks.
+- Set by hand, `"initials": "FEL"` in the Profile's `profile.json` must be three capital letters; anything else is ignored and written to the log.
 
 ### History Import
 

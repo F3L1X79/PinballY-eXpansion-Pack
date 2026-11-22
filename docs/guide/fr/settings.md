@@ -7,7 +7,7 @@ Pour le propriétaire de la borne :
 - **Réglages de l'eXpansion pack** : depuis le menu opérateur, activer ou désactiver chaque Add-on par catégorie, choisir l'écran de démarrage et la langue, puis redémarrer PinballY d'une pression.
 - **Profil admin** : les entrées de configuration pour vous seul.
 - **Profil enfant** : une roue sans tables pour adultes.
-- **Gérer les profils** : marquer un Profil admin ou un Profil enfant, donner l'historique de jeu de PinballY à un Profil (reprise de l'historique), ou faire repartir de zéro un Profil ou toute la maison d'un coup.
+- **Gérer les profils** : marquer un Profil admin ou un Profil enfant, donner ses initiales à un Profil, donner l'historique de jeu de PinballY à un Profil (reprise de l'historique), ou faire repartir de zéro un Profil ou toute la maison d'un coup.
 - **Nettoyage des menus** : des menus PinballY allégés (voir [Interface](interface.md#nettoyage-des-menus)).
 
 Tout tient dans un seul dossier, sans modifier PinballY.
@@ -141,13 +141,24 @@ Ce Profil marque ensuite les autres depuis la borne : ouvrez **Gérer les profil
 
 ## Réinitialiser un profil
 
-Un Profil admin trouve aussi **Gérer les profils** à deux endroits : dans le menu de sortie (Échap), juste après « Changer de joueur », au-dessus de « Menu opérateur » ; et dans le menu opérateur, juste après **Réglages de l'eXpansion pack**, dans leur propre groupe sous « Capture par lot ». Les autres Profils ne le voient jamais, même quand le bouton de service de la porte du monnayeur ouvre le menu opérateur. Il liste tous les Profils, Invité et vous-même compris, plus « Réinitialiser tous les profils », dès qu'il y en a au moins deux, pour remettre toute la maison à zéro d'un coup. Choisir un Profil ouvre son propre menu : ses marques admin et enfant (voir [Profil admin](#profil-admin) et [Profil enfant](#profil-enfant)), **Reprendre l'historique de PinballY** (voir [Reprise de l'historique](#reprise-de-lhistorique)) et **Réinitialiser**. Avec les [menus dessinés](interface.md#menus-dessinés), Échap ou « Retour » y ramène à la liste ; sans eux, les deux ferment le menu.
+Un Profil admin trouve aussi **Gérer les profils** à deux endroits : dans le menu de sortie (Échap), juste après « Changer de joueur », au-dessus de « Menu opérateur » ; et dans le menu opérateur, juste après **Réglages de l'eXpansion pack**, dans leur propre groupe sous « Capture par lot ». Les autres Profils ne le voient jamais, même quand le bouton de service de la porte du monnayeur ouvre le menu opérateur. Il liste tous les Profils, Invité et vous-même compris, plus « Réinitialiser tous les profils », dès qu'il y en a au moins deux, pour remettre toute la maison à zéro d'un coup. Choisir un Profil ouvre son propre menu : ses marques admin et enfant (voir [Profil admin](#profil-admin) et [Profil enfant](#profil-enfant)), ses **Initiales** (voir [Initiales](#initiales)), **Reprendre l'historique de PinballY** (voir [Reprise de l'historique](#reprise-de-lhistorique)) et **Réinitialiser**. Avec les [menus dessinés](interface.md#menus-dessinés), Échap ou « Retour » y ramène à la liste ; sans eux, les deux ferment le menu.
 
 - Après une confirmation (le curseur part sur « Non »), « Réinitialiser » ou « Réinitialiser tous les profils » fait repartir le Profil de zéro : ses parties, ses séries, ses records de session, ses parties aléatoires, sa progression aux défis, ses succès annoncés, sa maîtrise des tables, son palier de collection et ses cadres d'Avatar sont effacés, tandis que son nom, son avatar, ses marques et les meilleurs scores qu'il a gagnés restent.
 - Un message indique ensuite si l'opération a réussi.
 - Ses anciens fichiers sont gardés à côté, sous les noms `profile.reset-<date>.json` et `play-log-<année>.reset-<date>.json` : pour annuler une réinitialisation, fermez PinballY et renommez chaque copie sans sa partie `.reset-<date>`.
 - Si vous avez désactivé le menu de sortie dans les options de PinballY, le bouton de service de la porte du monnayeur ouvre toujours le menu opérateur, et « Gérer les profils » avec lui.
 - Une réinitialisation efface aussi ce que le Profil a repris de l'historique de PinballY, et la reprise n'est plus proposée.
+
+### Initiales
+
+Les **initiales** d'un Profil sont les trois lettres qui le désignent sur les tableaux des meilleurs scores des tables, comme « FEL » : les meilleurs scores qui les portent et n'appartiennent à aucun Profil, faits avant le pack par exemple, deviennent ceux de ce Profil. La ligne, dans le propre menu d'un Profil juste après ses marques, les affiche (« Initiales : FEL »), ou « Initiales : aucune ».
+
+- La choisir ouvre la saisie du nom avec les initiales actuelles déjà entrées : lettres capitales de A à Z seulement, effacer et OK, trois lettres au plus.
+- OK les enregistre ; OK avec toutes les lettres effacées les retire ; Échap ne change rien. Le menu du Profil revient ensuite, sur ses initiales.
+- Des initiales qu'un autre Profil a déjà sont refusées, en le nommant, et OK reste grisé tant que trois lettres ne sont pas entrées (sauf pour les retirer).
+- Invité n'a jamais d'initiales : sa ligne est grisée. La ligne n'apparaît pas tant que l'Add-on des meilleurs scores est désactivé.
+- Une réinitialisation garde les initiales, comme le nom, l'Avatar et les marques.
+- Écrites à la main, `"initials": "FEL"` dans le `profile.json` du Profil doivent être trois lettres capitales ; autre chose est ignoré et noté dans le journal.
 
 ### Reprise de l'historique
 

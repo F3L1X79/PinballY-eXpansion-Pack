@@ -414,6 +414,17 @@ test("the Child Profile mark keeps its key in profile.json", () => {
     assert.equal(JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\Alice\\profile.json`)).isChild, true);
 });
 
+test("a Profile's Initials keep their key in profile.json", () => {
+    const fake = createFakePinballYHost({ now: NOW, tables: TABLES });
+    fake.addFile(`${PROFILES_FOLDER}\\Alice\\profile.json`, JSON.stringify({ version: 1, initials: "FEL" }));
+    const store = createProfileStore(fake);
+    store.switchTo("Alice");
+    store.updateProfileData(data => { data.randomGames += 1; });
+
+    assert.equal(store.getInitialsOf("Alice"), "FEL");
+    assert.equal(JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\Alice\\profile.json`)).initials, "FEL");
+});
+
 test("the Play Log keeps its file name and keys", () => {
     const fake = createFakePinballYHost({ now: NOW, tables: TABLES });
     createProfileStore(fake);

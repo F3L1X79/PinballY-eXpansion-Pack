@@ -656,6 +656,18 @@ export default {
                 taken: "Já existe um perfil com este nome.",
             },
             folderFailed: "Não foi possível criar a pasta deste perfil: verifique a pasta profiles no Windows e tente novamente.",
+            initials: {
+                title: name => `Iniciais de ${name}`,
+                lines: [
+                    "Três letras, como na tabela de melhores pontuações de uma mesa.",
+                    "As melhores pontuações que as levam e não pertencem a nenhum perfil passam a ser deste perfil.",
+                    "Apague todas e escolha OK para removê-las.",
+                ],
+                refusals: {
+                    threeLetters: "As iniciais têm três letras.",
+                    taken: name => `Já são de ${name}.`,
+                },
+            },
         },
         // Avatar Choice, right after Name Entry: its title, then a line under the Profile's name.
         avatarChoice: {
@@ -692,6 +704,11 @@ export default {
             lastAdmin: "Último admin",
         },
         marksFailed: name => `Não foi possível alterar as marcas de ${name}. Consulte o log para mais detalhes.`,
+        initialsLine: initials => `Iniciais: ${initials === null ? "nenhuma" : initials}`,
+        initialsRefusals: {
+            guest: "Convidado nunca tem iniciais",
+        },
+        initialsFailed: name => `Não foi possível salvar as iniciais de ${name}. Consulte o log para mais detalhes.`,
         confirm: name => `Redefinir ${name}? Todas as suas partidas, sequências, desafios e conquistas serão apagados.`,
         yes: "Sim, redefinir",
         no: "Não",

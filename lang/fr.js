@@ -658,6 +658,18 @@ export default {
                 taken: "Un profil porte déjà ce nom.",
             },
             folderFailed: "Le dossier de ce profil n'a pas pu être créé : vérifiez le dossier profiles dans Windows, puis réessayez.",
+            initials: {
+                title: name => `Initiales de ${name}`,
+                lines: [
+                    "Trois lettres, comme sur le tableau des meilleurs scores d'une table.",
+                    "Les meilleurs scores qui les portent et n'appartiennent à aucun profil deviennent ceux de ce profil.",
+                    "Effacez-les toutes et choisissez OK pour les retirer.",
+                ],
+                refusals: {
+                    threeLetters: "Les initiales ont trois lettres.",
+                    taken: name => `Déjà prises par ${name}.`,
+                },
+            },
         },
         // Avatar Choice, right after Name Entry: its title, then a line under the Profile's name.
         avatarChoice: {
@@ -694,6 +706,11 @@ export default {
             lastAdmin: "Dernier admin",
         },
         marksFailed: name => `Impossible de changer les marques de ${name}. Voir le journal pour les détails.`,
+        initialsLine: initials => `Initiales : ${initials === null ? "aucune" : initials}`,
+        initialsRefusals: {
+            guest: "Invité n'a jamais d'initiales",
+        },
+        initialsFailed: name => `Impossible d'enregistrer les initiales de ${name}. Voir le journal pour les détails.`,
         confirm: name => `Réinitialiser ${name} ? Ses parties, séries, défis et succès seront tous effacés.`,
         yes: "Oui, réinitialiser",
         no: "Non",

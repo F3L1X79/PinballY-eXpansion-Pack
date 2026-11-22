@@ -6,6 +6,7 @@
 // - With none, "Manage profiles" offers "Become admin" to all but Guest and Child Profiles.
 // - The coin door service button still opens the Operator Menu for anyone.
 // - "Table Setup" gives way to an External Add-on's entry of that title, already in the menu.
+// - Manage profiles' Initials line, and its Name Entry, only with the High Scores Add-on on.
 // ============================================================
 
 import { safeHandler } from "../common/core/safe_handler.js";
@@ -16,6 +17,10 @@ import { createManageProfilesMenu } from "../common/menus/manage_profiles_menu.j
 import { addToPlayerGroup, PLAYER_GROUP_RANK } from "../common/menus/exit_menu.js";
 import { getDrawnMenus } from "../common/drawn_menu/drawn_menu.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
+import { createNameEntry } from "../common/profiles/name_entry.js";
+import { getDrawingAhead } from "../common/core/drawing_ahead.js";
+import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
+import config from "../common/core/config.js";
 import lang from "../common/core/i18n.js";
 
 const SCRIPT_NAME = "CustomMenuCommands";
@@ -42,7 +47,11 @@ export default function init() {
     for (const entry of MENU_COMMANDS) mainMenu.add(entry);
 
     const host = createPinballYHost();
-    const manageProfilesMenu = createManageProfilesMenu(host, profileStore, getDrawnMenus());
+    // The Initials take the Default Scores bearing them, which only the High Scores Add-on reads.
+    const nameEntry = config.addOns.highScores !== false
+        ? createNameEntry(host, { profileStore, drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls() })
+        : null;
+    const manageProfilesMenu = createManageProfilesMenu(host, profileStore, getDrawnMenus(), { nameEntry });
     const manageProfilesCommand = command.allocate("manageProfiles");
 
     // Fires when any menu opens, with a fresh item list each time. In the

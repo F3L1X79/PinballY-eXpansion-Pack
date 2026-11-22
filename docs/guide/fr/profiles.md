@@ -14,7 +14,7 @@ Avec « Changer de joueur », chacun prend son Profil et son Avatar, et l'écran
 - Dès que la borne compte au moins deux Profils sans compter Invité, PinballY démarre sur « Changer de joueur », pour que chacun choisisse son Profil avant de jouer ; il peut aussi démarrer sur l'écran d'accueil ou directement sur la roue (`STARTUP_SCREEN`, voir [Réglages](settings.md)).
 - Tant que « Changer de joueur » est ouvert, le son des vidéos de la table de la roue est baissé, et revient à sa fermeture.
 
-La progression de chaque Profil est enregistrée dans `Scripts\ExpansionPack\profiles`. Un Profil admin garde les entrées de configuration pour lui, un Profil enfant cache les tables pour adultes, et **Gérer les profils**, dans le menu de sortie et le menu opérateur d'un Profil admin, marque un Profil enfant, donne l'historique de jeu de PinballY à un Profil ou fait repartir un Profil de zéro : voir [Réglages](settings.md).
+La progression de chaque Profil est enregistrée dans `Scripts\ExpansionPack\profiles`. Un Profil admin garde les entrées de configuration pour lui, un Profil enfant cache les tables pour adultes, et **Gérer les profils**, dans le menu de sortie et le menu opérateur d'un Profil admin, marque un Profil enfant, donne ses initiales à un Profil, donne l'historique de jeu de PinballY à un Profil ou fait repartir un Profil de zéro : voir [Réglages](settings.md).
 
 ## Notes et tables favorites
 

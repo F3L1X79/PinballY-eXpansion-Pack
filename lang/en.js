@@ -550,6 +550,19 @@ export default {
                 taken: "A profile already has that name.",
             },
             folderFailed: "This profile's folder could not be created: check the profiles folder in Windows, then try again.",
+            // The same screen giving a Profile its Initials, from Manage profiles.
+            initials: {
+                title: name => `${name}'s initials`,
+                lines: [
+                    "Three letters, as on a table's high score board.",
+                    "The high scores bearing them that belong to no profile become this profile's.",
+                    "Erase them all and choose OK to clear them.",
+                ],
+                refusals: {
+                    threeLetters: "Initials have three letters.",
+                    taken: name => `Taken by ${name}.`,
+                },
+            },
         },
         // Avatar Choice, right after Name Entry: its title, then a line under the Profile's name.
         avatarChoice: {
@@ -588,6 +601,12 @@ export default {
             lastAdmin: "Last admin",
         },
         marksFailed: name => `${name}'s marks could not be changed. See the log for details.`,
+        // The Initials a table's high score board shows for the Profile; null when none.
+        initialsLine: initials => `Initials: ${initials === null ? "none" : initials}`,
+        initialsRefusals: {
+            guest: "Guest never has initials",
+        },
+        initialsFailed: name => `${name}'s initials could not be saved. See the log for details.`,
         confirm: name => `Reset ${name}? All of its plays, streaks, Challenges and achievements will be erased.`,
         yes: "Yes, reset",
         no: "No",

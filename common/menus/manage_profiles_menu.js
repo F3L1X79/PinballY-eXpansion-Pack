@@ -1,9 +1,9 @@
 // ============================================================
 // Manage profiles, opened from the Exit menu: the list of Profiles (and
-// "Every profile"), then a Profile's own menu, where a mark line flips the
-// mark at once, then the History Import's line and "Reset"; while no Profile
-// is marked, only "Become admin". Opens directly through the Drawn Menu module.
-// Listens to "command".
+// "Every profile"), then a Profile's own menu: the mark lines, flipping the mark
+// at once, the Initials line (High Scores Add-on on), the History Import's
+// line and "Reset"; while no Profile is marked, only "Become admin". Opens
+// directly through the Drawn Menu module. Listens to "command".
 // - A line the mark rules forbid stays, greyed with its reason (setup_entries.js, ADR 0020).
 // - Exit and Back go from a Profile's menu to the list only when drawn: natively, they close.
 // - The active Profile clearing its own Admin mark closes the menus: it no longer has access.
@@ -16,6 +16,7 @@ import { logHandlerError, safeHandler } from "../core/safe_handler.js";
 import { createNativeMenus } from "../drawn_menu/drawn_menu.js";
 import { createProfileResetMenu } from "./profile_reset_menu.js";
 import { createHistoryImportMenu } from "./history_import_menu.js";
+import { createInitialsMenu } from "./initials_menu.js";
 
 const SCRIPT_NAME = "ManageProfiles";
 const LIST_MENU_ID = "manageProfilesList";
@@ -24,11 +25,13 @@ const MARKS_FAILED_MENU_ID = "manageProfilesMarksFailed";
 const BECOME_ADMIN_MENU_ID = "manageProfilesBecomeAdmin";
 const SEPARATOR = { cmd: -1 };
 
-// menus: what shows the menus (common/drawn_menu/drawn_menu.js).
-export function createManageProfilesMenu(host, profileStore, menus = createNativeMenus(host)) {
+// menus: what shows the menus (common/drawn_menu/drawn_menu.js); nameEntry:
+// Name Entry (common/profiles/name_entry.js), null without the Initials line.
+export function createManageProfilesMenu(host, profileStore, menus = createNativeMenus(host), { nameEntry = null } = {}) {
     const { profileReset: TEXT } = lang;
     const profileReset = createProfileResetMenu(host, profileStore, menus);
     const historyImport = createHistoryImportMenu(host, profileStore, menus);
+    const initials = nameEntry ? createInitialsMenu(host, profileStore, { nameEntry, menus, showProfileMenu: (profile, cmd) => openProfile(profile, cmd) }) : null;
     const everyProfileCommand = host.allocateCommand("manageProfilesEveryProfile");
     const adminCommand = host.allocateCommand("manageProfilesAdmin");
     const childCommand = host.allocateCommand("manageProfilesChild");
@@ -108,6 +111,7 @@ export function createManageProfilesMenu(host, profileStore, menus = createNativ
             SEPARATOR,
             markLine(profile, marks, "isAdmin", TEXT.adminLine(marks.isAdmin), adminCommand),
             markLine(profile, marks, "isChild", TEXT.childLine(marks.isChild), childCommand),
+            ...(initials ? [initials.lineFor(profile)] : []),
             SEPARATOR,
             historyImport.lineFor(profile),
             { title: TEXT.reset, cmd: resetCommand },

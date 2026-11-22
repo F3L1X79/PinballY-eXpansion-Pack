@@ -16,6 +16,7 @@ import { logError } from "../core/error_log.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { isUntrackedTable } from "../core/untracked_tables.js";
 import { markRefusal } from "./setup_entries.js";
+import { areValidInitials, sameInitials } from "./initials_rules.js";
 import { GUEST_NAME, nameRefusal, sameName, withoutTrailingHyphen } from "./profile_name_rules.js";
 
 const SCRIPT_NAME = "ProfileStore";
@@ -71,7 +72,9 @@ const emptyProfileData = () => ({
 const MARK_NAMES = ["isAdmin", "isChild"];
 // The History Import's record is kept too, for the import never to be offered again (ADR 0025).
 const HISTORY_IMPORT_KEY = "historyImport";
-const KEPT_THROUGH_RESET = [...MARK_NAMES, HISTORY_IMPORT_KEY];
+// The Profile's identity on tables' boards, like its name (ADR 0026).
+const INITIALS_KEY = "initials";
+const KEPT_THROUGH_RESET = [...MARK_NAMES, HISTORY_IMPORT_KEY, INITIALS_KEY];
 // Set by the History Import, until the Profile's next Achievements check
 // marks what it reached Notified without a toast; dropped by a Profile Reset.
 const UNANNOUNCED_CHECK_KEY = "unannouncedCheckDue";
@@ -100,8 +103,8 @@ export function createProfileStore(host) {
     const logRecovery = text => logError(SCRIPT_NAME, text, host);
     // Logged once per session: the picker lists the Profiles on every opening.
     const loggedUnreadableAvatars = new Set();
-    // Logged once per session too: the menus check the marks on every opening.
-    const loggedMarkProblems = new Set();
+    // Logged once per session too: the menus check the marks and Initials on every opening.
+    const loggedHandEditProblems = new Set();
 
     // The first readable one of the Profile's own Avatars, otherwise the default Avatar.
     function avatarPathOf(folder) {
@@ -438,9 +441,9 @@ export function createProfileStore(host) {
         tellUpdateListeners(profile.name, { isReset: true });
     }
 
-    function logMarkProblemOnce(problemLine) {
-        if (loggedMarkProblems.has(problemLine)) return;
-        loggedMarkProblems.add(problemLine);
+    function logHandEditProblemOnce(problemLine) {
+        if (loggedHandEditProblems.has(problemLine)) return;
+        loggedHandEditProblems.add(problemLine);
         log(problemLine);
     }
 
@@ -452,7 +455,7 @@ export function createProfileStore(host) {
         const looseName = markName.toLowerCase();
         for (const key of Object.keys(data)) {
             if (key !== markName && key.replace(/\s/g, "").toLowerCase() === looseName) {
-                logMarkProblemOnce(`${profile.name}\\profile.json: ${JSON.stringify(key)} is ignored; did you mean "${markName}"?`);
+                logHandEditProblemOnce(`${profile.name}\\profile.json: ${JSON.stringify(key)} is ignored; did you mean "${markName}"?`);
             }
         }
         const value = data[markName];
@@ -461,7 +464,7 @@ export function createProfileStore(host) {
         if (profile.isGuest) problem = `Guest is never marked "${markName}"`;
         else if (typeof value !== "boolean") problem = `"${markName}" must be true or false, not ${JSON.stringify(value)}`;
         if (!problem) return true;
-        logMarkProblemOnce(`${profile.name}\\profile.json: ${problem}; read as false.`);
+        logHandEditProblemOnce(`${profile.name}\\profile.json: ${problem}; read as false.`);
         return false;
     }
 
@@ -499,6 +502,47 @@ export function createProfileStore(host) {
             if (isOn) changed[markName] = true;
             else delete changed[markName];
         }, profile.name);
+    }
+
+    // The named Profile's Initials, null when none. Set by hand, they count
+    // only as three capital letters on a Profile other than Guest; anything
+    // else is logged once and read as none, but kept in the file to fix.
+    function initialsOf(profileName) {
+        const { profile, data } = profileWithData(profileName);
+        const value = data[INITIALS_KEY];
+        if (value === undefined) return null;
+        let problem = null;
+        if (profile.isGuest) problem = `Guest never has "${INITIALS_KEY}"`;
+        else if (!areValidInitials(value)) problem = `"${INITIALS_KEY}" must be three capital letters A-Z, not ${JSON.stringify(value)}`;
+        if (!problem) return value;
+        logHandEditProblemOnce(`${profile.name}\\profile.json: ${problem}; read as no initials.`);
+        return null;
+    }
+
+    // The listed Profile holding these Initials in any letter case, null when none.
+    function initialsHolder(initials) {
+        return withCachedReads(() => listProfileNames().find(name => {
+            const held = initialsOf(name);
+            return held !== null && sameInitials(held, initials);
+        }) || null);
+    }
+
+    // Throws, writing nothing, for Guest, anything but three letters A-Z,
+    // and Initials another listed Profile holds.
+    function setInitials(profileName, initials) {
+        const profile = profileNamed(profileName);
+        if (profile.isGuest) throw new Error("Guest never has Initials.");
+        if (!areValidInitials(initials)) throw new Error(`${JSON.stringify(initials)} are not three capital letters A-Z.`);
+        const holder = initialsHolder(initials);
+        if (holder !== null && !sameName(holder, profile.name)) throw new Error(`The Initials ${initials} are already ${holder}'s.`);
+        updateProfileData(data => { data[INITIALS_KEY] = initials; }, profile.name);
+        log(`${profile.name} has the Initials ${initials}.`);
+    }
+
+    function clearInitials(profileName) {
+        const profile = profileNamed(profileName);
+        updateProfileData(data => { delete data[INITIALS_KEY]; }, profile.name);
+        log(`${profile.name} has no Initials any more.`);
     }
 
     // Guest is always listed, and is not part of the Household.
@@ -819,6 +863,12 @@ export function createProfileStore(host) {
         // { isGuest, isAdmin, isChild, isLastAdmin } of the named Profile.
         getMarksOf: marksOf,
         setMark,
+        // The named Profile's Initials ("FEL"), null when none (ADR 0026).
+        getInitialsOf: initialsOf,
+        setInitials,
+        clearInitials,
+        // The listed Profile holding these Initials, in any letter case; null when none.
+        findInitialsHolder: initialsHolder,
         // { tableCount, games, seconds } the History Import would add from these tables, without writing.
         previewHistoryImport: (profileName, tables) => withCachedReads(() => {
             // Throws for an unknown Profile, as importHistory would.

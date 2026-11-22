@@ -655,6 +655,18 @@ export default {
                 taken: "Un profilo ha già questo nome.",
             },
             folderFailed: "Non è stato possibile creare la cartella di questo profilo: controlla la cartella profiles in Windows e riprova.",
+            initials: {
+                title: name => `Iniziali di ${name}`,
+                lines: [
+                    "Tre lettere, come nella tabella dei punteggi migliori di un tavolo.",
+                    "I punteggi migliori che le portano e non appartengono a nessun profilo diventano di questo profilo.",
+                    "Cancellale tutte e scegli OK per toglierle.",
+                ],
+                refusals: {
+                    threeLetters: "Le iniziali hanno tre lettere.",
+                    taken: name => `Già di ${name}.`,
+                },
+            },
         },
         // Avatar Choice, right after Name Entry: its title, then a line under the Profile's name.
         avatarChoice: {
@@ -691,6 +703,11 @@ export default {
             lastAdmin: "Ultimo admin",
         },
         marksFailed: name => `Impossibile cambiare i segni di ${name}. Consulta il log per i dettagli.`,
+        initialsLine: initials => `Iniziali: ${initials === null ? "nessuna" : initials}`,
+        initialsRefusals: {
+            guest: "Ospite non ha mai iniziali",
+        },
+        initialsFailed: name => `Impossibile salvare le iniziali di ${name}. Consulta il log per i dettagli.`,
         confirm: name => `Azzerare ${name}? Tutte le sue partite, serie, sfide e obiettivi saranno cancellati.`,
         yes: "Sì, azzera",
         no: "No",

@@ -656,6 +656,18 @@ export default {
                 taken: "Ein Profil trägt bereits diesen Namen.",
             },
             folderFailed: "Der Ordner dieses Profils konnte nicht erstellt werden: Prüfen Sie den Ordner profiles in Windows und versuchen Sie es erneut.",
+            initials: {
+                title: name => `Initialen von ${name}`,
+                lines: [
+                    "Drei Buchstaben, wie auf der Highscore-Tabelle eines Tisches.",
+                    "Die Highscores mit diesen Initialen, die keinem Profil gehören, werden die dieses Profils.",
+                    "Löschen Sie alle und wählen Sie OK, um sie zu entfernen.",
+                ],
+                refusals: {
+                    threeLetters: "Initialen haben drei Buchstaben.",
+                    taken: name => `Bereits von ${name} belegt.`,
+                },
+            },
         },
         // Avatar Choice, right after Name Entry: its title, then a line under the Profile's name.
         avatarChoice: {
@@ -692,6 +704,11 @@ export default {
             lastAdmin: "Letzter Admin",
         },
         marksFailed: name => `Die Markierungen von ${name} konnten nicht geändert werden. Details stehen im Log.`,
+        initialsLine: initials => `Initialen: ${initials === null ? "keine" : initials}`,
+        initialsRefusals: {
+            guest: "Gast hat nie Initialen",
+        },
+        initialsFailed: name => `Die Initialen von ${name} konnten nicht gespeichert werden. Details stehen im Log.`,
         confirm: name => `${name} zurücksetzen? Alle Partien, Serien, Herausforderungen und Erfolge werden gelöscht.`,
         yes: "Ja, zurücksetzen",
         no: "Nein",
