@@ -2,8 +2,8 @@
 // A Profile's Initials from Manage profiles as Drawn Menus, through main.js
 // on the fake PinballY globals: the "Initials" line between the marks and the
 // History Import's line, greyed on Guest; Name Entry in its Initials mode
-// (A-Z, erase and OK, three letters, refusals, pre-filled); OK saves, OK on
-// nothing clears, Exit changes nothing; the Profile's menu shown again after.
+// (A-Z, erase and OK, three letters, refusals, pre-filled); OK then "Yes"
+// saves, OK on nothing clears, Exit changes nothing; the Profile's menu shown again after.
 // ============================================================
 
 import { test } from "node:test";
@@ -115,6 +115,9 @@ test("Name Entry's Initials mode: its own title and lines, a ring of A-Z with er
     assert.equal(reasonShown(fake), "");
     chooseOk();
     assert.equal(isNameEntryOpen(fake), false, "OK closes Name Entry");
+    // The claim's confirmation and closing Dialog: tests/menus/manage_profiles_initials_claim.test.js.
+    chooseEntry(fake, TEXT.initialsYes);
+    chooseEntry(fake, TEXT.ok);
     assert.equal(store.getInitialsOf("Bob"), "FEL");
     assert.equal(JSON.parse(fake.readFile(profileFile("Bob"))).initials, "FEL");
     assert.equal(highlightedEntry(fake), TEXT.initialsLine("FEL"), "the Profile's menu again, on its line");

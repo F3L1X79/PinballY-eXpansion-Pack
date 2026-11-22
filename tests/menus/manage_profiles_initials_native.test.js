@@ -2,8 +2,8 @@
 // A Profile's Initials with the Drawn Menus Add-on off, through main.js on
 // the fake PinballY globals: the same line in PinballY's own menus, greyed on
 // Guest as "<label> (<reason>)"; a save that fails writes nothing and shows a
-// failure line with "OK" that closes, the cause in the log only; once it works, the
-// Profile's menu shows the Initials.
+// failure line with "OK" that closes, the cause in the log only; once it works,
+// the closing Dialog, then the Profile's menu shows the Initials.
 // ============================================================
 
 import { test } from "node:test";
@@ -46,6 +46,7 @@ test("the Initials line shows natively, fails without writing, then saves", asyn
         enterName(fake, initials);
         moveTo(fake, OK);
         press(fake, "Select");
+        fake.selectMenuItem(TEXT.initialsYes);
     };
 
     openProfileMenu(lang.profiles.guestName);
@@ -65,7 +66,11 @@ test("the Initials line shows natively, fails without writing, then saves", asyn
 
     fake.unlockFile(profileFile("Bob"));
     enterInitials("FEL");
-    assert.ok(titles().includes(TEXT.initialsLine("FEL")), "the Profile's menu again, with its Initials");
+    assert.deepEqual(titles(), [TEXT.initialsDoneNone("Bob", "FEL"), "", TEXT.ok]);
+    fake.selectMenuItem(TEXT.ok);
+    assert.equal(fake.currentMenu(), null, "natively, OK closes");
+    openProfileMenu("Bob");
+    assert.ok(titles().includes(TEXT.initialsLine("FEL")), "the Profile's menu shows the Initials");
     assert.equal(store.getInitialsOf("Bob"), "FEL");
     fake.selectMenuItem(TEXT.back);
     assert.equal(errorLines(fake).length, 1, "no other error");

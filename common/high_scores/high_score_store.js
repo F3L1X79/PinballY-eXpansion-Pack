@@ -7,12 +7,14 @@
 // - Saved through the Profile store, so no Profile Reset touches it.
 // - A ROM reset (too many new places, a place gone unbeaten) gives Default Scores.
 // - A board read outside a Play waits until the Play on that table is settled.
+// - A claim by Initials (ADR 0026) announces nothing: no credited listener, an unannounced check due.
 // ============================================================
 
 import { hasUnbeatenGonePlace, newPlaces, placeKey } from "./board_reader.js";
 import { getProfileStore, toLocalIsoString } from "../profiles/profile_store.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { safeHandler, logHandlerError } from "../core/safe_handler.js";
+import { boardBears } from "../profiles/initials_rules.js";
 
 const RECORD_NAME = "high_scores";
 const RECORD_VERSION = 1;
@@ -56,9 +58,13 @@ export function createHighScoreStore(host, profileStore) {
     // Called after every save, even a failed one: what the readers see
     // changed already (a board, a High Score or a reset).
     const savedListeners = [];
-    const save = () => {
+    // undo(): what puts the data back as it was, when the save fails.
+    const save = (undo = null) => {
         try {
             profileStore.saveCabinetFile(RECORD_NAME, data);
+        } catch (error) {
+            if (undo) undo();
+            throw error;
         } finally {
             savedListeners.forEach(listener => listener());
         }
@@ -158,6 +164,50 @@ export function createHighScoreStore(host, profileStore) {
         setBoard(configId, board);
         save();
         log(`"${configId}": board changed outside a Play, ${countPlaces(newPlaces(known, places).length)} as Default Scores.`);
+    }
+
+    // The places of the known boards that never had an owner and bear these
+    // Initials ({ configId, place }); a removed Profile's places keep its name.
+    function unownedPlacesBearing(initials) {
+        return Object.keys(data.tables).flatMap(configId => (knownBoardOf(configId) || [])
+            .filter(place => place.owner === null && boardBears(place.initials, initials))
+            .map(place => ({ configId, place })));
+    }
+    const claimSummaryOf = found => ({ places: found.length, tables: new Set(found.map(({ configId }) => configId)).size });
+
+    // The named Profile's Initials take every place unownedPlacesBearing()
+    // finds, each a High Score marked takenByInitials, dated now, in one
+    // save (undone if it fails). Announces nothing: no credited listener, no
+    // Table Record taken, and the Profile's next Achievements check unannounced.
+    function claimInitialsPlaces(profileName) {
+        const owner = profileNamed(profileName);
+        if (!owner) throw new Error(`No Profile named "${profileName}".`);
+        const initials = profileStore.getInitialsOf(owner.name);
+        const found = initials === null ? [] : unownedPlacesBearing(initials);
+        if (found.length === 0) return claimSummaryOf(found);
+        const date = toLocalIsoString(host.now());
+        const highScoresBefore = data.highScores.length;
+        for (const { configId, place } of found) {
+            place.owner = owner.name;
+            data.highScores.push({
+                profile: owner.name, configId, score: place.score, initials: place.initials, place: place.rank,
+                date, tableRecord: place.rank === 1, takenFrom: null, takenByInitials: true,
+            });
+        }
+        save(() => {
+            for (const { place } of found) place.owner = null;
+            data.highScores.splice(highScoresBefore);
+        });
+        for (const { configId, place } of found) {
+            log(`"${configId}": place ${place.rank}, ${place.score} (${place.initials}) taken by the Initials ${initials} for ${owner.name}.`);
+        }
+        try {
+            profileStore.markUnannouncedCheckDue(owner.name);
+        } catch (error) {
+            // The places are taken already: only their Achievements may be announced.
+            logHandlerError(SCRIPT_NAME, error);
+        }
+        return claimSummaryOf(found);
     }
 
     return {
@@ -434,6 +484,11 @@ export function createHighScoreStore(host, profileStore) {
             data.lostRecordsSeen[profileKeyOf(profileName)] = toLocalIsoString(host.now());
             save();
         },
+        // { places, tables } the Initials would take now, without writing.
+        previewInitialsClaim: initials => claimSummaryOf(unownedPlacesBearing(initials)),
+        // The named Profile's saved Initials take their places; returns
+        // { places, tables } taken. Throws, changing nothing, when the save fails.
+        claimInitialsPlaces,
         onCredited(listener) { creditedListeners.push(listener); },
         // listener(): after any change of the file is saved.
         onSaved(listener) { savedListeners.push(listener); },

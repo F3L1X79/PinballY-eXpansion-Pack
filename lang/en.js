@@ -607,6 +607,11 @@ export default {
             guest: "Guest never has initials",
         },
         initialsFailed: name => `${name}'s initials could not be saved. See the log for details.`,
+        // After OK on Name Entry: the places with no owner on the tables' boards that bear the Initials.
+        initialsConfirm: (name, initials, places, tables) => `Give ${name} the initials ${initials}? High score places they take: ${places}, tables: ${tables}.`,
+        initialsYes: "Yes, save them",
+        initialsDone: (name, initials, places, tables) => `${name} has the initials ${initials} and took high score places: ${places}, tables: ${tables}. The achievements reached are unlocked without being announced.`,
+        initialsDoneNone: (name, initials) => `${name} has the initials ${initials}. No high score place bears them yet.`,
         confirm: name => `Reset ${name}? All of its plays, streaks, Challenges and achievements will be erased.`,
         yes: "Yes, reset",
         no: "No",

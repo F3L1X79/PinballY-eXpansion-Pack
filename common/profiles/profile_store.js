@@ -75,7 +75,7 @@ const HISTORY_IMPORT_KEY = "historyImport";
 // The Profile's identity on tables' boards, like its name (ADR 0026).
 const INITIALS_KEY = "initials";
 const KEPT_THROUGH_RESET = [...MARK_NAMES, HISTORY_IMPORT_KEY, INITIALS_KEY];
-// Set by the History Import, until the Profile's next Achievements check
+// Set by the History Import or a claim by Initials, until the Profile's next Achievements check
 // marks what it reached Notified without a toast; dropped by a Profile Reset.
 const UNANNOUNCED_CHECK_KEY = "unannouncedCheckDue";
 const NO_PLAY = Object.freeze({ count: 0, seconds: 0, lastPlayed: "" });
@@ -880,6 +880,8 @@ export function createProfileStore(host) {
         getHistoryImportProfile: historyImportProfile,
         // Whether the named Profile's next Achievements check is unannounced (after a History Import).
         isUnannouncedCheckDue: (profileName) => profileWithData(profileName).data[UNANNOUNCED_CHECK_KEY] === true,
+        // The named Profile's next Achievements check becomes unannounced (after a claim by Initials).
+        markUnannouncedCheckDue: (profileName) => updateProfileData(data => { data[UNANNOUNCED_CHECK_KEY] = true; }, profileNamed(profileName).name),
         // Ends that check in one save: these Achievement IDs become Notified.
         endUnannouncedCheck: (profileName, ids) => updateProfileData(data => {
             for (const id of ids) if (!data.notified.includes(id)) data.notified.push(id);

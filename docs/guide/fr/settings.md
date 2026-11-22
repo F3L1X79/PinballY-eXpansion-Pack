@@ -154,7 +154,8 @@ Un Profil admin trouve aussi **Gérer les profils** à deux endroits : dans le m
 Les **initiales** d'un Profil sont les trois lettres qui le désignent sur les tableaux des meilleurs scores des tables, comme « FEL » : les meilleurs scores qui les portent et n'appartiennent à aucun Profil, faits avant le pack par exemple, deviennent ceux de ce Profil. La ligne, dans le propre menu d'un Profil juste après ses marques, les affiche (« Initiales : FEL »), ou « Initiales : aucune ».
 
 - La choisir ouvre la saisie du nom avec les initiales actuelles déjà entrées : lettres capitales de A à Z seulement, effacer et OK, trois lettres au plus.
-- OK les enregistre ; OK avec toutes les lettres effacées les retire ; Échap ne change rien. Le menu du Profil revient ensuite, sur ses initiales.
+- OK demande confirmation, en disant combien de places de meilleur score, sur combien de tables, les initiales vont prendre ; « Non » ne change rien. « Oui » les enregistre et donne ces places au Profil, puis dit combien il en a pris, ou qu'aucune ne les porte encore. Les succès que ces places atteignent sont débloqués sans encart, même quand le Profil est choisi plus tard.
+- OK avec toutes les lettres effacées les retire ; Échap ne change rien. Le menu du Profil revient ensuite, sur ses initiales.
 - Des initiales qu'un autre Profil a déjà sont refusées, en le nommant, et OK reste grisé tant que trois lettres ne sont pas entrées (sauf pour les retirer).
 - Invité n'a jamais d'initiales : sa ligne est grisée. La ligne n'apparaît pas tant que l'Add-on des meilleurs scores est désactivé.
 - Une réinitialisation garde les initiales, comme le nom, l'Avatar et les marques.

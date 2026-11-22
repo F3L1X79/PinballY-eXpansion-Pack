@@ -26,12 +26,15 @@ const BECOME_ADMIN_MENU_ID = "manageProfilesBecomeAdmin";
 const SEPARATOR = { cmd: -1 };
 
 // menus: what shows the menus (common/drawn_menu/drawn_menu.js); nameEntry:
-// Name Entry (common/profiles/name_entry.js), null without the Initials line.
-export function createManageProfilesMenu(host, profileStore, menus = createNativeMenus(host), { nameEntry = null } = {}) {
+// Name Entry (common/profiles/name_entry.js), null without the Initials line;
+// highScoreStore: the High Score store, whose places the Initials take.
+export function createManageProfilesMenu(host, profileStore, menus = createNativeMenus(host), { nameEntry = null, highScoreStore = null } = {}) {
     const { profileReset: TEXT } = lang;
     const profileReset = createProfileResetMenu(host, profileStore, menus);
     const historyImport = createHistoryImportMenu(host, profileStore, menus);
-    const initials = nameEntry ? createInitialsMenu(host, profileStore, { nameEntry, menus, showProfileMenu: (profile, cmd) => openProfile(profile, cmd) }) : null;
+    const initials = nameEntry
+        ? createInitialsMenu(host, profileStore, { nameEntry, highScoreStore, menus, showProfileMenu: (profile, cmd) => openProfile(profile, cmd) })
+        : null;
     const everyProfileCommand = host.allocateCommand("manageProfilesEveryProfile");
     const adminCommand = host.allocateCommand("manageProfilesAdmin");
     const childCommand = host.allocateCommand("manageProfilesChild");

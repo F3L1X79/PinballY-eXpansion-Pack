@@ -681,6 +681,20 @@ test("the High Score store keeps its file name and keys", () => {
     });
 });
 
+test("the High Score store keeps the mark of a High Score taken by Initials", () => {
+    const configId = "Medieval Madness (Williams 1997)";
+    const fake = createFakePinballYHost({ now: NOW, tables: [] });
+    fake.addFile(`${PROFILES_FOLDER}\\Bob\\profile.json`, JSON.stringify({ version: 1, initials: "BOB" }));
+    const highScores = createHighScoreStore(fake, createProfileStore(fake));
+    highScores.recordBoard(configId, [{ rank: 1, initials: "BOB", score: 60000000 }]);
+
+    highScores.claimInitialsPlaces("Bob");
+
+    assert.deepEqual(JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\high_scores.json`)).highScores, [
+        { profile: "Bob", configId, score: 60000000, initials: "BOB", place: 1, date: "2026-09-23T10:00:00", tableRecord: true, takenFrom: null, takenByInitials: true },
+    ]);
+});
+
 test("the High Score store keeps the key of each Profile's Achievements reset date", () => {
     const fake = createFakePinballYHost({ now: NOW, tables: [] });
     fake.addFile(`${PROFILES_FOLDER}\\Bob\\profile.json`, JSON.stringify({ version: 1 }));

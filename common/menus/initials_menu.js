@@ -1,10 +1,11 @@
 // ============================================================
 // A Profile's Initials from Manage profiles (ADR 0026): the line of a
-// Profile's menu, then Name Entry in its Initials mode; OK saves them (clears
-// them when empty), Exit changes nothing, and the Profile's menu shows again.
-// Listens to "command".
+// Profile's menu, then Name Entry in its Initials mode; OK asks to confirm,
+// counting the places the Initials would take, and "Yes" saves them and claims
+// those places, then a closing Dialog gives the figures. OK on nothing clears
+// them, Exit and "No" change nothing. Listens to "command".
 // - The line is greyed for Guest, which never has Initials.
-// - A save that fails is logged and shown as a one-line Dialog, writing nothing.
+// - A save or claim that fails is logged and shown as a one-line Dialog, writing nothing.
 // ============================================================
 
 import lang from "../core/i18n.js";
@@ -14,17 +15,21 @@ import { logHandlerError, safeHandler } from "../core/safe_handler.js";
 import { createNativeMenus } from "../drawn_menu/drawn_menu.js";
 
 const SCRIPT_NAME = "Initials";
-const FAILED_MENU_ID = "initialsFailed";
+const CONFIRM_MENU_ID = "initialsConfirm";
+const OUTCOME_MENU_ID = "initialsOutcome";
 const SEPARATOR = { cmd: -1 };
 
-// nameEntry: Name Entry (common/profiles/name_entry.js); menus: what shows
-// the menus; showProfileMenu(profile, lineCommand): the Profile's menu again, on that line.
-export function createInitialsMenu(host, profileStore, { nameEntry, showProfileMenu, menus = createNativeMenus(host) }) {
+// nameEntry: Name Entry (common/profiles/name_entry.js); highScoreStore: the
+// High Score store, whose places the Initials take; menus: what shows the
+// menus; showProfileMenu(profile, lineCommand): the Profile's menu again, on that line.
+export function createInitialsMenu(host, profileStore, { nameEntry, highScoreStore, showProfileMenu, menus = createNativeMenus(host) }) {
     const { profileReset: TEXT } = lang;
     const lineCommand = host.allocateCommand("initialsLine");
-    const okCommand = host.getBuiltInCommand("MenuReturn");
-    // The Profile whose menu offers the line.
+    const yesCommand = host.allocateCommand("initialsYes");
+    const menuReturnCommand = host.getBuiltInCommand("MenuReturn");
+    // The Profile whose menu offers the line, then the Initials the confirmation names.
     let offeredProfile = null;
+    let pendingClaim = null;
 
     // The line of the Profile's menu, showing its Initials; greyed for Guest.
     function lineFor(profile) {
@@ -41,18 +46,72 @@ export function createInitialsMenu(host, profileStore, { nameEntry, showProfileM
         };
     }
 
-    // A failure is caught here, not by safeHandler, for the player to see it; its cause goes to the log.
-    function save(profile, initials) {
+    const backToProfile = profile => () => showProfileMenu(profile, lineCommand);
+
+    // A one-line Dialog whose OK goes back to the Profile's menu.
+    function showOutcome(profile, message) {
+        menus.show(OUTCOME_MENU_ID, [
+            { title: message, cmd: -1 },
+            SEPARATOR,
+            { title: TEXT.ok, cmd: menuReturnCommand, selected: true },
+        ], { dialogStyle: true, onBack: backToProfile(profile) });
+    }
+
+    function confirm(profile, initials) {
+        pendingClaim = { profile, initials };
+        const { places, tables } = highScoreStore.previewInitialsClaim(initials);
+        menus.show(CONFIRM_MENU_ID, [
+            { title: TEXT.initialsConfirm(displayNameOf(profile), initials, places, tables), cmd: -1 },
+            SEPARATOR,
+            { title: TEXT.initialsYes, cmd: yesCommand },
+            { title: TEXT.no, cmd: menuReturnCommand, selected: true },
+        ], {
+            dialogStyle: true,
+            onBack: () => {
+                pendingClaim = null;
+                showProfileMenu(profile, lineCommand);
+            },
+        });
+    }
+
+    // The Initials saved, then their places claimed; a claim that fails
+    // puts the former Initials back, so nothing is written.
+    function saveAndClaim(profile, initials) {
+        const former = profileStore.getInitialsOf(profile.name);
+        profileStore.setInitials(profile.name, initials);
         try {
-            if (initials === "") profileStore.clearInitials(profile.name);
-            else profileStore.setInitials(profile.name, initials);
+            return highScoreStore.claimInitialsPlaces(profile.name);
+        } catch (error) {
+            try {
+                if (former === null) profileStore.clearInitials(profile.name);
+                else profileStore.setInitials(profile.name, former);
+            } catch (restoreError) {
+                logHandlerError(SCRIPT_NAME, restoreError);
+            }
+            throw error;
+        }
+    }
+
+    // A failure is caught here, not by safeHandler, for the player to see it; its cause goes to the log.
+    function saveAndReport(profile, initials) {
+        const name = displayNameOf(profile);
+        let message;
+        try {
+            const { places, tables } = saveAndClaim(profile, initials);
+            message = places > 0 ? TEXT.initialsDone(name, initials, places, tables) : TEXT.initialsDoneNone(name, initials);
         } catch (error) {
             logHandlerError(SCRIPT_NAME, error);
-            menus.show(FAILED_MENU_ID, [
-                { title: TEXT.initialsFailed(displayNameOf(profile)), cmd: -1 },
-                SEPARATOR,
-                { title: TEXT.ok, cmd: okCommand, selected: true },
-            ], { dialogStyle: true, onBack: () => showProfileMenu(profile, lineCommand) });
+            message = TEXT.initialsFailed(name);
+        }
+        showOutcome(profile, message);
+    }
+
+    function clear(profile) {
+        try {
+            profileStore.clearInitials(profile.name);
+        } catch (error) {
+            logHandlerError(SCRIPT_NAME, error);
+            showOutcome(profile, TEXT.initialsFailed(displayNameOf(profile)));
             return;
         }
         showProfileMenu(profile, lineCommand);
@@ -63,14 +122,20 @@ export function createInitialsMenu(host, profileStore, { nameEntry, showProfileM
             profileName: displayNameOf(profile),
             current: profileStore.getInitialsOf(profile.name),
             holderOf: otherHolderOf(profile),
-            onDone: initials => save(profile, initials),
-            onExit: () => showProfileMenu(profile, lineCommand),
+            onDone: initials => (initials === "" ? clear(profile) : confirm(profile, initials)),
+            onExit: backToProfile(profile),
         });
     }
 
-    // Fires on every command: the line opens Name Entry for the Profile offered.
+    // Fires on every command: the line opens Name Entry for the Profile offered, "Yes" saves and claims.
     host.on("command", safeHandler(SCRIPT_NAME, ev => {
-        if (ev.id === lineCommand && offeredProfile && !offeredProfile.isGuest) enter(offeredProfile);
+        if (ev.id === lineCommand && offeredProfile && !offeredProfile.isGuest) {
+            enter(offeredProfile);
+        } else if (ev.id === yesCommand && pendingClaim) {
+            const { profile, initials } = pendingClaim;
+            pendingClaim = null;
+            saveAndReport(profile, initials);
+        }
     }));
 
     // lineFor(profile): the menu line for this Profile ({ name, isGuest }).

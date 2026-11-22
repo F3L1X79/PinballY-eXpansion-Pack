@@ -18,6 +18,7 @@ import { addToPlayerGroup, PLAYER_GROUP_RANK } from "../common/menus/exit_menu.j
 import { getDrawnMenus } from "../common/drawn_menu/drawn_menu.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { createNameEntry } from "../common/profiles/name_entry.js";
+import { getHighScoreStore } from "../common/high_scores/high_score_store.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
 import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
 import config from "../common/core/config.js";
@@ -48,10 +49,13 @@ export default function init() {
 
     const host = createPinballYHost();
     // The Initials take the Default Scores bearing them, which only the High Scores Add-on reads.
-    const nameEntry = config.addOns.highScores !== false
+    const highScoresOn = config.addOns.highScores !== false;
+    const nameEntry = highScoresOn
         ? createNameEntry(host, { profileStore, drawingAhead: getDrawingAhead(), drawnScreenControls: getDrawnScreenControls() })
         : null;
-    const manageProfilesMenu = createManageProfilesMenu(host, profileStore, getDrawnMenus(), { nameEntry });
+    const manageProfilesMenu = createManageProfilesMenu(host, profileStore, getDrawnMenus(), {
+        nameEntry, highScoreStore: highScoresOn ? getHighScoreStore() : null,
+    });
     const manageProfilesCommand = command.allocate("manageProfiles");
 
     // Fires when any menu opens, with a fresh item list each time. In the
