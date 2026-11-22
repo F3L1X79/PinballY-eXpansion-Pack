@@ -255,7 +255,7 @@ A Profile marked as a child's, from which Adult Tables are left out. Not parenta
 _Avoid_: kid mode, parental control, family filter
 
 **Profile Reset**:
-Starting a Profile over as if it had never played, while its name, Avatar, marks, Ratings and Favorite Tables stay.
+Starting a Profile over as if it had never played, while its name, Avatar, marks, Initials, Ratings and Favorite Tables stay.
 _Avoid_: fresh start, wipe, achievement reset (the Achievements come from the plays, so the plays go too)
 
 **Avatar**:

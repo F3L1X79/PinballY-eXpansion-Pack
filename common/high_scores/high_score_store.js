@@ -7,7 +7,7 @@
 // - Saved through the Profile store, so no Profile Reset touches it.
 // - A ROM reset (too many new places, a place gone unbeaten) gives Default Scores.
 // - A board read outside a Play waits until the Play on that table is settled.
-// - Initials (ADR 0026) take unowned places when given and on later reads, silently; changed, they give them back.
+// - Initials (ADR 0026) take unowned places when given and on later reads, silently; changed, they give them back; a reset keeps them counting.
 // ============================================================
 
 import { hasUnbeatenGonePlace, newPlaces, placeKey } from "./board_reader.js";
@@ -83,10 +83,13 @@ export function createHighScoreStore(host, profileStore) {
         && profiles.find(profile => profileKeyOf(profile.name) === profileKeyOf(name))) || null;
     // The date a Profile's High Scores count from: its last Profile Reset; "" without one.
     const countsFrom = profileKey => (isRecord(data.achievementsFrom) && data.achievementsFrom[profileKey]) || "";
-    // The scores of the list ({ profile, configId, score, date }) made on
-    // the table since their Profile's last Profile Reset.
+    // Whether a score ({ profile, date }) counts for its Profile: made since its
+    // last Profile Reset, or taken by its Initials, which a reset keeps.
+    const countsForItsProfile = entry => entry.takenByInitials === true || entry.date >= countsFrom(profileKeyOf(entry.profile));
+    // The scores of the list ({ profile, configId, score, date }) on the
+    // table that count for their Profile.
     const countedOn = (list, configId) => list.filter(entry => isRecord(entry) && entry.configId === configId
-        && typeof entry.profile === "string" && entry.date >= countsFrom(profileKeyOf(entry.profile)));
+        && typeof entry.profile === "string" && countsForItsProfile(entry));
     const countedHighScoresOn = configId => countedOn(data.highScores, configId);
     // A file without the list has no Play Score.
     const countedPlayScoresOn = configId => countedOn(Array.isArray(data.playScores) ? data.playScores : [], configId);
@@ -95,7 +98,7 @@ export function createHighScoreStore(host, profileStore) {
     const profileExists = name => profileStore.listProfileNames().some(candidate => profileKeyOf(candidate) === profileKeyOf(name));
     // The Household Board of the table: for each Household Profile
     // (Guest left out, Child Profiles in), its best High Score or Play
-    // Score there since its last Profile Reset, best first, the older
+    // Score there that counts for it (see countsForItsProfile), best first, the older
     // first on equal scores: { rank, score, date, owner }, the owner the
     // Profile store's Profile. A removed Profile's scores are skipped,
     // nothing rewritten: a Profile re-created under its name gets them back.
@@ -135,13 +138,18 @@ export function createHighScoreStore(host, profileStore) {
     const tellPlaysSettled = () => runEach(settledCallbacks.splice(0));
 
     // Fires after any change of a Profile's data: its High Score
-    // Achievements count afresh from its Profile Reset. The key is written
-    // only then, so a file without a reset keeps its first shape.
+    // Achievements count afresh from its Profile Reset, except the places
+    // its Initials took, whose Achievements come back unannounced. The key
+    // is written only then, so a file without a reset keeps its first shape.
     profileStore.onUpdate(safeHandler(SCRIPT_NAME, (profileName, { isReset }) => {
         if (!isReset) return;
         if (!isRecord(data.achievementsFrom)) data.achievementsFrom = {};
         data.achievementsFrom[profileKeyOf(profileName)] = toLocalIsoString(host.now());
         save();
+        const isOwn = isHighScoreOf(profileName);
+        if (data.highScores.some(highScore => isOwn(highScore) && highScore.takenByInitials === true)) {
+            profileStore.markUnannouncedCheckDue(profileName);
+        }
     }));
 
     // The board place becomes the owner's High Score, marked takenByInitials,
@@ -461,15 +469,14 @@ export function createHighScoreStore(host, profileStore) {
             save();
         },
         // What the named Profile's High Score Achievements count, from the
-        // High Scores it won since its last Profile Reset: the tables with
-        // one, the tables with a Table Record, whether it took a Table
-        // Record from another Profile, and from a grown-up: a Household
-        // Profile that is not a child, as the Profile store marks it now.
+        // High Scores that count for it (since its last Profile Reset, or
+        // taken by its Initials): the tables with one, the tables with a
+        // Table Record, whether it took a Table Record from another Profile,
+        // and from a grown-up: a Household Profile that is not a child, as
+        // the Profile store marks it now.
         achievementCountsOf(profileName) {
-            const profileKey = profileKeyOf(profileName);
-            const from = countsFrom(profileKey);
-            const won = data.highScores.filter(highScore => typeof highScore.profile === "string"
-                && profileKeyOf(highScore.profile) === profileKey && highScore.date >= from);
+            const isOwn = isHighScoreOf(profileName);
+            const won = data.highScores.filter(highScore => isOwn(highScore) && countsForItsProfile(highScore));
             const tablesOf = highScores => new Set(highScores.map(highScore => highScore.configId)).size;
             const takings = won.filter(highScore => typeof highScore.takenFrom === "string");
             // Only read when something was taken: most Profiles took nothing.
@@ -526,7 +533,7 @@ export function createHighScoreStore(host, profileStore) {
         householdBoardOf,
         // The Personal Board of the table: the named Profile's (Guest
         // included) PERSONAL_BOARD_PLACES best High Scores and Play Scores
-        // there since its last Profile Reset, each place of a multiplayer
+        // there that count for it (see countsForItsProfile), each place of a multiplayer
         // game included, ranked and shaped as householdBoardOf()'s. None
         // for a removed Profile.
         personalBoardOf(configId, profileName) {
