@@ -7,7 +7,7 @@
 // - Saved through the Profile store, so no Profile Reset touches it.
 // - A ROM reset (too many new places, a place gone unbeaten) gives Default Scores.
 // - A board read outside a Play waits until the Play on that table is settled.
-// - A claim by Initials (ADR 0026) announces nothing: no credited listener, an unannounced check due.
+// - Initials (ADR 0026) take unowned places when given and on later reads, silently (unannounced check).
 // ============================================================
 
 import { hasUnbeatenGonePlace, newPlaces, placeKey } from "./board_reader.js";
@@ -144,15 +144,67 @@ export function createHighScoreStore(host, profileStore) {
         save();
     }));
 
-    // A table with no known board takes the places as its baseline, all Default Scores.
+    // The board place becomes the owner's High Score, marked takenByInitials,
+    // dated at the claim; written by the caller's save.
+    function takeByInitials(owner, configId, place, date) {
+        place.owner = owner.name;
+        data.highScores.push({
+            profile: owner.name, configId, score: place.score, initials: place.initials, place: place.rank,
+            date, tableRecord: place.rank === 1, takenFrom: null, takenByInitials: true,
+        });
+    }
+    // After the save: the summary line (when given) logged, noting the claims
+    // that follow, then each claim ({ configId, place, initials, owner }) and
+    // each owner's next Achievements check made unannounced.
+    function afterClaimsSaved(claims, summary = null) {
+        if (summary !== null) log(claims.length === 0 ? summary : `${summary} Of them, ${claims.length} taken by Initials:`);
+        for (const { configId, place, initials, owner } of claims) {
+            log(`"${configId}": place ${place.rank}, ${place.score} (${place.initials}) taken by the Initials ${initials} for ${owner.name}.`);
+        }
+        for (const owner of new Set(claims.map(claim => claim.owner))) {
+            try {
+                profileStore.markUnannouncedCheckDue(owner.name);
+            } catch (error) {
+                // The places are taken already: only their Achievements may be announced.
+                logHandlerError(SCRIPT_NAME, error);
+            }
+        }
+    }
+
+    // The places of the board just given no owner (not on the known board)
+    // that bear a Profile's Initials become its own, before the caller's
+    // save; returns the claims for afterClaimsSaved().
+    function claimNewDefaultScores(configId, board, known) {
+        const knownKeys = new Set(known.map(placeKey));
+        const unowned = board.filter(place => place.owner === null && !knownKeys.has(placeKey(place)));
+        if (unowned.length === 0) return [];
+        // Read once for the board, not once per place; Guest reads as none.
+        const holders = profileStore.listProfiles()
+            .map(profile => ({ owner: profile, initials: profileStore.getInitialsOf(profile.name) }))
+            .filter(({ initials }) => initials !== null);
+        const date = toLocalIsoString(host.now());
+        const claims = [];
+        for (const place of unowned) {
+            const holder = holders.find(({ initials }) => boardBears(place.initials, initials));
+            if (!holder) continue;
+            takeByInitials(holder.owner, configId, place, date);
+            claims.push({ configId, place, ...holder });
+        }
+        return claims;
+    }
+
+    // A table with no known board takes the places as its baseline, all
+    // Default Scores but those bearing a Profile's Initials.
     function takeBaseline(configId, places, why) {
-        setBoard(configId, withOwners(places, [], null));
+        const board = withOwners(places, [], null);
+        setBoard(configId, board);
+        const claims = claimNewDefaultScores(configId, board, []);
         save();
-        log(`"${configId}": ${why}`);
+        afterClaimsSaved(claims, `"${configId}": ${why}`);
     }
 
     // A board read outside a Play: the places it did not know are Default
-    // Scores, set outside the pack.
+    // Scores, set outside the pack, but those bearing a Profile's Initials.
     function recordOutsidePlay(configId, places) {
         const known = knownBoardOf(configId);
         if (!known) {
@@ -162,8 +214,9 @@ export function createHighScoreStore(host, profileStore) {
         const board = withOwners(places, known, null);
         if (JSON.stringify(board) === JSON.stringify(known)) return;
         setBoard(configId, board);
+        const claims = claimNewDefaultScores(configId, board, known);
         save();
-        log(`"${configId}": board changed outside a Play, ${countPlaces(newPlaces(known, places).length)} as Default Scores.`);
+        afterClaimsSaved(claims, `"${configId}": board changed outside a Play, ${countPlaces(newPlaces(known, places).length)} as Default Scores.`);
     }
 
     // The places of the known boards that never had an owner and bear these
@@ -187,26 +240,12 @@ export function createHighScoreStore(host, profileStore) {
         if (found.length === 0) return claimSummaryOf(found);
         const date = toLocalIsoString(host.now());
         const highScoresBefore = data.highScores.length;
-        for (const { configId, place } of found) {
-            place.owner = owner.name;
-            data.highScores.push({
-                profile: owner.name, configId, score: place.score, initials: place.initials, place: place.rank,
-                date, tableRecord: place.rank === 1, takenFrom: null, takenByInitials: true,
-            });
-        }
+        for (const { configId, place } of found) takeByInitials(owner, configId, place, date);
         save(() => {
             for (const { place } of found) place.owner = null;
             data.highScores.splice(highScoresBefore);
         });
-        for (const { configId, place } of found) {
-            log(`"${configId}": place ${place.rank}, ${place.score} (${place.initials}) taken by the Initials ${initials} for ${owner.name}.`);
-        }
-        try {
-            profileStore.markUnannouncedCheckDue(owner.name);
-        } catch (error) {
-            // The places are taken already: only their Achievements may be announced.
-            logHandlerError(SCRIPT_NAME, error);
-        }
+        afterClaimsSaved(found.map(({ configId, place }) => ({ configId, place, initials, owner })));
         return claimSummaryOf(found);
     }
 
@@ -291,11 +330,14 @@ export function createHighScoreStore(host, profileStore) {
             const changed = JSON.stringify(board) !== JSON.stringify(known);
             setBoard(configId, board);
             if (!credited) {
+                const claims = claimNewDefaultScores(configId, board, known);
                 save();
                 const game = play ? `a Play by ${play.profileName}` : "a game under a minute";
                 const resetSign = tooManyNew ? `more than a ${MAX_NEW_PLACES_PER_PLAY}-player game can make` : "but a place gone from the board was beaten by no new place";
-                if (romReset) log(`"${configId}": ${countPlaces(added.length)} after ${game}, ${resetSign}: a ROM reset, nothing credited, the new places are Default Scores.`);
-                else if (changed) log(`"${configId}": ${countPlaces(added.length)} after ${game}, as Default Scores.`);
+                let summary = null;
+                if (romReset) summary = `"${configId}": ${countPlaces(added.length)} after ${game}, ${resetSign}: a ROM reset, nothing credited, the new places are Default Scores.`;
+                else if (changed) summary = `"${configId}": ${countPlaces(added.length)} after ${game}, as Default Scores.`;
+                afterClaimsSaved(claims, summary);
                 return null;
             }
             const formerOwner = known.length > 0 ? known[0].owner : null;
