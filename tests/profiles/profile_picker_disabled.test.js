@@ -18,10 +18,10 @@ test("turning the Profile picker off removes its main-menu entry and Welcome Scr
     fake.addFile(`${PROFILES_FOLDER}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: "guest" }));
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
-    // Not the Challenges Add-on either: it locks the week's Challenge in
-    // cabinet.json at startup, for Guest too. Nor the Drawn Menus, so the
-    // main menu is read natively.
-    for (const key of Object.keys(config.addOns)) config.addOns[key] = !["profilePicker", "challenges", "drawnMenus"].includes(key);
+    // Not the Challenges nor the Household Challenge either: they lock the
+    // week's in cabinet.json at startup, for Guest too. Nor the Drawn Menus,
+    // so the main menu is read natively.
+    for (const key of Object.keys(config.addOns)) config.addOns[key] = !["profilePicker", "challenges", "householdChallenge", "drawnMenus"].includes(key);
     // Without vpxtool, the Script Reader Prompt would open first.
     config.offerVpxtool = false;
     config.language = "en";

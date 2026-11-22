@@ -11,192 +11,24 @@
 import { safeHandler } from "../core/safe_handler.js";
 import { createPinballYHost } from "../core/pinbally_host.js";
 import { getProfileStore } from "../profiles/profile_store.js";
-import { getTableOfTheDay, getTableOfTheWeek, formatDateKey, getWeekKey } from "../tables/period_table.js";
+import { getTableOfTheDay, getTableOfTheWeek, getWeekKey } from "../tables/period_table.js";
 import { getRandomGame } from "../tables/random_game.js";
 import { isVisibleTo, tablesVisibleTo } from "../tables/visible_tables.js";
 import { getAchievementToasts, TOAST_KIND } from "../achievements/achievement_toast.js";
-import { createCalibration, manufacturerOf, decadeOf } from "./calibration.js";
+import { createCalibration } from "./calibration.js";
+import {
+    CHALLENGE_TEMPLATES as TEMPLATES, NO_PLAY, NO_TEMPLATE, createStartedFacts, daysLeftInWeek, drawTemplate,
+    isDrawnChallenge as isChallenge, progressOf,
+} from "./challenge_templates.js";
 import config from "../core/config.js";
 import lang from "../core/i18n.js";
 
+export { CHALLENGE_TEMPLATE_IDS } from "./challenge_templates.js";
+
 const SCRIPT_NAME = "Challenges";
 
-// Each template's target range: a casual play goal, never a trivial one.
-const targetRange = (min, max) => Object.freeze({ min, max });
-const MANY = targetRange(4, 8);
-const SOME = targetRange(3, 6);
-const FEW = targetRange(3, 5);
-const ENDURANCE_MINUTES = targetRange(20, 45);
-const MARATHON_MINUTES = targetRange(60, 120);
-const DUSTY_DAYS = 183;
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-// Players' saved data: the cabinet.json key and the week's lock when no
-// template was feasible.
+// Players' saved data: the cabinet.json key.
 const CABINET_KEY = "challenge";
-const NO_TEMPLATE = "";
-
-// Today included: 7 on Monday, 1 on Sunday.
-const daysLeftInWeek = date => 7 - (date.getDay() + 6) % 7;
-
-const NO_PLAY = Object.freeze({ count: 0, lastPlayed: "" });
-const wasNeverPlayed = play => play.count === 0;
-// A never played table has no last play: it is never dusty.
-const wasDusty = (play, date) =>
-    play.count > 0 && date.getTime() - new Date(play.lastPlayed).getTime() > DUSTY_DAYS * DAY_MS;
-
-const distinct = values => new Set(values).size;
-const distinctTables = games => distinct(games.map(game => game.configId));
-const onlyTable = (tables, periodTable) =>
-    tables.filter(table => periodTable && table.configId === periodTable.configId);
-const notCounted = (tables, games) => tables.filter(table => !games.some(game => game.configId === table.configId));
-const distinctDays = games => distinct(games.map(game => game.day));
-const totalSeconds = games => games.reduce((sum, game) => sum + game.seconds, 0);
-// The highest of totalOf over each table's games, 0 without any.
-function bestTableTotal(games, totalOf) {
-    const byTable = new Map();
-    for (const game of games) byTable.set(game.configId, [...(byTable.get(game.configId) || []), game]);
-    return Math.max(0, ...[...byTable.values()].map(totalOf));
-}
-// Applied to summed seconds, so that no game's last partial minute is lost.
-const wholeMinutes = seconds => Math.floor(seconds / 60);
-// A table without a manufacturer or a year has no value to count.
-const isKnown = value => value !== "" && value !== null;
-const distinctKnown = values => distinct(values.filter(isKnown));
-// A single option without a parameter, its target capped at max.
-const cappedOptions = max => [{ param: null, max }];
-// Without a visible table there is no Period Table and no game that counts.
-const isPlayable = context => context.visibleTables.length > 0;
-const optionsWhenPlayable = (context, max = Infinity) => cappedOptions(isPlayable(context) ? max : 0);
-
-// One option per known value of keyOf, its target capped at that value's
-// table count.
-function groupOptions(tables, keyOf) {
-    const counts = new Map();
-    for (const table of tables) {
-        const key = keyOf(table);
-        if (isKnown(key)) counts.set(key, (counts.get(key) || 0) + 1);
-    }
-    return [...counts].map(([param, count]) => ({ param, max: count }));
-}
-
-// The least, across the Profiles that set the bar, of visible tables whose
-// play record matches: a target each of them can reach.
-function leastAcrossProfiles(context, matches) {
-    const { visibleTables, profilePlays } = context;
-    return Math.min(...profilePlays.map(plays =>
-        visibleTables.filter(table => matches(plays[table.configId] || NO_PLAY)).length));
-}
-
-// Template ids are players' saved data (cabinet.json, history): never rename one.
-// range: the target's { min, max }, counts, or minutes for endurance and marathon.
-// calibrated: progress reads only a game's table, manufacturer, decade, day
-// and seconds, which the Play Log can rebuild (calibration.js): the target
-// follows the last weeks once there is enough of it.
-// options(context): the { param, max } choices, max capping the target; an
-// option whose cap is below range.min is not feasible.
-// progress(games, param): the value compared with the target.
-// tablesToPlay(context): the Challenge Tables, visible tables that would move
-// the Challenge forward; only for the templates where that makes sense.
-// differentTables stays first: a scripted draw of 0 picks it.
-const TEMPLATES = Object.freeze({
-    differentTables: {
-        range: MANY,
-        calibrated: true,
-        options: context => cappedOptions(context.visibleTables.length),
-        progress: games => distinctTables(games),
-    },
-    manufacturerTables: {
-        range: SOME,
-        calibrated: true,
-        // The community tables' manufacturer is not a real one.
-        options: context => groupOptions(
-            context.visibleTables.filter(table => manufacturerOf(table) !== config.communityTablesManufacturer), manufacturerOf),
-        progress: (games, manufacturer) => distinctTables(games.filter(game => game.manufacturer === manufacturer)),
-        tablesToPlay: ({ visibleTables, games, param }) =>
-            notCounted(visibleTables.filter(table => manufacturerOf(table) === param), games),
-    },
-    decadeTables: {
-        range: SOME,
-        calibrated: true,
-        options: context => groupOptions(context.visibleTables, decadeOf),
-        progress: (games, decade) => distinctTables(games.filter(game => game.decade === decade)),
-        tablesToPlay: ({ visibleTables, games, param }) =>
-            notCounted(visibleTables.filter(table => decadeOf(table) === param), games),
-    },
-    differentManufacturers: {
-        range: SOME,
-        calibrated: true,
-        options: context => cappedOptions(distinctKnown(context.visibleTables.map(manufacturerOf))),
-        progress: games => distinctKnown(games.map(game => game.manufacturer)),
-    },
-    differentDecades: {
-        range: FEW,
-        calibrated: true,
-        options: context => cappedOptions(distinctKnown(context.visibleTables.map(decadeOf))),
-        progress: games => distinctKnown(games.map(game => game.decade)),
-    },
-    neverPlayedTables: {
-        range: FEW,
-        options: context => cappedOptions(leastAcrossProfiles(context, wasNeverPlayed)),
-        progress: games => distinctTables(games.filter(game => game.wasNeverPlayed)),
-        tablesToPlay: ({ visibleTables, playOf }) => visibleTables.filter(table => wasNeverPlayed(playOf(table))),
-    },
-    dustyTables: {
-        range: FEW,
-        options: context => cappedOptions(leastAcrossProfiles(context, play => wasDusty(play, context.now))),
-        progress: games => distinctTables(games.filter(game => game.wasDusty)),
-        tablesToPlay: ({ visibleTables, playOf, now }) => visibleTables.filter(table => wasDusty(playOf(table), now)),
-    },
-    tableOfTheDayDays: {
-        range: FEW,
-        options: context => optionsWhenPlayable(context, context.daysLeft),
-        progress: games => distinctDays(games.filter(game => game.isTableOfTheDay)),
-        tablesToPlay: ({ visibleTables, games, now, getDayTable }) => {
-            const today = formatDateKey(now);
-            if (games.some(game => game.isTableOfTheDay && game.day === today)) return [];
-            return onlyTable(visibleTables, getDayTable());
-        },
-    },
-    tableOfTheWeekGames: {
-        range: MANY,
-        options: context => optionsWhenPlayable(context),
-        progress: games => games.filter(game => game.isTableOfTheWeek).length,
-        tablesToPlay: ({ visibleTables, getWeekTable }) => onlyTable(visibleTables, getWeekTable()),
-    },
-    activeDays: {
-        range: FEW,
-        calibrated: true,
-        options: context => optionsWhenPlayable(context, context.daysLeft),
-        progress: games => distinctDays(games),
-    },
-    // The table of the player's choice: the one with the most minutes.
-    endurance: {
-        range: ENDURANCE_MINUTES,
-        calibrated: true,
-        options: context => optionsWhenPlayable(context),
-        progress: games => wholeMinutes(bestTableTotal(games, totalSeconds)),
-    },
-    marathon: {
-        range: MARATHON_MINUTES,
-        calibrated: true,
-        options: context => optionsWhenPlayable(context),
-        progress: games => wholeMinutes(totalSeconds(games)),
-    },
-    randomGames: {
-        range: SOME,
-        options: context => optionsWhenPlayable(context),
-        progress: games => games.filter(game => game.randomGame).length,
-    },
-    // The table of the player's choice: the one with the most games.
-    sameTableGames: {
-        range: MANY,
-        calibrated: true,
-        options: context => optionsWhenPlayable(context),
-        progress: games => bestTableTotal(games, tableGames => tableGames.length),
-    },
-});
-export const CHALLENGE_TEMPLATE_IDS = Object.freeze(Object.keys(TEMPLATES));
 
 // The Challenge's title, the same on its Card, its Toast and the Welcome Screen.
 export const challengeTitleOf = challenge => lang.challenges.titles[challenge.template](challenge.target, challenge.param);
@@ -211,10 +43,9 @@ export function createChallenges(host, profileStore, { tableOfTheDay, tableOfThe
     const randomInt = (min, max) => min + randomIndex(max - min + 1);
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
     const calibration = createCalibration(host, profileStore);
+    const startedFacts = createStartedFacts(host, profileStore, { tableOfTheDay, tableOfTheWeek, randomGame, scriptName: SCRIPT_NAME });
 
     const getLocks = () => ({ ...NO_CHALLENGE, ...profileStore.getCabinetData()[CABINET_KEY] });
-    const isChallenge = challenge => Boolean(challenge && challenge.template in TEMPLATES);
-    const progressOf = (challenge, games) => TEMPLATES[challenge.template].progress(games, challenge.param);
 
     // The target of the drawn option: calibrated on the bar-setting
     // Profiles' last weeks, at least the range's minimum and at most the
@@ -238,18 +69,17 @@ export function createChallenges(host, profileStore, { tableOfTheDay, tableOfThe
         const barSetters = profiles.filter(profile => guestSetsTheBar || !profile.isGuest).map(profile => profile.name);
         const profilePlays = barSetters.map(name => profileStore.getPlaysOf(name));
         const now = host.now();
-        const context = { visibleTables: host.getVisibleTables(), profilePlays, now, daysLeft: daysLeftInWeek(now) };
-        const candidates = Object.entries(TEMPLATES)
-            .filter(([id]) => !previous || previous.template !== id)
-            .map(([id, template]) => ({
-                id,
-                options: template.options(context).filter(option => option.max >= template.range.min),
-            }))
-            .filter(candidate => candidate.options.length > 0);
-        if (candidates.length === 0) return { week, template: NO_TEMPLATE, param: null, target: 0 };
-        const { id, options } = candidates[randomIndex(candidates.length)];
-        const option = options[randomIndex(options.length)];
-        return { week, template: id, param: option.param, target: targetOf(TEMPLATES[id], option, barSetters, now) };
+        const visibleTables = host.getVisibleTables();
+        const context = {
+            visibleTables, now, daysLeft: daysLeftInWeek(now),
+            // The least across the Profiles that set the bar: a target each of them can reach.
+            reachableCount: matches => Math.min(...profilePlays.map(plays =>
+                visibleTables.filter(table => matches(plays[table.configId] || NO_PLAY)).length)),
+        };
+        const drawn = drawTemplate(context, previous ? [previous.template] : [], randomIndex);
+        if (!drawn) return { week, template: NO_TEMPLATE, param: null, target: 0 };
+        const { id, template, option } = drawn;
+        return { week, template: id, param: option.param, target: targetOf(template, option, barSetters, now) };
     }
 
     // The week's Challenge, drawn on its first need in the week; null when
@@ -364,45 +194,11 @@ export function createChallenges(host, profileStore, { tableOfTheDay, tableOfThe
         });
     }
 
-    // The started game's facts, noted at "gamestarted" because by its Play
-    // the Profile store has recorded it (a never played table stops being
-    // one) and the Period may have changed; by table, until its Play or its
-    // next start.
-    const startedFacts = new Map();
-
-    function factsOf(game, start) {
-        const play = profileStore.getPlay(game.configId);
-        const dayTable = tableOfTheDay.getTable();
-        const weekTable = tableOfTheWeek.getTable();
-        return {
-            configId: game.configId,
-            manufacturer: manufacturerOf(game),
-            decade: decadeOf(game),
-            day: formatDateKey(start),
-            seconds: 0,
-            randomGame: randomGame.isStartedGameRandom(),
-            isTableOfTheDay: Boolean(dayTable && dayTable.configId === game.configId),
-            isTableOfTheWeek: Boolean(weekTable && weekTable.configId === game.configId),
-            wasNeverPlayed: wasNeverPlayed(play),
-            wasDusty: wasDusty(play, start),
-        };
-    }
-
-    // Fires on table launch.
-    host.on("gamestarted", safeHandler(SCRIPT_NAME, ev => {
-        if (!ev.game) return;
-        // Forgotten first, so that a start whose facts cannot be read never
-        // counts with an earlier short game's facts.
-        startedFacts.delete(ev.game.configId);
-        startedFacts.set(ev.game.configId, factsOf(ev.game, host.now()));
-    }));
-
     // Fires on "gameover" for a Play only (ADR 0008); the first Play to reach
     // the target of its week's Challenge completes it.
     profileStore.onPlay(safeHandler(SCRIPT_NAME, ({ profileName, configId, start, seconds }) => {
-        const facts = startedFacts.get(configId);
+        const facts = startedFacts.take(configId);
         if (!facts) return;
-        startedFacts.delete(configId);
         const table = host.getGameInfo(configId);
         if (!table || !isVisibleTo(table, profileStore, profileName)) return;
 

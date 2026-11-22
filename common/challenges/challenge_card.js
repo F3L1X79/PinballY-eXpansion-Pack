@@ -1,10 +1,10 @@
 // ============================================================
-// Challenge Card: the week's Challenge and the active Profile's progress at
-// the top right of the wheel screen, on its own layer (see docs/adr/0003).
-// Lights up once on something new; shows last week's verdict first in a new
-// week. A Wheel Mark (common/core/wheel_marks.js), with or without a selected
-// table: redrawn at startup, on a Profile switch and on the return to the wheel.
-// - Hidden, a point, with no Challenge, while a game runs and in attract mode.
+// Challenge Card and Household Challenge Card: the week's challenge and its
+// progress at the top right of the wheel screen, each on its own layer (see
+// docs/adr/0003), twins but for their colour and texts. Light up once on something
+// new; show last week's verdict first in a new week. Wheel Marks (common/core/wheel_marks.js),
+// with or without a selected table: redrawn at startup, on a Profile switch and on the return to the wheel.
+// - Hidden, a point, with no challenge, while a game runs and in attract mode.
 // ============================================================
 
 import lang from "../core/i18n.js";
@@ -14,10 +14,27 @@ import { TOP_RIGHT_STACK } from "../drawing/top_right_stack.js";
 import { createHiddenLayer, hideLayer, placeAligned } from "../drawing/placed_layers.js";
 import { challengeTitleOf } from "./challenge.js";
 
-const SCRIPT_NAME = "ChallengeCard";
-
 // Like the badge: above the wheel and the game info box, under popups and menus.
 export const CHALLENGE_CARD_Z_INDEX = 4500;
+export const HOUSEHOLD_CHALLENGE_CARD_Z_INDEX = 4501;
+
+// What tells one card from the other: its texts are read on each draw.
+const CHALLENGE_LOOK = Object.freeze({
+    scriptName: "ChallengeCard",
+    zIndex: CHALLENGE_CARD_Z_INDEX,
+    place: TOP_RIGHT_STACK.CHALLENGE_CARD,
+    accent: STEAMBALL_COLORS.challengeAccent,
+    accentLit: STEAMBALL_COLORS.challengeAccentLit,
+    texts: () => lang.challenges,
+});
+const HOUSEHOLD_LOOK = Object.freeze({
+    scriptName: "HouseholdChallengeCard",
+    zIndex: HOUSEHOLD_CHALLENGE_CARD_Z_INDEX,
+    place: TOP_RIGHT_STACK.HOUSEHOLD_CHALLENGE_CARD,
+    accent: STEAMBALL_COLORS.householdAccent,
+    accentLit: STEAMBALL_COLORS.householdAccentLit,
+    texts: () => ({ ...lang.challenges, ...lang.householdChallenge }),
+});
 // Its own canvas pinned to the top right corner, where the top right stack
 // puts it, for the same reason as the badge: a canvas drawn at startup,
 // before the window is laid out, would be stretched out of shape. Sizes
@@ -42,8 +59,6 @@ export const CHALLENGE_VERDICT_MS = 5000;
 const COLORS = Object.freeze({
     background: STEAMBALL_COLORS.panelTranslucent,
     border: STEAMBALL_COLORS.border,
-    accent: STEAMBALL_COLORS.challengeAccent,
-    accentLit: STEAMBALL_COLORS.challengeAccentLit,
     barTrack: STEAMBALL_COLORS.track,
     title: STEAMBALL_COLORS.title,
     text: STEAMBALL_COLORS.description,
@@ -77,17 +92,17 @@ function challengeCardCanvasHeight(host, challenge) {
 }
 
 // Fading one-pixel frames around the card, widening outwards.
-function drawGlow(dc, cardHeight) {
-    const accentRgb = COLORS.accent & 0xFFFFFF;
+function drawGlow(dc, cardHeight, accent) {
+    const accentRgb = accent & 0xFFFFFF;
     for (let ring = HIGHLIGHT.glowRings; ring >= 1; ring--) {
         const alpha = Math.round(HIGHLIGHT.glowMaxAlpha * (1 - ring / (HIGHLIGHT.glowRings + 1)));
         dc.frameRect(CARD.x - ring, CARD.y - ring, CARD.width + 2 * ring, cardHeight + 2 * ring, 1, alpha * 2 ** 24 + accentRgb);
     }
 }
 
-// What the card shows: the week's Challenge or the previous one's verdict.
-function currentFace({ challenge, value, daysLeft, completed }) {
-    const TEXT = lang.challenges;
+// What the card shows: the week's challenge or the previous one's verdict.
+function currentFace(texts, { challenge, value, daysLeft, completed }) {
+    const TEXT = texts;
     const daysText = daysLeft === 1 ? TEXT.lastDay : TEXT.daysLeft(daysLeft);
     return {
         header: TEXT.cardHeader, challenge, value, completed,
@@ -95,8 +110,8 @@ function currentFace({ challenge, value, daysLeft, completed }) {
     };
 }
 
-function verdictFace({ challenge, reached, completed }) {
-    const TEXT = lang.challenges;
+function verdictFace(texts, { challenge, reached, completed }) {
+    const TEXT = texts;
     return {
         header: TEXT.verdictHeader, challenge, value: reached, completed,
         status: completed ? TEXT.completed : TEXT.missed(reached, challenge.target),
@@ -104,31 +119,33 @@ function verdictFace({ challenge, reached, completed }) {
 }
 
 // extra: how much taller than one title line the card is drawn.
-function drawCard(host, dc, face, lit, extra) {
+function drawCard(host, dc, face, lit, extra, { accent, accentLit }) {
     const { header, challenge, value, completed, status } = face;
     const cardHeight = CARD.height + extra;
-    if (lit) drawGlow(dc, cardHeight);
+    if (lit) drawGlow(dc, cardHeight, accent);
     dc.fillRect(CARD.x, CARD.y, CARD.width, cardHeight, COLORS.background);
     dc.frameRect(CARD.x, CARD.y, CARD.width, cardHeight, CARD.border, COLORS.border);
-    dc.fillRect(CARD.x, CARD.y, CARD.width, CARD.accentHeight, COLORS.accent);
+    dc.fillRect(CARD.x, CARD.y, CARD.width, CARD.accentHeight, accent);
 
-    drawText(host, dc, header.toLocaleUpperCase(), { ...HEADER, weight: 600, color: COLORS.accent });
+    drawText(host, dc, header.toLocaleUpperCase(), { ...HEADER, weight: 600, color: accent });
     drawText(host, dc, challengeTitleOf(challenge), { ...TITLE, weight: 600, color: COLORS.title });
 
     const barX = CARD.x + CARD.padding;
     const barY = CARD.y + BAR.y + extra;
     dc.fillRect(barX, barY, TEXT_WIDTH, BAR.height, COLORS.barTrack);
     const filled = Math.round(TEXT_WIDTH * value / challenge.target);
-    if (filled > 0) dc.fillRect(barX, barY, filled, BAR.height, lit ? COLORS.accentLit : COLORS.accent);
+    if (filled > 0) dc.fillRect(barX, barY, filled, BAR.height, lit ? accentLit : accent);
 
     drawText(host, dc, status,
-        { ...PROGRESS, y: PROGRESS.y + extra, weight: completed ? 600 : 400, color: completed ? COLORS.accent : COLORS.text });
+        { ...PROGRESS, y: PROGRESS.y + extra, weight: completed ? 600 : 400, color: completed ? accent : COLORS.text });
 }
 
+// challenges: the Challenge module, or any with the same showUp() and getActiveView().
 // topOf: how far below the window's top the card sits, in reference px.
 // Returns the card as a Wheel Mark, for getWheelMarks().register().
-export function createChallengeCard(host, challenges, { topOf }) {
-    const layer = createHiddenLayer(host, CHALLENGE_CARD_Z_INDEX);
+export function createChallengeCard(host, challenges, { topOf, look = CHALLENGE_LOOK }) {
+    const SCRIPT_NAME = look.scriptName;
+    const layer = createHiddenLayer(host, look.zIndex);
     let timer = null;
 
     function stopTimer() {
@@ -158,12 +175,12 @@ export function createChallengeCard(host, challenges, { topOf }) {
         // The span follows the canvas height, so a taller card keeps its proportions.
         // 0 - top: a card at the very top is placed at 0, not -0.
         placeAligned(layer, { ySpan: (CANVAS.height + extra) / CARD_REFERENCE_HEIGHT }, 0, (0 - topOf()) / CARD_REFERENCE_HEIGHT, "top right");
-        layer.draw(dc => drawCard(host, dc, face, lit, extra), CANVAS.width, CANVAS.height + extra);
+        layer.draw(dc => drawCard(host, dc, face, lit, extra, look), CANVAS.width, CANVAS.height + extra);
     }
 
     const drawCurrent = lit => {
         const view = challenges.getActiveView();
-        draw(view && currentFace(view), lit);
+        draw(view && currentFace(look.texts(), view), lit);
     };
 
     // Lit up, then resting after the highlight, then whatever comes next.
@@ -186,7 +203,7 @@ export function createChallengeCard(host, challenges, { topOf }) {
     function refresh(options = {}) {
         stopTimer();
         const { hasNews, verdict } = challenges.showUp(options);
-        if (verdict) unseenVerdict = verdictFace(verdict);
+        if (verdict) unseenVerdict = verdictFace(look.texts(), verdict);
         else if (options.switched) unseenVerdict = null;
         if (unseenVerdict) {
             const face = unseenVerdict;
@@ -208,9 +225,9 @@ export function createChallengeCard(host, challenges, { topOf }) {
 
     return {
         topRight: {
-            place: TOP_RIGHT_STACK.CHALLENGE_CARD,
+            place: look.place,
             margins: CHALLENGE_CARD_MARGINS,
-            // The week's Challenge's: the Mastery Bar sits under it.
+            // The week's challenge's: the pieces under it follow.
             height: () => {
                 const view = challenges.getActiveView();
                 return view ? challengeCardCanvasHeight(host, view.challenge) : null;
@@ -236,3 +253,8 @@ export function createChallengeCard(host, challenges, { topOf }) {
         },
     };
 }
+
+// The Household Challenge Card: the Challenge Card's twin, in pastel pink,
+// from the Household Challenge module.
+export const createHouseholdChallengeCard = (host, householdChallenge, { topOf }) =>
+    createChallengeCard(host, householdChallenge, { topOf, look: HOUSEHOLD_LOOK });

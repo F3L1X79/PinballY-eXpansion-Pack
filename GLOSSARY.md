@@ -421,6 +421,10 @@ _Avoid_: Challenge Tables (those move the Profile's own Challenge forward)
 The small card at the top right of the wheel screen that keeps the week's Challenge and the active Profile's progress always in view.
 _Avoid_: challenge widget, challenge popup, status line
 
+**Household Challenge Card**:
+The Challenge Card's twin, right under it on the wheel screen, that keeps the week's Household Challenge and the house's progress in view; absent in a week without one.
+_Avoid_: household widget, Challenge Card (that one shows the Profile's own Challenge)
+
 **Challenge Tables**:
 The tables the active Profile can see that would move its Challenge forward if played now, offered as a wheel selection; only some Challenges have them.
 _Avoid_: challenge filter, eligible tables

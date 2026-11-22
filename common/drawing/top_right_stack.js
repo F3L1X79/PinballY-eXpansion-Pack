@@ -1,9 +1,9 @@
 // ============================================================
-// Top right stack: where the Rating Plate, the Challenge Card and the Mastery
-// Bar sit on the wheel screen, in that order, their panels 24 px apart, from
-// right under the Profile badge or the window's top. Each piece gives its own
-// sizes; one not added (its Add-on off) leaves no room. Asked on each show.
-// - With the badge and the card, the plate rises beside the badge: no gap under the badge.
+// Top right stack: where the Rating Plate, the Challenge Card, the Household
+// Challenge Card and the Mastery Bar sit on the wheel screen, in that order,
+// their panels 24 px apart, from right under the Profile badge or the window's
+// top. Each piece gives its own sizes; one not added (its Add-on off) leaves no room.
+// - With the badge and a card, the plate rises beside the badge: no gap under the badge.
 // - The plate's room is kept while it hides (no selected table): nothing under it jumps.
 // ============================================================
 
@@ -11,9 +11,12 @@
 export const TOP_RIGHT_STACK = Object.freeze({
     RATING_PLATE: "ratingPlate",
     CHALLENGE_CARD: "challengeCard",
+    HOUSEHOLD_CHALLENGE_CARD: "householdChallengeCard",
     MASTERY_BAR: "masteryBar",
 });
-const ORDER = [TOP_RIGHT_STACK.RATING_PLATE, TOP_RIGHT_STACK.CHALLENGE_CARD, TOP_RIGHT_STACK.MASTERY_BAR];
+const ORDER = [TOP_RIGHT_STACK.RATING_PLATE, TOP_RIGHT_STACK.CHALLENGE_CARD, TOP_RIGHT_STACK.HOUSEHOLD_CHALLENGE_CARD, TOP_RIGHT_STACK.MASTERY_BAR];
+// The cards the plate rises beside the badge for: the first one added.
+const CARDS = [TOP_RIGHT_STACK.CHALLENGE_CARD, TOP_RIGHT_STACK.HOUSEHOLD_CHALLENGE_CARD];
 
 // Between one panel's bottom and the next one's top, in reference px.
 export const TOP_RIGHT_STACK_GAP = 24;
@@ -28,7 +31,11 @@ export function createTopRightStack({ underBadge }) {
     // Challenge); the last piece, with nothing under it, needs no height().
     const pieces = new Map();
 
-    const plateBesideBadge = () => underBadge && pieces.has(TOP_RIGHT_STACK.RATING_PLATE) && pieces.has(TOP_RIGHT_STACK.CHALLENGE_CARD);
+    const firstCard = () => {
+        const place = CARDS.find(card => pieces.has(card));
+        return place ? pieces.get(place) : null;
+    };
+    const plateBesideBadge = () => underBadge && pieces.has(TOP_RIGHT_STACK.RATING_PLATE) && firstCard() !== null;
 
     // How far below the window's top that piece's canvas sits, in reference px.
     function topOf(place) {
@@ -36,8 +43,7 @@ export function createTopRightStack({ underBadge }) {
             // Its panel GAP above the card's, so the card stays right under
             // the badge (validated on the cabinet).
             const plate = pieces.get(TOP_RIGHT_STACK.RATING_PLATE);
-            const card = pieces.get(TOP_RIGHT_STACK.CHALLENGE_CARD);
-            return start + card.margins.top - TOP_RIGHT_STACK_GAP - (plate.height() - plate.margins.bottom);
+            return start + firstCard().margins.top - TOP_RIGHT_STACK_GAP - (plate.height() - plate.margins.bottom);
         }
         let above = null;
         for (const pieceAbove of ORDER) {
@@ -51,8 +57,17 @@ export function createTopRightStack({ underBadge }) {
         return start;
     }
 
+    // What that piece adds to the stack while it takes room, its panel and
+    // the gap under it, in reference px; 0 without it.
+    function addedBy(place) {
+        const piece = pieces.get(place);
+        const height = piece && piece.height ? piece.height() : null;
+        return height === null ? 0 : height - piece.margins.top - piece.margins.bottom + TOP_RIGHT_STACK_GAP;
+    }
+
     return {
         add(place, piece) { pieces.set(place, piece); },
         topOf,
+        addedBy,
     };
 }

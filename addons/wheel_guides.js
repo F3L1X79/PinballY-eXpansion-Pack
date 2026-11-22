@@ -15,6 +15,7 @@ import { safeHandler } from "../common/core/safe_handler.js";
 import { logInfo } from "../common/core/info_log.js";
 import { onStartupScreenClosed, willStartupScreenClose } from "../common/core/startup_screen.js";
 import { getWheelMarks } from "../common/core/wheel_marks.js";
+import { TOP_RIGHT_STACK } from "../common/drawing/top_right_stack.js";
 import { getWheelOrder } from "../common/tables/wheel_order.js";
 import { getWheelPlaces } from "../common/tables/wheel_places.js";
 import { getDrawingAhead } from "../common/core/drawing_ahead.js";
@@ -51,11 +52,13 @@ export default function init() {
         if (rail) rail.hide();
     }
     const railRows = rail ? createRailRows(wheelPlaces, { withYears: isWheelRailYearsOn(config) }) : null;
-    // No rail on a ranked selection.
+    // No rail on a ranked selection. It stays midway between the Mastery Bar
+    // and the Wheel Arc: lower by half of what the Household Challenge Card,
+    // told before this mark, adds to the top right stack.
     function showRail(game) {
         const rows = railRows.getRows();
         if (rows === null) rail.hide();
-        else rail.show(rows, railRows.keyOf(game), game.id);
+        else rail.show(rows, railRows.keyOf(game), game.id, getWheelMarks().addedToStackBy(TOP_RIGHT_STACK.HOUSEHOLD_CHALLENGE_CARD) / 2);
     }
     function showTable(game) {
         if (position) {

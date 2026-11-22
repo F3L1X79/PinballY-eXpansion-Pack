@@ -166,6 +166,8 @@ export const DEFAULTS = {
         // Marks on the wheel screen saying where the player is on the wheel.
         wheelGuides: true,
         challenges: true,
+        // A weekly goal the whole Household reaches together, on or off whatever the Challenges are.
+        householdChallenge: true,
         tableMastery: true,
         // Fills each table's empty ROM field from its script (vpxtool in the pack's tools folder).
         tableRoms: true,

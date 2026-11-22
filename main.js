@@ -59,6 +59,7 @@ import * as playLaunchSound from "./addons/play_launch_sound.js";
 import * as sessionStatsTracker from "./addons/session_stats_tracker.js";
 import * as achievementsEngine from "./addons/achievements_engine.js";
 import * as challenges from "./addons/challenges.js";
+import * as householdChallenge from "./addons/household_challenge.js";
 import * as tableMastery from "./addons/table_mastery.js";
 import * as ratingPrompt from "./addons/rating_prompt.js";
 import * as tableRoms from "./addons/table_roms.js";
@@ -123,8 +124,8 @@ const SCRIPTS = [
     { key: "seamlessLaunchOverlay", module: seamlessLaunchOverlay },
 
     // Game session: windows, Backglass Clock, Discord Rich Presence, sound,
-    // stats, Table ROMs, High Scores, achievements, Challenges, Table
-    // Mastery, Profile Ratings, rating.
+    // stats, Table ROMs, High Scores, achievements, Challenges, Household
+    // Challenge, Table Mastery, Profile Ratings, rating.
     { key: "forceBackglass", module: forceBackglass },
     { key: "backglassClock", module: backglassClock },
     { key: "discordRichPresence", module: discordRichPresence },
@@ -134,6 +135,7 @@ const SCRIPTS = [
     { key: "highScores", module: highScores },
     { key: "achievements", module: achievementsEngine },
     { key: "challenges", module: challenges },
+    { key: "householdChallenge", module: householdChallenge },
     { key: "tableMastery", module: tableMastery },
     { key: "profileRatings", module: profileRatings },
     { key: "ratingPrompt", module: ratingPrompt },

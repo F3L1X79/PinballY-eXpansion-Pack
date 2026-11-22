@@ -1,10 +1,10 @@
 // ============================================================
-// Wheel Mark: when the wheel's marks (Wheel Guides, Challenge Card, Mastery
-// Bar, Rating Plate) show, and where the top right stack's pieces sit. Merges
-// "gameselect", the Attract Order's moves, a Profile switch, "gamestarted",
-// attract mode and "wheelmode" into one show(game) or hide() per mark.
+// Wheel Mark: when the wheel's marks (Wheel Guides, Challenge Card, Household
+// Challenge Card, Mastery Bar, Rating Plate) show, and where the top right
+// stack's pieces sit. Merges "gameselect", the Attract Order's moves, a Profile
+// switch, "gamestarted", attract mode and "wheelmode" into one show(game) or hide() per mark.
 // - Listens and first tells from start(), called by main.js after every Add-on: their own listeners hear first.
-// - Told in the stack's order (card, bar, plate), then the other marks as they register.
+// - Told in the stack's order (cards, bar, plate), then the other marks as they register.
 // ============================================================
 
 import config from "./config.js";
@@ -18,7 +18,7 @@ import { TOP_RIGHT_STACK, createTopRightStack } from "../drawing/top_right_stack
 const SCRIPT_NAME = "WheelMarks";
 // The top right stack's marks are told first, in this order: the card's
 // height is the bar's to read. The other marks follow, as they register.
-const TELL_ORDER = [TOP_RIGHT_STACK.CHALLENGE_CARD, TOP_RIGHT_STACK.MASTERY_BAR, TOP_RIGHT_STACK.RATING_PLATE];
+const TELL_ORDER = [TOP_RIGHT_STACK.CHALLENGE_CARD, TOP_RIGHT_STACK.HOUSEHOLD_CHALLENGE_CARD, TOP_RIGHT_STACK.MASTERY_BAR, TOP_RIGHT_STACK.RATING_PLATE];
 
 // underBadge: the Profile badge sits above the top right stack.
 export function createWheelMarks(host, { attractOrder, profileStore, underBadge = false }) {
@@ -66,6 +66,8 @@ export function createWheelMarks(host, { attractOrder, profileStore, underBadge 
 
     return {
         start,
+        // What that piece of the top right stack adds to it while it takes room, in reference px; 0 without it.
+        addedToStackBy: place => stack.addedBy(place),
         // show(game, { returned, switched }), hide({ returned, switched, wheelLeft }):
         // told from start() for the table on screen, errors logged under
         // scriptName. showsWithoutTable: shown with a null game rather than hidden.

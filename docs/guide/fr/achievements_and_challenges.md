@@ -15,6 +15,15 @@ Dès que la borne a un mois de parties derrière elle, la plupart des objectifs 
 - L'écran d'accueil montre aussi l'une de vos tables du défi (voir [Choisir une table](choosing_a_table.md)).
 - Le réussir fait pleuvoir des confettis sur tout l'écran de la roue.
 
+## Défi de la maison
+
+Dès que la borne a un mois de parties derrière elle, un second objectif arrive chaque lundi : le **Défi de la maison**, que tous les joueurs atteignent ensemble. Il est tiré parmi les mêmes sortes d'objectifs que le Défi, jamais le même que le Défi de la semaine ni que le Défi de la maison de la semaine passée.
+
+- Chaque partie le fait avancer, quel que soit le joueur, Invité compris. Aucun nombre minimum de joueurs : un joueur seul y gagne un second objectif de la semaine.
+- « Jamais jouée » et « poussiéreuse » s'apprécient pour le joueur aux commandes : une table que vos parents connaissent déjà peut rester nouvelle pour vous.
+- Sa carte rose se place juste sous la carte du Défi sur l'écran de la roue (voir [Interface](interface.md)), la même pour tous les profils.
+- Il se désactive à part avec `ADD_ON_HOUSEHOLD_CHALLENGE` (voir [Réglages](settings.md)).
+
 ## Succès
 
 <img src="../../images/achievements.png" alt="La liste « Succès personnels »" width="380">

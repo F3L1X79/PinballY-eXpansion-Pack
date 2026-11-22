@@ -112,7 +112,7 @@ Les réglages de l'eXpansion Pack écrivent aussi dans ce fichier. Une clé qu'i
 | `WHEEL_POSITION` | `true` | `false` retire la position dans la roue (`17/100`, en bas à droite de l'écran de la roue) et rend « Table n/total » à la ligne d'état du bas (voir [Interface](interface.md#sur-lécran-de-la-roue)). |
 | `FAVORITE_HEART` | `true` | `false` retire le cœur des favoris (en bas à gauche de l'écran de la roue, rouge sur une table favorite ; voir [Interface](interface.md#sur-lécran-de-la-roue)). |
 
-Chaque fonctionnalité se désactive aussi avec sa clé `ADD_ON_*`, par exemple `ADD_ON_CLOCK=false` ou `ADD_ON_CHALLENGES=false`. Seuls le nettoyage des menus, l'horloge du backglass (`ADD_ON_BACKGLASS_CLOCK`, l'heure sur l'écran du backglass pendant une partie, voir [Interface](interface.md#horloge-du-backglass)) et Discord Rich Presence (`ADD_ON_DISCORD_RICH_PRESENCE`, voir [plus haut](#discord-rich-presence)) sont désactivés par défaut. Chaque clé est décrite dans [.env.example](../../../.env.example).
+Chaque fonctionnalité se désactive aussi avec sa clé `ADD_ON_*`, par exemple `ADD_ON_CLOCK=false` ou `ADD_ON_CHALLENGES=false`. `ADD_ON_HOUSEHOLD_CHALLENGE=false` désactive à part le [Défi de la maison](achievements_and_challenges.md#défi-de-la-maison) et sa carte : il fonctionne que les Défis soient activés ou non. Seuls le nettoyage des menus, l'horloge du backglass (`ADD_ON_BACKGLASS_CLOCK`, l'heure sur l'écran du backglass pendant une partie, voir [Interface](interface.md#horloge-du-backglass)) et Discord Rich Presence (`ADD_ON_DISCORD_RICH_PRESENCE`, voir [plus haut](#discord-rich-presence)) sont désactivés par défaut. Chaque clé est décrite dans [.env.example](../../../.env.example).
 
 ## Profil admin
 

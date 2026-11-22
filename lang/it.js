@@ -784,6 +784,14 @@ export default {
         toastDescription: (count) => (count === 1 ? "Prima sfida completata" : `${count} sfide completate`),
     },
 
+    // The Household Challenge Card, under the Challenge Card; its titles,
+    // progress and missed line are the Challenge Card's.
+    householdChallenge: {
+        cardHeader: "Sfida di casa",
+        completed: "Sfida di casa completata!",
+        verdictHeader: "Sfida di casa precedente",
+    },
+
     // The Mastery Bar, under the Challenge Card (see common/mastery/mastery_bar.js), and the
     // Collection Mastery's texts.
     tableMastery: {
@@ -949,6 +957,11 @@ export default {
                 name: "Sfide",
                 whenOn: "Una sfida ogni settimana, sotto il badge del profilo.",
                 whenOff: "Niente obiettivi né statistiche delle sfide.",
+            },
+            householdChallenge: {
+                name: "Sfida di casa",
+                whenOn: "Ogni settimana un traguardo che tutti i giocatori raggiungono insieme, sotto la sfida.",
+                whenOff: "Nient'altro cambia.",
             },
             tableMastery: {
                 name: "Maestria del tavolo",

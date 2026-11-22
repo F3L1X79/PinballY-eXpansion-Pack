@@ -689,6 +689,14 @@ export default {
         toastDescription: (count) => (count === 1 ? "First Challenge completed" : `${count} Challenges completed`),
     },
 
+    // The Household Challenge Card, under the Challenge Card; its titles,
+    // progress and missed line are the Challenge Card's.
+    householdChallenge: {
+        cardHeader: "Household Challenge",
+        completed: "Household Challenge completed!",
+        verdictHeader: "Previous Household Challenge",
+    },
+
     // The Mastery Bar, under the Challenge Card (see common/mastery/mastery_bar.js), the Mastery Toast
     // and the Collection Mastery's texts.
     tableMastery: {
@@ -888,6 +896,11 @@ export default {
                 name: "Challenges",
                 whenOn: "A Challenge each week, under the Profile badge.",
                 whenOff: "No Challenge Achievements or Challenge stats.",
+            },
+            householdChallenge: {
+                name: "Household Challenge",
+                whenOn: "A goal each week that all the players reach together, under the Challenge.",
+                whenOff: "Nothing else changes.",
             },
             tableMastery: {
                 name: "Table Mastery",

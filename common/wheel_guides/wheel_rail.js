@@ -21,7 +21,8 @@ import { createGuideLayer, isGuideOn, moveGuideLayer, REFERENCE_HEIGHT, showGuid
 // The pills over the base, both over the other guides.
 export const WHEEL_RAIL_Z_INDEX = Object.freeze({ base: WHEEL_GUIDES_Z_INDEX + 1, pill: WHEEL_GUIDES_Z_INDEX + 2 });
 // Prototype values, in reference px; centred centerY down, between the
-// Mastery Bar and the Wheel Arc; right: a share of the window's width.
+// Mastery Bar and the Wheel Arc (lower by show()'s lowerBy while the stack
+// is taller); right: a share of the window's width.
 const RAIL = Object.freeze({ width: 40, centerY: 960, right: 0.008, radius: 10 });
 // The pill's inset is 1 px on the rows lower than a letter's.
 const PILL = Object.freeze({ side: 5, inset: 2, smallInset: 1, fullRow: 30, radius: 7, weight: 700 });
@@ -218,9 +219,16 @@ export function createWheelRail(host, drawingAhead, { restSeconds }) {
         slide = 0;
     }
 
+    // The centre the shown base was placed at, in reference px from the top.
+    let placedCenterY = null;
+
     // rows: as rail_rows.js gives them; selected: the key of the selected
-    // table's row; tableId: the selected table's. A new table or new rows bring the rail back.
-    function show(rows, selected, tableId) {
+    // table's row; tableId: the selected table's; lowerBy: how far below its
+    // usual centre it sits, in reference px. A new table or new rows bring the rail back.
+    function show(rows, selected, tableId, lowerBy = 0) {
+        const centerY = RAIL.centerY + lowerBy;
+        // Placed again where it now belongs, without a fade.
+        if (centerY !== placedCenterY) isBaseShown = false;
         const hasNewRows = updateBase(rows);
         if (tableId !== shownTableId || hasNewRows) {
             shownTableId = tableId;
@@ -241,7 +249,8 @@ export function createWheelRail(host, drawingAhead, { restSeconds }) {
             placedY.set(layer, y);
         };
         if (!isBaseShown) {
-            showCentredAt(base, baseHeight, RAIL.centerY);
+            showCentredAt(base, baseHeight, centerY);
+            placedCenterY = centerY;
             isBaseShown = true;
         }
         const index = rows.findIndex(row => row.key === selected);
@@ -249,7 +258,7 @@ export function createWheelRail(host, drawingAhead, { restSeconds }) {
         const pill = row === null ? null : pills.get(pillKey(row)) || drawPill(row);
         if (pill !== shownPill) hidePill();
         if (pill !== null) {
-            showCentredAt(pill, row.height, RAIL.centerY - baseHeight / 2 + rowTops[index] + row.height / 2);
+            showCentredAt(pill, row.height, centerY - baseHeight / 2 + rowTops[index] + row.height / 2);
             shownPill = pill;
         }
         applyMotion();

@@ -112,7 +112,7 @@ The eXpansion Pack Settings write to this file too. A key they save that is not 
 | `WHEEL_POSITION` | `true` | `false` removes the Wheel Position (`17/100`, bottom right of the wheel screen) and gives "Table n/total" back to the lower status line (see [Interface](interface.md#on-the-wheel-screen)). |
 | `FAVORITE_HEART` | `true` | `false` removes the Favorite Heart (bottom left of the wheel screen, red on a Favorite Table; see [Interface](interface.md#on-the-wheel-screen)). |
 
-Every feature can also be turned off with its `ADD_ON_*` key, for example `ADD_ON_CLOCK=false` or `ADD_ON_CHALLENGES=false`. Only Menu Cleanup, the Backglass Clock (`ADD_ON_BACKGLASS_CLOCK`, the time on the backglass screen during a game, see [Interface](interface.md#backglass-clock)) and Discord Rich Presence (`ADD_ON_DISCORD_RICH_PRESENCE`, see [above](#discord-rich-presence)) are off by default. Each key is described in [.env.example](../../../.env.example).
+Every feature can also be turned off with its `ADD_ON_*` key, for example `ADD_ON_CLOCK=false` or `ADD_ON_CHALLENGES=false`. `ADD_ON_HOUSEHOLD_CHALLENGE=false` turns off the [Household Challenge](achievements_and_challenges.md#household-challenge) and its card on its own: it works whether the Challenges are on or off. Only Menu Cleanup, the Backglass Clock (`ADD_ON_BACKGLASS_CLOCK`, the time on the backglass screen during a game, see [Interface](interface.md#backglass-clock)) and Discord Rich Presence (`ADD_ON_DISCORD_RICH_PRESENCE`, see [above](#discord-rich-presence)) are off by default. Each key is described in [.env.example](../../../.env.example).
 
 ## Admin Profile
 
