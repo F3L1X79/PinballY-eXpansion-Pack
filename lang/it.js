@@ -637,7 +637,7 @@ export default {
     profiles: {
         menuEntry: "Cambia giocatore",
         pickerTitle: "Chi gioca?",
-        pickerHint: "Flipper: scorri · Start: scegli · Exit: annulla",
+        pickerHint: "Flipper: scorri · Select: scegli · Exit: annulla",
         guestName: "Ospite",
         // The Profile picker's last slot, and the screen it opens.
         newProfile: "Nuovo profilo",

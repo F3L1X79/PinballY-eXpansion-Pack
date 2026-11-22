@@ -530,7 +530,7 @@ export default {
     profiles: {
         menuEntry: "Change Player",
         pickerTitle: "Who's playing?",
-        pickerHint: "Flippers: browse · Start: choose · Exit: cancel",
+        pickerHint: "Flippers: browse · Launcher: choose · Exit: cancel",
         guestName: "Guest",
         // The Profile picker's last slot, and the screen it opens.
         newProfile: "New profile",

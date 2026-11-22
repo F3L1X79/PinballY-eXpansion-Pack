@@ -638,7 +638,7 @@ export default {
     profiles: {
         menuEntry: "Trocar de jogador",
         pickerTitle: "Quem joga?",
-        pickerHint: "Flippers: mudar · Start: escolher · Exit: cancelar",
+        pickerHint: "Flippers: mudar · Select: escolher · Exit: cancelar",
         guestName: "Convidado",
         // The Profile picker's last slot, and the screen it opens.
         newProfile: "Novo perfil",
