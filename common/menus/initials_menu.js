@@ -1,9 +1,9 @@
 // ============================================================
 // A Profile's Initials from Manage profiles (ADR 0026): the line of a
-// Profile's menu, then Name Entry in its Initials mode; OK asks to confirm,
-// counting the places the Initials would take, and "Yes" saves them and claims
-// those places, then a closing Dialog gives the figures. OK on nothing clears
-// them, Exit and "No" change nothing. Listens to "command".
+// Profile's menu, then Name Entry in its Initials mode; OK (on nothing: clear)
+// asks to confirm, counting the places the Initials would take and those former
+// ones give back; "Yes" saves, gives back and claims, then a closing Dialog
+// gives the figures. Exit and "No" change nothing. Listens to "command".
 // - The line is greyed for Guest, which never has Initials.
 // - A save or claim that fails is logged and shown as a one-line Dialog, writing nothing.
 // ============================================================
@@ -57,13 +57,28 @@ export function createInitialsMenu(host, profileStore, { nameEntry, highScoreSto
         ], { dialogStyle: true, onBack: backToProfile(profile) });
     }
 
+    // The confirmation of new Initials, or of clearing them ("" entered);
+    // clearing a Profile that has none changes nothing, so it asks nothing.
     function confirm(profile, initials) {
+        const former = profileStore.getInitialsOf(profile.name);
+        if (initials === "" && former === null) {
+            showProfileMenu(profile, lineCommand);
+            return;
+        }
         pendingClaim = { profile, initials };
-        const { places, tables } = highScoreStore.previewInitialsClaim(initials);
+        const name = displayNameOf(profile);
+        const givenBack = former === null ? 0 : highScoreStore.previewInitialsRelease(profile.name, initials === "" ? null : initials);
+        let message;
+        if (initials === "") {
+            message = TEXT.initialsClearConfirm(name, former, givenBack);
+        } else {
+            const { places, tables } = highScoreStore.previewInitialsClaim(initials);
+            message = TEXT.initialsConfirm(name, initials, places, tables, former === null || former === initials ? null : givenBack);
+        }
         menus.show(CONFIRM_MENU_ID, [
-            { title: TEXT.initialsConfirm(displayNameOf(profile), initials, places, tables), cmd: -1 },
+            { title: message, cmd: -1 },
             SEPARATOR,
-            { title: TEXT.initialsYes, cmd: yesCommand },
+            { title: initials === "" ? TEXT.initialsClearYes : TEXT.initialsYes, cmd: yesCommand },
             { title: TEXT.no, cmd: menuReturnCommand, selected: true },
         ], {
             dialogStyle: true,
@@ -74,11 +89,13 @@ export function createInitialsMenu(host, profileStore, { nameEntry, highScoreSto
         });
     }
 
-    // The Initials saved, then their places claimed; a claim that fails
-    // puts the former Initials back, so nothing is written.
+    // The Initials saved ("" clears them), then the places former ones took
+    // given back and theirs claimed; a claim that fails puts the former
+    // Initials back, so nothing is written.
     function saveAndClaim(profile, initials) {
         const former = profileStore.getInitialsOf(profile.name);
-        profileStore.setInitials(profile.name, initials);
+        if (initials === "") profileStore.clearInitials(profile.name);
+        else profileStore.setInitials(profile.name, initials);
         try {
             return highScoreStore.claimInitialsPlaces(profile.name);
         } catch (error) {
@@ -92,12 +109,17 @@ export function createInitialsMenu(host, profileStore, { nameEntry, highScoreSto
         }
     }
 
-    // A failure is caught here, not by safeHandler, for the player to see it; its cause goes to the log.
+    // A failure is caught here, not by safeHandler, for the player to see it;
+    // its cause goes to the log. Cleared Initials go straight back to the Profile's menu.
     function saveAndReport(profile, initials) {
         const name = displayNameOf(profile);
         let message;
         try {
             const { places, tables } = saveAndClaim(profile, initials);
+            if (initials === "") {
+                showProfileMenu(profile, lineCommand);
+                return;
+            }
             message = places > 0 ? TEXT.initialsDone(name, initials, places, tables) : TEXT.initialsDoneNone(name, initials);
         } catch (error) {
             logHandlerError(SCRIPT_NAME, error);
@@ -106,23 +128,12 @@ export function createInitialsMenu(host, profileStore, { nameEntry, highScoreSto
         showOutcome(profile, message);
     }
 
-    function clear(profile) {
-        try {
-            profileStore.clearInitials(profile.name);
-        } catch (error) {
-            logHandlerError(SCRIPT_NAME, error);
-            showOutcome(profile, TEXT.initialsFailed(displayNameOf(profile)));
-            return;
-        }
-        showProfileMenu(profile, lineCommand);
-    }
-
     function enter(profile) {
         nameEntry.openInitials({
             profileName: displayNameOf(profile),
             current: profileStore.getInitialsOf(profile.name),
             holderOf: otherHolderOf(profile),
-            onDone: initials => (initials === "" ? clear(profile) : confirm(profile, initials)),
+            onDone: initials => confirm(profile, initials),
             onExit: backToProfile(profile),
         });
     }

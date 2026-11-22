@@ -7,7 +7,7 @@
 // - Saved through the Profile store, so no Profile Reset touches it.
 // - A ROM reset (too many new places, a place gone unbeaten) gives Default Scores.
 // - A board read outside a Play waits until the Play on that table is settled.
-// - Initials (ADR 0026) take unowned places when given and on later reads, silently (unannounced check).
+// - Initials (ADR 0026) take unowned places when given and on later reads, silently; changed, they give them back.
 // ============================================================
 
 import { hasUnbeatenGonePlace, newPlaces, placeKey } from "./board_reader.js";
@@ -228,25 +228,76 @@ export function createHighScoreStore(host, profileStore) {
     }
     const claimSummaryOf = found => ({ places: found.length, tables: new Set(found.map(({ configId }) => configId)).size });
 
-    // The named Profile's Initials take every place unownedPlacesBearing()
-    // finds, each a High Score marked takenByInitials, dated now, in one
-    // save (undone if it fails). Announces nothing: no credited listener, no
-    // Table Record taken, and the Profile's next Achievements check unannounced.
+    const isHighScoreOf = profileName => highScore => isRecord(highScore) && typeof highScore.profile === "string"
+        && profileKeyOf(highScore.profile) === profileKeyOf(profileName);
+    // The named Profile's High Scores taken by Initials that these Initials
+    // (null once cleared) would not have taken: what changing them gives back.
+    function claimsGivenBackBy(profileName, initials) {
+        const isOwn = isHighScoreOf(profileName);
+        return data.highScores.filter(highScore => isOwn(highScore) && highScore.takenByInitials === true
+            && (initials === null || !boardBears(highScore.initials, initials)));
+    }
+    // The board place a High Score taken by Initials took, while still on its
+    // board; null once pushed off. A board never repeats a place, so its key finds it.
+    const placeTakenBy = claim => (knownBoardOf(claim.configId) || [])
+        .find(place => isPlaceOf(claim.profile)(place) && placeKey(place) === placeKey(claim)) || null;
+    // The Plays' High Scores that took the Table Record this claim held: on
+    // its table, from its Profile, with no later Table Record of that Profile between.
+    function takingsOf(claim) {
+        if (!claim.tableRecord) return [];
+        const isOwn = isHighScoreOf(claim.profile);
+        const laterRecords = data.highScores.filter(highScore => isOwn(highScore) && highScore.configId === claim.configId
+            && highScore.tableRecord && highScore.date > claim.date);
+        return data.highScores.filter(highScore => highScore.configId === claim.configId && typeof highScore.takenFrom === "string"
+            && profileKeyOf(highScore.takenFrom) === profileKeyOf(claim.profile) && highScore.date >= claim.date
+            && !laterRecords.some(record => record.date <= highScore.date));
+    }
+    // The claims' places become Default Scores again and the claims are
+    // dropped, with the Lost Records they caused; written by the caller's
+    // save. Returns what to log after it: { released, dropped }.
+    function giveBack(claims) {
+        const released = claims.map(claim => ({ claim, place: placeTakenBy(claim) })).filter(({ place }) => place !== null);
+        const dropped = claims.flatMap(takingsOf);
+        for (const { place } of released) place.owner = null;
+        for (const taking of dropped) taking.takenFrom = null;
+        data.highScores = data.highScores.filter(highScore => !claims.includes(highScore));
+        return { released, dropped };
+    }
+    function logGivenBack({ released, dropped }, owner) {
+        for (const { claim, place } of released) {
+            log(`"${claim.configId}": place ${place.rank}, ${place.score} (${place.initials}) given back by ${owner.name}'s former Initials, a Default Score again.`);
+        }
+        for (const taking of dropped) {
+            log(`"${taking.configId}": the Table Record ${taking.profile} took from ${owner.name} was taken by Initials given back; Lost Record dropped.`);
+        }
+    }
+
+    // The named Profile's saved Initials (null once cleared) first give back
+    // the places former ones took, then take every place
+    // unownedPlacesBearing() finds, each a High Score marked takenByInitials,
+    // dated now, in one save (undone if it fails). Announces nothing: no
+    // credited listener, no Table Record taken, and the Profile's next
+    // Achievements check unannounced. A place won in a Play is never touched.
     function claimInitialsPlaces(profileName) {
         const owner = profileNamed(profileName);
         if (!owner) throw new Error(`No Profile named "${profileName}".`);
         const initials = profileStore.getInitialsOf(owner.name);
+        const givenBackClaims = claimsGivenBackBy(owner.name, initials);
+        const before = JSON.stringify({ tables: data.tables, highScores: data.highScores });
+        const givenBack = giveBack(givenBackClaims);
         const found = initials === null ? [] : unownedPlacesBearing(initials);
-        if (found.length === 0) return claimSummaryOf(found);
+        const summary = { ...claimSummaryOf(found), givenBack: givenBack.released.length };
+        if (found.length === 0 && givenBackClaims.length === 0) return summary;
         const date = toLocalIsoString(host.now());
-        const highScoresBefore = data.highScores.length;
         for (const { configId, place } of found) takeByInitials(owner, configId, place, date);
         save(() => {
-            for (const { place } of found) place.owner = null;
-            data.highScores.splice(highScoresBefore);
+            const restored = JSON.parse(before);
+            data.tables = restored.tables;
+            data.highScores = restored.highScores;
         });
+        logGivenBack(givenBack, owner);
         afterClaimsSaved(found.map(({ configId, place }) => ({ configId, place, initials, owner })));
-        return claimSummaryOf(found);
+        return summary;
     }
 
     return {
@@ -528,8 +579,13 @@ export function createHighScoreStore(host, profileStore) {
         },
         // { places, tables } the Initials would take now, without writing.
         previewInitialsClaim: initials => claimSummaryOf(unownedPlacesBearing(initials)),
-        // The named Profile's saved Initials take their places; returns
-        // { places, tables } taken. Throws, changing nothing, when the save fails.
+        // How many places the named Profile's Initials took would be given
+        // back for these Initials (null: cleared), without writing.
+        previewInitialsRelease: (profileName, initials) => claimsGivenBackBy(profileName, initials)
+            .filter(claim => placeTakenBy(claim) !== null).length,
+        // The named Profile's saved Initials give back the places former ones
+        // took and take theirs; returns { places, tables, givenBack }.
+        // Throws, changing nothing, when the save fails.
         claimInitialsPlaces,
         onCredited(listener) { creditedListeners.push(listener); },
         // listener(): after any change of the file is saved.

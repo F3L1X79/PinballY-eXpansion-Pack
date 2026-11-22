@@ -59,7 +59,7 @@ test("claiming takes every place without an owner bearing the Initials, and only
     const { profileStore, store } = setUp();
     profileStore.setInitials("Alice", "FEL");
 
-    assert.deepEqual(store.claimInitialsPlaces("Alice"), { places: 3, tables: 2 }, "the preview's figures");
+    assert.deepEqual(store.claimInitialsPlaces("Alice"), { places: 3, tables: 2, givenBack: 0 }, "the preview's figures");
     assert.deepEqual(ownersOn(store, MM), [[1, "Alice"], [2, null], [3, "Bob"]], "a Play's place bearing FEL stays Bob's");
     assert.deepEqual(ownersOn(store, AFM), [[1, "Bob"], [2, "Alice"], [3, "Alice"]]);
     assert.deepEqual(ownersOn(store, TZ), [[1, null], [2, null]], "a removed Profile's place is never taken");
@@ -103,7 +103,7 @@ test("Initials taking nothing write nothing and leave no check due", () => {
     profileStore.setInitials("Alice", "XYZ");
     const before = fake.readFile(HIGH_SCORES_FILE);
 
-    assert.deepEqual(store.claimInitialsPlaces("Alice"), { places: 0, tables: 0 });
+    assert.deepEqual(store.claimInitialsPlaces("Alice"), { places: 0, tables: 0, givenBack: 0 });
     assert.equal(fake.readFile(HIGH_SCORES_FILE), before);
     assert.equal(profileStore.isUnannouncedCheckDue("Alice"), false);
 });

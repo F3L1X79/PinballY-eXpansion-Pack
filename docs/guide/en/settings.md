@@ -155,7 +155,9 @@ A Profile's **Initials** are the three letters that stand for it on tables' high
 
 - Choosing it opens Name Entry with the current Initials already entered: capital letters A to Z only, erase and OK, three letters at most.
 - OK asks to confirm, saying how many high score places, on how many tables, the Initials will take; "No" changes nothing. "Yes" saves them and gives the Profile those places, then says how many it took, or that none bears them yet. The Achievements those places reach are unlocked without a toast, even when the Profile is picked later.
-- OK with every letter erased clears them; Exit changes nothing. The Profile's menu then comes back, on its Initials.
+- Changing them gives back, as default scores, the places the former Initials took, before the new ones take theirs; the confirmation says how many. A score the Profile won in a game stays its own, and a lost Table Record on a place given back is no longer shown on the Welcome Screen.
+- OK with every letter erased clears them, after a confirmation saying how many places they give back; Exit changes nothing. The Profile's menu then comes back, on its Initials.
+- Removing a Profile frees its Initials for another Profile.
 - Initials another Profile already has are refused, naming it, and OK stays greyed until three letters are entered (unless you are clearing them).
 - Guest never has Initials: its line is greyed. The line is missing while the High Scores Add-on is off.
 - A Profile Reset keeps the Initials, like the name, Avatar and marks.

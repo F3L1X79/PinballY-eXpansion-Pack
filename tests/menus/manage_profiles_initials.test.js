@@ -154,6 +154,8 @@ test("OK with nothing entered clears the Initials", () => {
     openInitials("Bob", "FEL");
     eraseName(fake);
     chooseOk();
+    // The confirmation and the places given back: tests/menus/manage_profiles_initials_release.test.js.
+    chooseEntry(fake, TEXT.initialsClearYes);
     assert.equal(store.getInitialsOf("Bob"), null);
     assert.equal(highlightedEntry(fake), TEXT.initialsLine(null));
     closeProfileMenu();
