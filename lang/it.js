@@ -254,7 +254,6 @@ export default {
                 progress: (title, value, target) => `${title} · ${value}/${target}`,
                 lastStep: "Ancora una partita per completare la sfida!",
             },
-            go: "Vai",
         },
     },
     // Lower status line text for the currently selected table.

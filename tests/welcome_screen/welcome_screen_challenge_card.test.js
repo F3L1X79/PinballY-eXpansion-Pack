@@ -1,7 +1,7 @@
 // ============================================================
 // Welcome Screen Challenge Table card: with a Stern Challenge, a third card
 // under the Period Table cards shows a drawn Stern table and the progress;
-// its Go launches it, and the Play is not a Random Game.
+// choosing the card launches it, and the Play is not a Random Game.
 // ============================================================
 
 import { test } from "node:test";
@@ -11,7 +11,7 @@ import { assertNoErrorLogged } from "../support/error_log.js";
 import { periodCards, readChoices, choose, isWelcomeScreenOpen } from "./welcome_screen_reader.js";
 import { startWithChallenge, playFor, countedGame, ALICE_FILE, STERN_A, STERN_C } from "./challenge_card_scenario.js";
 
-test("the Welcome Screen offers a Challenge Table, launched by its Go and not as a Random Game", async t => {
+test("the Welcome Screen offers a Challenge Table, launched by choosing its card and not as a Random Game", async t => {
     // The last of the equal candidates, in collection order.
     t.mock.method(Math, "random", () => 0.99);
     const fake = await startWithChallenge({ games: [countedGame(STERN_A)] });

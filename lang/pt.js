@@ -254,7 +254,6 @@ export default {
                 progress: (title, value, target) => `${title} · ${value}/${target}`,
                 lastStep: "Mais uma partida para concluir o desafio!",
             },
-            go: "Ir",
         },
     },
 

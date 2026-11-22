@@ -1,7 +1,8 @@
 // ============================================================
 // Welcome Screen Period Table cards in English: Day and Week cards with
-// logo, period, cleaned name, Mastery head and grey line; Next walks through
-// their buttons and Select on the day's launches it.
+// logo, period (gold, pastel blue), cleaned name, Mastery head and grey
+// line, without a button; Next walks through the cards, chosen whole, and
+// Select on the day's launches it.
 // ============================================================
 
 import { test } from "node:test";
@@ -10,8 +11,9 @@ import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js
 import config from "../../common/core/config.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import {
-    WELCOME_SCREEN_OPEN_MS, isWelcomeScreenOpen, periodCards, periodCardLogos, readChoices, choose,
+    WELCOME_SCREEN_OPEN_MS, isWelcomeScreenOpen, periodCards, periodColors, periodCardLogos, readChoices, choose,
 } from "./welcome_screen_reader.js";
+import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 
 const PROFILES = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 const CABINET = `${PROFILES}\\cabinet.json`;
@@ -60,6 +62,7 @@ test("the Welcome Screen shows a card per Period Table and launches the day's", 
         { period: CARDS.day.period, name: "Medieval Madness", mastery: lang.tableMastery.levelNames[1], line: `3 ${CARDS.day.streak}` },
         { period: CARDS.week.period, name: "Attack from Mars Special", mastery: lang.tableMastery.toDiscover, line: CARDS.week.played },
     ]);
+    assert.deepEqual(periodColors(fake), [STEAMBALL_COLORS.gold, STEAMBALL_COLORS.weekPeriod], "the day's period in gold, the week's in pastel blue");
     assert.equal(CARDS.day.streak, "days in a row on the Table of the Day: keep it going!", "the count is in the square before it");
     assert.deepEqual(periodCardLogos(fake), [MEDIEVAL_LOGO, "Attack from Mars Special"], "the title stands in for a missing logo");
 

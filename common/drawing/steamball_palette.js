@@ -28,6 +28,8 @@ export const STEAMBALL_COLORS = Object.freeze({
     dim: 0xFF6E7887,
     challengeAccent: 0xFF4FD1B0,
     challengeAccentLit: 0xFFB8FFF0,
+    // The Table of the Week's period on the Welcome Screen, a pastel blue beside the Day's gold.
+    weekPeriod: 0xFF9CC8F0,
     // The High Score Toast's accent, apart from the Ranks' metals and the Challenges' teal.
     highScoreAccent: 0xFFB07CF0,
     // A line to read before going on, such as Name Entry's on the first Profile; yellower than the title's gold.

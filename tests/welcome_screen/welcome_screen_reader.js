@@ -107,10 +107,14 @@ const topToBottom = layers => [...layers].sort((a, b) => b.position().y - a.posi
 // first, as in "3 days in a row…"; null when there is none) }.
 export const periodCards = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)).map(layer => {
     const [period, name, mastery, ...rest] = layer.texts();
-    // Between the level's number in its square and the button's label.
-    const lineTexts = rest.slice(1, -1);
+    // After the level's number in its square.
+    const lineTexts = rest.slice(1);
     return { period, name, mastery, line: lineTexts.length > 0 ? lineTexts.join(" ") : null };
 });
+
+// Each card's period colour, top to bottom.
+export const periodColors = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards))
+    .map(layer => layer.strokes().find(stroke => "text" in stroke).color);
 
 // Each card's logo, top to bottom: its wheel image's path, or the title
 // drawn in its place.
@@ -220,11 +224,11 @@ export function highlighted(fake) {
     return { label: found ? found.text : null, tooltip: null };
 }
 
-// The period of the card whose button is highlighted, null for any other choice.
+// The period of the card the marker surrounds whole, null for any other choice.
 export function highlightedCard(fake) {
     if (shownTooltip(fake)) return null;
-    const found = underMarker(fake);
-    return found && found.layer.zIndex === WELCOME_SCREEN_Z_INDEX.cards ? found.layer.texts()[0] : null;
+    const card = selectionMarker.layerUnderMarker(fake, WELCOME_SCREEN_Z_INDEX.marker, shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards));
+    return card ? card.texts()[0] : null;
 }
 
 // The highlighted card's period, else the label or tooltip of the highlighted choice.

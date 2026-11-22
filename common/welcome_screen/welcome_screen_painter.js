@@ -38,13 +38,13 @@ const LOOK = Object.freeze({
     rowH: 120, rowSize: 26, minRowSize: 18, rowTextInset: 12, rowIcon: 76,
     // A Period Table card, from its top: period, name, Mastery card (the
     // Mastery Bar's, scaled by cardK), then the grey line, if any.
-    cardTop: 18, nameY: 54, masteryY: 96, lineGap: 10, lineH: 34, cardBottom: 16,
+    cardTop: 18, nameY: 58, masteryY: 104, lineGap: 10, lineH: 34, cardBottom: 16,
     periodSize: 21, nameSize: 22, minNameSize: 18, lineSize: 18, minLineSize: 15, lineTile: 28,
     cardK: 1.25, masteryCardH: 74,
-    button: Object.freeze({ w: 140, h: 52, size: 22 }),
     // The logo column, narrower inside a window under narrowBelow (a
-    // portrait playfield), then the details at most detailsMaxW wide.
-    logoInset: 24, logoTop: 20, logoW: 360, narrowLogoShare: 0.26, narrowBelow: 1300, detailsGap: 32, detailsMaxW: 640,
+    // portrait playfield), then the details at most detailsMaxW wide, short
+    // of the card's right edge by detailsRight.
+    detailsRight: 24, logoInset: 24, logoTop: 20, logoW: 360, narrowLogoShare: 0.26, narrowBelow: 1300, detailsGap: 32, detailsMaxW: 640,
     // The panel's width: a share of the window's, at most maxWidth.
     widthShare: 0.9, maxWidth: 1800,
     // Room around the Avatar on its tooltip's layer, and beside it for the
@@ -243,12 +243,12 @@ export function drawBackdrop(dc, size, referenceWidth, screen) {
     drawPanelBackdrop(dc, size, REFERENCE_HEIGHT, geometry(referenceWidth, screen).panel);
 }
 
-// The table cards, top to bottom, each with the highlight of its "Go" button.
-function layoutCards(host, screen, { inner, cardHs, lineY, logoW, detailsX, masteryCardH }, cardsTop, choiceAt) {
-    const { button } = LOOK;
-    // Centred on the Mastery card's height.
-    const buttonRect = { ...button, x: inner.w - LOOK.logoInset - button.w, y: LOOK.masteryY + Math.round((masteryCardH - button.h) / 2) };
-    const detailsW = Math.min(buttonRect.x - LOOK.detailsGap - detailsX, LOOK.detailsMaxW);
+// The period's colour by card: the Week's pastel blue, gold for the others.
+const periodColorOf = card => (card.choice === CHOICE.WEEK ? COLORS.weekPeriod : COLORS.gold);
+
+// The table cards, top to bottom, each chosen whole: its highlight is the card.
+function layoutCards(host, screen, { inner, cardHs, lineY, logoW, detailsX }, cardsTop, choiceAt) {
+    const detailsW = Math.min(inner.w - LOOK.detailsRight - detailsX, LOOK.detailsMaxW);
     const pieces = [];
     const highlights = {};
     let cardY = cardsTop;
@@ -260,14 +260,11 @@ function layoutCards(host, screen, { inner, cardHs, lineY, logoW, detailsX, mast
             draw: dc => {
                 fillGradient(dc, 0, 0, inner.w, cardH, COLORS.panelTop, COLORS.panel);
                 dc.frameRect(0, 0, inner.w, cardH, 1, COLORS.border);
-                text(host, dc, card.period, { x: detailsX, y: LOOK.cardTop, width: detailsW, size: LOOK.periodSize, weight: 700, color: COLORS.gold, font: FONTS.display });
+                text(host, dc, card.period, { x: detailsX, y: LOOK.cardTop, width: detailsW, size: LOOK.periodSize, weight: 700, color: periodColorOf(card), font: FONTS.display });
                 oneLine(host, dc, card.title, { x: detailsX, y: LOOK.nameY, width: detailsW, size: LOOK.nameSize, minSize: LOOK.minNameSize });
                 drawTableMasteryCard(host, dc, card.mastery, card.masteryHead, detailsX, LOOK.masteryY, detailsW);
                 if (card.line && card.line.plain) drawPlainLine(host, dc, card.line.text, detailsX, lineY, detailsW);
                 else if (card.line) drawGreyLine(host, dc, card.line.played ? null : card.line.streak, card.line.text, detailsX, lineY, detailsW);
-                fillGradient(dc, buttonRect.x, buttonRect.y, button.w, button.h, COLORS.rowUnlocked, COLORS.tile);
-                dc.frameRect(buttonRect.x, buttonRect.y, button.w, button.h, 1, COLORS.border);
-                text(host, dc, card.goLabel, { x: buttonRect.x, y: buttonRect.y, width: button.w, height: button.h, size: button.size, weight: 700, font: FONTS.display, align: "center" });
             },
         });
         // On a layer of its own, above the card's.
@@ -277,7 +274,7 @@ function layoutCards(host, screen, { inner, cardHs, lineY, logoW, detailsX, mast
             rect: { x: inner.x + LOOK.logoInset, y: cardY + LOOK.logoTop, w: logoW, h: logoH },
             draw: dc => drawWheelLogo(host, dc, card, { x: 0, y: 0, w: logoW, h: logoH }, 30),
         });
-        highlights[card.choice] = choiceAt({ x: inner.x + buttonRect.x, y: cardY + buttonRect.y, w: button.w, h: button.h });
+        highlights[card.choice] = choiceAt({ x: inner.x, y: cardY, w: inner.w, h: cardH });
         cardY += cardH + LOOK.gap;
     });
     return { pieces, highlights };
@@ -292,7 +289,7 @@ function layoutCards(host, screen, { inner, cardHs, lineY, logoW, detailsX, mast
 // (each { choice, period, title, logoPath, mastery, masteryHead ({ text,
 // color }, as the Mastery Bar's), line
 // (null, { played, streak, text }, or { plain: true, text } without the
-// square), goLabel }), choices, labels (by
+// square) }), choices, labels (by
 // choice), exitLook (the Exit Button's EXIT_BUTTON_LOOK), buttonHints
 // (the footer's groups) }. Returns the pieces, each { zIndex, rect, draw(dc) } drawn in
 // its rect's own coordinates, and the highlight of each choice.

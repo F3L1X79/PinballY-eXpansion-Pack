@@ -195,7 +195,6 @@ export default function init() {
             mastery,
             masteryHead: masteryHeadOf(mastery ? mastery.level : 0),
             line,
-            goLabel: TEXT.periodCards.go,
         };
     }
 

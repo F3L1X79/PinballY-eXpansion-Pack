@@ -9,7 +9,7 @@
 Every day there is a table nobody in the house has played yet, or the one left alone the longest, and every week a random one. The Welcome Screen greets you with both at startup, again after Change Player, and whenever you pick **Back to the Welcome Screen** in the main menu, with what they mean for you.
 
 - While your weekly Challenge has Challenge Tables, it also shows one of them, drawn at random. That Challenge Table is never one of the two tables already shown, unless one more game finishes your Challenge.
-- From there, launch one of them, stay on the table on the wheel, change player or spin a Random Game.
+- From there, launch one of them, stay on the table on the wheel, change player or spin a Random Game. A table's card is chosen whole: move the selection onto the card with the flippers, then Select (or Launch) launches its table.
 - Play them several days or weeks in a row to build a Streak.
 - Neither is ever a hidden table or an unconfigured one (a table file PinballY found but that was never set up), even when your wheel shows it.
 - If your last game was a week ago or more, the Welcome Screen says "Welcome back", and after more than 30 days "Long time no see". Guest keeps the usual greeting as long as Change Player is there.
