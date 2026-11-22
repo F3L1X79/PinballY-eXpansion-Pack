@@ -462,7 +462,7 @@ _Avoid_: level-up popup, mastery achievement (Table Mastery has no Achievement)
 ### High Scores
 
 **High Score**:
-A place on a table's own high score board that a Profile won with a Play, whatever initials were typed. It stays won even when better scores push it off the board. Shown as "meilleur score" in French.
+A place on a table's own high score board that a Profile won with a Play, whatever initials were typed, or took by its Initials. It stays won even when better scores push it off the board. Shown as "meilleur score" in French.
 _Avoid_: record (the Table Record is only the best one), hi-score, score (the score of a game that did not reach the board is known only as a Play Score)
 
 **Play Score**:
@@ -477,8 +477,12 @@ _Avoid_: Error Log (an anomaly is no error of the pack)
 The pack's one owner of what a Play won: it reads the table's board when a launch begins and again after the game, learns where a table without a ROM keeps its board, then reads the Play Score, writes its anomalies to the Play Score Anomaly Log, and says what to announce, at most one thing per Play. It also reads the board the High Score Board shows.
 _Avoid_: High Scores Add-on (it only shows what was won)
 
+**Initials**:
+The three letters an Admin Profile gives a Profile, unique on the cabinet, by which that Profile takes every Default Score that never had an owner and bears them. They never decide who wins a place in a Play. Guest has none. Shown as "initiales" in French.
+_Avoid_: tag, nickname, alias
+
 **Default Score**:
-A score that belongs to no Profile: already on a table's high score board when the pack first read it, or a High Score whose Profile was removed. Shown as "score par défaut" in French.
+A score that belongs to no Profile: already on a table's high score board when the pack first read it, or a High Score whose Profile was removed. One bearing a Profile's Initials, and that never had an owner, is that Profile's instead. Shown as "score par défaut" in French.
 _Avoid_: original score (confused with original tables), anonymous score, factory score (not all of them come from the factory)
 
 **Table Record**:
@@ -509,11 +513,11 @@ _Avoid_: high scores popup, leaderboard
 The view of the High Score Board that shows the table's own high score board with each place's owner. Not the table’s own board, which it shows. Shown as "Scores de la ROM" in French.
 
 **Household Board**:
-The view of the High Score Board that ranks the Household's Profiles by their best High Score or Play Score on the table since their last Profile Reset, one place each. Shown as "Scores de la maison" in French.
+The view of the High Score Board that ranks the Household's Profiles by their best High Score or Play Score on the table since their last Profile Reset, those their Initials took always counting, one place each. Shown as "Scores de la maison" in French.
 _Avoid_: leaderboard, family board
 
 **Personal Board**:
-The view of the High Score Board that shows the active Profile's five best scores on the table since its last Profile Reset: its High Scores, those pushed off the table's board included, and its Play Scores, a Play counted once. Shown as "Vos 5 meilleurs scores" in French.
+The view of the High Score Board that shows the active Profile's five best scores on the table since its last Profile Reset: its High Scores, those pushed off the table's board and those its Initials took whenever included, and its Play Scores, a Play counted once. Shown as "Vos 5 meilleurs scores" in French.
 _Avoid_: Personal 5, My High Scores (the wheel selection of tables where it still holds one)
 
 ### Achievements
