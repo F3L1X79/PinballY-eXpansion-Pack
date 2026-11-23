@@ -219,6 +219,7 @@
         <div class="cell sweet">
           <a class="chip tr-play" href="#wheel-arrival-sound"><b></b>Son d'arrivée sur la roue</a>
           <a class="chip tr-play" href="#talking-cabinet"><b></b>Borne qui parle</a>
+          <a class="chip tr-profiles" href="#moments-log"><b></b>Journal des moments</a>
         </div>
         <div class="cell">
           <a class="chip tr-play" href="#rocket-backglass"><b></b>Rocket Game sur le backglass</a>
@@ -403,6 +404,30 @@
               <li>Les phrases passent par <code>lang/</code> dans les six langues ; les noms de Profile et de table se prononcent-ils correctement ?</li>
             </ul>
             <p class="ctx">Idée du 23/11/2026, priorité moyenne à la demande de Félix.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-profiles" id="moments-log" data-track="profiles" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Journal des moments : noter les grands moments quand ils arrivent</h3>
+            <div class="tags"><span class="tag track">Profiles</span><span class="tag">petit</span><span class="tag">données</span></div>
+          </div>
+          <p>Noter, avec leur date, les grands moments que rien ne garde aujourd'hui : un Household Challenge terminé (seules les deux dernières semaines sont gardées), un House Record pris à un autre Profile (calculé pour le toast, jamais noté), un Table Record, un Mastery Level 10. Rien de visible : c'est la matière de la carte « Les moments de l'année » de <a href="#year-in-pinball">Year in Pinball (n° <span data-ref="year-in-pinball"></span>)</a>.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Les événements existent déjà : <code>houseRecord</code> de <code>common/high_scores/high_score_store.js</code>, la Play Settlement, le Household Challenge complété de <code>common/challenges/household_challenge.js</code>, les Mastery Levels</div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Un journal par Profile (dans son dossier, mis de côté avec lui par un Profile Reset ou une Profile Removal), ou un journal de la maison dans <code>profiles\</code> ?</li>
+              <li>Quels moments exactement : « premier » seulement (premier Table Record, premier House Record pris à quelqu'un) ou chaque fois ? Et le 100e Play sur une table, que le Play Log retrouve déjà ?</li>
+              <li>Un fichier par année, comme le Play Log, pour que le bilan n'en lise qu'un ?</li>
+              <li>Un journal coupé par un plantage : journalisé, mis de côté, le démarrage continue ?</li>
+            </ul>
+            <p class="ctx">Idée du 23/11/2026, issue de Year in Pinball. Placé tôt : chaque mois sans journal est un mois perdu pour le premier bilan complet, celui de 2027.</p>
           </details>
         </div>
       </li>
@@ -680,10 +705,11 @@
           </div>
           <p>Un bilan de l'année par Profile, façon Spotify Wrapped : tables jouées et découvertes, temps de jeu, table et fabricant préférés, plus longue session, Achievements débloqués, plus longue Streak. Proposé tout seul en fin d'année.</p>
           <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Lit le Play Log (livré) ; sur l'écran des Profile Stats dessinées (livré)</div>
+          <div class="links">Lit le Play Log (livré) et le <a href="#moments-log">journal des moments (n° <span data-ref="moments-log"></span>)</a> ; sur l'écran des Profile Stats dessinées (livré)</div>
           <details>
-            <summary>Questions ouvertes (5)</summary>
+            <summary>Questions ouvertes (6)</summary>
             <ul>
+              <li>Une carte « Les moments de l'année », dans l'ordre du calendrier : premier Table Record, House Record pris à un autre Profile (le premier mis en avant), 100e Play sur une table, premier Mastery Level 10, Household Challenges terminés. Combien de moments au plus, et lesquels garder quand l'année en compte beaucoup ?</li>
               <li>Quand le proposer : premier lancement après le 31/12, ou dès la mi-décembre ? Le garder consultable ensuite depuis les Profile Stats ?</li>
               <li>Comment le partager : une capture enregistrée dans un dossier, prête pour Discord ?</li>
               <li>Première année incomplète (journal commencé en cours d'année) : l'annoncer, ou ne rien montrer avant une année pleine ?</li>
