@@ -144,6 +144,15 @@ export default {
                 // The "?" card's line, for a Challenge without tables to offer.
                 anyTable: "Any table: a random game",
             },
+            // The Household Challenge's card, as the Challenge's, with the
+            // Avatars of those who helped after "helpers".
+            household: {
+                period: "HOUSEHOLD CHALLENGE",
+                progress: (title, value, target) => `${title} · ${value}/${target}`,
+                lastStep: "One more game to win the Household Challenge!",
+                anyTable: "Any table: a random game",
+                helpers: "Helped:",
+            },
         },
     },
 

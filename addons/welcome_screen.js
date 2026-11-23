@@ -1,8 +1,8 @@
 ﻿// ============================================================
 // Welcome Screen: at startup (alone or after the startup Profile picker), after
 // Change Player and from its main menu entry, a drawn panel greets the active
-// Profile (Daily Streak, Lost Records, Collection Mastery) and offers a Period
-// Table, the Challenge's table (or a "?" Random Game), a Random Game, or to stay.
+// Profile (Daily Streak, Lost Records, Collection Mastery) and offers the Period
+// Tables, the Challenge's and Household Challenge's (or "?"), a Random Game, or to stay.
 // A drawn dialog of the wheel dialog module at the startup priority (docs/adr/0011).
 // - At startup only, the startup veil dims the wheel until the panel is in.
 // - Drawn at its turn, then redrawn in place when PinballY lays the window out while it is open.
@@ -31,7 +31,10 @@ import { getHighScoreStore } from "../common/high_scores/high_score_store.js";
 import { getTableOfTheDay, getTableOfTheWeek } from "../common/tables/period_table.js";
 import { launchShownTable } from "../common/tables/table_launch.js";
 import { getChallenges, challengeTitleOf } from "../common/challenges/challenge.js";
+import { getHouseholdChallenge } from "../common/challenges/household_challenge.js";
 import { progressTextOf } from "../common/challenges/challenge_card.js";
+import { sameName } from "../common/profiles/profile_name_rules.js";
+import { householdInColumnOrder } from "../common/stats/household_stats.js";
 import { masteryOf, collectionMasteryOfProfile } from "../common/mastery/table_mastery.js";
 import { tablesVisibleTo } from "../common/tables/visible_tables.js";
 import { masteryHeadOf, collectionTextsOf } from "../common/mastery/mastery_bar.js";
@@ -77,8 +80,9 @@ export default function init() {
     // The Lost Records come from the High Scores Add-on's store: none when it is off.
     const highScores = config.addOns.highScores === false ? null : getHighScoreStore();
     const periodTables = { [CHOICE.DAY]: getTableOfTheDay(), [CHOICE.WEEK]: getTableOfTheWeek() };
-    // The Challenge Tables come from the Challenges Add-on: none when it is off.
+    // The Challenge Table and Household Challenge Table cards come from their Add-on: none when it is off.
     const challenges = config.addOns.challenges === false ? null : getChallenges();
+    const householdChallenge = config.addOns.householdChallenge === false ? null : getHouseholdChallenge();
     const navigationSound = createNavigationSound(host, SCRIPT_NAME);
     // The screen greets the Profile in place of the Profile Greeting, so it
     // takes its sound; one that cannot play is logged and never stops the screen.
@@ -162,11 +166,10 @@ export default function init() {
         return { avatarPath: lineAvatarOf(lostRecords[0].taker), text };
     }
 
-    // One of the active Profile's Challenge Tables, each with the same
-    // chance, drawn anew at each opening. Never an offered Period Table nor
-    // the Last Played Table, unless nothing else is left. Null without any.
-    function drawChallengeTable(offeredTables) {
-        const tables = challenges.getTablesToPlay();
+    // One of tables, each with the same chance, drawn anew at each opening.
+    // Never a table another card offers nor the Last Played Table, unless
+    // nothing else is left. Null without any.
+    function drawChallengeTable(tables, offeredTables) {
         const unoffered = tables.filter(game => !offeredTables.some(offered => offered.configId === game.configId));
         const fresh = unoffered.length > 0 ? unoffered : tables;
         const lastPlayed = randomGame.getLastPlayedTable();
@@ -175,27 +178,59 @@ export default function init() {
         return candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : null;
     }
 
-    // The Challenge Table card while the week's Challenge is under way, with
-    // its drawn table (null for a "?" card, which launches a Random Game);
-    // null without a Challenge to follow or once it is completed.
-    function readChallengeTableCard(offeredTables) {
-        const view = challenges ? challenges.getActiveView() : null;
-        if (!view || view.completed) return null;
+    // The Household Challenge Table card's helpers line: the helpers'
+    // Avatars in the Household Stats' column order, Guest last; no Avatar
+    // when the active Profile helped alone.
+    function readHelpers() {
+        const contributors = householdChallenge.getContributors();
+        const active = store.getActiveProfile();
+        const avatarPaths = !contributors.some(name => !sameName(name, active.name)) ? [] : householdInColumnOrder(store)
+            .concat(store.listProfiles().filter(profile => profile.isGuest))
+            .filter(profile => contributors.some(name => sameName(name, profile.name)))
+            .map(profile => profile.avatarPath);
+        return { label: TEXT.periodCards[CHOICE.HOUSEHOLD].helpers, avatarPaths };
+    }
+
+    // The Challenge Table card or the Household Challenge Table card, with
+    // its table (null for a "?" card, which launches a Random Game).
+    function challengeTableCardOf({ choice, view, readLine }, game) {
         const { challenge, value } = view;
-        const texts = TEXT.periodCards.challenge;
+        const texts = TEXT.periodCards[choice];
         const title = challengeTitleOf(challenge);
-        const game = drawChallengeTable(offeredTables);
+        const helpers = readLine ? readLine() : null;
         if (!game) {
             const card = {
-                choice: CHOICE.CHALLENGE, period: texts.period, title,
+                choice, period: texts.period, title,
                 progress: { text: progressTextOf(lang.challenges, view), share: value / challenge.target },
                 line: { plain: true, text: texts.anyTable },
+                helpers,
             };
-            return { card, game: null };
+            return card;
         }
         const isLastStep = value === challenge.target - 1;
         const line = { plain: true, text: isLastStep ? texts.lastStep : texts.progress(title, value, challenge.target) };
-        return { card: cardOf(CHOICE.CHALLENGE, game, texts.period, line), game };
+        return { ...cardOf(choice, game, texts.period, line), helpers };
+    }
+
+    // The Challenge Table and Household Challenge Table cards, while their
+    // challenge is under way. The one with fewer tables draws first, so
+    // the other leaves it its table when it can; the cards stay in order.
+    function readChallengeTableCards(offeredTables) {
+        const sources = [
+            { choice: CHOICE.CHALLENGE, challengeSource: challenges, readLine: null },
+            { choice: CHOICE.HOUSEHOLD, challengeSource: householdChallenge, readLine: readHelpers },
+        ];
+        const underWay = sources
+            .map(source => ({ ...source, view: source.challengeSource ? source.challengeSource.getActiveView() : null }))
+            .filter(({ view }) => view && !view.completed)
+            .map(source => ({ ...source, tables: source.challengeSource.getTablesToPlay() }));
+        const drawn = new Map();
+        for (const source of [...underWay].sort((a, b) => a.tables.length - b.tables.length)) {
+            const game = drawChallengeTable(source.tables, offeredTables);
+            drawn.set(source.choice, game);
+            if (game) offeredTables.push(game);
+        }
+        return underWay.map(source => ({ card: challengeTableCardOf(source, drawn.get(source.choice)), game: drawn.get(source.choice) }));
     }
 
     function cardOf(choice, game, period, line) {
@@ -212,8 +247,9 @@ export default function init() {
     }
 
     // A card per Period Table offered to the active Profile, then the
-    // Challenge's, if any; reading them picks and locks this Period's tables
-    // when nobody did yet.
+    // Challenge's and the Household Challenge's, if any, each table offered
+    // once while there are others; reading them picks and locks this
+    // Period's tables when nobody did yet.
     function readCards() {
         const cards = [];
         const offeredTables = [];
@@ -225,9 +261,12 @@ export default function init() {
             offeredTables.push(game);
             cards.push(cardOf(choice, game, texts.period, greyLineOf(periodTable, texts)));
         }
-        const challengeCard = readChallengeTableCard(offeredTables);
-        if (challengeCard) cards.push(challengeCard.card);
-        return { cards, challengeTable: challengeCard ? challengeCard.game : null };
+        const challengeTables = {};
+        for (const { card, game } of readChallengeTableCards(offeredTables)) {
+            cards.push(card);
+            challengeTables[card.choice] = game;
+        }
+        return { cards, challengeTables };
     }
 
     // Over the tables the active Profile can see; a tier it reached stays.
@@ -240,9 +279,9 @@ export default function init() {
         // What the wheel shows behind the screen: staying keeps it.
         const current = host.getCurrentTable();
         const stay = current ? cleanTitle(current.title) : null;
-        const { cards, challengeTable } = readCards();
+        const { cards, challengeTables } = readCards();
         return {
-            challengeTable,
+            challengeTables,
             picker,
             avatarPath: profile.avatarPath,
             framePath: picker ? getProfileRewards().wornImageOf(profile.name, AVATAR_FRAME_WIDTH) : null,
@@ -432,16 +471,17 @@ export default function init() {
     // A Random Game animates the wheel: the Drawn Screen controls log its rejection.
     function choose() {
         const choice = shown.screen.choices[shown.selected];
-        const { challengeTable } = shown.screen;
-        close({ atOnce: choice === CHOICE.RANDOM || choice === CHOICE.CHALLENGE || choice in periodTables, isFollowed: choice === CHOICE.AVATAR });
+        const { challengeTables } = shown.screen;
+        const isChallenge = choice in challengeTables;
+        close({ atOnce: choice === CHOICE.RANDOM || isChallenge || choice in periodTables, isFollowed: choice === CHOICE.AVATAR });
         if (choice === CHOICE.RANDOM) return randomGame.launch();
         if (choice === CHOICE.AVATAR) getChangePlayer()();
         // Launched as shown, without checking again: only a new week starting
-        // while the screen is open could change the Challenge Tables. The
+        // while the screen is open could change a challenge's tables. The
         // "?" card's is the random choice's launch, whatever addOns.randomGame says.
-        if (choice === CHOICE.CHALLENGE) {
-            if (!challengeTable) return randomGame.launch();
-            launchShownTable(host, challengeTable);
+        if (isChallenge) {
+            if (!challengeTables[choice]) return randomGame.launch();
+            launchShownTable(host, challengeTables[choice]);
         }
         // Locked when the screen was read; a new Period since may have
         // picked an Adult Table, never launched for a Child Profile.

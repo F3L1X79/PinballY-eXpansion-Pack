@@ -31,6 +31,12 @@ Menu Cleanup lightens PinballY's menus for every Profile, Admin Profiles include
 
 It is **off by default**, like the Backglass Clock: turn it on with `ADD_ON_MENU_CLEANUP=true`. PinballY's dedicated buttons for these screens, if you mapped them, still work.
 
+## Welcome Screen
+
+The [Welcome Screen](choosing_a_table.md#welcome-screen-table-of-the-day-table-of-the-week) shows its cards in this order: Table of the Day, Table of the Week, Challenge, Household Challenge. Up to three cards are stacked; four cards make a 2 × 2 grid, the Table of the Day and the Table of the Week on top, the Challenge and the Household Challenge below. The flippers go through them in that reading order.
+
+The Household Challenge card has its period in pink, "HOUSEHOLD CHALLENGE", and offers a table that moves the house's goal forward, or a "?" launching a Random Game. Under its progress, "Helped:" shows the Avatars of those who played for it this week, Guest's for a visitor, without numbers nor ranking; you alone, the line is absent. Once the house completes it, the card leaves.
+
 ## On the wheel screen
 
 - A clock, a gold arc under the wheel (the Wheel Arc) and a richer status line.

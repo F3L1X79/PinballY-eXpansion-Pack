@@ -255,6 +255,13 @@ export default {
                 lastStep: "Ancora una partita per completare la sfida!",
                 anyTable: "Un tavolo qualsiasi: una partita a caso",
             },
+            household: {
+                period: "SFIDA DI CASA",
+                progress: (title, value, target) => `${title} · ${value}/${target}`,
+                lastStep: "Ancora una partita per completare la sfida di casa!",
+                anyTable: "Un tavolo qualsiasi: una partita a caso",
+                helpers: "Hanno aiutato:",
+            },
         },
     },
     // Lower status line text for the currently selected table.

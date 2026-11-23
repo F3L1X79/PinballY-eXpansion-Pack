@@ -1,15 +1,15 @@
 ﻿// ============================================================
 // Welcome Screen painter: layout and drawing of the Welcome Screen (header,
-// Period Table and Challenge Table cards, bottom row, Button Hints, each
-// choice's rect and tooltip), in reference pixels, from the prototype
-// validated on the cabinet.
+// Period Table and Challenge Table cards, stacked or four in a 2 x 2 grid, bottom
+// row, Button Hints, each choice's rect and tooltip), in reference pixels,
+// from the prototypes validated on the cabinet.
 // Only drawing: no layer, no event, no side effect.
 // ============================================================
 
 import { STEAMBALL_COLORS as COLORS, STEAMBALL_FONTS as FONTS } from "../drawing/steamball_palette.js";
 import { metalOf, tierMetalOf, tierOf, MASTERY_STEPS, MAX_MASTERY_LEVEL } from "../mastery/table_mastery.js";
 import {
-    text, oneLine, textInBox, fillGradient, drawAvatar, drawAvatarFrame, avatarFrameSide, avatarFrameInset, drawLevelPip, levelPipOn, tooltip, drawBackdrop as drawPanelBackdrop, drawWheelLogo,
+    text, oneLine, measureWidth, textInBox, fillGradient, drawAvatar, drawAvatarFrame, avatarFrameSide, avatarFrameInset, drawLevelPip, levelPipOn, tooltip, drawBackdrop as drawPanelBackdrop, drawWheelLogo,
     drawExitButton, exitTooltipRectOf, drawExitTooltip, drawButtonHintsBand, buttonHintsFooterRectOf, EXIT_AND_HINTS_METRICS as EXIT_AND_HINTS,
 } from "../drawing/steamball_drawing.js";
 import { drawMasterySquare, masterySquareSize } from "../mastery/mastery_square.js";
@@ -21,7 +21,7 @@ export const WELCOME_SCREEN_Z_INDEX = Object.freeze({ backdrop: 6100, header: 61
 
 export const REFERENCE_HEIGHT = 1920;
 
-export const CHOICE = Object.freeze({ AVATAR: "avatar", EXIT_BUTTON: "exitButton", DAY: "day", WEEK: "week", CHALLENGE: "challenge", STAY: "stay", RANDOM: "random" });
+export const CHOICE = Object.freeze({ AVATAR: "avatar", EXIT_BUTTON: "exitButton", DAY: "day", WEEK: "week", CHALLENGE: "challenge", HOUSEHOLD: "household", STAY: "stay", RANDOM: "random" });
 
 
 const LOOK = Object.freeze({
@@ -46,6 +46,12 @@ const LOOK = Object.freeze({
     // Avatar Choice's "?" tile about a wheel logo's height in the logo column.
     progressHeadY: 16, progressHeadSize: 17, minProgressHeadSize: 14, progressBarY: 58, progressBarH: 12, progressInset: 18,
     mysteryTile: 96,
+    // The Household Challenge card's helpers line, under its grey line: the
+    // label, then the Avatars, from helperAvatar down to minHelperAvatar to fit.
+    helpersGap: 8, helpersH: 44, helperAvatar: 40, minHelperAvatar: 24, helpersAvatarGap: 8,
+    // Four cards make a 2 x 2 grid, each cell with its own logo column, a
+    // share of the cell, and tighter insets than a stacked card's.
+    gridInset: 20, gridLogoShare: 0.3, gridDetailsGap: 24,
     // The logo column, narrower inside a window under narrowBelow (a
     // portrait playfield), then the details at most detailsMaxW wide, short
     // of the card's right edge by detailsRight.
@@ -163,18 +169,37 @@ function drawCollectionCard(host, dc, collection, x, y, w) {
 }
 
 // A "?" card's progress, in its Mastery card's place: the progress text
-// over a bar, both in the Challenge's colour; share from 0 to 1.
-function drawProgressBlock(host, dc, x, y, w, { text: progressText, share }) {
+// over a bar, both in the challenge's colour; share from 0 to 1.
+function drawProgressBlock(host, dc, x, y, w, { text: progressText, share }, color) {
     const h = Math.round(LOOK.masteryCardH * LOOK.cardK);
     dc.fillRect(x, y, w, h, COLORS.panelTranslucent);
     dc.frameRect(x, y, w, h, 1, COLORS.border);
     const barX = x + LOOK.progressInset;
     const barW = w - 2 * LOOK.progressInset;
-    oneLine(host, dc, progressText, { x: barX, y: y + LOOK.progressHeadY, width: barW, size: LOOK.progressHeadSize, minSize: LOOK.minProgressHeadSize, color: COLORS.challengeAccent });
+    oneLine(host, dc, progressText, { x: barX, y: y + LOOK.progressHeadY, width: barW, size: LOOK.progressHeadSize, minSize: LOOK.minProgressHeadSize, color });
     dc.fillRect(barX, y + LOOK.progressBarY, barW, LOOK.progressBarH, COLORS.track);
     const filled = Math.round(barW * Math.min(1, share));
-    if (filled > 0) dc.fillRect(barX, y + LOOK.progressBarY, filled, LOOK.progressBarH, COLORS.challengeAccent);
+    if (filled > 0) dc.fillRect(barX, y + LOOK.progressBarY, filled, LOOK.progressBarH, color);
 }
+
+// The helpers line: its label, at most half the line, then the helpers'
+// Avatars, smaller in a narrow grid cell so that all of them fit; past the
+// smallest size, as many as fit in w.
+function drawHelpersLine(host, dc, { label, avatarPaths }, x, y, w) {
+    const gap = LOOK.helpersAvatarGap;
+    const labelW = Math.min(Math.ceil(measureWidth(host, label, { size: LOOK.lineSize, weight: 600 })), Math.round(w / 2));
+    const room = w - labelW - gap;
+    const size = Math.max(LOOK.minHelperAvatar, Math.min(LOOK.helperAvatar, Math.floor((room + gap) / avatarPaths.length) - gap));
+    oneLine(host, dc, label, { x, y: y + Math.round((LOOK.helpersH - LOOK.lineTile) / 2), width: labelW, height: LOOK.lineTile, size: LOOK.lineSize, minSize: LOOK.minLineSize, color: COLORS.description });
+    let avatarX = x + labelW + gap;
+    for (const path of avatarPaths) {
+        if (avatarX + size > x + w) break;
+        drawAvatar(dc, path, avatarX, y + Math.round((LOOK.helpersH - size) / 2), size);
+        avatarX += size + gap;
+    }
+}
+
+const hasHelpersLine = card => Boolean(card.helpers && card.helpers.avatarPaths.length > 0);
 
 // ---------- Bottom row icons, drawn in a size x size box ----------
 
@@ -243,17 +268,52 @@ function geometry(referenceWidth, screen) {
     const collectionY = greetingEndY + dailyStreakH + lostRecordsH + LOOK.greetingBottom;
     const masteryCardH = Math.round(LOOK.masteryCardH * LOOK.cardK);
     const headerH = collectionY + masteryCardH + LOOK.headerBottom;
-    // Each card ends under its Mastery card, or under its grey line.
+    // Each card ends under its Mastery card, its grey line or its helpers line.
     const masteryBottom = LOOK.masteryY + masteryCardH;
     const lineY = masteryBottom + LOOK.lineGap;
-    const cardHs = screen.cards.map(card => (card.line ? lineY + LOOK.lineH : masteryBottom) + LOOK.cardBottom);
-    const cardsH = cardHs.reduce((sum, cardH) => sum + cardH + LOOK.gap, 0);
+    const helpersY = lineY + LOOK.lineH + LOOK.helpersGap;
+    const cardHOf = card => {
+        if (hasHelpersLine(card)) return helpersY + LOOK.helpersH + LOOK.cardBottom;
+        return (card.line ? lineY + LOOK.lineH : masteryBottom) + LOOK.cardBottom;
+    };
     const logoW = inner.w < LOOK.narrowBelow ? Math.round(inner.w * LOOK.narrowLogoShare) : LOOK.logoW;
-    // Where a card's details start, which Collection Mastery lines up with.
+    // Where a stacked card's details start, which Collection Mastery lines up with.
     const detailsX = LOOK.logoInset + logoW + LOOK.detailsGap;
+    const cardRows = cardRowsOf(screen.cards, inner.w, { logoW, detailsX }, cardHOf);
+    const cardsH = cardRows.reduce((sum, row) => sum + row.h + LOOK.gap, 0);
     const h = LOOK.pad + headerH + LOOK.gap + cardsH + LOOK.rowH + LOOK.gap + EXIT_AND_HINTS.footerH;
     const panel = { x: inner.x - LOOK.pad, y: Math.round((REFERENCE_HEIGHT - h) / 2), w, h };
-    return { panel, inner, headerH, greetingY, dailyStreakY, lostRecordsY, collectionY, masteryCardH, cardHs, cardsH, lineY, logoW, detailsX };
+    return { panel, inner, headerH, greetingY, dailyStreakY, lostRecordsY, collectionY, masteryCardH, cardRows, cardsH, lineY, helpersY, detailsX };
+}
+
+// Four cards make a 2 x 2 grid; fewer stack.
+const GRID_CARDS = 4;
+
+// The rows of cards, top to bottom, each { cells, h }, as tall as its
+// tallest card; a cell is { card, x (from the inner column's left), w,
+// logoInset, logoW, detailsX, detailsW }, in the card's own coordinates.
+function cardRowsOf(cards, innerW, stacked, cardHOf) {
+    if (cards.length !== GRID_CARDS) {
+        const detailsW = Math.min(innerW - LOOK.detailsRight - stacked.detailsX, LOOK.detailsMaxW);
+        return cards.map(card => ({
+            cells: [{ card, x: 0, w: innerW, logoInset: LOOK.logoInset, logoW: stacked.logoW, detailsX: stacked.detailsX, detailsW }],
+            h: cardHOf(card),
+        }));
+    }
+    const cellW = Math.round((innerW - LOOK.gap) / 2);
+    const logoW = Math.round(cellW * LOOK.gridLogoShare);
+    const detailsX = LOOK.gridInset + logoW + LOOK.gridDetailsGap;
+    const rows = [];
+    for (let index = 0; index < cards.length; index += 2) {
+        const pair = cards.slice(index, index + 2);
+        rows.push({
+            cells: pair.map((card, column) => ({
+                card, x: column * (cellW + LOOK.gap), w: cellW, logoInset: LOOK.gridInset, logoW, detailsX, detailsW: cellW - detailsX - LOOK.gridInset,
+            })),
+            h: Math.max(...pair.map(cardHOf)),
+        });
+    }
+    return rows;
 }
 
 // The backdrop: the dimmed wheel and the panel, drawn on a window-sized
@@ -262,8 +322,11 @@ export function drawBackdrop(dc, size, referenceWidth, screen) {
     drawPanelBackdrop(dc, size, REFERENCE_HEIGHT, geometry(referenceWidth, screen).panel);
 }
 
-// The period's colour by card: the Day's gold, the Week's pastel blue, the Challenge's green.
-const PERIOD_COLORS = Object.freeze({ [CHOICE.DAY]: COLORS.gold, [CHOICE.WEEK]: COLORS.weekPeriod, [CHOICE.CHALLENGE]: COLORS.challengeAccent });
+// The period's colour by card: the Day's gold, the Week's pastel blue, the
+// Challenge's green, the Household Challenge's pastel pink.
+const PERIOD_COLORS = Object.freeze({
+    [CHOICE.DAY]: COLORS.gold, [CHOICE.WEEK]: COLORS.weekPeriod, [CHOICE.CHALLENGE]: COLORS.challengeAccent, [CHOICE.HOUSEHOLD]: COLORS.householdAccent,
+});
 
 // The logo column's piece: the table's wheel logo, or a "?" card's tile,
 // centred and at most LOOK.mysteryTile high.
@@ -276,33 +339,35 @@ function logoPieceOf(host, card, rect) {
     return { zIndex: WELCOME_SCREEN_Z_INDEX.logos, rect: tile, draw: dc => drawRandomPlace(host, dc, side) };
 }
 
-// The table cards, top to bottom, each chosen whole: its highlight is the card.
-function layoutCards(host, screen, { inner, cardHs, lineY, logoW, detailsX }, cardsTop, choiceAt) {
-    const detailsW = Math.min(inner.w - LOOK.detailsRight - detailsX, LOOK.detailsMaxW);
+// The table cards, row by row, each chosen whole: its highlight is the card.
+function layoutCards(host, { inner, cardRows, lineY, helpersY }, cardsTop, choiceAt) {
     const pieces = [];
     const highlights = {};
-    let cardY = cardsTop;
-    screen.cards.forEach((card, index) => {
-        const cardH = cardHs[index];
-        pieces.push({
-            zIndex: WELCOME_SCREEN_Z_INDEX.cards,
-            rect: { x: inner.x, y: cardY, w: inner.w, h: cardH },
-            draw: dc => {
-                fillGradient(dc, 0, 0, inner.w, cardH, COLORS.panelTop, COLORS.panel);
-                dc.frameRect(0, 0, inner.w, cardH, 1, COLORS.border);
-                text(host, dc, card.period, { x: detailsX, y: LOOK.cardTop, width: detailsW, size: LOOK.periodSize, weight: 700, color: PERIOD_COLORS[card.choice], font: FONTS.display });
-                oneLine(host, dc, card.title, { x: detailsX, y: LOOK.nameY, width: detailsW, size: LOOK.nameSize, minSize: LOOK.minNameSize });
-                if (card.progress) drawProgressBlock(host, dc, detailsX, LOOK.masteryY, detailsW, card.progress);
-                else drawTableMasteryCard(host, dc, card.mastery, card.masteryHead, detailsX, LOOK.masteryY, detailsW);
-                if (card.line && card.line.plain) drawPlainLine(host, dc, card.line.text, detailsX, lineY, detailsW);
-                else if (card.line) drawGreyLine(host, dc, card.line.played ? null : card.line.streak, card.line.text, detailsX, lineY, detailsW);
-            },
-        });
-        // On a layer of its own, above the card's.
-        pieces.push(logoPieceOf(host, card, { x: inner.x + LOOK.logoInset, y: cardY + LOOK.logoTop, w: logoW, h: cardH - 2 * LOOK.logoTop }));
-        highlights[card.choice] = choiceAt({ x: inner.x, y: cardY, w: inner.w, h: cardH });
-        cardY += cardH + LOOK.gap;
-    });
+    let rowY = cardsTop;
+    for (const { cells, h: cardH } of cardRows) {
+        for (const { card, x, w, logoInset, logoW, detailsX, detailsW } of cells) {
+            const color = PERIOD_COLORS[card.choice];
+            pieces.push({
+                zIndex: WELCOME_SCREEN_Z_INDEX.cards,
+                rect: { x: inner.x + x, y: rowY, w, h: cardH },
+                draw: dc => {
+                    fillGradient(dc, 0, 0, w, cardH, COLORS.panelTop, COLORS.panel);
+                    dc.frameRect(0, 0, w, cardH, 1, COLORS.border);
+                    text(host, dc, card.period, { x: detailsX, y: LOOK.cardTop, width: detailsW, size: LOOK.periodSize, weight: 700, color, font: FONTS.display });
+                    oneLine(host, dc, card.title, { x: detailsX, y: LOOK.nameY, width: detailsW, size: LOOK.nameSize, minSize: LOOK.minNameSize });
+                    if (card.progress) drawProgressBlock(host, dc, detailsX, LOOK.masteryY, detailsW, card.progress, color);
+                    else drawTableMasteryCard(host, dc, card.mastery, card.masteryHead, detailsX, LOOK.masteryY, detailsW);
+                    if (card.line && card.line.plain) drawPlainLine(host, dc, card.line.text, detailsX, lineY, detailsW);
+                    else if (card.line) drawGreyLine(host, dc, card.line.played ? null : card.line.streak, card.line.text, detailsX, lineY, detailsW);
+                    if (hasHelpersLine(card)) drawHelpersLine(host, dc, card.helpers, detailsX, helpersY, detailsW);
+                },
+            });
+            // On a layer of its own, above the card's.
+            pieces.push(logoPieceOf(host, card, { x: inner.x + x + logoInset, y: rowY + LOOK.logoTop, w: logoW, h: cardH - 2 * LOOK.logoTop }));
+            highlights[card.choice] = choiceAt({ x: inner.x + x, y: rowY, w, h: cardH });
+        }
+        rowY += cardH + LOOK.gap;
+    }
     return { pieces, highlights };
 }
 
@@ -316,7 +381,8 @@ function layoutCards(host, screen, { inner, cardHs, lineY, logoW, detailsX }, ca
 // color }, as the Mastery Bar's), line
 // (null, { played, streak, text }, or { plain: true, text } without the
 // square); a "?" card has progress ({ text, share }) in place of logoPath
-// and mastery }), choices, labels (by
+// and mastery; the Household Challenge's has helpers ({ label,
+// avatarPaths }, no line without any Avatar) }), choices, labels (by
 // choice), exitLook (the Exit Button's EXIT_BUTTON_LOOK), buttonHints
 // (the footer's groups) }. Returns the pieces, each { zIndex, rect, draw(dc) } drawn in
 // its rect's own coordinates, and the highlight of each choice.
@@ -380,7 +446,7 @@ export function layoutWelcomeScreen(host, screen, referenceWidth) {
     const choiceAt = (target, tooltipShown = null) => ({ target, tooltip: tooltipShown });
 
     const cardsTop = top + headerH + LOOK.gap;
-    const cards = layoutCards(host, screen, layout, cardsTop, choiceAt);
+    const cards = layoutCards(host, layout, cardsTop, choiceAt);
     pieces.push(...cards.pieces);
 
     // "random" and "stay", side by side.

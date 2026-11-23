@@ -31,6 +31,12 @@ Le nettoyage des menus allège les menus de PinballY pour tous les Profils, Prof
 
 Elle est **désactivée par défaut**, comme l'horloge du backglass : activez-la avec `ADD_ON_MENU_CLEANUP=true`. Les boutons dédiés de PinballY pour ces écrans, si vous les avez affectés, fonctionnent toujours.
 
+## Écran d'accueil
+
+L'[écran d'accueil](choosing_a_table.md#écran-daccueil--table-du-jour-table-de-la-semaine) présente ses cartes dans cet ordre : table du jour, table de la semaine, Défi, Défi de la maison. Jusqu'à trois cartes, elles s'empilent ; quatre cartes forment une grille 2 × 2, la table du jour et la table de la semaine en haut, le Défi et le Défi de la maison en dessous. Les flippers les parcourent dans cet ordre de lecture.
+
+La carte du Défi de la maison a son titre en rose, « DÉFI DE LA MAISON », et propose une table qui fait avancer l'objectif de la maison, ou un « ? » qui lance une partie au hasard. Sous sa progression, « Ont aidé : » montre les avatars de ceux qui ont joué pour lui cette semaine, celui d'Invité pour un visiteur, sans chiffre ni classement ; si vous êtes seul, la ligne est absente. Une fois le défi réussi par la maison, la carte disparaît.
+
 ## Sur l'écran de la roue
 
 - Une horloge, l'arc doré de la roue et une ligne d'état enrichie.

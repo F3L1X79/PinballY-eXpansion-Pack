@@ -33,6 +33,16 @@ const MINUTES_PER_HOUR = 60;
 const GLIDE_TIME_CONSTANT_MS = 40;
 const GLIDE_SNAP_PX = 0.5;
 
+// The Household's Profiles in the screen's column order: every Profile but
+// Guest (always first in the store's list), the active one first, then the
+// Profile picker's order.
+export function householdInColumnOrder(profileStore) {
+    const active = profileStore.getActiveProfile().name.toLowerCase();
+    const household = profileStore.listProfiles().slice(1);
+    const isActive = profile => profile.name.toLowerCase() === active;
+    return [...household.filter(isActive), ...household.filter(profile => !isActive(profile))];
+}
+
 // readStats(profileName, timeReader): the Profile Stats' values for that
 // Profile (common/stats/profile_stats.js), each reader run through
 // timeReader(reader, read); openProfileStats(profileName, onBack, onFailed):
@@ -157,13 +167,10 @@ export function createHouseholdStats(host, {
         return null;
     }
 
-    // The Household's Profiles, the active one first, then the Profile picker's order.
     function readProfiles() {
         const active = profileStore.getActiveProfile();
-        const household = householdOf(profileStore.listProfiles());
-        const isActive = profile => profile.name.toLowerCase() === active.name.toLowerCase();
-        return [...household.filter(isActive), ...household.filter(profile => !isActive(profile))]
-            .map(profile => ({ profile, isActive: isActive(profile) }));
+        return householdInColumnOrder(profileStore)
+            .map(profile => ({ profile, isActive: profile.name.toLowerCase() === active.name.toLowerCase() }));
     }
 
     // Forgets every kept value read under another day or other visible

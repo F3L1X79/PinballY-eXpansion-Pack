@@ -116,6 +116,9 @@ export const periodCards = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_
 // period, the Challenge's title, its progress and its line.
 export const cardTexts = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)).map(layer => layer.texts());
 
+// Each card's images, top to bottom: the Household Challenge card's helpers' Avatars.
+export const cardImages = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)).map(layer => layer.images());
+
 // Each card's fill colours, top to bottom: a "?" card's progress bar among them.
 export const cardFills = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)).map(layer => layer.fills());
 
@@ -172,6 +175,12 @@ function windowRect(layer, { width, height }) {
     const cy = (0.5 - layer.position().y) * height;
     return { left: cx - w / 2, top: cy - h / 2, right: cx + w / 2, bottom: cy + h / 2 };
 }
+
+// Each card's rect in a window of that size ({ period, left, top, right,
+// bottom }), in reading order: by row, then left to right.
+export const cardRects = (fake, size) => shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)
+    .map(layer => ({ period: layer.texts()[0], ...windowRect(layer, size) }))
+    .sort((a, b) => Math.round(a.top - b.top) || a.left - b.left);
 
 // In a window of that size: the footer's rect, every other shown layer's
 // but the backdrop's, the marker's and the tooltips' (each { zIndex,

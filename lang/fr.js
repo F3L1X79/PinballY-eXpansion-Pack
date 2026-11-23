@@ -256,6 +256,13 @@ export default {
                 lastStep: "Plus qu'une partie pour finir le défi !",
                 anyTable: "N'importe quelle table : une partie au hasard",
             },
+            household: {
+                period: "DÉFI DE LA MAISON",
+                progress: (title, value, target) => `${title} · ${value}/${target}`,
+                lastStep: "Plus qu'une partie pour réussir le défi de la maison !",
+                anyTable: "N'importe quelle table : une partie au hasard",
+                helpers: "Ont aidé :",
+            },
         },
     },
 

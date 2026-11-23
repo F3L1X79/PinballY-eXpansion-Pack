@@ -1,7 +1,8 @@
 // ============================================================
 // Starts main.js on the fake host with a week's Challenge locked in
-// cabinet.json and followed by Alice, for the Welcome Screen's Challenge
-// Table card scenarios; the Period Tables are locked on the Williams tables.
+// cabinet.json and followed by Alice, and a Household Challenge when asked,
+// for the Welcome Screen's challenge card scenarios; the Period Tables are
+// locked on the Williams tables.
 // Never loaded by PinballY.
 // ============================================================
 
@@ -50,15 +51,24 @@ export function playFor(fake, game, seconds) {
     fake.gameOver(game);
 }
 
+// The Household Challenge's record of a counted Play, by that Profile.
+export const householdGame = (profile, game) => ({ profile, ...countedGame(game) });
+
+// The Profile's own Avatar image, readable once seeded through files.
+export const avatarOf = name => `${PROFILES}\\${name}\\avatar.png`;
+
 // challenge: the week's, locked; games: what Alice's Challenge counted;
+// household: the week's Household Challenge, locked, its games included;
 // plays: Alice's play records; profile: what else her profile.json carries;
-// others: more Profiles' names; addOns: the enabled Add-ons. Returns the
-// fake once the Welcome Screen is open.
+// others: more Profiles' names; files: more files to seed; addOns: the
+// enabled Add-ons. Returns the fake once the Welcome Screen is open.
 export async function startWithChallenge({
-    challenge = STERN_CHALLENGE, games = [], completed = false, plays = {}, profile = {}, tables = TABLES, others = [],
-    addOns = ["startupChoicePrompt", "profilePicker", "challenges"], language = "en",
+    challenge = STERN_CHALLENGE, games = [], completed = false, household = null, plays = {}, profile = {}, tables = TABLES, others = [],
+    files = {}, addOns = ["startupChoicePrompt", "profilePicker", "challenges"], language = "en", layoutSize = null,
 } = {}) {
     const fake = createFakePinballYHost({ now: NOW, tables });
+    if (layoutSize) fake.setLayoutSize(layoutSize);
+    for (const [path, content] of Object.entries(files)) fake.addFile(path, content);
     for (const name of others) fake.addFile(`${PROFILES}\\${name}\\profile.json`, JSON.stringify({ version: 1, notified: [], plays: {} }));
     fake.addFile(ALICE_FILE, JSON.stringify({
         version: 1, notified: [], plays, ...profile,
@@ -70,6 +80,7 @@ export async function startWithChallenge({
         tableOfTheDay: { configId: DAY_TABLE.configId, period: "2026-09-23" },
         tableOfTheWeek: { configId: WEEK_TABLE.configId, period: WEEK },
         challenge: { current: challenge, previous: null },
+        ...(household ? { householdChallenge: { current: { games: [], ...household }, previous: null } } : {}),
     }));
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
