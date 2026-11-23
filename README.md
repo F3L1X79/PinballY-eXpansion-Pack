@@ -20,6 +20,7 @@ An unofficial extension of [PinballY](http://mjrnet.org/pinscape/PinballY.php) t
 ## Achievements and Challenges
 
 - A new Challenge every Monday, the same for the whole household, its card tracking your progress on the wheel screen.
+- A Household Challenge every week that all the players win together, with no ranking: every game counts, Guest's too.
 - Dozens of Achievements from Bronze to Platinum, a few of them secret, each announced by a toast without interrupting your games. Every one of them raises your Player Level, shown on your Avatar.
 
 → [Achievements and Challenges](docs/guide/en/achievements_and_challenges.md)

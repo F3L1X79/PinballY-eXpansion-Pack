@@ -20,6 +20,7 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 ## Succès et défis
 
 - Un nouveau Défi chaque lundi, le même pour toute la maison, dont la carte suit votre progression sur l'écran de la roue.
+- Un Défi de la maison chaque semaine, que tous les joueurs réussissent ensemble, sans classement : chaque partie compte, celles d'Invité aussi.
 - Des dizaines de Succès du Bronze au Platine, dont quelques secrets, chacun annoncé par un encart sans interrompre vos parties. Chaque Succès fait monter votre niveau, affiché sur votre Avatar.
 
 → [Succès et défis](docs/guide/fr/achievements_and_challenges.md)

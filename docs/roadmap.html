@@ -337,7 +337,7 @@
           </div>
           <p>Un Household Challenge chaque semaine, en plus du Challenge de chaque Profile : tous les Plays comptent, Guest compris, sans classement, même pour un joueur seul. Les cibles des deux défis viennent du Play Log (deuxième meilleure des 8 dernières semaines + 1). Carte sur le Welcome Screen (grille 2 × 2 à quatre cartes, « ? » qui lance un Random Game), Household Challenge Card sur la roue, Household Challenge Tables, famille d'Achievements « Maison » et un cadre.</p>
           <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="done">prototype</span><i>›</i><span class="done">tickets</span><i>›</i><span class="here">implement</span></div>
-          <div class="links">Flow Matt : <code>/implement-spec 565</code> (tickets #586 à #595, dont un humain : les captures). Prototype validé sur la borne le 22/11/2026, branche locale <code>prototype/household-challenge</code>, verdict en commentaire de la spec. Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/565">#565</a>, qui absorbe les « Challenges adaptés à l'activité de la maison »</div>
+          <div class="links">Tickets agents livrés (#586 à #596) ; reste le ticket humain des captures, <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/595">#595</a>. Prototype validé sur la borne le 22/11/2026, branche locale <code>prototype/household-challenge</code>, verdict en commentaire de la spec. Spec <a href="https://github.com/F3L1X79/PinballY-eXpansion-Pack/issues/565">#565</a>, qui absorbe les « Challenges adaptés à l'activité de la maison »</div>
           <details>
             <summary>Décisions du grilling (19/11/2026)</summary>
             <ul>
@@ -346,7 +346,7 @@
               <li>« Ont aidé : » en Avatars, sans chiffres, dans l'ordre des Household Stats ; Guest compte, mais pas dans le calibrage.</li>
               <li>Toast et confettis pour celui qui le termine, toast à leur prochaine arrivée pour les autres contributeurs.</li>
               <li>Add-on à part (<code>addOns.householdChallenge</code>), indépendant des Challenges.</li>
-              <li>Prototype (22/11/2026) : grille 2 × 2, logo à gauche ; plus de « Y aller », le marqueur entoure la carte entière ; « ? » de l'Avatar Choice ; table de la semaine en bleu pastel, Défi de la maison en rose pastel ; carte de la roue jumelle de celle du Défi ; rail de la roue descendu.</li>
+              <li>Prototype (22/11/2026) : grille 2 × 2, logo à gauche ; la carte de la grille se choisit entière, les cartes empilées gardent « Y aller » (#596) ; « ? » de l'Avatar Choice ; table de la semaine en bleu pastel, Défi de la maison en rose pastel ; carte de la roue jumelle de celle du Défi ; rail de la roue descendu.</li>
             </ul>
             <p class="ctx">Idée externe du 29/10/2026. Seuls les modèles recalculables depuis le Play Log (début, table, durée) sont calibrés ; les autres gardent leurs plages fixes.</p>
           </details>
