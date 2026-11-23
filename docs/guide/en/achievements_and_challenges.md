@@ -17,6 +17,8 @@ Once the cabinet has a month of games behind it, most targets follow the househo
 
 ## Household Challenge
 
+<img src="../../images/household_challenge.png" alt="The Household Challenge Card, pink, with the household's progress and the days left" width="301">
+
 Once the cabinet has a month of games behind it, a second goal comes every Monday: the **Household Challenge**, which all the players reach together. It is drawn from the same kinds of goals as the Challenge, never the same one as the week's Challenge nor as last week's Household Challenge.
 
 - Every game counts towards it, whoever plays, Guest included. There is no minimum number of players: a player alone gets a second goal of the week.

@@ -4,7 +4,7 @@
 
 ## Welcome Screen: Table of the Day, Table of the Week
 
-<img src="../../images/welcome_screen.png" alt="The Welcome Screen with the Table of the Day, the Table of the Week and a Challenge Table" width="480">
+<img src="../../images/welcome_screen.png" alt="The Welcome Screen's four cards in a 2 × 2 grid: the Table of the Day, the Table of the Week in pastel blue, a Challenge Table and the pink Household Challenge with its Helped line" width="480">
 
 Every day there is a table nobody in the house has played yet, or the one left alone the longest, and every week a random one. The Welcome Screen greets you with both at startup, again after Change Player, and whenever you pick **Back to the Welcome Screen** in the main menu, with what they mean for you.
 

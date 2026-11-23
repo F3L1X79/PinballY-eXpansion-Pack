@@ -4,7 +4,7 @@
 
 ## Écran d'accueil : table du jour, table de la semaine
 
-<img src="../../images/welcome_screen.png" alt="L'écran d'accueil avec la table du jour, la table de la semaine et une table du défi" width="480">
+<img src="../../images/welcome_screen.png" alt="Les quatre cartes de l'écran d'accueil en grille 2 × 2 : la table du jour, la table de la semaine en bleu pastel, une table du défi et le Défi de la maison rose avec sa ligne « Ont aidé : »" width="480">
 
 Chaque jour une table que personne à la maison n'a encore jouée, ou celle délaissée depuis le plus longtemps, chaque semaine une table au hasard. L'écran d'accueil vous les présente au démarrage, après chaque « Changer de joueur », et chaque fois que vous choisissez **Revenir à l'écran d'accueil** dans le menu principal, avec ce qu'elles représentent pour vous.
 

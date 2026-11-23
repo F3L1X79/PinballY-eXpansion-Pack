@@ -17,6 +17,8 @@ Dès que la borne a un mois de parties derrière elle, la plupart des objectifs 
 
 ## Défi de la maison
 
+<img src="../../images/household_challenge.png" alt="La carte rose du Défi de la maison, avec la progression de la maison et les jours restants" width="301">
+
 Dès que la borne a un mois de parties derrière elle, un second objectif arrive chaque lundi : le **Défi de la maison**, que tous les joueurs atteignent ensemble. Il est tiré parmi les mêmes sortes d'objectifs que le Défi, jamais le même que le Défi de la semaine ni que le Défi de la maison de la semaine passée.
 
 - Chaque partie le fait avancer, quel que soit le joueur, Invité compris. Aucun nombre minimum de joueurs : un joueur seul y gagne un second objectif de la semaine.
