@@ -196,7 +196,7 @@
         <span class="recap" id="recap" aria-label="Chantiers par effort"></span>
       </div>
       <div class="gauge" aria-hidden="true"><i id="hero-gauge" style="width:0"></i></div>
-      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 22.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
+      <div class="hero-line" style="margin-top:8px"><span class="stamp">MAJ 23.11.2026</span><span class="stamp">Blason = effort : bronze petit · argent moyen · or moyen-gros · platine gros</span></div>
     </div>
   </header>
 
@@ -218,9 +218,14 @@
         <div class="ax row">Moyen</div>
         <div class="cell sweet">
           <a class="chip tr-play" href="#wheel-arrival-sound"><b></b>Son d'arrivée sur la roue</a>
+          <a class="chip tr-play" href="#talking-cabinet"><b></b>Borne qui parle</a>
         </div>
         <div class="cell">
+          <a class="chip tr-play" href="#rocket-backglass"><b></b>Rocket Game sur le backglass</a>
           <a class="chip tr-play" href="#closing-curtains"><b></b>Rideaux de fermeture</a>
+          <a class="chip tr-play" href="#dof-toys"><b></b>Jouets DOF</a>
+          <a class="chip tr-play" href="#cross-screen-comet"><b></b>Comète sur tous les écrans</a>
+          <a class="chip tr-play" href="#skill-shot-game"><b></b>Skill shot</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
           <a class="chip tr-profiles" href="#delete-profile"><b></b>Supprimer un Profile</a>
           <a class="chip tr-play" href="#frog-game"><b></b>Jeu de la grenouille</a>
@@ -233,6 +238,7 @@
 
         <div class="ax row">Faible</div>
         <div class="cell">
+          <a class="chip tr-play" href="#screen-shake"><b></b>Secousse d'écran</a>
           <a class="chip tr-share" href="#pinbally-release-day"><b></b>Nouvelle version de PinballY</a>
           <a class="chip tr-play" href="#play-scores-final-only"><b></b>Play Scores Stern M-200</a>
         </div>
@@ -323,6 +329,31 @@
               <li>Quel son (rideau qui glisse, coup de gong ?) et quelle durée, pour que quitter ne paraisse pas lent ?</li>
             </ul>
             <p class="ctx">Idée de Félix du 22/11/2026, haute priorité.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="rocket-backglass" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Un écran du Rocket Game sur le backglass, à la place du backglass de la table</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Pendant un Rocket Game, l'écran du backglass ne montre plus le backglass de la table choisie, mais un écran propre au jeu, comme le fronton d'une borne d'arcade : le score en cours, le Rocket Board, un décor spatial. Le backglass de la table revient à la fin du jeu.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (l'écran du backglass, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>addons/rocket_game.js</code>, de <code>common/rocket/rocket_engine.js</code> et du <code>rocket_board.js</code> ; le backglass se dessine via <code>backglassWindow</code>, comme la Backglass Clock ; voisin de la <a href="#cross-screen-comet">mise en scène sur plusieurs écrans (n° <span data-ref="cross-screen-comet"></span>)</a></div>
+          <details>
+            <summary>Questions ouvertes (5)</summary>
+            <ul>
+              <li>Un écran d'accompagnement (score, Rocket Board, décor), ou le jeu lui-même joué sur l'écran du backglass, la roue restant derrière ?</li>
+              <li>Le score suit-il la partie en direct, ou l'écran reste-t-il fixe pour ne pas ralentir le jeu (dessin d'un second écran à chaque point) ?</li>
+              <li>Comment cacher le backglass de la table : un calque opaque par-dessus, ou une API de <code>backglassWindow</code> qui remplace son média ? À vérifier dans <code>docs/pinbally/</code>.</li>
+              <li>Une borne sans écran de backglass, ou une fenêtre backglass cachée : rien ne change, sans erreur journalisée ?</li>
+              <li>Le DMD et le topper suivent-ils aussi (logo du jeu, meilleur score) ?</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 23/11/2026, haute priorité.</p>
           </details>
         </div>
       </li>
@@ -421,6 +452,127 @@
               <li>Le nom (dans les six langues, voir <code>GLOSSARY.md</code>), la musique, les images (poses PNG ou dessin Steamball), et un Achievement ?</li>
             </ul>
             <p class="ctx">Idée de Félix du 23/11/2026.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="talking-cabinet" data-track="play" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Une borne qui parle, avec la voix de Windows</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">son</span></div>
+          </div>
+          <p>La borne annonce à voix haute un Achievement, salue le Profile qui revient (« Content de te revoir, Félix ») ou donne la Table of the Day au démarrage, dans la langue du pack. Sans rien installer : la synthèse vocale de Windows, par <code>createAutomationObject("SAPI.SpVoice")</code>.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (une phrase dite sur la borne, pour juger les voix installées) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Passe par <code>common/core/pinbally_host.js</code> (<code>createAutomationObject</code>) ; voisin du <a href="#sound-design">sound design (n° <span data-ref="sound-design"></span>)</a> et du salut du Profile de <code>addons/welcome_screen.js</code></div>
+          <details>
+            <summary>Questions ouvertes (5)</summary>
+            <ul>
+              <li><code>Speak</code> est-il asynchrone depuis PinballY (drapeau <code>SVSFlagsAsync</code>), pour ne jamais figer la roue pendant la phrase ? À vérifier sur la borne.</li>
+              <li>Quelles voix sont installées sur la borne, et comment choisir celle de la langue du pack ? Que faire quand aucune voix ne parle cette langue ?</li>
+              <li>Que dit-elle, et quand : Achievements seulement, ou aussi salut, Table of the Day, records ? Un réglage pour la couper, dans <code>common/core/config.js</code> ?</li>
+              <li>Avec un son déjà joué (salut du Profile, toast, Easter Egg) : la voix attend-elle, ou remplace-t-elle le son ?</li>
+              <li>Les phrases passent par <code>lang/</code> dans les six langues ; les noms de Profile et de table se prononcent-ils correctement ?</li>
+            </ul>
+            <p class="ctx">Idée du 23/11/2026, priorité moyenne à la demande de Félix.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="dof-toys" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Faire vibrer la vraie borne : les jouets DOF sur un gros événement</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">borne</span></div>
+          </div>
+          <p>Un Achievement important, un record ou un Level déclenche les jouets de la borne branchés sur DOF : un coup de shaker, les contacteurs, un flash des LEDs. Un effet unique, qui finit seul.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (un coup de shaker depuis un script, sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. DOF a une interface COM (<code>createAutomationObject</code>) ; PinballY gère déjà DOF lui-même, voir <code>docs/pinbally/pinbally-help.md</code></div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Peut-on atteindre DOF depuis un script pendant que PinballY s'en sert lui-même, sans conflit ? Sinon, PinballY expose-t-il un moyen de déclencher ses propres événements DOF ? À vérifier dans <code>docs/pinbally/Help/</code>, puis sur la borne.</li>
+              <li>Quels jouets a la borne de Félix, et lesquels déclencher pour quels événements ?</li>
+              <li>Une borne sans DOF : rien ne se passe, sans erreur journalisée à chaque événement ?</li>
+              <li>Un réglage pour couper les jouets (soirée tardive, voisins) ?</li>
+            </ul>
+            <p class="ctx">Idée du 23/11/2026, priorité moyenne à la demande de Félix. Utile d'abord sur la borne de Félix, selon la règle « besoins de la borne d'abord ».</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="screen-shake" data-track="play" data-rank="bronze">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Une secousse de l'écran sur un gros événement</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">UI</span></div>
+          </div>
+          <p>Sur un gros événement (record, Level, Achievement rare), la fenêtre de la roue tremble de quelques pixels pendant une demi-seconde, puis revient exactement à sa place. Mouvement unique, qui finit seul.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (la secousse, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. <code>dllImport</code> de <code>user32</code> (<code>GetWindowRect</code>, <code>SetWindowPos</code>) ; règles de déclaration dans <code>docs/research/system-scripts.md</code> (C6)</div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Bouger la fenêtre Windows (<code>SetWindowPos</code>), ou seulement décaler les calques dessinés, sans toucher à la fenêtre ? La seconde voie est plus sûre si PinballY se fâche d'un déplacement.</li>
+              <li>La fenêtre revient-elle toujours à sa place, même si un plantage ou un lancement tombe au milieu de la secousse ?</li>
+              <li>En plein écran exclusif ou avec une fenêtre sans bordure, PinballY accepte-t-il le déplacement ? À vérifier sur la borne.</li>
+              <li>Quels événements la méritent, pour qu'elle reste rare ?</li>
+            </ul>
+            <p class="ctx">Idée du 23/11/2026, priorité moyenne à la demande de Félix. Effet unique, compatible avec la règle « pas d'animation sans fin ».</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="cross-screen-comet" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Une mise en scène sur tous les écrans : la comète du topper à la roue</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Sur un record, une comète part du topper ou du DMD, traverse le backglass et finit sur la roue, où elle éclate. Les écrans secondaires, aujourd'hui peu utilisés par le pack, jouent ensemble. Mouvement unique, qui finit seul.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (la comète sur les vrais écrans de la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. <code>dmdWindow</code>, <code>topperWindow</code>, <code>backglassWindow</code> ; calques par <code>common/drawing/placed_layers.js</code> ; voisin des Fireworks et de l'<a href="#rocket-backglass">écran du Rocket Game sur le backglass (n° <span data-ref="rocket-backglass"></span>)</a></div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Les fenêtres secondaires acceptent-elles les mêmes calques de dessin que la roue ? À vérifier dans <code>docs/pinbally/</code>.</li>
+              <li>Comment savoir où sont les écrans les uns par rapport aux autres (ordre vertical), pour que la comète paraisse continue ? Un ordre fixe topper → DMD → backglass → roue suffit-il ?</li>
+              <li>Une borne sans topper ou sans DMD : la comète saute l'écran absent ?</li>
+              <li>Quels événements la méritent : record, Level, Achievement rare ?</li>
+            </ul>
+            <p class="ctx">Idée du 23/11/2026, priorité moyenne à la demande de Félix.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="skill-shot-game" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Easter Egg : un skill shot de dix secondes dans la roue</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Un très court jeu dessiné, joué aux flippers et à Launch : une bille monte, et il faut la lâcher au bon moment pour toucher la cible qui passe. Dix secondes, un essai, puis retour à la roue. Débloqué comme un Easter Egg.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (le geste et la cible, à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Boutons par <code>common/core/drawn_screen_controls.js</code> ; tirage par <code>host.random()</code>, comme les autres Easter Eggs ; voisin du <a href="#frog-game">jeu de la grenouille (n° <span data-ref="frog-game"></span>)</a> et du Rocket Game</div>
+          <details>
+            <summary>Questions ouvertes (4)</summary>
+            <ul>
+              <li>Le geste : un seul bouton au bon moment, ou les flippers pour viser ? Assez simple pour être compris sans explication.</li>
+              <li>Quand il apparaît : un tirage rare sur la roue, comme les autres Easter Eggs, ou une combinaison de boutons cachée ?</li>
+              <li>Ce qu'on gagne : un Achievement, une place dans un classement, ou rien que la fierté ?</li>
+              <li>Le nom dans les six langues (voir <code>GLOSSARY.md</code>), le son, et le dessin Steamball de la cible.</li>
+            </ul>
+            <p class="ctx">Idée du 23/11/2026, priorité moyenne à la demande de Félix. Comme tous les Easter Eggs, décrit nulle part pour le joueur : pas de page du guide.</p>
           </details>
         </div>
       </li>
