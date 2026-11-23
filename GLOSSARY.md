@@ -413,6 +413,10 @@ _Avoid_: quest, goal, mission, Achievement (an Achievement is a permanent milest
 A play goal set for one week, alongside each Profile's own Challenge, that the cabinet's players reach together: every Play counts towards it, Guest's included, and nothing ranks who helped most. It is completed or missed when the week ends. Shown as "Défi de la maison" in French.
 _Avoid_: Household Mission, family quest, team challenge, Challenge (alone: a Challenge belongs to one Profile)
 
+**Household factor**:
+The number of Profiles, Guest left out, that played in the last 8 complete weeks, never below 2; it multiplies the target ranges of the Household Challenge, so that it always asks more than a Challenge. Unlike the Household, it leaves out the Profiles that did not play.
+_Avoid_: household size, player count
+
 **Household Challenge Tables**:
 The tables the active Profile can see that would move the Household Challenge forward if played now, offered as a wheel selection; only some Household Challenges have them.
 _Avoid_: Challenge Tables (those move the Profile's own Challenge forward)
