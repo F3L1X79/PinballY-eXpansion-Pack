@@ -28,8 +28,8 @@ const AFM = table(2, "Attack from Mars", "Bally", 1995);
 const place = (rank, initials, score, owner) => ({ rank, initials, score, owner });
 // Default Scores bearing FEL on both tables (one a Table Record), SLL's
 // Table Record on Attack from Mars, and a Play's place of Bob bearing FEL.
-// Seven more tables whose Default Scores bear MNY, more than the confirmation lists.
-const MANY = ["Galaxy", "Firepower", "Eight Ball", "Dracula", "Centaur", "Black Knight", "Atlantis"].map((title, index) => table(10 + index, title, "Bally", 1980));
+// Twelve more tables whose Default Scores bear MNY, more than the confirmation lists.
+const MANY = ["Kiss", "Joker Poker", "Iron Maiden", "Hercules", "Gorgar", "Galaxy", "Firepower", "Eight Ball", "Dracula", "Centaur", "Black Knight", "Atlantis"].map((title, index) => table(10 + index, title, "Bally", 1980));
 const BOARDS = {
     [MM.configId]: { board: [place(1, "FEL", 9000, null), place(2, "LED", 8000, null), place(3, "FEL", 7000, "Bob")] },
     [AFM.configId]: { board: [place(1, "SLL", 6000, null), place(2, "fel ", 5000, null)] },
@@ -161,10 +161,10 @@ test("Initials no place bears yet are saved, and the closing Dialog says so", ()
     assertNoErrorLogged(fake);
 });
 
-test("past six tables, the confirmation lists five and ends with ...", () => {
+test("past ten tables, the confirmation lists nine and ends with ...", () => {
     enterInitials("Dan", "MNY");
-    assert.equal(readDrawnMenu(fake).message, withTables(TEXT.initialsConfirm("Dan", "MNY", 7, 7),
-        "- Atlantis", "- Black Knight", "- Centaur", "- Dracula", "- Eight Ball", "..."));
+    assert.equal(readDrawnMenu(fake).message, withTables(TEXT.initialsConfirm("Dan", "MNY", 12, 12),
+        "- Atlantis", "- Black Knight", "- Centaur", "- Dracula", "- Eight Ball", "- Firepower", "- Galaxy", "- Gorgar", "- Hercules", "..."));
     pressMenu(fake, "Select");
     assert.equal(store.getInitialsOf("Dan"), null, "No changes nothing");
     closeProfileMenu();

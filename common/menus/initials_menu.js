@@ -19,7 +19,7 @@ const CONFIRM_MENU_ID = "initialsConfirm";
 const OUTCOME_MENU_ID = "initialsOutcome";
 const SEPARATOR = { cmd: -1 };
 // The Dialog stays within the screen: past this many tables, the last line says "...".
-const MAX_TABLES_LISTED = 6;
+const MAX_TABLES_LISTED = 10;
 const MORE_TABLES = "...";
 
 // nameEntry: Name Entry (common/profiles/name_entry.js); highScoreStore: the

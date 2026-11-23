@@ -628,11 +628,11 @@ export default {
         initialsFailed: name => `${name}'s initials could not be saved. See the log for details.`,
         // After OK on Name Entry: the places with no owner on the tables' boards that bear the Initials.
         // givenBack: the places the former initials give back, null when there are none to change.
-        initialsConfirm: (name, initials, places, tables, givenBack = null) => `Give ${name} the initials ${initials}? High score places they take: ${places}, tables: ${tables}.${givenBack === null ? "" : ` Places the former initials give back as default scores: ${givenBack}.`}`,
+        initialsConfirm: (name, initials, places, tables, givenBack = null) => `Give ${name} the initials ${initials}?\n\nHigh score places they take: ${places}\nTables: ${tables}${givenBack === null ? "" : `\nPlaces the former initials give back as default scores: ${givenBack}`}`,
         initialsYes: "Yes, save them",
-        initialsClearConfirm: (name, initials, givenBack) => `Clear ${name}'s initials ${initials}? High score places they give back as default scores: ${givenBack}.`,
+        initialsClearConfirm: (name, initials, givenBack) => `Clear ${name}'s initials ${initials}?\n\nHigh score places they give back as default scores: ${givenBack}`,
         initialsClearYes: "Yes, clear them",
-        initialsDone: (name, initials, places, tables) => `${name} has the initials ${initials} and took high score places: ${places}, tables: ${tables}. The achievements reached are unlocked without being announced.`,
+        initialsDone: (name, initials, places, tables) => `${name} has the initials ${initials}.\n\nHigh score places taken: ${places}\nTables: ${tables}\n\nThe achievements reached are unlocked without being announced.`,
         initialsDoneNone: (name, initials) => `${name} has the initials ${initials}. No high score place bears them yet.`,
         confirm: name => `Reset ${name}? All of its plays, streaks, Challenges and achievements will be erased.`,
         yes: "Yes, reset",
