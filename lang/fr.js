@@ -1229,6 +1229,10 @@ export default {
         restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
+        "1.9.0": [
+            "Le Défi de la maison : chaque lundi, un second objectif que toute la maison atteint ensemble.",
+            "Un Profil Admin donne ses initiales à un Profil, dans Gérer les profils : les anciens scores qui les portent deviennent les siens.",
+        ],
         "1.8.0": [
             "Changez d'Avatar depuis Mon profil, ou portez votre propre photo.",
             "Un profil Admin peut reprendre l'historique de PinballY pour un profil, dans Gérer les profils : une seule fois par borne.",

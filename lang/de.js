@@ -1223,6 +1223,10 @@ export default {
         restarting: "Neustart läuft",
     },
     releaseHighlights: {
+        "1.9.0": [
+            "Die Familien-Herausforderung: jeden Montag ein zweites Ziel, das der ganze Haushalt gemeinsam erreicht.",
+            "Ein Admin-Profil gibt einem Profil unter Profile verwalten seine Initialen: die alten Punktzahlen mit diesen Initialen werden seine eigenen.",
+        ],
         "1.8.0": [
             "Ändere deinen Avatar unter Mein Profil, oder trage dein eigenes Bild.",
             "Ein Admin-Profil kann unter Profile verwalten PinballYs Verlauf für ein Profil übernehmen: nur einmal pro Automat.",

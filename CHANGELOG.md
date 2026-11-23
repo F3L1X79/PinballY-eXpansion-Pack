@@ -2,6 +2,15 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.9.0 (2026-11-23)
+
+- **Household Challenge**: once the cabinet has a month of games behind it, a second goal comes every Monday, which all the players reach together, Guest included. Its target asks more than a Challenge's, scaled by the number of players, and is calibrated on the household's past weeks. A pink card sits under the Challenge Card on the wheel. The game that completes it is celebrated for the player at the controls, then once for every other player who helped. A new Achievement family and Avatar Frame remember the house's wins, and the **Household Challenge Tables** wheel selection lists the tables that would move it forward. `ADD_ON_HOUSEHOLD_CHALLENGE` turns it off on its own.
+- **Challenge targets**: once the household has four weeks of games behind it, most goals follow what the players really played over their last eight weeks: a bit more than a very good week, so a Challenge is missed now and then, on purpose.
+- **Initials**: an Admin Profile gives a Profile its three-letter Initials from **Manage profiles**. The scores bearing them on the tables' boards that belong to no Profile (made before the pack, for instance) become its own, and so do those that show up later. The confirmation lists the tables concerned. Changing or clearing the Initials gives those places back as default scores, and they keep counting after a Profile Reset.
+- **Welcome Screen**: the cards are chosen whole, the Table of the Week in pastel blue. While the Challenge is under way, a Challenge Table card shows, or a "?" card, and while the Household Challenge is under way, its pink card shows with the Avatars of everyone who helped. The cards sit two by two, and every text is drawn whole in a portrait window.
+- **Name Entry**: once a name or Initials are full, the cursor goes to OK, and only erasing or OK can be chosen.
+- **Small touches**: the Profile picker's hint names the Launcher, not Start.
+
 ## v1.8.0 (2026-11-21)
 
 - **Change the Avatar**: on **My Profile**, the Avatar is now a choice right after the Exit Button: Select opens Avatar Choice for the active Profile, Guest included, on the portrait worn. Portraits another Profile wears are greyed and skipped. The last place holds the Profile's Own Picture (a photo dropped as `avatar.jpg` or `avatar.png`, set aside as `.bak` when a portrait is chosen, never overwritten), or a "?" that gives a random free portrait. Guest now ships its picture as `avatar.jpg`, its Own Picture.

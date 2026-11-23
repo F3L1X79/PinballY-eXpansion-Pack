@@ -1222,6 +1222,10 @@ export default {
         restarting: "Riavvio in corso",
     },
     releaseHighlights: {
+        "1.9.0": [
+            "La Sfida di casa: ogni lunedì, un secondo obiettivo che tutta la casa raggiunge insieme.",
+            "Un profilo Admin dà le sue iniziali a un profilo, in Gestisci i profili: i vecchi punteggi che le portano diventano suoi.",
+        ],
         "1.8.0": [
             "Cambia il tuo avatar da Il mio profilo, o usa la tua foto.",
             "Un profilo Admin può riprendere la cronologia di PinballY per un profilo, in Gestisci i profili: una sola volta per cabinato.",

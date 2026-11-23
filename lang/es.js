@@ -1224,6 +1224,10 @@ export default {
         restarting: "Reiniciando",
     },
     releaseHighlights: {
+        "1.9.0": [
+            "El Reto de casa: cada lunes, un segundo objetivo que toda la casa alcanza junta.",
+            "Un perfil Admin da sus iniciales a un perfil, en Gestionar perfiles: las puntuaciones antiguas que las llevan pasan a ser suyas.",
+        ],
         "1.8.0": [
             "Cambia tu avatar desde Mi perfil, o usa tu propia foto.",
             "Un perfil Admin puede recuperar el historial de PinballY para un perfil, en Gestionar perfiles: una sola vez por máquina.",
