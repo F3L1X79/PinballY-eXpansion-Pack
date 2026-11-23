@@ -59,7 +59,7 @@ test("in French, the Welcome Screen says a Period Table was played, cuts a long 
     assert.ok(day.name.endsWith("…") && LONG_TITLE.startsWith(day.name.slice(0, -1).trimEnd()), day.name);
     assert.deepEqual(week, { period: "TABLE DE LA SEMAINE", name: "Attack from Mars", mastery: "Table à découvrir", line: null });
     assert.equal(CARDS.day.streak, "jours d'affilée sur la table du jour : continue !");
-    assert.equal(CARDS.week.streak, "semaines d'affilée sur la table de la semaine : continue !");
+    assert.equal(CARDS.week.streak, "semaines d'affilée sur la table de la semaine !");
     assert.equal(CARDS.week.played, "Jouée cette semaine");
 
     choose(fake, "TABLE DE LA SEMAINE");

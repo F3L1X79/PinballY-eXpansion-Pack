@@ -135,7 +135,7 @@ export default {
             week: {
                 period: "TABLE OF THE WEEK",
                 played: "Played this week",
-                streak: "weeks in a row on the Table of the Week: keep it going!",
+                streak: "weeks in a row on the Table of the Week: go on!",
             },
             challenge: {
                 period: "A CHALLENGE TABLE",

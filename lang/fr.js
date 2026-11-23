@@ -248,7 +248,7 @@ export default {
             week: {
                 period: "TABLE DE LA SEMAINE",
                 played: "Jouée cette semaine",
-                streak: "semaines d'affilée sur la table de la semaine : continue !",
+                streak: "semaines d'affilée sur la table de la semaine !",
             },
             challenge: {
                 period: "UNE TABLE DU DÉFI",

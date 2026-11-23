@@ -19,6 +19,8 @@ test("the four-card grid in a French portrait window draws every text whole, its
         challenge: { week: WEEK, template: "tableOfTheDayDays", param: null, target: 3 },
         // Without a table to offer: the "?" card, "Jouer des tables de…" on the screenshot.
         household: { week: WEEK, template: "differentDecades", param: null, target: 3 },
+        // The Week's Streak line, the longest grey line in French.
+        profile: { streaks: { tableOfTheWeek: { current: 2, longest: 2, lastPeriod: "2026-09-14", periodsPlayed: 2 } } },
         others: ["Bob"],
         addOns: ["startupChoicePrompt", "profilePicker", "challenges", "householdChallenge"],
         language: "fr",
@@ -27,6 +29,7 @@ test("the four-card grid in a French portrait window draws every text whole, its
 
     const texts = cardTexts(fake);
     assert.deepEqual(texts.map(card => card[0]), ["TABLE DU JOUR", "TABLE DE LA SEMAINE", "UNE TABLE DU DÉFI", "DÉFI DE LA MAISON"]);
+    assert.ok(texts[1].includes("semaines d'affilée sur la table de la semaine !"), "the Week's Streak line whole");
     assert.ok(texts[2].includes("Jouer la table du jour 3 jours différents · 0/3"), "the Challenge's line whole");
     assert.ok(texts[3].includes("Jouer des tables de 3 décennies différentes"), "the \"?\" card's title whole");
     assert.ok(texts[3].includes("N'importe quelle table : une partie au hasard"), "the \"?\" card's line whole");

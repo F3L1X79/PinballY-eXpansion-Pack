@@ -247,7 +247,7 @@ export default {
             week: {
                 period: "TAVOLO DELLA SETTIMANA",
                 played: "Giocato in settimana",
-                streak: "settimane di fila sul tavolo della settimana: continua così!",
+                streak: "settimane di fila sul tavolo della settimana!",
             },
             challenge: {
                 period: "UN TAVOLO DELLA SFIDA",
