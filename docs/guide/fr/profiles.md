@@ -74,7 +74,7 @@ Configurer le pack ne demande pas de Profil admin : tant qu'aucun Profil n'est m
 
 <img src="../../images/profile_stats.png" alt="Les statistiques d'un Profil : niveau, maîtrise de la collection, parties, séries, goûts et tables jouées en premier, le plus et en dernier" width="480">
 
-**Mon profil**, dans le menu principal, résume votre vie de flippeur :
+**Mon profil**, dans le menu principal, résume votre vie de pincabiste :
 
 - parties jouées, temps total et durée moyenne d'une partie ;
 - votre niveau et la maîtrise de votre collection ;

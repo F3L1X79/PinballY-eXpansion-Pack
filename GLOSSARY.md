@@ -242,6 +242,10 @@ _Avoid_: avatar picker (too close to Profile Picker), player select, avatar gall
 The Profile that always exists and cannot be removed. Its plays stay its own when a player who played as Guest creates a Profile: nothing moves over.
 _Avoid_: default user, anonymous
 
+**Hidden Guest**:
+Guest left out of what the players see, as wished by a household that never plays as Guest, and shown again at any time; it still exists, its Plays still count, and it shows again while it is the active Profile. Shown as "Invité masqué" in French.
+_Avoid_: removed Guest, deleted Guest (Guest is never removed), disabled Guest
+
 **Household**:
 Every Profile of the cabinet except Guest, Child Profiles included, whether or not it has played. Shown as "la maison" in French.
 _Avoid_: family, all players, users
@@ -257,6 +261,10 @@ _Avoid_: kid mode, parental control, family filter
 **Profile Reset**:
 Starting a Profile over as if it had never played, while its name, Avatar, marks, Initials, Ratings and Favorite Tables stay.
 _Avoid_: fresh start, wipe, achievement reset (the Achievements come from the plays, so the plays go too)
+
+**Profile Removal**:
+Setting a Profile aside so that the cabinet forgets it, its files kept for the owner to bring back by hand. Guest and the active Profile are never removed. Shown as "suppression du profil" in French.
+_Avoid_: deletion, wipe (nothing is erased), Profile Reset (the Profile stays)
 
 **Avatar**:
 The picture that stands for a Profile.

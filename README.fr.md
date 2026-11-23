@@ -12,7 +12,7 @@ Extension non officielle de [PinballY](http://mjrnet.org/pinscape/PinballY.php) 
 
 - Avec « Changer de joueur », chacun prend son Profil, et l'écran d'accueil vous salue par votre nom : vous savez pour qui les parties vont compter. Un nouveau Profil se crée depuis la borne avec les flippers, sans clavier : la saisie du nom, puis le Choix de l'Avatar parmi les portraits du pack. Seules les parties d'au moins une minute comptent, et le Profil Invité reste toujours là pour les visiteurs.
 - Chaque Profil a ses propres notes en étoiles et ses tables favorites, que la notation et les favoris de PinballY montrent tant qu'il joue. Sur l'écran de la roue, cinq étoiles montrent votre propre note de la table sélectionnée, et un rappel vous propose de noter une table une fois que vous y avez assez joué.
-- **"Mon profil"** résume votre vie de flippeur ; **"Stats de la maison"** montre tout le monde côte à côte, le meilleur de chaque ligne en doré.
+- **"Mon profil"** résume votre vie de pincabiste ; **"Stats de la maison"** montre tout le monde côte à côte, le meilleur de chaque ligne en doré.
 - Un Profil admin garde les entrées de configuration pour vous, et un Profil enfant retire les tables pour adultes de la roue.
 
 → [Profils](docs/guide/fr/profiles.md)
