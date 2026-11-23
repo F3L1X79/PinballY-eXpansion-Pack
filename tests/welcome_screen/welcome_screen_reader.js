@@ -130,6 +130,13 @@ export const cardTexts = fake => cardLayers(fake).map(layer => cardParts(layer).
 // Each card's Go button label, top to bottom, null for a card without one.
 export const goButtons = fake => cardLayers(fake).map(layer => cardParts(layer).goLabel);
 
+// Each card's period and name stroke heights, top to bottom: { period,
+// name }, equal when the period takes a single line, as the name does.
+export const periodAndNameHeights = fake => cardLayers(fake).map(layer => {
+    const [period, name] = layer.strokes().filter(stroke => "text" in stroke);
+    return { period: period.rect.height, name: name.rect.height };
+});
+
 // Each card's images, top to bottom: the Household Challenge card's helpers' Avatars.
 export const cardImages = fake => cardLayers(fake).map(layer => layer.images());
 
@@ -195,6 +202,23 @@ function windowRect(layer, { width, height }) {
 export const cardRects = (fake, size) => shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)
     .map(layer => ({ period: layer.texts()[0], ...windowRect(layer, size) }))
     .sort((a, b) => Math.round(a.top - b.top) || a.left - b.left);
+
+// Each card in a window of that size, in reading order: { period, card
+// and logo (rects, the logo being the logo layer whose centre lies in the
+// card), detailsTop (the period's top) }.
+export const cardLogoPlacements = (fake, size) => {
+    const logos = shownLayers(fake, WELCOME_SCREEN_Z_INDEX.logos).map(layer => windowRect(layer, size));
+    return shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards).map(layer => {
+        const card = windowRect(layer, size);
+        const logo = logos.find(rect => {
+            const cx = (rect.left + rect.right) / 2;
+            const cy = (rect.top + rect.bottom) / 2;
+            return cx >= card.left && cx <= card.right && cy >= card.top && cy <= card.bottom;
+        });
+        const period = layer.strokes().find(stroke => "text" in stroke);
+        return { period: period.text, card, logo, detailsTop: toWindow(layer, size, period.rect.x, period.rect.y).y };
+    }).sort((a, b) => Math.round(a.card.top - b.card.top) || a.card.left - b.card.left);
+};
 
 // In a window of that size: the footer's rect, every other shown layer's
 // but the backdrop's, the marker's and the tooltips' (each { zIndex,

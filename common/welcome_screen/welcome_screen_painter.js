@@ -40,8 +40,8 @@ const LOOK = Object.freeze({
     // A Period Table card, from its top: period, name, Mastery card (the
     // Mastery Bar's, scaled by cardK), then the grey line, if any.
     cardTop: 18, nameY: 58, masteryY: 104, lineGap: 10, lineH: 34, cardBottom: 16,
-    periodSize: 21, nameSize: 22, minNameSize: 18, lineSize: 18, minLineSize: 15, lineTile: 28,
-    cardK: 1.25, masteryCardH: 74,
+    periodSize: 21, minPeriodSize: 16, nameSize: 22, minNameSize: 18, lineSize: 18, minLineSize: 15, lineTile: 28,
+    cardK: 1.25, masteryCardH: 74, masteryHeadSize: 13, minMasteryHeadSize: 11,
     // A stacked card's Go button, right of the details, centred on the
     // Mastery card's height.
     button: Object.freeze({ w: 140, h: 52, size: 22 }),
@@ -53,8 +53,10 @@ const LOOK = Object.freeze({
     // label, then the Avatars, from helperAvatar down to minHelperAvatar to fit.
     helpersGap: 8, helpersH: 44, helperAvatar: 40, minHelperAvatar: 24, helpersAvatarGap: 8,
     // Four cards make a 2 x 2 grid, each cell with its own logo column, a
-    // share of the cell, and tighter insets than a stacked card's.
-    gridInset: 20, gridLogoShare: 0.3, gridDetailsGap: 24,
+    // share of the cell, and tighter insets than a stacked card's; inside a
+    // window under narrowBelow, a band at the top of the cell instead, as
+    // high as a stacked card's logo without a grey line, the details under it.
+    gridInset: 20, gridLogoShare: 0.3, gridDetailsGap: 24, narrowGridLogoH: 172,
     // The logo column, narrower inside a window under narrowBelow (a
     // portrait playfield), then the details at most detailsMaxW wide, short
     // of the Go button by detailsGap.
@@ -139,9 +141,12 @@ function drawMasteryCard(host, dc, x, y, w, { head, headColor, count = null, sha
     const squareX = x + w - scaled(14) - size;
     const barX = x + scaled(18);
     const barW = squareX - scaled(26) - barX;
-    text(host, dc, head, { x: barX, y: y + scaled(13), width: barW, size: scaled(13), weight: 600, color: headColor });
+    // The head on one line, short of the count.
+    const headSize = scaled(LOOK.masteryHeadSize);
+    const countW = count === null ? 0 : measureWidth(host, count, { size: headSize, weight: 600 }) + scaled(12);
+    oneLine(host, dc, head, { x: barX, y: y + scaled(13), width: barW - countW, size: headSize, minSize: scaled(LOOK.minMasteryHeadSize), color: headColor });
     // Right-aligned with the bar's end.
-    if (count !== null) text(host, dc, count, { x: barX, y: y + scaled(13), width: barW, size: scaled(13), weight: 600, color: COLORS.description, align: "right" });
+    if (count !== null) text(host, dc, count, { x: barX, y: y + scaled(13), width: barW, size: headSize, weight: 600, color: COLORS.description, align: "right" });
     dc.fillRect(barX, y + scaled(46), barW, scaled(10), COLORS.track);
     const filled = Math.round(barW * Math.min(1, share));
     if (filled > 0) dc.fillRect(barX, y + scaled(46), filled, scaled(10), fillColor);
@@ -294,8 +299,10 @@ const GRID_CARDS = 4;
 
 // The rows of cards, top to bottom, each { cells, h }, as tall as its
 // tallest card; a cell is { card, x (from the inner column's left), w,
-// logoInset, logoW, detailsX, detailsW, button (a stacked card's Go
-// button's rect, null in the grid) }, in the card's own coordinates.
+// logoInset, logoW, logoH (null for the card's height), detailsTop (under
+// a logo band, else 0), detailsX, detailsW, lineW (the grey and helpers
+// lines'), button (a stacked card's Go button's rect, null in the grid) },
+// in the card's own coordinates.
 function cardRowsOf(cards, innerW, stacked, cardHOf) {
     if (cards.length !== GRID_CARDS) {
         const { button: buttonLook } = LOOK;
@@ -303,22 +310,27 @@ function cardRowsOf(cards, innerW, stacked, cardHOf) {
             ...buttonLook, x: innerW - LOOK.logoInset - buttonLook.w, y: LOOK.masteryY + Math.round((stacked.masteryCardH - buttonLook.h) / 2),
         };
         const detailsW = Math.min(button.x - LOOK.detailsGap - stacked.detailsX, LOOK.detailsMaxW);
+        // The grey and helpers lines pass under the Go button.
+        const lineW = innerW - LOOK.logoInset - stacked.detailsX;
         return cards.map(card => ({
-            cells: [{ card, x: 0, w: innerW, logoInset: LOOK.logoInset, logoW: stacked.logoW, detailsX: stacked.detailsX, detailsW, button }],
+            cells: [{ card, x: 0, w: innerW, logoInset: LOOK.logoInset, logoW: stacked.logoW, logoH: null, detailsTop: 0, detailsX: stacked.detailsX, detailsW, lineW, button }],
             h: cardHOf(card),
         }));
     }
     const cellW = Math.round((innerW - LOOK.gap) / 2);
-    const logoW = Math.round(cellW * LOOK.gridLogoShare);
-    const detailsX = LOOK.gridInset + logoW + LOOK.gridDetailsGap;
+    const columnLogoW = Math.round(cellW * LOOK.gridLogoShare);
+    const { logoW, logoH, detailsTop, detailsX } = innerW < LOOK.narrowBelow
+        ? { logoW: cellW - 2 * LOOK.gridInset, logoH: LOOK.narrowGridLogoH, detailsTop: LOOK.logoTop + LOOK.narrowGridLogoH, detailsX: LOOK.gridInset }
+        : { logoW: columnLogoW, logoH: null, detailsTop: 0, detailsX: LOOK.gridInset + columnLogoW + LOOK.gridDetailsGap };
+    const detailsW = cellW - detailsX - LOOK.gridInset;
     const rows = [];
     for (let index = 0; index < cards.length; index += 2) {
         const pair = cards.slice(index, index + 2);
         rows.push({
             cells: pair.map((card, column) => ({
-                card, x: column * (cellW + LOOK.gap), w: cellW, logoInset: LOOK.gridInset, logoW, detailsX, detailsW: cellW - detailsX - LOOK.gridInset, button: null,
+                card, x: column * (cellW + LOOK.gap), w: cellW, logoInset: LOOK.gridInset, logoW, logoH, detailsTop, detailsX, detailsW, lineW: detailsW, button: null,
             })),
-            h: Math.max(...pair.map(cardHOf)),
+            h: detailsTop + Math.max(...pair.map(cardHOf)),
         });
     }
     return rows;
@@ -354,7 +366,7 @@ function layoutCards(host, { inner, cardRows, lineY, helpersY }, cardsTop, goLab
     const highlights = {};
     let rowY = cardsTop;
     for (const { cells, h: cardH } of cardRows) {
-        for (const { card, x, w, logoInset, logoW, detailsX, detailsW, button } of cells) {
+        for (const { card, x, w, logoInset, logoW, logoH, detailsTop, detailsX, detailsW, lineW, button } of cells) {
             const color = PERIOD_COLORS[card.choice];
             pieces.push({
                 zIndex: WELCOME_SCREEN_Z_INDEX.cards,
@@ -362,13 +374,13 @@ function layoutCards(host, { inner, cardRows, lineY, helpersY }, cardsTop, goLab
                 draw: dc => {
                     fillGradient(dc, 0, 0, w, cardH, COLORS.panelTop, COLORS.panel);
                     dc.frameRect(0, 0, w, cardH, 1, COLORS.border);
-                    text(host, dc, card.period, { x: detailsX, y: LOOK.cardTop, width: detailsW, size: LOOK.periodSize, weight: 700, color, font: FONTS.display });
-                    oneLine(host, dc, card.title, { x: detailsX, y: LOOK.nameY, width: detailsW, size: LOOK.nameSize, minSize: LOOK.minNameSize });
-                    if (card.progress) drawProgressBlock(host, dc, detailsX, LOOK.masteryY, detailsW, card.progress, color);
-                    else drawTableMasteryCard(host, dc, card.mastery, card.masteryHead, detailsX, LOOK.masteryY, detailsW);
-                    if (card.line && card.line.plain) drawPlainLine(host, dc, card.line.text, detailsX, lineY, detailsW);
-                    else if (card.line) drawGreyLine(host, dc, card.line.played ? null : card.line.streak, card.line.text, detailsX, lineY, detailsW);
-                    if (hasHelpersLine(card)) drawHelpersLine(host, dc, card.helpers, detailsX, helpersY, detailsW);
+                    oneLine(host, dc, card.period, { x: detailsX, y: detailsTop + LOOK.cardTop, width: detailsW, size: LOOK.periodSize, minSize: LOOK.minPeriodSize, weight: 700, color, font: FONTS.display });
+                    oneLine(host, dc, card.title, { x: detailsX, y: detailsTop + LOOK.nameY, width: detailsW, size: LOOK.nameSize, minSize: LOOK.minNameSize });
+                    if (card.progress) drawProgressBlock(host, dc, detailsX, detailsTop + LOOK.masteryY, detailsW, card.progress, color);
+                    else drawTableMasteryCard(host, dc, card.mastery, card.masteryHead, detailsX, detailsTop + LOOK.masteryY, detailsW);
+                    if (card.line && card.line.plain) drawPlainLine(host, dc, card.line.text, detailsX, detailsTop + lineY, lineW);
+                    else if (card.line) drawGreyLine(host, dc, card.line.played ? null : card.line.streak, card.line.text, detailsX, detailsTop + lineY, lineW);
+                    if (hasHelpersLine(card)) drawHelpersLine(host, dc, card.helpers, detailsX, detailsTop + helpersY, lineW);
                     if (button) {
                         fillGradient(dc, button.x, button.y, button.w, button.h, COLORS.rowUnlocked, COLORS.tile);
                         dc.frameRect(button.x, button.y, button.w, button.h, 1, COLORS.border);
@@ -376,8 +388,8 @@ function layoutCards(host, { inner, cardRows, lineY, helpersY }, cardsTop, goLab
                     }
                 },
             });
-            // On a layer of its own, above the card's.
-            pieces.push(logoPieceOf(host, card, { x: inner.x + x + logoInset, y: rowY + LOOK.logoTop, w: logoW, h: cardH - 2 * LOOK.logoTop }));
+            // On a layer of its own, above the card's: the logo column, or the band over the details.
+            pieces.push(logoPieceOf(host, card, { x: inner.x + x + logoInset, y: rowY + LOOK.logoTop, w: logoW, h: logoH ?? cardH - 2 * LOOK.logoTop }));
             highlights[card.choice] = choiceAt(button
                 ? { x: inner.x + x + button.x, y: rowY + button.y, w: button.w, h: button.h }
                 : { x: inner.x + x, y: rowY, w, h: cardH });
