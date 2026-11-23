@@ -15,6 +15,8 @@ import { isVisibleTo } from "../tables/visible_tables.js";
 export const CALIBRATION_WEEKS = 8;
 // Below this many complete weeks of Play Log, draws keep the fixed ranges.
 export const CALIBRATION_MIN_WEEKS = 4;
+// A player alone still gets a Household Challenge above their own Challenge.
+const HOUSEHOLD_MIN_FACTOR = 2;
 
 // A game record's manufacturer and decade, read from the table's metadata.
 export const manufacturerOf = table => table.manufacturer || "";
@@ -116,16 +118,19 @@ export function createCalibration(host, profileStore) {
         return values.length > 0 ? clampTarget(median(values), range, cap) : null;
     }
 
-    // The Household's target: each week's value over every Profile's game
-    // records together (Guest left out), as the Household Challenge counts
-    // them; its second best week plus 1, clamped. Null as for targetFor.
-    function householdTargetFor(valueOf, { range, cap }, now = host.now()) {
+    // Null without enough Play Log. The factor leaves out Guest and the
+    // Profiles without a Play in the weeks; targetFor reads the weeks of
+    // every Profile together, as the Household Challenge counts them.
+    function householdCalibration(now = host.now()) {
         if (!hasEnoughPlayLog(now)) return null;
         const profileWeeks = playerNames().map(name => weeklyGamesOf(name, now)).filter(weeks => weeks !== null);
-        if (profileWeeks.length === 0) return null;
         const weeks = Array.from({ length: CALIBRATION_WEEKS }, (_, index) => profileWeeks.flatMap(games => games[index]));
-        return clampTarget(secondBestPlusOne(weeks.map(valueOf)), range, cap);
+        return {
+            factor: Math.max(HOUSEHOLD_MIN_FACTOR, profileWeeks.length),
+            targetFor: (valueOf, { range, cap }) =>
+                (profileWeeks.length === 0 ? null : clampTarget(secondBestPlusOne(weeks.map(valueOf)), range, cap)),
+        };
     }
 
-    return { hasEnoughPlayLog, weeklyGamesOf, targetFor, householdTargetFor };
+    return { hasEnoughPlayLog, weeklyGamesOf, targetFor, householdCalibration };
 }

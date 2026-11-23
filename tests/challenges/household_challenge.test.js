@@ -52,6 +52,8 @@ const logged = day => ({ start: `${day}T20:00:00`, configId: "Table 1", seconds:
 const ENOUGH_LOG = { Alice: [logged("2026-08-17")] };
 // A lock of the week, as cabinet.json keeps it.
 const lockOf = (template, target, { param = null, week = WEEK, games = [] } = {}) => ({ week, template, param, target, games });
+// The week's Household Challenge already locked: one Play on each of the 4 tables completes it.
+const FOUR_TABLES = { current: lockOf("differentTables", 4), previous: null };
 
 // saved: the Household Challenge's locks already in cabinet.json; plays:
 // each Profile's play records; logs: each Profile's Play Log, Guest's under
@@ -112,38 +114,41 @@ function play(fake, game, seconds = 90) {
     fake.gameOver(game);
 }
 
+// On 4 tables, a doubled range (Alice alone played) leaves tableOfTheDayDays
+// the first feasible template: no count of tables reaches 6.
 test("the week's Household Challenge is drawn once, locked in cabinet.json, never with the week's Challenge template", () => {
-    // The Challenge draws differentTables; the Household Challenge the first
-    // template left, calibrated on Alice's single Play: the range's minimum.
-    const { fake } = setUp({ randoms: [0, 0, 0.99] });
+    // The Challenge draws tableOfTheDayDays, the 5th of its 11 feasible
+    // templates; the Household Challenge the first one left, tableOfTheWeekGames,
+    // in the doubled range 8 to 16.
+    const { fake } = setUp({ challengeRandoms: [4.5 / 11, 0, 0.99], randoms: [0, 0, 0.99] });
 
-    assert.equal(readJson(fake, CABINET_FILE).challenge.current.template, "differentTables");
-    assert.deepEqual(cabinetLocks(fake), { current: lockOf("differentManufacturers", 3), previous: null });
+    assert.equal(readJson(fake, CABINET_FILE).challenge.current.template, "tableOfTheDayDays");
+    assert.deepEqual(cabinetLocks(fake), { current: lockOf("tableOfTheWeekGames", 16), previous: null });
     assert.ok(cardShows(fake, HOUSE_TEXT.cardHeader.toLocaleUpperCase()));
-    assert.ok(cardShows(fake, TEXT.titles.differentManufacturers(3)));
-    assert.ok(cardShows(fake, TEXT.progress(0, 3, TEXT.daysLeft(7))));
+    assert.ok(cardShows(fake, TEXT.titles.tableOfTheWeekGames(16)));
+    assert.ok(cardShows(fake, TEXT.progress(0, 16, TEXT.daysLeft(7))));
 
     fake.setNow(SUNDAY_NIGHT);
     fake.fire("wheelmode");
-    assert.deepEqual(cabinetLocks(fake), { current: lockOf("differentManufacturers", 3), previous: null }, "the same all week");
+    assert.deepEqual(cabinetLocks(fake), { current: lockOf("tableOfTheWeekGames", 16), previous: null }, "the same all week");
     assertNoErrorLogged(fake);
 });
 
 test("a new week's Household Challenge never has last week's template", () => {
-    const lastWeek = lockOf("differentTables", 4, { week: LAST_WEEK });
+    const lastWeek = lockOf("tableOfTheDayDays", 6, { week: LAST_WEEK });
     const { fake } = setUp({ challenges: false, saved: { current: lastWeek, previous: null }, randoms: [0, 0, 0.99] });
 
     assert.deepEqual(cabinetLocks(fake), {
-        current: lockOf("differentManufacturers", 3),
+        current: lockOf("tableOfTheWeekGames", 16),
         previous: { ...lastWeek, verdictSeenBy: ["Alice"] },
     }, "last week's verdict shown to Alice at startup");
 });
 
-test("with the Challenges off, any template can be drawn, the target in its range capped by what the Household can reach", () => {
+test("with the Challenges off, any template can be drawn, the target in its doubled range capped by what the Household can reach", () => {
     const { fake } = setUp({ challenges: false, randoms: [0, 0, 0.99] });
 
     assert.equal(readJson(fake, CABINET_FILE).challenge, undefined, "no Challenge drawn");
-    assert.deepEqual(cabinetLocks(fake).current, lockOf("differentTables", 4), "min(8, 4 visible tables)");
+    assert.deepEqual(cabinetLocks(fake).current, lockOf("tableOfTheDayDays", 7), "min(10, 7 days left)");
 });
 
 test("no Household Challenge before the Household's Play Log covers 4 complete weeks, Guest's Plays not counting", () => {
@@ -157,7 +162,7 @@ test("no Household Challenge before the Household's Play Log covers 4 complete w
 });
 
 test("every Profile's Plays add up, Guest's included, recorded in cabinet.json with their Profile", () => {
-    const { fake, store } = setUp({ challenges: false, randoms: [0, 0, 0] });
+    const { fake, store } = setUp({ challenges: false, saved: FOUR_TABLES });
 
     play(fake, TABLES[0]);
     store.switchTo("Bob");
@@ -230,7 +235,7 @@ test("without a condition, any counted Play makes a contributor", () => {
 });
 
 test("the card shows the Household Challenge completed until Sunday, then last week's verdict once per Profile", () => {
-    const { fake, store } = setUp({ challenges: false, randoms: [0, 0, 0] });
+    const { fake, store } = setUp({ challenges: false, saved: FOUR_TABLES });
     play(fake, TABLES[0]);
     play(fake, TABLES[1]);
     store.switchTo("Bob");
@@ -262,7 +267,7 @@ test("the card shows the Household Challenge completed until Sunday, then last w
 });
 
 test("a missed Household Challenge's verdict shows how far the house got", () => {
-    const { fake } = setUp({ challenges: false, randoms: [0, 0, 0] });
+    const { fake } = setUp({ challenges: false, saved: FOUR_TABLES });
     play(fake, TABLES[0]);
     play(fake, TABLES[1]);
 
@@ -318,7 +323,7 @@ test("the card is a point while a game runs and in attract mode, and comes back 
 });
 
 test("the card lights up once after a Play that moved the Household Challenge forward", () => {
-    const { fake } = setUp({ challenges: false });
+    const { fake } = setUp({ challenges: false, saved: FOUR_TABLES });
     fake.advanceTime(5000);
     const resting = houseCard(fake).frames().length;
 

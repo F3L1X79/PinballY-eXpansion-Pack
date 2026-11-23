@@ -216,26 +216,25 @@ export function tablesToPlayOf(host, profileStore, challenge, games, { tableOfTh
 }
 
 // One of the templates not excluded with a feasible option, and one of its
-// feasible options: { id, template, option }, or null when none is feasible.
-export function drawTemplate(context, excludedIds, randomIndex) {
+// feasible options: { id, template, option, range }, or null when none is
+// feasible. factor scales each template's range (the Household Challenge's).
+export function drawTemplate(context, excludedIds, randomIndex, factor = 1) {
     const candidates = Object.entries(TEMPLATES)
         .filter(([id]) => !excludedIds.includes(id))
-        .map(([id, template]) => ({
-            id,
-            template,
-            options: template.options(context).filter(option => option.max >= template.range.min),
-        }))
+        .map(([id, template]) => {
+            const range = targetRange(template.range.min * factor, template.range.max * factor);
+            return { id, template, range, options: template.options(context).filter(option => option.max >= range.min) };
+        })
         .filter(candidate => candidate.options.length > 0);
     if (candidates.length === 0) return null;
-    const { id, template, options } = candidates[randomIndex(candidates.length)];
-    return { id, template, option: options[randomIndex(options.length)] };
+    const { id, template, range, options } = candidates[randomIndex(candidates.length)];
+    return { id, template, range, option: options[randomIndex(options.length)] };
 }
 
 // The drawn option's target: calibrate(valueOf, { range, cap }) for a
 // calibrated template, else (or when it gives null) drawn in the range,
 // capped by the option.
-export function targetOfDrawn({ template, option }, calibrate, randomInt) {
-    const { range } = template;
+export function targetOfDrawn({ template, option, range }, calibrate, randomInt) {
     const calibrated = template.calibrated
         ? calibrate(games => template.progress(games, option.param), { range, cap: option.max })
         : null;

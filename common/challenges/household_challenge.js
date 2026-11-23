@@ -124,13 +124,15 @@ export function createHouseholdChallenge(host, profileStore, { challenges, table
         for (const listener of creditedListeners) listener(name, count);
     }
 
-    // A template not excluded with a feasible option, its target calibrated
-    // on the Household's last weeks together, else drawn in its range; both
-    // capped by what the Household can reach together.
+    // A template not excluded with a feasible option, its range the
+    // Challenge's times the household factor; its target calibrated on the
+    // Household's last weeks together, else drawn in that range; both capped
+    // by what the Household can reach together.
     function draw(week, previous) {
         const none = { week, template: NO_TEMPLATE, param: null, target: 0, games: [] };
         const now = host.now();
-        if (!calibration.hasEnoughPlayLog(now)) return none;
+        const household = calibration.householdCalibration(now);
+        if (!household) return none;
         const challenge = challenges ? challenges.getCurrent() : null;
         const excluded = [previous, challenge].filter(isDrawnChallenge).map(drawn => drawn.template);
         const profilePlays = profileStore.listProfiles().map(profile => profileStore.getPlaysOf(profile.name));
@@ -141,9 +143,9 @@ export function createHouseholdChallenge(host, profileStore, { challenges, table
             reachableCount: matches => visibleTables.filter(table =>
                 profilePlays.some(plays => matches(plays[table.configId] || NO_PLAY))).length,
         };
-        const drawn = drawTemplate(context, excluded, randomIndex);
+        const drawn = drawTemplate(context, excluded, randomIndex, household.factor);
         if (!drawn) return none;
-        const target = targetOfDrawn(drawn, (valueOf, bounds) => calibration.householdTargetFor(valueOf, bounds, now), randomInt);
+        const target = targetOfDrawn(drawn, household.targetFor, randomInt);
         return { week, template: drawn.id, param: drawn.option.param, target, games: [] };
     }
 

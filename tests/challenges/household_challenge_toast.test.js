@@ -31,20 +31,21 @@ const table = (id, manufacturer, year) =>
     ({ id, configId: `Table ${id}`, title: `Table ${id}`, manufacturer, year, isHidden: false });
 const TABLES = [table(1, "Williams", 1992), table(2, "Bally", 1995), table(3, "Stern", 2016), table(4, "Gottlieb", 1978)];
 const HOUSE_TEXT = lang.householdChallenge;
-// The week's Household Challenge with the draw below: 4 different tables.
+// The week's Household Challenge, locked in cabinet.json: 4 different tables.
+const LOCK = { week: "2026-09-21", template: "differentTables", param: null, target: 4, games: [] };
 const TITLE = lang.challenges.titles.differentTables(4);
 const toastOf = count => [HOUSE_TEXT.toastHeader.toLocaleUpperCase(), TITLE, HOUSE_TEXT.toastDescription(count)].join(" | ");
 
 // Alice's Play five complete weeks back: the Household's Play Log covers 4 weeks.
 const PLAY_LOG = JSON.stringify({ version: 1, plays: [{ start: "2026-08-17T20:00:00", configId: "Table 1", seconds: 120 }] });
 
-// The Challenges off; the Household Challenge drawn as differentTables, target 4.
+// The Challenges off; the week's Household Challenge already locked.
 function setUp({ profiles = ["Alice", "Bob"], active = "Alice" } = {}) {
     const fake = createFakePinballYHost({ now: MONDAY, tables: TABLES, layoutSize: { width: 1080, height: 1920 } });
     fake.installGlobals();
     for (const name of profiles) fake.addFolder(`${PROFILES}\\${name}`);
     fake.addFile(`${PROFILES}\\Alice\\play-log-2026.json`, PLAY_LOG);
-    fake.addFile(CABINET_FILE, JSON.stringify({ version: 1, activeProfile: active }));
+    fake.addFile(CABINET_FILE, JSON.stringify({ version: 1, activeProfile: active, householdChallenge: { current: LOCK, previous: null } }));
     const store = createProfileStore(fake);
     const showers = [];
     const toasts = createAchievementToasts(fake, { confettiShower: { start: () => showers.push(true), endsAtMs: () => null, onStopped() {} } });
