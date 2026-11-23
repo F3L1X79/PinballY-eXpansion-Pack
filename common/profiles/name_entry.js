@@ -2,8 +2,8 @@
 // Name Entry: the drawn screen where a word is put together with the
 // flippers on a ring of characters. Over the Profile picker, a new Profile's
 // name: OK creates the Profile (one folder written) and hands its name back.
-// From Manage profiles, a Profile's Initials: OK hands them back, saving nothing;
-// once three letters are in, the cursor goes to OK and only erasing or OK can be chosen.
+// From Manage profiles, a Profile's Initials: OK hands them back, saving nothing.
+// A full word (12 or 3) puts the cursor on OK, leaving only erasing or OK to choose.
 // - Exit and attract mode create nothing; a failed folder keeps the screen open with a message, logged, no Error Toast.
 // - Moving along the ring only moves layers: each draw blocks PinballY 20 to 45 ms on the cabinet.
 // - Buttons and attract mode go through the Drawn Screen controls, set up before the Profile picker's listener.
@@ -67,8 +67,8 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
     const eraseIndex = () => ring().length - 2;
     const okIndex = () => ring().length - 1;
     const isOkGreyed = () => shown.refusal !== null;
-    // Full Initials leave only erasing and OK to choose: the letters are greyed and skipped.
-    const isFull = () => shown.mode.okOnceFull && shown.name.length >= shown.mode.maxLength;
+    // A full word leaves only erasing and OK to choose: the characters are greyed and skipped.
+    const isFull = () => shown.name.length >= shown.mode.maxLength;
     const isLetterBlocked = index => index < eraseIndex() && isFull();
 
     // The failed folder's message takes the reason's place.
@@ -86,7 +86,7 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
             // Only while the Household is empty.
             notice: profileStore.isHouseholdEmpty() ? TEXT.firstProfileLine : null,
             // After a first capital, the cursor goes to the lower case.
-            lowerAfterFirst: true, okOnceFull: false,
+            lowerAfterFirst: true,
             refusalOf: name => nameRefusal(name, { listedNames, guestNameShown: guestName }),
             // An empty name has no reason to give.
             reasonOf: refusal => (refusal === NAME_REFUSAL.EMPTY ? "" : TEXT.refusals[refusal]),
@@ -106,8 +106,7 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
     function initialsMode({ profileName, current, holderOf, onDone, onExit }) {
         return {
             ring: INITIALS_RING, maxLength: INITIALS_LENGTH, title: TEXT.initials.title(profileName), lines: TEXT.initials.lines, word: current || "",
-            // Once three letters are in, the cursor goes to OK.
-            notice: null, lowerAfterFirst: false, okOnceFull: true,
+            notice: null, lowerAfterFirst: false,
             refusalOf: initials => initialsRefusal(initials, holderOf),
             reasonOf: (refusal, initials) => (refusal === INITIALS_REFUSAL.TAKEN
                 ? TEXT.initials.refusals.taken(holderOf(initials)) : TEXT.initials.refusals.threeLetters),
@@ -257,8 +256,8 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
         navigationSound.load();
         shown = {
             mode, name: mode.word, refusal: mode.refusalOf(mode.word), hasFolderFailed: false, opacity: 0,
-            // Full Initials pre-filled open on OK.
-            cursor: mode.okOnceFull && mode.word.length >= mode.maxLength ? mode.ring.length - 1 : 0,
+            // A full word pre-filled (Initials) opens on OK.
+            cursor: mode.word.length >= mode.maxLength ? mode.ring.length - 1 : 0,
             controlled: controls.open({ onMove: move, onChoose: choose, onExit: exit, close: remove }),
             referenceWidth: 0, geometry: null, backdrop: null, fixedLayers: [], ringLayers: [], nameLayer: null, reasonLayer: null, marker: null,
         };
@@ -283,7 +282,7 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
 
     const redrawReason = () => redraw(shown.reasonLayer, shown.geometry.reason, drawReasonOn(shown.geometry.reason));
 
-    // Full Initials put the cursor on OK.
+    // A full word puts the cursor on OK.
     function setName(name) {
         shown.name = name;
         redraw(shown.nameLayer, shown.geometry.name, drawNameOn(shown.geometry.name));

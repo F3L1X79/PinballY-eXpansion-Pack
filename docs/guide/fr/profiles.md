@@ -53,7 +53,7 @@ La dernière place montre la photo du Profil, sa photo perso, quand il en a une 
 
 Un fichier de portrait abîmé est écarté du Choix de l'Avatar et journalisé ; si aucun n'est lisible, le Choix de l'Avatar est sauté et le nouveau Profil garde l'Avatar par défaut. Une fois créé, un Profil change d'Avatar depuis [Mon profil](#mon-profil).
 
-Un nom compte 12 caractères au maximum, sans accents, espaces ni chiffres. Pour un nom plus long ou accentué, renommez le dossier du Profil dans Windows, **avant de jouer** : renommer garde les parties et les Succès du Profil, mais ses meilleurs scores et ses records perdus suivent le nom, et renommer le dossier du Profil actif repart sur Invité.
+Un nom compte 12 caractères au maximum, sans accents, espaces ni chiffres ; au 12e, le curseur passe sur OK et les caractères sont grisés : restent effacer et OK. Pour un nom plus long ou accentué, renommez le dossier du Profil dans Windows, **avant de jouer** : renommer garde les parties et les Succès du Profil, mais ses meilleurs scores et ses records perdus suivent le nom, et renommer le dossier du Profil actif repart sur Invité.
 
 Quelle que soit la casse, la saisie du nom refuse le nom d'Invité, `guest` ou tel que votre langue l'affiche, les noms que Windows se réserve (`CON`, `PRN`, `AUX`, `NUL`) et le nom d'un Profil déjà listé, et écrit pourquoi sous l'anneau. Rien d'autre n'est refusé : un Profil mis de côté en `_Max` ou un Profil supprimé laisse son nom libre. Un tiret ne fait rien au début d'un nom ou juste après un autre, et un tiret final est retiré : « Max- » est créé sous le nom « Max ».
 

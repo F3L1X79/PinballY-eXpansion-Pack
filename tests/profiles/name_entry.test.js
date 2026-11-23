@@ -1,7 +1,7 @@
 // ============================================================
 // Name Entry through main.js: the "+" opens it over the Profile picker; the
 // flippers move along the ring without drawing; a name is built, erased and
-// capped; OK creates an empty folder and the picker comes back on it with no
+// capped, OK alone with erase once full; OK creates an empty folder and the picker comes back on it with no
 // switch. Exit returns to the "+", nothing created.
 // ============================================================
 
@@ -12,12 +12,14 @@ import { expectedButtonHints, buttonHintsOn } from "../support/button_hints_read
 import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 import { NAME_ENTRY_Z_INDEX } from "../../common/profiles/name_entry_painter.js";
 import {
-    startOnWheel, press, step, highlighted, openNameEntry, isNameEntryOpen, nameEntryTexts, nameShown, currentCharacter, ringShown, colorOf,
+    startOnWheel, press, step, highlighted, openNameEntry, isNameEntryOpen, nameEntryTexts, nameShown, currentCharacter, ringShown, ringLayers, colorOf,
     enter, enterName, moveTo, pickerTexts, passThroughAvatarChoice, PROFILES_FOLDER, NAME_ENTRY_OPEN_MS, GLIDE_OVER_MS,
 } from "./name_entry_scenario.js";
 
 const ERASE = String.fromCharCode(0x2190);
 const OK = "OK";
+// A character's alpha on the strip, next to the current one (which fades it by a fifth only).
+const alphaOf = (fake, character) => ringLayers(fake).find(layer => layer.texts()[0] === character).alpha;
 
 test("a name built with the flippers creates an empty folder, and the picker comes back on it", async () => {
     const { fake, lang, store, openPicker } = await startOnWheel({ profiles: ["Alice", "Zed"], activeProfile: "Zed" });
@@ -81,14 +83,18 @@ test("a name built with the flippers creates an empty folder, and the picker com
     assert.equal(nameShown(fake), "Ma");
     assert.equal(currentCharacter(fake), ERASE);
 
-    // A 13th character is not added.
+    // The 12th character puts the cursor on OK; the others are greyed and skipped.
     enterName(fake, "xxxxxxxxxx");
     assert.equal(nameShown(fake), "Maxxxxxxxxxx");
-    press(fake, "Select");
-    assert.equal(nameShown(fake), "Maxxxxxxxxxx", "12 characters at most");
-    assert.equal(nameShown(fake).length, 12);
-    enter(fake, ERASE);
-    for (let erased = 0; erased < 7; erased++) press(fake, "Select");
+    assert.equal(currentCharacter(fake), OK, "a full name puts the cursor on OK");
+    assert.ok(alphaOf(fake, "A") < alphaOf(fake, OK) / 2, "the characters are greyed");
+    press(fake, "Next");
+    assert.equal(currentCharacter(fake), ERASE, "Next skips the characters, to the erase arrow");
+    press(fake, "Next");
+    assert.equal(currentCharacter(fake), OK);
+    press(fake, "Prev");
+    assert.equal(currentCharacter(fake), ERASE);
+    for (let erased = 0; erased < 8; erased++) press(fake, "Select");
     assert.equal(nameShown(fake), "Maxx");
 
     moveTo(fake, OK);
