@@ -11,8 +11,6 @@ import { cardTexts, periodAndNameHeights, cardLogoPlacements } from "./welcome_s
 import { startWithChallenge, WEEK } from "./challenge_card_scenario.js";
 
 const PORTRAIT = { width: 1080, height: 1920 };
-// A stacked card's logo layer without a grey line, in a 1920-pixel-high window.
-const STACKED_LOGO_H = 172;
 
 test("the four-card grid in a French portrait window draws every text whole, its logos above the details", async () => {
     const fake = await startWithChallenge({
@@ -42,8 +40,6 @@ test("the four-card grid in a French portrait window draws every text whole, its
         assert.ok(logo, `"${period}" has its logo inside its cell`);
         assert.ok(logo.left >= card.left && logo.right <= card.right && logo.top >= card.top, `"${period}"'s logo inside the cell`);
         assert.ok(logo.bottom <= detailsTop, `"${period}"'s logo above its details`);
-        // The "?" card's layer is its tile alone, as on a stacked card.
-        if (period !== "DÉFI DE LA MAISON") assert.ok(logo.bottom - logo.top >= STACKED_LOGO_H - 0.5, `"${period}"'s logo as tall as a stacked card's`);
     }
     assertNoErrorLogged(fake);
 });

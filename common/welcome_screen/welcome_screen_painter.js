@@ -54,9 +54,12 @@ const LOOK = Object.freeze({
     helpersGap: 8, helpersH: 44, helperAvatar: 40, minHelperAvatar: 24, helpersAvatarGap: 8,
     // Four cards make a 2 x 2 grid, each cell with its own logo column, a
     // share of the cell, and tighter insets than a stacked card's; inside a
-    // window under narrowBelow, a band at the top of the cell instead, as
-    // high as a stacked card's logo without a grey line, the details under it.
-    gridInset: 20, gridLogoShare: 0.3, gridDetailsGap: 24, narrowGridLogoH: 172,
+    // window under narrowBelow, a band at the top of the cell instead, the
+    // details under it, their name and grey line on up to two lines, each
+    // two-line box always kept (wrapNameH and wrapLineH high, pushing what
+    // follows down by wrapNameExtra and wrapLineExtra).
+    gridInset: 20, gridLogoShare: 0.3, gridDetailsGap: 24, narrowGridLogoH: 128,
+    wrapNameH: 58, wrapNameExtra: 22, wrapLineH: 48, wrapLineExtra: 20,
     // The logo column, narrower inside a window under narrowBelow (a
     // portrait playfield), then the details at most detailsMaxW wide, short
     // of the Go button by detailsGap.
@@ -107,22 +110,30 @@ function drawLostRecordsLine(host, dc, { avatarPath, text: lineText }, w) {
     oneLine(host, dc, lineText, { x: textX, y: top, width: w - textX, height: tile, size: LOOK.lostRecordsSize, minSize: LOOK.minLostRecordsSize, color: COLORS.alert });
 }
 
+// A grey line's text, on one line, or wrapped onto two from the top of
+// its box when wrap is true.
+function drawLineText(host, dc, lineText, { x, y, width, height, size, wrap }) {
+    const look = { x, y, width, size, minSize: LOOK.minLineSize, color: COLORS.description };
+    if (wrap) textInBox(host, dc, lineText, { ...look, height: LOOK.wrapLineH, top: true });
+    else oneLine(host, dc, lineText, { ...look, height });
+}
+
 // A grey line: a small square like the go-back arrow's, with the check
 // mark when count is null, else the count, then its text. The square and
 // its marks scale with tile.
-function drawGreyLine(host, dc, count, lineText, x, y, w, { tile = LOOK.lineTile, size = LOOK.lineSize } = {}) {
+function drawGreyLine(host, dc, count, lineText, x, y, w, { tile = LOOK.lineTile, size = LOOK.lineSize, wrap = false } = {}) {
     const k = tile / LOOK.lineTile;
     const top = y + 2;
     fillGradient(dc, x, top, tile, tile, COLORS.rowUnlocked, COLORS.tile);
     dc.frameRect(x, top, tile, tile, 2, COLORS.border);
     if (count === null) drawCheck(dc, x + Math.round(6 * k), top + Math.round(5 * k), Math.round(15 * k), COLORS.description);
     else text(host, dc, String(count), { x, y: top, width: tile, height: tile, size: Math.round((count > 99 ? 11 : 14) * k), weight: 700, color: COLORS.description, font: FONTS.display, align: "center" });
-    oneLine(host, dc, lineText, { x: x + tile + 12, y: top, width: w - tile - 12, height: tile, size, minSize: LOOK.minLineSize, color: COLORS.description });
+    drawLineText(host, dc, lineText, { x: x + tile + 12, y: top, width: w - tile - 12, height: tile, size, wrap });
 }
 
 // A grey line without its square, on the grey line's height.
-function drawPlainLine(host, dc, lineText, x, y, w) {
-    oneLine(host, dc, lineText, { x, y: y + 2, width: w, height: LOOK.lineTile, size: LOOK.lineSize, minSize: LOOK.minLineSize, color: COLORS.description });
+function drawPlainLine(host, dc, lineText, x, y, w, { wrap = false } = {}) {
+    drawLineText(host, dc, lineText, { x, y: y + 2, width: w, height: LOOK.lineTile, size: LOOK.lineSize, wrap });
 }
 
 // ---------- Mastery cards ----------
@@ -301,8 +312,9 @@ const GRID_CARDS = 4;
 // tallest card; a cell is { card, x (from the inner column's left), w,
 // logoInset, logoW, logoH (null for the card's height), detailsTop (under
 // a logo band, else 0), detailsX, detailsW, lineW (the grey and helpers
-// lines'), button (a stacked card's Go button's rect, null in the grid) },
-// in the card's own coordinates.
+// lines'), wrap (name and grey line on up to two lines), nameShift and
+// lineShift (their kept second lines), button (a stacked card's Go
+// button's rect, null in the grid) }, in the card's own coordinates.
 function cardRowsOf(cards, innerW, stacked, cardHOf) {
     if (cards.length !== GRID_CARDS) {
         const { button: buttonLook } = LOOK;
@@ -313,25 +325,24 @@ function cardRowsOf(cards, innerW, stacked, cardHOf) {
         // The grey and helpers lines pass under the Go button.
         const lineW = innerW - LOOK.logoInset - stacked.detailsX;
         return cards.map(card => ({
-            cells: [{ card, x: 0, w: innerW, logoInset: LOOK.logoInset, logoW: stacked.logoW, logoH: null, detailsTop: 0, detailsX: stacked.detailsX, detailsW, lineW, button }],
+            cells: [{ card, x: 0, w: innerW, logoInset: LOOK.logoInset, logoW: stacked.logoW, logoH: null, detailsTop: 0, detailsX: stacked.detailsX, detailsW, lineW, wrap: false, nameShift: 0, lineShift: 0, button }],
             h: cardHOf(card),
         }));
     }
     const cellW = Math.round((innerW - LOOK.gap) / 2);
     const columnLogoW = Math.round(cellW * LOOK.gridLogoShare);
-    const { logoW, logoH, detailsTop, detailsX } = innerW < LOOK.narrowBelow
+    const wrap = innerW < LOOK.narrowBelow;
+    const { logoW, logoH, detailsTop, detailsX } = wrap
         ? { logoW: cellW - 2 * LOOK.gridInset, logoH: LOOK.narrowGridLogoH, detailsTop: LOOK.logoTop + LOOK.narrowGridLogoH, detailsX: LOOK.gridInset }
         : { logoW: columnLogoW, logoH: null, detailsTop: 0, detailsX: LOOK.gridInset + columnLogoW + LOOK.gridDetailsGap };
     const detailsW = cellW - detailsX - LOOK.gridInset;
     const rows = [];
     for (let index = 0; index < cards.length; index += 2) {
-        const pair = cards.slice(index, index + 2);
-        rows.push({
-            cells: pair.map((card, column) => ({
-                card, x: column * (cellW + LOOK.gap), w: cellW, logoInset: LOOK.gridInset, logoW, logoH, detailsTop, detailsX, detailsW, lineW: detailsW, button: null,
-            })),
-            h: detailsTop + Math.max(...pair.map(cardHOf)),
-        });
+        const cells = cards.slice(index, index + 2).map((card, column) => ({
+            card, x: column * (cellW + LOOK.gap), w: cellW, logoInset: LOOK.gridInset, logoW, logoH, detailsTop, detailsX, detailsW, lineW: detailsW, wrap,
+            nameShift: wrap ? LOOK.wrapNameExtra : 0, lineShift: wrap && card.line ? LOOK.wrapLineExtra : 0, button: null,
+        }));
+        rows.push({ cells, h: Math.max(...cells.map(cell => cell.detailsTop + cardHOf(cell.card) + cell.nameShift + cell.lineShift)) });
     }
     return rows;
 }
@@ -366,8 +377,12 @@ function layoutCards(host, { inner, cardRows, lineY, helpersY }, cardsTop, goLab
     const highlights = {};
     let rowY = cardsTop;
     for (const { cells, h: cardH } of cardRows) {
-        for (const { card, x, w, logoInset, logoW, logoH, detailsTop, detailsX, detailsW, lineW, button } of cells) {
+        for (const { card, x, w, logoInset, logoW, logoH, detailsTop, detailsX, detailsW, lineW, wrap, nameShift, lineShift, button } of cells) {
             const color = PERIOD_COLORS[card.choice];
+            // What follows a wrapped name or grey line moves down by its kept second line.
+            const masteryTop = detailsTop + LOOK.masteryY + nameShift;
+            const lineTop = detailsTop + lineY + nameShift;
+            const helpersTop = detailsTop + helpersY + nameShift + lineShift;
             pieces.push({
                 zIndex: WELCOME_SCREEN_Z_INDEX.cards,
                 rect: { x: inner.x + x, y: rowY, w, h: cardH },
@@ -375,12 +390,14 @@ function layoutCards(host, { inner, cardRows, lineY, helpersY }, cardsTop, goLab
                     fillGradient(dc, 0, 0, w, cardH, COLORS.panelTop, COLORS.panel);
                     dc.frameRect(0, 0, w, cardH, 1, COLORS.border);
                     oneLine(host, dc, card.period, { x: detailsX, y: detailsTop + LOOK.cardTop, width: detailsW, size: LOOK.periodSize, minSize: LOOK.minPeriodSize, weight: 700, color, font: FONTS.display });
-                    oneLine(host, dc, card.title, { x: detailsX, y: detailsTop + LOOK.nameY, width: detailsW, size: LOOK.nameSize, minSize: LOOK.minNameSize });
-                    if (card.progress) drawProgressBlock(host, dc, detailsX, detailsTop + LOOK.masteryY, detailsW, card.progress, color);
-                    else drawTableMasteryCard(host, dc, card.mastery, card.masteryHead, detailsX, detailsTop + LOOK.masteryY, detailsW);
-                    if (card.line && card.line.plain) drawPlainLine(host, dc, card.line.text, detailsX, detailsTop + lineY, lineW);
-                    else if (card.line) drawGreyLine(host, dc, card.line.played ? null : card.line.streak, card.line.text, detailsX, detailsTop + lineY, lineW);
-                    if (hasHelpersLine(card)) drawHelpersLine(host, dc, card.helpers, detailsX, detailsTop + helpersY, lineW);
+                    const name = { x: detailsX, y: detailsTop + LOOK.nameY, width: detailsW, size: LOOK.nameSize, minSize: LOOK.minNameSize };
+                    if (wrap) textInBox(host, dc, card.title, { ...name, height: LOOK.wrapNameH, top: true });
+                    else oneLine(host, dc, card.title, name);
+                    if (card.progress) drawProgressBlock(host, dc, detailsX, masteryTop, detailsW, card.progress, color);
+                    else drawTableMasteryCard(host, dc, card.mastery, card.masteryHead, detailsX, masteryTop, detailsW);
+                    if (card.line && card.line.plain) drawPlainLine(host, dc, card.line.text, detailsX, lineTop, lineW, { wrap });
+                    else if (card.line) drawGreyLine(host, dc, card.line.played ? null : card.line.streak, card.line.text, detailsX, lineTop, lineW, { wrap });
+                    if (hasHelpersLine(card)) drawHelpersLine(host, dc, card.helpers, detailsX, helpersTop, lineW);
                     if (button) {
                         fillGradient(dc, button.x, button.y, button.w, button.h, COLORS.rowUnlocked, COLORS.tile);
                         dc.frameRect(button.x, button.y, button.w, button.h, 1, COLORS.border);

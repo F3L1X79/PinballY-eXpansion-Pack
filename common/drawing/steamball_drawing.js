@@ -63,9 +63,9 @@ export function oneLine(host, dc, str, { x, y, width, height, size, minSize = si
     return measured.width;
 }
 
-// Text wrapped in the box and centred in its height: the size goes down
-// to minSize until every line fits, then the end gives way to "…".
-export function textInBox(host, dc, str, { x, y, width, height, size, minSize = size, weight = 600, color = COLORS.title, font = FONTS.body }) {
+// Text wrapped in the box, centred in its height unless top is true: the
+// size goes down to minSize until every line fits, then the end gives way to "…".
+export function textInBox(host, dc, str, { x, y, width, height, size, minSize = size, weight = 600, color = COLORS.title, font = FONTS.body, top = false }) {
     const styledAt = (candidate, fontSize) => {
         const styled = host.createStyledText({ textAlign: "left", textStyle: { font, size: fontSize, weight, color } });
         styled.add(candidate);
@@ -77,7 +77,7 @@ export function textInBox(host, dc, str, { x, y, width, height, size, minSize = 
     while (!fits(styled) && fontSize > minSize) styled = styledAt(str, --fontSize);
     for (let cut = str.length - 1; !fits(styled) && cut > 1; cut--) styled = styledAt(`${str.slice(0, cut).trimEnd()}…`, fontSize);
     const measured = styled.measure(width).height;
-    styled.draw(dc, { x, y: y + (height - measured) / 2, width, height: measured });
+    styled.draw(dc, { x, y: top ? y : y + (height - measured) / 2, width, height: measured });
 }
 
 export function fillDisc(dc, cx, cy, r, color) {
