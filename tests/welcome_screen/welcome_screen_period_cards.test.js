@@ -1,8 +1,8 @@
 // ============================================================
 // Welcome Screen Period Table cards in English: Day and Week cards with
 // logo, period (gold, pastel blue), cleaned name, Mastery head and grey
-// line, without a button; Next walks through the cards, chosen whole, and
-// Select on the day's launches it.
+// line, and a Go button; Next walks through the buttons, and Select on the
+// day's launches it.
 // ============================================================
 
 import { test } from "node:test";
@@ -11,7 +11,7 @@ import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js
 import config from "../../common/core/config.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
 import {
-    WELCOME_SCREEN_OPEN_MS, isWelcomeScreenOpen, periodCards, periodColors, periodCardLogos, readChoices, choose,
+    WELCOME_SCREEN_OPEN_MS, isWelcomeScreenOpen, periodCards, periodColors, periodCardLogos, readChoices, choose, goButtons, cardHighlightParts,
 } from "./welcome_screen_reader.js";
 import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 
@@ -69,6 +69,8 @@ test("the Welcome Screen shows a card per Period Table and launches the day's", 
     assert.deepEqual(readChoices(fake), [
         lang.profiles.menuEntry, lang.buttonHints.close, CARDS.day.period, CARDS.week.period, TEXT.randomTable, TEXT.stayOn("Medieval Madness"),
     ]);
+    assert.deepEqual(goButtons(fake), ["Go", "Go"], "stacked cards each draw a Go button");
+    assert.deepEqual(cardHighlightParts(fake), ["button", "button"], "the marker goes round the button");
 
     choose(fake, CARDS.day.period);
     await settle();

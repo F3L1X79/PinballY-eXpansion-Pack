@@ -102,25 +102,39 @@ export const bottomRowLabels = fake => shownLayers(fake, WELCOME_SCREEN_Z_INDEX.
 // Top to bottom: a layer's position is measured upward.
 const topToBottom = layers => [...layers].sort((a, b) => b.position().y - a.position().y);
 
+// A card's texts: its details column's, and its Go button's label, drawn
+// right of the column (the period's width), null without a button.
+function cardParts(layer) {
+    const strokes = layer.strokes().filter(stroke => "text" in stroke);
+    const detailsEnd = strokes[0].rect.x + strokes[0].rect.width;
+    const button = strokes.find(stroke => stroke.rect.x >= detailsEnd);
+    return { texts: strokes.filter(stroke => stroke !== button).map(stroke => stroke.text), goLabel: button ? button.text : null };
+}
+
+const cardLayers = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards));
+
 // Each Period Table card, top to bottom: { period, name, mastery (the
 // Mastery card's head), line (the grey line, its square's Streak count
 // first, as in "3 days in a row…"; null when there is none) }.
-export const periodCards = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)).map(layer => {
-    const [period, name, mastery, ...rest] = layer.texts();
+export const periodCards = fake => cardLayers(fake).map(layer => {
+    const [period, name, mastery, ...rest] = cardParts(layer).texts;
     // After the level's number in its square.
     const lineTexts = rest.slice(1);
     return { period, name, mastery, line: lineTexts.length > 0 ? lineTexts.join(" ") : null };
 });
 
-// Each card's texts as drawn, top to bottom: a "?" card's are its
-// period, the Challenge's title, its progress and its line.
-export const cardTexts = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)).map(layer => layer.texts());
+// Each card's texts as drawn, top to bottom, without its Go button's: a
+// "?" card's are its period, the Challenge's title, its progress and its line.
+export const cardTexts = fake => cardLayers(fake).map(layer => cardParts(layer).texts);
+
+// Each card's Go button label, top to bottom, null for a card without one.
+export const goButtons = fake => cardLayers(fake).map(layer => cardParts(layer).goLabel);
 
 // Each card's images, top to bottom: the Household Challenge card's helpers' Avatars.
-export const cardImages = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)).map(layer => layer.images());
+export const cardImages = fake => cardLayers(fake).map(layer => layer.images());
 
 // Each card's fill colours, top to bottom: a "?" card's progress bar among them.
-export const cardFills = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards)).map(layer => layer.fills());
+export const cardFills = fake => cardLayers(fake).map(layer => layer.fills());
 
 // Each card's logo layer height, in reference pixels, top to bottom.
 export const periodCardLogoHeights = fake => topToBottom(shownLayers(fake, WELCOME_SCREEN_Z_INDEX.logos))
@@ -244,11 +258,21 @@ export function highlighted(fake) {
     return { label: found ? found.text : null, tooltip: null };
 }
 
-// The period of the card the marker surrounds whole, null for any other choice.
-export function highlightedCard(fake) {
+// The highlighted card: { period, part ("card" when the marker surrounds
+// it whole, "button" when it surrounds its Go button) }, null for any other choice.
+export function highlightedCardPart(fake) {
     if (shownTooltip(fake)) return null;
     const card = selectionMarker.layerUnderMarker(fake, WELCOME_SCREEN_Z_INDEX.marker, shownLayers(fake, WELCOME_SCREEN_Z_INDEX.cards));
-    return card ? card.texts()[0] : null;
+    if (card) return { period: card.texts()[0], part: "card" };
+    const found = underMarker(fake);
+    if (!found || found.layer.zIndex !== WELCOME_SCREEN_Z_INDEX.cards || cardParts(found.layer).goLabel !== found.text) return null;
+    return { period: found.layer.texts()[0], part: "button" };
+}
+
+// The period of the highlighted card, null for any other choice.
+export function highlightedCard(fake) {
+    const found = highlightedCardPart(fake);
+    return found ? found.period : null;
 }
 
 // The highlighted card's period, else the label or tooltip of the highlighted choice.
@@ -271,9 +295,28 @@ export function readChoices(fake) {
 }
 
 // Moves the highlight with Next to the choice with this label, card
-// period or tooltip, then presses Select.
-export function choose(fake, name) {
+// period or tooltip.
+export function moveTo(fake, name) {
     for (let guard = 0; guard < 20 && highlightedName(fake) !== name; guard++) press(fake, "Next");
     assert.equal(highlightedName(fake), name, `the Welcome Screen offers "${name}"`);
+}
+
+// Moves the highlight to that choice, then presses Select.
+export function choose(fake, name) {
+    moveTo(fake, name);
     return press(fake, "Select");
+}
+
+// What the marker surrounds on each card, in the flippers' order: "card"
+// or "button" (see highlightedCardPart). The highlight comes back where it was.
+export function cardHighlightParts(fake) {
+    const names = readChoices(fake);
+    const parts = [];
+    for (const name of names) {
+        moveTo(fake, name);
+        const found = highlightedCardPart(fake);
+        if (found) parts.push(found.part);
+    }
+    moveTo(fake, names[0]);
+    return parts;
 }

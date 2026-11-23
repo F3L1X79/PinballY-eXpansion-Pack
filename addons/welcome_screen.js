@@ -303,6 +303,7 @@ export default function init() {
                 [CHOICE.STAY]: stay ? TEXT.stayOn(stay) : TEXT.stayOnWheel,
                 [CHOICE.RANDOM]: TEXT.randomTable,
             },
+            goLabel: TEXT.periodCards.go,
             exitLook: EXIT_LOOK,
             buttonHints: buttonHintGroupsOf({ flippers: FLIPPER_HINT.BROWSE, select: true, exitLook: EXIT_LOOK }),
         };

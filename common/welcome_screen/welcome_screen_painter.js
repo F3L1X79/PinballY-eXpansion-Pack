@@ -42,6 +42,9 @@ const LOOK = Object.freeze({
     cardTop: 18, nameY: 58, masteryY: 104, lineGap: 10, lineH: 34, cardBottom: 16,
     periodSize: 21, nameSize: 22, minNameSize: 18, lineSize: 18, minLineSize: 15, lineTile: 28,
     cardK: 1.25, masteryCardH: 74,
+    // A stacked card's Go button, right of the details, centred on the
+    // Mastery card's height.
+    button: Object.freeze({ w: 140, h: 52, size: 22 }),
     // A "?" card: its progress block in the Mastery card's place, and the
     // Avatar Choice's "?" tile about a wheel logo's height in the logo column.
     progressHeadY: 16, progressHeadSize: 17, minProgressHeadSize: 14, progressBarY: 58, progressBarH: 12, progressInset: 18,
@@ -54,8 +57,8 @@ const LOOK = Object.freeze({
     gridInset: 20, gridLogoShare: 0.3, gridDetailsGap: 24,
     // The logo column, narrower inside a window under narrowBelow (a
     // portrait playfield), then the details at most detailsMaxW wide, short
-    // of the card's right edge by detailsRight.
-    detailsRight: 24, logoInset: 24, logoTop: 20, logoW: 360, narrowLogoShare: 0.26, narrowBelow: 1300, detailsGap: 32, detailsMaxW: 640,
+    // of the Go button by detailsGap.
+    logoInset: 24, logoTop: 20, logoW: 360, narrowLogoShare: 0.26, narrowBelow: 1300, detailsGap: 32, detailsMaxW: 640,
     // The panel's width: a share of the window's, at most maxWidth.
     widthShare: 0.9, maxWidth: 1800,
     // Room around the Avatar on its tooltip's layer, and beside it for the
@@ -279,7 +282,7 @@ function geometry(referenceWidth, screen) {
     const logoW = inner.w < LOOK.narrowBelow ? Math.round(inner.w * LOOK.narrowLogoShare) : LOOK.logoW;
     // Where a stacked card's details start, which Collection Mastery lines up with.
     const detailsX = LOOK.logoInset + logoW + LOOK.detailsGap;
-    const cardRows = cardRowsOf(screen.cards, inner.w, { logoW, detailsX }, cardHOf);
+    const cardRows = cardRowsOf(screen.cards, inner.w, { logoW, detailsX, masteryCardH }, cardHOf);
     const cardsH = cardRows.reduce((sum, row) => sum + row.h + LOOK.gap, 0);
     const h = LOOK.pad + headerH + LOOK.gap + cardsH + LOOK.rowH + LOOK.gap + EXIT_AND_HINTS.footerH;
     const panel = { x: inner.x - LOOK.pad, y: Math.round((REFERENCE_HEIGHT - h) / 2), w, h };
@@ -291,12 +294,17 @@ const GRID_CARDS = 4;
 
 // The rows of cards, top to bottom, each { cells, h }, as tall as its
 // tallest card; a cell is { card, x (from the inner column's left), w,
-// logoInset, logoW, detailsX, detailsW }, in the card's own coordinates.
+// logoInset, logoW, detailsX, detailsW, button (a stacked card's Go
+// button's rect, null in the grid) }, in the card's own coordinates.
 function cardRowsOf(cards, innerW, stacked, cardHOf) {
     if (cards.length !== GRID_CARDS) {
-        const detailsW = Math.min(innerW - LOOK.detailsRight - stacked.detailsX, LOOK.detailsMaxW);
+        const { button: buttonLook } = LOOK;
+        const button = {
+            ...buttonLook, x: innerW - LOOK.logoInset - buttonLook.w, y: LOOK.masteryY + Math.round((stacked.masteryCardH - buttonLook.h) / 2),
+        };
+        const detailsW = Math.min(button.x - LOOK.detailsGap - stacked.detailsX, LOOK.detailsMaxW);
         return cards.map(card => ({
-            cells: [{ card, x: 0, w: innerW, logoInset: LOOK.logoInset, logoW: stacked.logoW, detailsX: stacked.detailsX, detailsW }],
+            cells: [{ card, x: 0, w: innerW, logoInset: LOOK.logoInset, logoW: stacked.logoW, detailsX: stacked.detailsX, detailsW, button }],
             h: cardHOf(card),
         }));
     }
@@ -308,7 +316,7 @@ function cardRowsOf(cards, innerW, stacked, cardHOf) {
         const pair = cards.slice(index, index + 2);
         rows.push({
             cells: pair.map((card, column) => ({
-                card, x: column * (cellW + LOOK.gap), w: cellW, logoInset: LOOK.gridInset, logoW, detailsX, detailsW: cellW - detailsX - LOOK.gridInset,
+                card, x: column * (cellW + LOOK.gap), w: cellW, logoInset: LOOK.gridInset, logoW, detailsX, detailsW: cellW - detailsX - LOOK.gridInset, button: null,
             })),
             h: Math.max(...pair.map(cardHOf)),
         });
@@ -339,13 +347,14 @@ function logoPieceOf(host, card, rect) {
     return { zIndex: WELCOME_SCREEN_Z_INDEX.logos, rect: tile, draw: dc => drawRandomPlace(host, dc, side) };
 }
 
-// The table cards, row by row, each chosen whole: its highlight is the card.
-function layoutCards(host, { inner, cardRows, lineY, helpersY }, cardsTop, choiceAt) {
+// The table cards, row by row; a stacked card's highlight is its Go
+// button, a grid card's the whole card.
+function layoutCards(host, { inner, cardRows, lineY, helpersY }, cardsTop, goLabel, choiceAt) {
     const pieces = [];
     const highlights = {};
     let rowY = cardsTop;
     for (const { cells, h: cardH } of cardRows) {
-        for (const { card, x, w, logoInset, logoW, detailsX, detailsW } of cells) {
+        for (const { card, x, w, logoInset, logoW, detailsX, detailsW, button } of cells) {
             const color = PERIOD_COLORS[card.choice];
             pieces.push({
                 zIndex: WELCOME_SCREEN_Z_INDEX.cards,
@@ -360,11 +369,18 @@ function layoutCards(host, { inner, cardRows, lineY, helpersY }, cardsTop, choic
                     if (card.line && card.line.plain) drawPlainLine(host, dc, card.line.text, detailsX, lineY, detailsW);
                     else if (card.line) drawGreyLine(host, dc, card.line.played ? null : card.line.streak, card.line.text, detailsX, lineY, detailsW);
                     if (hasHelpersLine(card)) drawHelpersLine(host, dc, card.helpers, detailsX, helpersY, detailsW);
+                    if (button) {
+                        fillGradient(dc, button.x, button.y, button.w, button.h, COLORS.rowUnlocked, COLORS.tile);
+                        dc.frameRect(button.x, button.y, button.w, button.h, 1, COLORS.border);
+                        text(host, dc, goLabel, { x: button.x, y: button.y, width: button.w, height: button.h, size: button.size, weight: 700, font: FONTS.display, align: "center" });
+                    }
                 },
             });
             // On a layer of its own, above the card's.
             pieces.push(logoPieceOf(host, card, { x: inner.x + x + logoInset, y: rowY + LOOK.logoTop, w: logoW, h: cardH - 2 * LOOK.logoTop }));
-            highlights[card.choice] = choiceAt({ x: inner.x + x, y: rowY, w, h: cardH });
+            highlights[card.choice] = choiceAt(button
+                ? { x: inner.x + x + button.x, y: rowY + button.y, w: button.w, h: button.h }
+                : { x: inner.x + x, y: rowY, w, h: cardH });
         }
         rowY += cardH + LOOK.gap;
     }
@@ -383,7 +399,7 @@ function layoutCards(host, { inner, cardRows, lineY, helpersY }, cardsTop, choic
 // square); a "?" card has progress ({ text, share }) in place of logoPath
 // and mastery; the Household Challenge's has helpers ({ label,
 // avatarPaths }, no line without any Avatar) }), choices, labels (by
-// choice), exitLook (the Exit Button's EXIT_BUTTON_LOOK), buttonHints
+// choice), goLabel (a stacked card's Go button), exitLook (the Exit Button's EXIT_BUTTON_LOOK), buttonHints
 // (the footer's groups) }. Returns the pieces, each { zIndex, rect, draw(dc) } drawn in
 // its rect's own coordinates, and the highlight of each choice.
 export function layoutWelcomeScreen(host, screen, referenceWidth) {
@@ -446,7 +462,7 @@ export function layoutWelcomeScreen(host, screen, referenceWidth) {
     const choiceAt = (target, tooltipShown = null) => ({ target, tooltip: tooltipShown });
 
     const cardsTop = top + headerH + LOOK.gap;
-    const cards = layoutCards(host, layout, cardsTop, choiceAt);
+    const cards = layoutCards(host, layout, cardsTop, screen.goLabel, choiceAt);
     pieces.push(...cards.pieces);
 
     // "random" and "stay", side by side.

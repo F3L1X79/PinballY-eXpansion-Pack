@@ -153,6 +153,7 @@ export default {
                 anyTable: "Any table: a random game",
                 helpers: "Helped:",
             },
+            go: "Go",
         },
     },
 

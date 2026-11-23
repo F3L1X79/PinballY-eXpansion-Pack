@@ -1,13 +1,14 @@
 // ============================================================
 // Welcome Screen with four cards: the Period cards on top, the Challenge
-// and Household Challenge cards below, in a 2 x 2 grid read row by row; the
-// two challenge cards never offer the same table while another is left.
+// and Household Challenge cards below, in a 2 x 2 grid read row by row, each
+// chosen whole, without a Go button; the two challenge cards never offer
+// the same table while another is left.
 // ============================================================
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { assertNoErrorLogged } from "../support/error_log.js";
-import { periodCards, cardRects, readChoices } from "./welcome_screen_reader.js";
+import { periodCards, cardRects, readChoices, goButtons, cardHighlightParts } from "./welcome_screen_reader.js";
 import { startWithChallenge, householdGame, countedGame, STERN_CHALLENGE, WEEK, STERN_A, STERN_B, STERN_C } from "./challenge_card_scenario.js";
 
 const WINDOW = { width: 1920, height: 1080 };
@@ -38,5 +39,7 @@ test("four cards make a 2 x 2 grid, each challenge card with its own table", asy
     const choices = readChoices(fake);
     const cardChoices = choices.filter(name => Object.values(CARDS).some(card => card.period === name));
     assert.deepEqual(cardChoices, [CARDS.day.period, CARDS.week.period, CARDS.challenge.period, CARDS.household.period], "the flippers' loop in reading order");
+    assert.deepEqual(goButtons(fake), [null, null, null, null], "no Go button in the grid");
+    assert.deepEqual(cardHighlightParts(fake), ["card", "card", "card", "card"], "each card chosen whole");
     assertNoErrorLogged(fake);
 });

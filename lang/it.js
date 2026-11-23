@@ -262,6 +262,7 @@ export default {
                 anyTable: "Un tavolo qualsiasi: una partita a caso",
                 helpers: "Hanno aiutato:",
             },
+            go: "Vai",
         },
     },
     // Lower status line text for the currently selected table.

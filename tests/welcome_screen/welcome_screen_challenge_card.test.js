@@ -1,17 +1,17 @@
 // ============================================================
 // Welcome Screen Challenge Table card: with a Stern Challenge, a third card
 // under the Period Table cards shows a drawn Stern table and the progress;
-// choosing the card launches it, and the Play is not a Random Game.
+// its Go button launches it, and the Play is not a Random Game.
 // ============================================================
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { settle } from "../support/fake_pinbally_host.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
-import { periodCards, readChoices, choose, isWelcomeScreenOpen } from "./welcome_screen_reader.js";
+import { periodCards, readChoices, choose, isWelcomeScreenOpen, goButtons, cardHighlightParts } from "./welcome_screen_reader.js";
 import { startWithChallenge, playFor, countedGame, ALICE_FILE, STERN_A, STERN_C } from "./challenge_card_scenario.js";
 
-test("the Welcome Screen offers a Challenge Table, launched by choosing its card and not as a Random Game", async t => {
+test("the Welcome Screen offers a Challenge Table, launched by its Go button and not as a Random Game", async t => {
     // The last of the equal candidates, in collection order.
     t.mock.method(Math, "random", () => 0.99);
     const fake = await startWithChallenge({ games: [countedGame(STERN_A)] });
@@ -28,6 +28,8 @@ test("the Welcome Screen offers a Challenge Table, launched by choosing its card
         lang.profiles.menuEntry, lang.buttonHints.close, CARDS.day.period, CARDS.week.period, "A CHALLENGE TABLE",
         TEXT.randomTable, TEXT.stayOn("Medieval Madness"),
     ]);
+    assert.equal(goButtons(fake)[2], CARDS.go);
+    assert.equal(cardHighlightParts(fake)[2], "button");
 
     choose(fake, "A CHALLENGE TABLE");
     await settle();

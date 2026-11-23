@@ -263,6 +263,7 @@ export default {
                 anyTable: "N'importe quelle table : une partie au hasard",
                 helpers: "Ont aidé :",
             },
+            go: "Y aller",
         },
     },
 

@@ -262,6 +262,7 @@ export default {
                 anyTable: "Irgendein Tisch: eine zufällige Partie",
                 helpers: "Geholfen haben:",
             },
+            go: "Los",
         },
     },
 
