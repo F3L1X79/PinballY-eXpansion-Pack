@@ -358,6 +358,10 @@ _Avoid_: startup prompt, splash screen, dialog (it does more than ask a question
 The first screen PinballY shows when it starts, chosen by the owner: the Profile Picker, the Welcome Screen, or the bare wheel. Shown as "Écran de démarrage" in French.
 _Avoid_: splash screen, first screen
 
+**Wheel Arrival**:
+The moment the Startup Screen hands the wheel over to the player, once per start: the last screen of the startup chain closes without launching a table. Never on the return from a game, nor when a reopened screen or a menu closes.
+_Avoid_: return to the wheel (that is after a game), Welcome Screen close (too narrow)
+
 **Last Played Table**:
 The table of the active Profile's most recent Play, across the whole collection, however it was launched.
 

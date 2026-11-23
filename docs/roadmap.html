@@ -319,17 +319,18 @@
             <h3>Un son à l'arrivée sur la roue, après le Welcome Screen</h3>
             <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">son</span></div>
           </div>
-          <p>Quand le joueur quitte le Welcome Screen et arrive sur la roue, un son marque l'arrivée. Uniquement à ce moment-là : ni au retour d'une partie, ni à la fermeture d'un menu ou d'un autre écran.</p>
-          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>addons/welcome_screen.js</code> (qui joue déjà <code>profileGreetingSoundFile</code>) et de <code>host.playSound</code> ; voisin du <a href="#sound-design">sound design (n° <span data-ref="sound-design"></span>)</a></div>
+          <p>À la Wheel Arrival (le Startup Screen rend la roue au joueur, une fois par démarrage), un son choisi par le propriétaire marque l'arrivée. Uniquement à ce moment-là : ni au retour d'une partie, ni à la fermeture d'un menu ou d'un autre écran.</p>
+          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="here">tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : spec #603 → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>common/core/startup_screen.js</code> (<code>onStartupScreenClosed</code>, déjà suivi par le Crow et la Wheel Rail) et de <code>host.createSoundRotation</code> ; voisin du <a href="#sound-design">sound design (n° <span data-ref="sound-design"></span>)</a></div>
           <details>
-            <summary>Questions ouvertes (3)</summary>
+            <summary>Décisions du grill</summary>
             <ul>
-              <li>Quel son, et sous quelle licence ? Un réglage <code>wheelArrivalSoundFile</code> dans <code>common/core/config.js</code>, comme les autres sons ?</li>
-              <li>Le Welcome Screen désactivé, ou fermé vers un autre écran (Profile Picker, Random Game) : le son joue-t-il quand même à la première arrivée sur la roue ?</li>
-              <li>Avec le salut du Profile, un toast ou le Crow juste après : le son attend-il, ou passe-t-il par-dessus ?</li>
+              <li>Le son joue sur Exit ou Stay du Welcome Screen de démarrage, ou à la fin du Profile Greeting quand le Welcome Screen est désactivé ; jamais sur un lancement, un écran rouvert ou la roue nue.</li>
+              <li>Change Player depuis le Welcome Screen de démarrage prolonge la chaîne : la Wheel Arrival vient à la fermeture du Welcome Screen qui suit, ou du Profile Picker si rien ne suit. Le Crow et la Wheel Rail en profitent.</li>
+              <li>Son propre lecteur : il se superpose au salut, aux toasts et au Crow, sans couper ni retarder.</li>
+              <li><code>WHEEL_ARRIVAL_SOUND_FILE</code> vide par défaut : aucun son fourni, pas de réglage de volume.</li>
             </ul>
-            <p class="ctx">Idée de Félix du 22/11/2026, haute priorité.</p>
+            <p class="ctx">Idée de Félix du 22/11/2026, haute priorité ; grillée le 23/11/2026.</p>
           </details>
         </div>
       </li>
