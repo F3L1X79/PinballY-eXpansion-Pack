@@ -55,11 +55,9 @@ const LOOK = Object.freeze({
     // Four cards make a 2 x 2 grid, each cell with its own logo column, a
     // share of the cell, and tighter insets than a stacked card's; inside a
     // window under narrowBelow, a band at the top of the cell instead, the
-    // details under it, their name and grey line on up to two lines, each
-    // two-line box always kept (wrapNameH and wrapLineH high, pushing what
-    // follows down by wrapNameExtra and wrapLineExtra).
-    gridInset: 20, gridLogoShare: 0.3, gridDetailsGap: 24, narrowGridLogoH: 128,
-    wrapNameH: 58, wrapNameExtra: 22, wrapLineH: 48, wrapLineExtra: 20,
+    // details under it, their name and grey line on up to two lines (WRAP),
+    // wrapGap above what follows.
+    gridInset: 20, gridLogoShare: 0.3, gridDetailsGap: 24, narrowGridLogoH: 128, wrapGap: 8,
     // The logo column, narrower inside a window under narrowBelow (a
     // portrait playfield), then the details at most detailsMaxW wide, short
     // of the Go button by detailsGap.
@@ -74,6 +72,24 @@ const LOOK = Object.freeze({
     // The header layer's transparent edge, on every side.
     layerEdge: 4,
 });
+
+// Two lines of text at that size, a pixel or two to spare: StyledText
+// sizes are in points (4/3 of a pixel) and a Segoe UI line is 1.33 times
+// its size.
+const twoLinesH = size => Math.ceil(2 * size * 4 / 3 * 1.33) + 2;
+
+// A grid cell's name and grey line on two lines at their smallest size,
+// their boxes always kept, pushing what follows down by nameShift and
+// lineShift (beyond the one line's room).
+const WRAP = (() => {
+    const nameH = twoLinesH(LOOK.minNameSize);
+    const lineH = twoLinesH(LOOK.minLineSize);
+    return Object.freeze({
+        nameH, lineH,
+        nameShift: nameH + LOOK.wrapGap - (LOOK.masteryY - LOOK.nameY),
+        lineShift: 2 + lineH + LOOK.wrapGap - LOOK.lineH,
+    });
+})();
 
 // How wide the header's Avatar Frame is drawn, for its image's size.
 export const AVATAR_FRAME_WIDTH = avatarFrameSide(LOOK.avatar);
@@ -114,7 +130,7 @@ function drawLostRecordsLine(host, dc, { avatarPath, text: lineText }, w) {
 // its box when wrap is true.
 function drawLineText(host, dc, lineText, { x, y, width, height, size, wrap }) {
     const look = { x, y, width, size, minSize: LOOK.minLineSize, color: COLORS.description };
-    if (wrap) textInBox(host, dc, lineText, { ...look, height: LOOK.wrapLineH, top: true });
+    if (wrap) textInBox(host, dc, lineText, { ...look, height: WRAP.lineH, top: true });
     else oneLine(host, dc, lineText, { ...look, height });
 }
 
@@ -340,7 +356,7 @@ function cardRowsOf(cards, innerW, stacked, cardHOf) {
     for (let index = 0; index < cards.length; index += 2) {
         const cells = cards.slice(index, index + 2).map((card, column) => ({
             card, x: column * (cellW + LOOK.gap), w: cellW, logoInset: LOOK.gridInset, logoW, logoH, detailsTop, detailsX, detailsW, lineW: detailsW, wrap,
-            nameShift: wrap ? LOOK.wrapNameExtra : 0, lineShift: wrap && card.line ? LOOK.wrapLineExtra : 0, button: null,
+            nameShift: wrap ? WRAP.nameShift : 0, lineShift: wrap && card.line ? WRAP.lineShift : 0, button: null,
         }));
         rows.push({ cells, h: Math.max(...cells.map(cell => cell.detailsTop + cardHOf(cell.card) + cell.nameShift + cell.lineShift)) });
     }
@@ -391,7 +407,7 @@ function layoutCards(host, { inner, cardRows, lineY, helpersY }, cardsTop, goLab
                     dc.frameRect(0, 0, w, cardH, 1, COLORS.border);
                     oneLine(host, dc, card.period, { x: detailsX, y: detailsTop + LOOK.cardTop, width: detailsW, size: LOOK.periodSize, minSize: LOOK.minPeriodSize, weight: 700, color, font: FONTS.display });
                     const name = { x: detailsX, y: detailsTop + LOOK.nameY, width: detailsW, size: LOOK.nameSize, minSize: LOOK.minNameSize };
-                    if (wrap) textInBox(host, dc, card.title, { ...name, height: LOOK.wrapNameH, top: true });
+                    if (wrap) textInBox(host, dc, card.title, { ...name, height: WRAP.nameH, top: true });
                     else oneLine(host, dc, card.title, name);
                     if (card.progress) drawProgressBlock(host, dc, detailsX, masteryTop, detailsW, card.progress, color);
                     else drawTableMasteryCard(host, dc, card.mastery, card.masteryHead, detailsX, masteryTop, detailsW);

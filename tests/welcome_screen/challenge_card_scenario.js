@@ -61,12 +61,13 @@ export const avatarOf = name => `${PROFILES}\\${name}\\avatar.png`;
 // household: the week's Household Challenge, locked, its games included;
 // plays: Alice's play records; profile: what else her profile.json carries;
 // others: more Profiles' names; files: more files to seed; addOns: the
-// enabled Add-ons. Returns the fake once the Welcome Screen is open.
+// enabled Add-ons; pointSizedLines: lines as high as on the cabinet.
+// Returns the fake once the Welcome Screen is open.
 export async function startWithChallenge({
     challenge = STERN_CHALLENGE, games = [], completed = false, household = null, plays = {}, profile = {}, tables = TABLES, others = [],
-    files = {}, addOns = ["startupChoicePrompt", "profilePicker", "challenges"], language = "en", layoutSize = null,
+    files = {}, addOns = ["startupChoicePrompt", "profilePicker", "challenges"], language = "en", layoutSize = null, pointSizedLines = false,
 } = {}) {
-    const fake = createFakePinballYHost({ now: NOW, tables });
+    const fake = createFakePinballYHost({ now: NOW, tables, pointSizedLines });
     if (layoutSize) fake.setLayoutSize(layoutSize);
     for (const [path, content] of Object.entries(files)) fake.addFile(path, content);
     for (const name of others) fake.addFile(`${PROFILES}\\${name}\\profile.json`, JSON.stringify({ version: 1, notified: [], plays: {} }));

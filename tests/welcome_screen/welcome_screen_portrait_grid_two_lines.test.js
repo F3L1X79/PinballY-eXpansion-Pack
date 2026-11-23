@@ -22,6 +22,8 @@ test("in a portrait grid, a long name and a long grey line wrap onto two lines",
         addOns: ["startupChoicePrompt", "profilePicker", "challenges", "householdChallenge"],
         language: "fr",
         layoutSize: { width: 1080, height: 1920 },
+        // Two lines as high as on the cabinet, not two 20-pixel ones.
+        pointSizedLines: true,
     });
 
     const texts = cardTexts(fake);

@@ -101,6 +101,9 @@ const TRUE_STRINGS = ["1", "true", "yes", "on"];
 // Rough text metrics for the fake StyledText: fixed-width characters and lines.
 const CHAR_WIDTH = 7;
 const LINE_HEIGHT = 20;
+// With pointSizedLines: StyledText sizes are in points (StyledText.html,
+// "size"), 4/3 of a pixel, and a Segoe UI line is 1.33 times its size.
+const pointSizedLineHeight = size => Math.ceil(size * 4 / 3 * 1.33);
 
 // PinballY stores every setting as a string and converts on read.
 function toStoredString(value) {
@@ -165,10 +168,11 @@ class FakeCommandEvent {
 }
 
 class FakeStyledText {
-    constructor(options = {}, log = () => {}) {
+    constructor(options = {}, log = () => {}, pointSizedLines = false) {
         this.options = options;
         this.runs = [];
         this.log = log;
+        this.pointSizedLines = pointSizedLines;
         this.invalidStyle = isInvalidTextStyle(options.textStyle);
     }
 
@@ -190,7 +194,9 @@ class FakeStyledText {
         const lineCount = lines.reduce(
             (count, line) => count + Math.max(1, Math.ceil(line.length * CHAR_WIDTH / width)), 0);
         const longest = Math.max(...lines.map(line => line.length));
-        return { width: Math.min(width, longest * CHAR_WIDTH), height: lineCount * LINE_HEIGHT };
+        const size = Math.max((this.options.textStyle && this.options.textStyle.size) || 0, ...this.runs.map(run => run.size || 0));
+        const lineHeight = this.pointSizedLines && size > 0 ? pointSizedLineHeight(size) : LINE_HEIGHT;
+        return { width: Math.min(width, longest * CHAR_WIDTH), height: lineCount * lineHeight };
     }
 
     draw(dc, rect) {
@@ -230,6 +236,9 @@ export function createFakePinballYHost({
     // How long each layer draw takes on the clock: a draw blocks PinballY
     // while it runs (docs/adr/0005); 0 leaves the clock still.
     drawMs = 0,
+    // Lines as high as their point size makes them on the cabinet, instead
+    // of LINE_HEIGHT whatever the size.
+    pointSizedLines = false,
 } = {}) {
     let nowMs = now.getTime();
     let currentDrawMs = drawMs;
@@ -1678,7 +1687,7 @@ export function createFakePinballYHost({
         getLaunchOverlayBackground: () => launchOverlay.bg,
         resolveGlobalImage,
         resolveGlobalSound,
-        createStyledText: (options) => new FakeStyledText(options, (text) => { logLines.push(text); }),
+        createStyledText: (options) => new FakeStyledText(options, (text) => { logLines.push(text); }, pointSizedLines),
         allocateCommand,
         getBuiltInCommand,
         // Like PinballY's JsDoCommand: carries the command out without
@@ -2267,7 +2276,9 @@ export function createFakePinballYHost({
                 },
                 setInterval: (callback, ms) => addTimer(callback, ms, ms),
                 clearInterval: removeTimer,
-                StyledText: FakeStyledText,
+                StyledText: class extends FakeStyledText {
+                    constructor(options) { super(options, undefined, pointSizedLines); }
+                },
                 CommandEvent: FakeCommandEvent,
                 HttpRequest: FakeHttpRequest,
                 HWND: FAKE_HWND,
