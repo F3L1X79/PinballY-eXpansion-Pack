@@ -584,8 +584,12 @@ export function createHighScoreStore(host, profileStore) {
             data.lostRecordsSeen[profileKeyOf(profileName)] = toLocalIsoString(host.now());
             save();
         },
-        // { places, tables } the Initials would take now, without writing.
-        previewInitialsClaim: initials => claimSummaryOf(unownedPlacesBearing(initials)),
+        // { places, tables, configIds } the Initials would take now, without
+        // writing: configIds names each table once.
+        previewInitialsClaim: initials => {
+            const found = unownedPlacesBearing(initials);
+            return { ...claimSummaryOf(found), configIds: [...new Set(found.map(({ configId }) => configId))] };
+        },
         // How many places the named Profile's Initials took would be given
         // back for these Initials (null: cleared), without writing.
         previewInitialsRelease: (profileName, initials) => claimsGivenBackBy(profileName, initials)

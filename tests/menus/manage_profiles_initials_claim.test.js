@@ -28,14 +28,19 @@ const AFM = table(2, "Attack from Mars", "Bally", 1995);
 const place = (rank, initials, score, owner) => ({ rank, initials, score, owner });
 // Default Scores bearing FEL on both tables (one a Table Record), SLL's
 // Table Record on Attack from Mars, and a Play's place of Bob bearing FEL.
+// Seven more tables whose Default Scores bear MNY, more than the confirmation lists.
+const MANY = ["Galaxy", "Firepower", "Eight Ball", "Dracula", "Centaur", "Black Knight", "Atlantis"].map((title, index) => table(10 + index, title, "Bally", 1980));
 const BOARDS = {
     [MM.configId]: { board: [place(1, "FEL", 9000, null), place(2, "LED", 8000, null), place(3, "FEL", 7000, "Bob")] },
     [AFM.configId]: { board: [place(1, "SLL", 6000, null), place(2, "fel ", 5000, null)] },
+    ...Object.fromEntries(MANY.map(game => [game.configId, { board: [place(1, "MNY", 1000, null)] }])),
 };
+// The confirmation's question, then a blank line and the tables listed one per line.
+const withTables = (question, ...lines) => `${question}\n\n${lines.join("\n")}`;
 // Every toast submitted so far has had its time on screen.
 const ALL_TOASTS_MS = 18000;
 
-const fake = createFakePinballYHost({ now: new Date(2026, 10, 22, 20, 0, 0), tables: [MM, AFM] });
+const fake = createFakePinballYHost({ now: new Date(2026, 10, 22, 20, 0, 0), tables: [MM, AFM, ...MANY] });
 let TEXT;
 let OK;
 let store;
@@ -43,7 +48,7 @@ let highScores;
 
 test("setup", async () => {
     fake.addFile(profileFile("Alice"), JSON.stringify({ version: 1, isAdmin: true }));
-    for (const name of ["Bob", "Carol"]) fake.addFile(profileFile(name), JSON.stringify({ version: 1 }));
+    for (const name of ["Bob", "Carol", "Dan"]) fake.addFile(profileFile(name), JSON.stringify({ version: 1 }));
     fake.addFile(HIGH_SCORES_FILE, JSON.stringify({ version: 1, tables: BOARDS, highScores: [] }));
     // Never uninstalled: node --test runs each test file in its own process.
     fake.installGlobals();
@@ -90,11 +95,12 @@ function closeProfileMenu() {
     assert.ok(!isDrawnMenuShown(fake));
 }
 
-test("after OK, a confirmation counts the places and tables the Initials would take; No changes nothing", () => {
+test("after OK, a confirmation counts the places and lists the tables the Initials would take; No changes nothing", () => {
     const files = [HIGH_SCORES_FILE, profileFile("Bob")].map(path => fake.readFile(path));
     enterInitials("Bob", "FEL");
 
-    assert.equal(squeezed(readDrawnMenu(fake).message), squeezed(TEXT.initialsConfirm("Bob", "FEL", 2, 2)));
+    assert.equal(readDrawnMenu(fake).message, withTables(TEXT.initialsConfirm("Bob", "FEL", 2, 2), "- Attack from Mars", "- Medieval Madness"),
+        "one table per line, by title");
     assert.deepEqual(drawnMenuLines(fake), [TEXT.initialsYes, TEXT.no]);
     assert.equal(highlightedEntry(fake), TEXT.no);
     pressMenu(fake, "Select");
@@ -132,7 +138,7 @@ test("Yes saves and claims another Profile's places, says how many, and announce
 
 test("the active Profile's own claim announces nothing either", async () => {
     enterInitials("Alice", "SLL");
-    assert.equal(squeezed(readDrawnMenu(fake).message), squeezed(TEXT.initialsConfirm("Alice", "SLL", 1, 1)));
+    assert.equal(readDrawnMenu(fake).message, withTables(TEXT.initialsConfirm("Alice", "SLL", 1, 1), "- Attack from Mars"));
     chooseEntry(fake, TEXT.initialsYes);
     assert.equal(squeezed(readDrawnMenu(fake).message), squeezed(TEXT.initialsDone("Alice", "SLL", 1, 1)));
     chooseEntry(fake, TEXT.ok);
@@ -146,13 +152,22 @@ test("the active Profile's own claim announces nothing either", async () => {
 
 test("Initials no place bears yet are saved, and the closing Dialog says so", () => {
     enterInitials("Carol", "XYZ");
-    assert.equal(squeezed(readDrawnMenu(fake).message), squeezed(TEXT.initialsConfirm("Carol", "XYZ", 0, 0)));
+    assert.equal(readDrawnMenu(fake).message, TEXT.initialsConfirm("Carol", "XYZ", 0, 0), "no table, no list");
     chooseEntry(fake, TEXT.initialsYes);
     assert.equal(squeezed(readDrawnMenu(fake).message), squeezed(TEXT.initialsDoneNone("Carol", "XYZ")));
     assert.equal(store.getInitialsOf("Carol"), "XYZ");
     chooseEntry(fake, TEXT.ok);
     closeProfileMenu();
     assertNoErrorLogged(fake);
+});
+
+test("past six tables, the confirmation lists five and ends with ...", () => {
+    enterInitials("Dan", "MNY");
+    assert.equal(readDrawnMenu(fake).message, withTables(TEXT.initialsConfirm("Dan", "MNY", 7, 7),
+        "- Atlantis", "- Black Knight", "- Centaur", "- Dracula", "- Eight Ball", "..."));
+    pressMenu(fake, "Select");
+    assert.equal(store.getInitialsOf("Dan"), null, "No changes nothing");
+    closeProfileMenu();
 });
 
 test("a claim that cannot be saved shows the failure text and writes nothing", () => {

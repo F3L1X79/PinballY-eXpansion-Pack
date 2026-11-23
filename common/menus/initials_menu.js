@@ -1,8 +1,8 @@
 // ============================================================
 // A Profile's Initials from Manage profiles (ADR 0026): the line of a
 // Profile's menu, then Name Entry in its Initials mode; OK (on nothing: clear)
-// asks to confirm, counting the places the Initials would take and those former
-// ones give back; "Yes" saves, gives back and claims, then a closing Dialog
+// asks to confirm, counting the places the Initials would take (tables listed)
+// and those former ones give back; "Yes" saves, gives back and claims, then a closing Dialog
 // gives the figures. Exit and "No" change nothing. Listens to "command".
 // - The line is greyed for Guest, which never has Initials.
 // - A save or claim that fails is logged and shown as a one-line Dialog, writing nothing.
@@ -18,6 +18,9 @@ const SCRIPT_NAME = "Initials";
 const CONFIRM_MENU_ID = "initialsConfirm";
 const OUTCOME_MENU_ID = "initialsOutcome";
 const SEPARATOR = { cmd: -1 };
+// The Dialog stays within the screen: past this many tables, the last line says "...".
+const MAX_TABLES_LISTED = 6;
+const MORE_TABLES = "...";
 
 // nameEntry: Name Entry (common/profiles/name_entry.js); highScoreStore: the
 // High Score store, whose places the Initials take; menus: what shows the
@@ -57,6 +60,19 @@ export function createInitialsMenu(host, profileStore, { nameEntry, highScoreSto
         ], { dialogStyle: true, onBack: backToProfile(profile) });
     }
 
+    // The tables the Initials would take places on, one per line under the
+    // question (the Dialog's dash list), by title; past MAX_TABLES_LISTED, "...".
+    function tableListOf(configIds) {
+        const titleOf = configId => {
+            const game = host.getGameInfo(configId);
+            return game && game.title ? game.title : configId;
+        };
+        const titles = configIds.map(titleOf).sort((a, b) => a.localeCompare(b));
+        if (titles.length === 0) return "";
+        const shown = titles.length > MAX_TABLES_LISTED ? [...titles.slice(0, MAX_TABLES_LISTED - 1), null] : titles;
+        return `\n${shown.map(title => (title === null ? MORE_TABLES : `- ${title}`)).join("\n")}`;
+    }
+
     // The confirmation of new Initials, or of clearing them ("" entered);
     // clearing a Profile that has none changes nothing, so it asks nothing.
     function confirm(profile, initials) {
@@ -72,8 +88,9 @@ export function createInitialsMenu(host, profileStore, { nameEntry, highScoreSto
         if (initials === "") {
             message = TEXT.initialsClearConfirm(name, former, givenBack);
         } else {
-            const { places, tables } = highScoreStore.previewInitialsClaim(initials);
-            message = TEXT.initialsConfirm(name, initials, places, tables, former === null || former === initials ? null : givenBack);
+            const { places, tables, configIds } = highScoreStore.previewInitialsClaim(initials);
+            message = TEXT.initialsConfirm(name, initials, places, tables, former === null || former === initials ? null : givenBack)
+                + tableListOf(configIds);
         }
         menus.show(CONFIRM_MENU_ID, [
             { title: message, cmd: -1 },

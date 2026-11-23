@@ -65,7 +65,8 @@ test("changed Initials give back the places the old ones took, then take theirs"
     assert.deepEqual(store.placesHeldBy("Alice"), [{ configId: MM, bestPlace: 2 }]);
     assert.deepEqual(store.personalBoardOf(MM, "Alice").map(({ score }) => score), [8000, 7000], "the old claims' High Scores dropped");
     assert.deepEqual(store.achievementCountsOf("Alice").tableRecordTables, 0);
-    assert.deepEqual(store.previewInitialsClaim("FEL"), { places: 2, tables: 2 }, "Default Scores again, for anyone's Initials");
+    const { places, tables } = store.previewInitialsClaim("FEL");
+    assert.deepEqual({ places, tables }, { places: 2, tables: 2 }, "Default Scores again, for anyone's Initials");
 });
 
 test("cleared Initials give back every place they took", () => {

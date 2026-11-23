@@ -45,13 +45,13 @@ function setUp({ boards = BOARDS, highScores = [] } = {}) {
 // The places of a board as (rank, owner's name or null).
 const ownersOn = (store, configId) => store.boardOf(configId).map(({ rank, owner }) => [rank, owner ? owner.name : null]);
 
-test("the preview counts the places and tables the Initials would take, writing nothing", () => {
+test("the preview counts the places and names the tables the Initials would take, writing nothing", () => {
     const { fake, store } = setUp();
     const before = fake.readFile(HIGH_SCORES_FILE);
 
-    assert.deepEqual(store.previewInitialsClaim("FEL"), { places: 3, tables: 2 });
-    assert.deepEqual(store.previewInitialsClaim("fel"), { places: 3, tables: 2 }, "any case");
-    assert.deepEqual(store.previewInitialsClaim("XYZ"), { places: 0, tables: 0 });
+    assert.deepEqual(store.previewInitialsClaim("FEL"), { places: 3, tables: 2, configIds: [MM, AFM] }, "each table once");
+    assert.deepEqual(store.previewInitialsClaim("fel"), { places: 3, tables: 2, configIds: [MM, AFM] }, "any case");
+    assert.deepEqual(store.previewInitialsClaim("XYZ"), { places: 0, tables: 0, configIds: [] });
     assert.equal(fake.readFile(HIGH_SCORES_FILE), before);
 });
 
@@ -63,7 +63,7 @@ test("claiming takes every place without an owner bearing the Initials, and only
     assert.deepEqual(ownersOn(store, MM), [[1, "Alice"], [2, null], [3, "Bob"]], "a Play's place bearing FEL stays Bob's");
     assert.deepEqual(ownersOn(store, AFM), [[1, "Bob"], [2, "Alice"], [3, "Alice"]]);
     assert.deepEqual(ownersOn(store, TZ), [[1, null], [2, null]], "a removed Profile's place is never taken");
-    assert.deepEqual(store.previewInitialsClaim("FEL"), { places: 0, tables: 0 }, "nothing left to take");
+    assert.deepEqual(store.previewInitialsClaim("FEL"), { places: 0, tables: 0, configIds: [] }, "nothing left to take");
 });
 
 test("a claimed place counts everywhere a High Score does, marked as taken by Initials and dated at the claim", () => {

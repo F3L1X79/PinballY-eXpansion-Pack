@@ -2,7 +2,7 @@
 // A Profile's Initials from Manage profiles as Drawn Menus, through main.js
 // on the fake PinballY globals: the "Initials" line between the marks and the
 // History Import's line, greyed on Guest; Name Entry in its Initials mode
-// (A-Z, erase and OK, three letters, refusals, pre-filled); OK then "Yes"
+// (A-Z, erase and OK, three letters then OK alone with erase, refusals, pre-filled); OK then "Yes"
 // saves, OK on nothing clears, Exit changes nothing; the Profile's menu shown again after.
 // ============================================================
 
@@ -12,7 +12,7 @@ import { createFakePinballYHost, settle } from "../support/fake_pinbally_host.js
 import config from "../../common/core/config.js";
 import { OPEN_OVER_MS, readDrawnMenu, drawnMenuLines, highlightedEntry, press as pressMenu, openOperatorMenu, chooseEntry, isDrawnMenuShown } from "../drawn_menu/drawn_menu_reader.js";
 import {
-    NAME_ENTRY_OPEN_MS, press, isNameEntryOpen, nameEntryTexts, nameShown, reasonShown, ringShown, colorOf, moveTo, enterName, eraseName, currentCharacter,
+    NAME_ENTRY_OPEN_MS, press, isNameEntryOpen, nameEntryTexts, nameShown, reasonShown, ringShown, ringLayers, colorOf, moveTo, enterName, eraseName, currentCharacter,
 } from "../profiles/name_entry_scenario.js";
 import { STEAMBALL_COLORS } from "../../common/drawing/steamball_palette.js";
 import { assertNoErrorLogged } from "../support/error_log.js";
@@ -75,6 +75,10 @@ function pressAndLeave(button) {
     fake.advanceTime(OPEN_OVER_MS);
 }
 
+// A character's alpha on the strip, next to the current one (which fades it by a fifth only).
+const letterAlpha = character => ringLayers(fake).find(layer => layer.texts()[0] === character).alpha;
+const okAlpha = () => letterAlpha(OK);
+
 function chooseOk() {
     moveTo(fake, OK);
     pressAndLeave("Select");
@@ -110,10 +114,26 @@ test("Name Entry's Initials mode: its own title and lines, a ring of A-Z with er
     press(fake, "Select");
     assert.equal(isNameEntryOpen(fake), true, "OK does nothing on two letters");
 
-    enterName(fake, "LX");
-    assert.equal(nameShown(fake), "FEL", "three letters at most");
+    enterName(fake, "L");
+    assert.equal(nameShown(fake), "FEL");
     assert.equal(reasonShown(fake), "");
-    chooseOk();
+    assert.equal(currentCharacter(fake), OK, "the third letter puts the cursor on OK");
+    assert.ok(letterAlpha("A") < okAlpha() / 2, "the letters are greyed");
+    press(fake, "Next");
+    assert.equal(currentCharacter(fake), ERASE_ARROW, "Next skips the letters, to the erase arrow");
+    press(fake, "Next");
+    assert.equal(currentCharacter(fake), OK);
+    press(fake, "Prev");
+    assert.equal(currentCharacter(fake), ERASE_ARROW, "so does Prev");
+    press(fake, "Select");
+    assert.equal(nameShown(fake), "FE", "erasing gives the letters back");
+    assert.ok(letterAlpha("Z") > okAlpha() / 2, "no longer greyed");
+    press(fake, "Prev");
+    assert.equal(currentCharacter(fake), "Z");
+    enterName(fake, "L");
+    assert.equal(currentCharacter(fake), OK);
+    press(fake, "Select");
+    fake.advanceTime(OPEN_OVER_MS);
     assert.equal(isNameEntryOpen(fake), false, "OK closes Name Entry");
     // The claim's confirmation and closing Dialog: tests/menus/manage_profiles_initials_claim.test.js.
     chooseEntry(fake, TEXT.initialsYes);
@@ -142,6 +162,7 @@ test("the current Initials are pre-filled, and Exit leaves them unchanged", () =
     openInitials("Bob", "FEL");
     assert.equal(nameShown(fake), "FEL");
     assert.equal(reasonShown(fake), "", "its own Initials are not taken");
+    assert.equal(currentCharacter(fake), OK, "full Initials open on OK");
     eraseName(fake);
     pressAndLeave("Exit");
     assert.equal(isNameEntryOpen(fake), false);

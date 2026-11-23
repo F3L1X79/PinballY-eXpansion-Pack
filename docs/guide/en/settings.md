@@ -153,8 +153,8 @@ An Admin Profile also finds **Manage profiles** in two places: in the Exit menu 
 
 A Profile's **Initials** are the three letters that stand for it on tables' high score boards, such as "FEL": the high scores bearing them that belong to no Profile, made before the pack for instance, become this Profile's. The line, in a Profile's own menu right after its marks, shows them ("Initials: FEL"), or "Initials: none".
 
-- Choosing it opens Name Entry with the current Initials already entered: capital letters A to Z only, erase and OK, three letters at most.
-- OK asks to confirm, saying how many high score places, on how many tables, the Initials will take; "No" changes nothing. "Yes" saves them and gives the Profile those places, then says how many it took, or that none bears them yet. The Achievements those places reach are unlocked without a toast, even when the Profile is picked later.
+- Choosing it opens Name Entry with the current Initials already entered: capital letters A to Z only, erase and OK, three letters at most. On the third letter, the cursor goes to OK and the letters are greyed: only erase and OK can be chosen.
+- OK asks to confirm, saying how many high score places, on how many tables, the Initials will take, with those tables' names one under the other ("..." past six); "No" changes nothing. "Yes" saves them and gives the Profile those places, then says how many it took, or that none bears them yet. The Achievements those places reach are unlocked without a toast, even when the Profile is picked later.
 - Changing them gives back, as default scores, the places the former Initials took, before the new ones take theirs; the confirmation says how many. A score the Profile won in a game stays its own, and a lost Table Record on a place given back is no longer shown on the Welcome Screen.
 - OK with every letter erased clears them, after a confirmation saying how many places they give back; Exit changes nothing. The Profile's menu then comes back, on its Initials.
 - Removing a Profile frees its Initials for another Profile.

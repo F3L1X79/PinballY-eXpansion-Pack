@@ -2,7 +2,8 @@
 // Name Entry: the drawn screen where a word is put together with the
 // flippers on a ring of characters. Over the Profile picker, a new Profile's
 // name: OK creates the Profile (one folder written) and hands its name back.
-// From Manage profiles, a Profile's Initials: OK hands them back, saving nothing.
+// From Manage profiles, a Profile's Initials: OK hands them back, saving nothing;
+// once three letters are in, the cursor goes to OK and only erasing or OK can be chosen.
 // - Exit and attract mode create nothing; a failed folder keeps the screen open with a message, logged, no Error Toast.
 // - Moving along the ring only moves layers: each draw blocks PinballY 20 to 45 ms on the cabinet.
 // - Buttons and attract mode go through the Drawn Screen controls, set up before the Profile picker's listener.
@@ -35,6 +36,9 @@ const HYPHEN = "-";
 const ERASE_ARROW = String.fromCharCode(0x2190);
 // The strip's characters fade away from the current one, by this much per place.
 const FADE_PER_PLACE = 0.2;
+// A letter that cannot be chosen is greyed by its layer's alpha, not drawn
+// anew: redrawing the 26 letters would block PinballY for most of a second.
+const BLOCKED_ALPHA = 0.3;
 
 // drawingAhead: the shared drawing ahead (common/core/drawing_ahead.js);
 // drawnScreenControls: the shared Drawn Screen controls (common/core/drawn_screen_controls.js).
@@ -63,6 +67,9 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
     const eraseIndex = () => ring().length - 2;
     const okIndex = () => ring().length - 1;
     const isOkGreyed = () => shown.refusal !== null;
+    // Full Initials leave only erasing and OK to choose: the letters are greyed and skipped.
+    const isFull = () => shown.mode.okOnceFull && shown.name.length >= shown.mode.maxLength;
+    const isLetterBlocked = index => index < eraseIndex() && isFull();
 
     // The failed folder's message takes the reason's place.
     function reasonText() {
@@ -79,7 +86,7 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
             // Only while the Household is empty.
             notice: profileStore.isHouseholdEmpty() ? TEXT.firstProfileLine : null,
             // After a first capital, the cursor goes to the lower case.
-            lowerAfterFirst: true,
+            lowerAfterFirst: true, okOnceFull: false,
             refusalOf: name => nameRefusal(name, { listedNames, guestNameShown: guestName }),
             // An empty name has no reason to give.
             reasonOf: refusal => (refusal === NAME_REFUSAL.EMPTY ? "" : TEXT.refusals[refusal]),
@@ -99,7 +106,8 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
     function initialsMode({ profileName, current, holderOf, onDone, onExit }) {
         return {
             ring: INITIALS_RING, maxLength: INITIALS_LENGTH, title: TEXT.initials.title(profileName), lines: TEXT.initials.lines, word: current || "",
-            notice: null, lowerAfterFirst: false,
+            // Once three letters are in, the cursor goes to OK.
+            notice: null, lowerAfterFirst: false, okOnceFull: true,
             refusalOf: initials => initialsRefusal(initials, holderOf),
             reasonOf: (refusal, initials) => (refusal === INITIALS_REFUSAL.TAKEN
                 ? TEXT.initials.refusals.taken(holderOf(initials)) : TEXT.initials.refusals.threeLetters),
@@ -184,7 +192,7 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
             const offset = shownOffsets.get(index);
             placed.place(layer, cellRectOf(shown.geometry, offset));
             placed.show(layer);
-            layer.alpha = shown.opacity * (1 - FADE_PER_PLACE * Math.abs(offset));
+            layer.alpha = shown.opacity * (1 - FADE_PER_PLACE * Math.abs(offset)) * (isLetterBlocked(index) ? BLOCKED_ALPHA : 1);
         });
     }
 
@@ -248,7 +256,9 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
         // Here rather than on the first move, which it would slow down.
         navigationSound.load();
         shown = {
-            mode, name: mode.word, refusal: mode.refusalOf(mode.word), hasFolderFailed: false, cursor: 0, opacity: 0,
+            mode, name: mode.word, refusal: mode.refusalOf(mode.word), hasFolderFailed: false, opacity: 0,
+            // Full Initials pre-filled open on OK.
+            cursor: mode.okOnceFull && mode.word.length >= mode.maxLength ? mode.ring.length - 1 : 0,
             controlled: controls.open({ onMove: move, onChoose: choose, onExit: exit, close: remove }),
             referenceWidth: 0, geometry: null, backdrop: null, fixedLayers: [], ringLayers: [], nameLayer: null, reasonLayer: null, marker: null,
         };
@@ -273,10 +283,13 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
 
     const redrawReason = () => redraw(shown.reasonLayer, shown.geometry.reason, drawReasonOn(shown.geometry.reason));
 
+    // Full Initials put the cursor on OK.
     function setName(name) {
         shown.name = name;
         redraw(shown.nameLayer, shown.geometry.name, drawNameOn(shown.geometry.name));
         checkName();
+        if (isFull()) shown.cursor = okIndex();
+        placeRing();
     }
 
     // Checks the name again, drawing the reason and OK only if they changed.
@@ -317,17 +330,17 @@ export function createNameEntry(host, { profileStore, drawingAhead, drawnScreenC
         } else if (cursor === eraseIndex()) {
             if (name !== "") setName(name.slice(0, -1));
         } else if (name.length < mode.maxLength && !isMisplacedHyphen(ring()[cursor], name)) {
+            if (name === "" && mode.lowerAfterFirst) shown.cursor = LOWER_A;
             setName(name + ring()[cursor]);
-            if (name === "" && mode.lowerAfterFirst) {
-                shown.cursor = LOWER_A;
-                placeRing();
-            }
         }
     }
 
     function move(direction, isRepeat) {
         navigationSound.play(direction, isRepeat);
-        shown.cursor = (shown.cursor + direction + ring().length) % ring().length;
+        const size = ring().length;
+        do {
+            shown.cursor = (shown.cursor + direction + size) % size;
+        } while (isLetterBlocked(shown.cursor));
         placeRing();
     }
 

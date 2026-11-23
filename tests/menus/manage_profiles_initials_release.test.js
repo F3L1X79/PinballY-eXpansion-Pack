@@ -88,7 +88,7 @@ test("changing them, the confirmation also counts the places given back; No chan
     const files = savedFiles();
     enterInitials("Bob", "FEL", "ABC");
 
-    assert.equal(squeezed(readDrawnMenu(fake).message), squeezed(TEXT.initialsConfirm("Bob", "ABC", 1, 1, 2)));
+    assert.equal(readDrawnMenu(fake).message, `${TEXT.initialsConfirm("Bob", "ABC", 1, 1, 2)}\n\n- Medieval Madness`);
     assert.deepEqual(drawnMenuLines(fake), [TEXT.initialsYes, TEXT.no]);
     pressMenu(fake, "Select");
 
