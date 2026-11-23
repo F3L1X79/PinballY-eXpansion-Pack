@@ -224,6 +224,7 @@
           <a class="chip tr-play" href="#closing-curtains"><b></b>Rideaux de fermeture</a>
           <a class="chip tr-play" href="#sound-design"><b></b>Sound design</a>
           <a class="chip tr-profiles" href="#delete-profile"><b></b>Supprimer un Profile</a>
+          <a class="chip tr-play" href="#frog-game"><b></b>Jeu de la grenouille</a>
         </div>
         <div class="cell">
           <a class="chip tr-profiles" href="#year-in-pinball"><b></b>Year in Pinball</a>
@@ -422,6 +423,31 @@
               <li>La durée, le son (souffle, puis bip de mire ?), et le nom, l'indice et le blason de l'Achievement.</li>
             </ul>
             <p class="ctx">Idée de Félix du 19/11/2026. Un effet unique qui finit seul, compatible avec la règle « pas d'animation sans fin ». Comme tous les Easter Eggs, décrit nulle part pour le joueur : pas de page du guide.</p>
+          </details>
+        </div>
+      </li>
+
+      <li draggable="true" tabindex="0" class="item tr-play" id="frog-game" data-track="play" data-rank="silver">
+        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
+        <div class="emblem"></div>
+        <div class="content">
+          <div class="item-head">
+            <h3>Un second jeu comme le Rocket Game : la grenouille sur les nénuphars</h3>
+            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">moyen</span><span class="tag">UI</span></div>
+          </div>
+          <p>Le moteur du Rocket Game avec d'autres images : une grenouille saute de nénuphar en nénuphar sans tomber dans les trous d'eau. De temps en temps, un crocodile traverse l'étang de gauche à droite ou de droite à gauche pour la manger.</p>
+          <div class="stepper"><span class="here">idée</span><i>›</i><span>grill</span><i>›</i><span>prototype</span><i>›</i><span>spec</span><i>›</i><span>tickets</span><i>›</i><span>implement</span></div>
+          <div class="links">Flow Matt : <code>/grill-with-docs</code> → <code>/prototype</code> (grenouille, nénuphars et crocodile à juger sur la borne) → <code>/to-spec</code> → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>common/rocket/rocket_engine.js</code> (couloirs aux flippers, fin au crash, musique), de <code>common/rocket/rocket_patterns.js</code> (rangées avec un couloir libre toujours atteignable), de <code>addons/rocket_game.js</code> et du <code>rocket_board.js</code></div>
+          <details>
+            <summary>Questions ouvertes (5)</summary>
+            <ul>
+              <li>Un moteur commun aux deux jeux, avec ses images et ses motifs donnés par chaque jeu, ou une copie du Rocket ? Les rangées d'astéroïdes deviennent des rangées de nénuphars dont les trous d'eau sont les obstacles.</li>
+              <li>Les boutons : les flippers changent de couloir comme pour la fusée ; Launch fait-il sauter la grenouille (au lieu de tirer), par exemple par-dessus un crocodile ?</li>
+              <li>Le crocodile : à quelle fréquence, à quelle vitesse, et annoncé comment (tête qui dépasse du bord, son) pour qu'il reste toujours évitable, comme le couloir libre du Rocket ?</li>
+              <li>Comment le jeu se débloque : une entrée du menu principal toujours là, ou cachée derrière un Easter Egg à elle, comme le Rocket Game derrière le Rocket ? Son propre classement de la maison (Board), ou un seul pour les deux jeux ?</li>
+              <li>Le nom (dans les six langues, voir <code>GLOSSARY.md</code>), la musique, les images (poses PNG ou dessin Steamball), et un Achievement ?</li>
+            </ul>
+            <p class="ctx">Idée de Félix du 23/11/2026.</p>
           </details>
         </div>
       </li>
