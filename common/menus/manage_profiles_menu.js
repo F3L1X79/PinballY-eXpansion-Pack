@@ -2,7 +2,7 @@
 // Manage profiles, opened from the Exit menu: the list of Profiles (and
 // "Every profile"), then a Profile's own menu: the mark lines, flipping the mark
 // at once, the Initials line (High Scores Add-on on), the History Import's
-// line and "Reset"; while no Profile is marked, only "Become admin". Opens
+// line, "Reset" and "Remove"; while no Profile is marked, only "Become admin". Opens
 // directly through the Drawn Menu module. Listens to "command".
 // - A line the mark rules forbid stays, greyed with its reason (setup_entries.js, ADR 0020).
 // - Exit and Back go from a Profile's menu to the list only when drawn: natively, they close.
@@ -17,6 +17,7 @@ import { createNativeMenus } from "../drawn_menu/drawn_menu.js";
 import { createProfileResetMenu } from "./profile_reset_menu.js";
 import { createHistoryImportMenu } from "./history_import_menu.js";
 import { createInitialsMenu } from "./initials_menu.js";
+import { createProfileRemovalMenu } from "./profile_removal_menu.js";
 
 const SCRIPT_NAME = "ManageProfiles";
 const LIST_MENU_ID = "manageProfilesList";
@@ -32,6 +33,7 @@ export function createManageProfilesMenu(host, profileStore, menus = createNativ
     const { profileReset: TEXT } = lang;
     const profileReset = createProfileResetMenu(host, profileStore, menus);
     const historyImport = createHistoryImportMenu(host, profileStore, menus);
+    const profileRemoval = createProfileRemovalMenu(host, profileStore, { menus, showList: () => openList() });
     const initials = nameEntry
         ? createInitialsMenu(host, profileStore, { nameEntry, highScoreStore, menus, showProfileMenu: (profile, cmd) => openProfile(profile, cmd) })
         : null;
@@ -118,6 +120,7 @@ export function createManageProfilesMenu(host, profileStore, menus = createNativ
             SEPARATOR,
             historyImport.lineFor(profile),
             { title: TEXT.reset, cmd: resetCommand },
+            profileRemoval.lineFor(profile),
             { title: TEXT.back, cmd: menuReturnCommand },
         ], selectedCmd), { onBack: () => backToList(profile) });
     }

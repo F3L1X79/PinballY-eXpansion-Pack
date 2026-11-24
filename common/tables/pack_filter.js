@@ -10,7 +10,7 @@
 
 import { safeHandler } from "../core/safe_handler.js";
 import { ALL_TABLES_FILTER } from "../core/pinbally_host.js";
-import { getWheelOrder, pageGroupByYear } from "./wheel_order.js";
+import { getWheelOrder } from "./wheel_order.js";
 
 export const PACK_FILTER_PAGINGS = Object.freeze({ WHEEL_ORDER: "wheelOrder", RANKED: "ranked" });
 
@@ -32,7 +32,7 @@ const wheelOrderOf = wheelOrder => wheelOrder ?? getWheelOrder();
 // pack's filters only; null for PinballY's default (the title's first
 // letter), as PinballY gives no filter's pageGroup back.
 export function pageGroupOfFilter(filterId, wheelOrder) {
-    if (wheelOrderOf(wheelOrder).isSortedCopy(filterId)) return pageGroupByYear;
+    if (wheelOrderOf(wheelOrder).isSortedCopy(filterId)) return wheelOrderOf(wheelOrder).yearPageGroup;
     const packSort = packFilterSortOf(filterId);
     if (packSort === null) return null;
     // Ranked, each table is a page of its own.

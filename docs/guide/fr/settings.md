@@ -7,7 +7,7 @@ Pour le propriétaire de la borne :
 - **Réglages de l'eXpansion pack** : depuis le menu opérateur, activer ou désactiver chaque Add-on par catégorie, choisir l'écran de démarrage et la langue, puis redémarrer PinballY d'une pression.
 - **Profil admin** : les entrées de configuration pour vous seul.
 - **Profil enfant** : une roue sans tables pour adultes.
-- **Gérer les profils** : marquer un Profil admin ou un Profil enfant, donner ses initiales à un Profil, donner l'historique de jeu de PinballY à un Profil (reprise de l'historique), ou faire repartir de zéro un Profil ou toute la maison d'un coup.
+- **Gérer les profils** : marquer un Profil admin ou un Profil enfant, donner ses initiales à un Profil, donner l'historique de jeu de PinballY à un Profil (reprise de l'historique), faire repartir de zéro un Profil ou toute la maison d'un coup, ou supprimer un Profil de la borne.
 - **Nettoyage des menus** : des menus PinballY allégés (voir [Interface](interface.md#nettoyage-des-menus)).
 
 Tout tient dans un seul dossier, sans modifier PinballY.
@@ -48,7 +48,7 @@ Sous « Roue », **Repères de la roue** montre où vous en êtes sur la roue : 
 Tant que « Repères de la roue » est enregistré activé, la page « Roue » liste quatre lignes de plus après son séparateur, au-dessus de la ligne « Mode attraction », pour ne garder que les repères voulus ; chacune s'applique au redémarrage de PinballY :
 
 - **Rail de la roue** Activé ou Désactivé (`WHEEL_RAIL`) ;
-- **Rail par année**, affichée tant que le rail de la roue est enregistré activé : **Décennies seules** (par défaut) ou **Décennies et années**, les années de chaque décennie dessous quand la roue est par année (`WHEEL_RAIL_YEARS` ; les lettres de la roue alphabétique restent les mêmes) ;
+- **Rail par année**, affichée tant que le rail de la roue est enregistré activé : **Décennies seules** (par défaut) ou **Décennies et années**, les années de chaque décennie dessous quand la roue est par année, les boutons Page suivante et Page précédente sautant alors d'une année à l'autre au lieu d'une décennie (`WHEEL_RAIL_YEARS` ; les lettres de la roue alphabétique restent les mêmes) ;
 - **Position dans la roue** Activé ou Désactivé : désactivée, « Table n/total » revient dans la ligne d'état du bas (`WHEEL_POSITION`) ;
 - **Cœur des favoris** Activé ou Désactivé (`FAVORITE_HEART`).
 
@@ -141,13 +141,21 @@ Ce Profil marque ensuite les autres depuis la borne : ouvrez **Gérer les profil
 
 ## Réinitialiser un profil
 
-Un Profil admin trouve aussi **Gérer les profils** à deux endroits : dans le menu de sortie (Échap), juste après « Changer de joueur », au-dessus de « Menu opérateur » ; et dans le menu opérateur, juste après **Réglages de l'eXpansion pack**, dans leur propre groupe sous « Capture par lot ». Les autres Profils ne le voient jamais, même quand le bouton de service de la porte du monnayeur ouvre le menu opérateur. Il liste tous les Profils, Invité et vous-même compris, plus « Réinitialiser tous les profils », dès qu'il y en a au moins deux, pour remettre toute la maison à zéro d'un coup. Choisir un Profil ouvre son propre menu : ses marques admin et enfant (voir [Profil admin](#profil-admin) et [Profil enfant](#profil-enfant)), ses **Initiales** (voir [Initiales](#initiales)), **Reprendre l'historique de PinballY** (voir [Reprise de l'historique](#reprise-de-lhistorique)) et **Réinitialiser**. Avec les [menus dessinés](interface.md#menus-dessinés), Échap ou « Retour » y ramène à la liste ; sans eux, les deux ferment le menu.
+Un Profil admin trouve aussi **Gérer les profils** à deux endroits : dans le menu de sortie (Échap), juste après « Changer de joueur », au-dessus de « Menu opérateur » ; et dans le menu opérateur, juste après **Réglages de l'eXpansion pack**, dans leur propre groupe sous « Capture par lot ». Les autres Profils ne le voient jamais, même quand le bouton de service de la porte du monnayeur ouvre le menu opérateur. Il liste tous les Profils, Invité et vous-même compris, plus « Réinitialiser tous les profils », dès qu'il y en a au moins deux, pour remettre toute la maison à zéro d'un coup. Choisir un Profil ouvre son propre menu : ses marques admin et enfant (voir [Profil admin](#profil-admin) et [Profil enfant](#profil-enfant)), ses **Initiales** (voir [Initiales](#initiales)), **Reprendre l'historique de PinballY** (voir [Reprise de l'historique](#reprise-de-lhistorique)), **Réinitialiser** et **Supprimer** (voir [Supprimer un profil](#supprimer-un-profil)). Avec les [menus dessinés](interface.md#menus-dessinés), Échap ou « Retour » y ramène à la liste ; sans eux, les deux ferment le menu.
 
 - Après une confirmation (le curseur part sur « Non »), « Réinitialiser » ou « Réinitialiser tous les profils » fait repartir le Profil de zéro : ses parties, ses séries, ses records de session, ses parties aléatoires, sa progression aux défis, ses succès annoncés, sa maîtrise des tables, son palier de collection et ses cadres d'Avatar sont effacés, tandis que son nom, son avatar, ses marques et les meilleurs scores qu'il a gagnés restent. Seuls les scores gagnés depuis comptent pour lui, sauf les places que ses [initiales](#initiales) ont prises.
 - Un message indique ensuite si l'opération a réussi.
 - Ses anciens fichiers sont gardés à côté, sous les noms `profile.reset-<date>.json` et `play-log-<année>.reset-<date>.json` : pour annuler une réinitialisation, fermez PinballY et renommez chaque copie sans sa partie `.reset-<date>`.
 - Si vous avez désactivé le menu de sortie dans les options de PinballY, le bouton de service de la porte du monnayeur ouvre toujours le menu opérateur, et « Gérer les profils » avec lui.
 - Une réinitialisation efface aussi ce que le Profil a repris de l'historique de PinballY, et la reprise n'est plus proposée.
+
+### Supprimer un profil
+
+**Supprimer**, sous « Réinitialiser » dans le menu d'un Profil, retire un Profil de la borne : un Profil de test, un nom mal tapé, quelqu'un qui a déménagé. Après une confirmation (le curseur part sur « Non »), la borne l'oublie aussitôt, sans redémarrer PinballY : il quitte la liste, « Changer de joueur », les Stats de la maison, les tableaux de la maison, le tableau du Rocket Game et la ligne des aides de l'écran d'accueil. Ses places sur le tableau des meilleurs scores d'une table restent, affichées en « Score par défaut » ; un Profil créé plus tard sous le même nom retrouve ses meilleurs scores. Ses initiales sont libres pour un autre Profil, et ses parties de la semaine comptent toujours pour le Défi de la maison.
+
+- Ses fichiers ne sont pas effacés : son dossier dans `Scripts\ExpansionPack\profiles` est renommé `_<nom> removed <date>`, que le pack ignore (voir [Dépannage](troubleshooting.md) pour le faire revenir).
+- Invité et le Profil en cours ne sont jamais supprimés : leur ligne « Supprimer » est grisée, avec sa raison. Il n'y a pas de « supprimer tous les profils ».
+- Si le dossier ne peut pas être renommé (un fichier ouvert dans un autre programme), un message le dit, la cause va dans le journal, et rien ne change.
 
 ### Initiales
 

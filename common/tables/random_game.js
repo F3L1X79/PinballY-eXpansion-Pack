@@ -133,8 +133,8 @@ export function createRandomGame(host, profileStore, { animateTo, skipAnimation 
     return { launch, getRandomGamesPlayed, getLastPlayedTable: findLastPlayedTable, isStartedGameRandom: () => startedGameIsRandom };
 }
 
-// NextPage jumps follow the Active Filter's own page groups (by decade while
-// by year): planned by first letter, they stop off the drawn table.
+// NextPage jumps follow the Active Filter's own page groups (by decade, or
+// year, while by year): planned by first letter, they stop off the drawn table.
 async function animateWheelThenPause(host, tables, index) {
     await animateWheelTo(tables, index, {
         baseSpeedMs: ANIMATION_BASE_SPEED_MS,

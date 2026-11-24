@@ -46,9 +46,9 @@ test("with WHEEL_RAIL_YEARS, each decade's years show under it and the pill sits
     assert.equal(fake.getCurrentTable().title, "Table 1960");
     assert.equal(shownRail(fake).pill, "60", "on the year, not the decade");
     fake.pressPageButton("NextPage");
-    assert.equal(fake.getCurrentTable().title, "Table 1970");
-    assert.equal(shownRail(fake).pill, "70", "Next Page, decade by decade");
-    fake.moveWheel(14);
+    assert.equal(fake.getCurrentTable().title, "Table 1961");
+    assert.equal(shownRail(fake).pill, "61", "Next Page, year by year");
+    fake.moveWheel(23);
     assert.equal(shownRail(fake).pill, "84");
     assert.deepEqual(layersBreakingTheRule(fake), []);
     assertNoErrorLogged(fake);

@@ -110,7 +110,8 @@ export const DEFAULTS = {
     logLaunchEvents: false,
     // false = no Wheel Rail of letters or decades on the right edge (Wheel Guides Add-on).
     wheelRail: true,
-    // true = each decade's years under it on the Wheel Rail, as two digits (84).
+    // true = each decade's years under it on the Wheel Rail, as two digits
+    // (84), and Next / Previous Page jumping by year instead of by decade.
     wheelRailYears: false,
     // Seconds the Wheel Rail stays without a move before sliding away (a
     // whole number); 0 = always shown.

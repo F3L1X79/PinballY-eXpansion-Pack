@@ -7,7 +7,7 @@ For the cabinet owner:
 - **eXpansion Pack Settings**: from the Operator Menu, turn each Add-on on or off by category, pick the startup screen and the language, then restart PinballY in one press.
 - **Admin Profile**: the setup entries for you alone.
 - **Child Profile**: a wheel without Adult Tables for the kids.
-- **Manage profiles**: mark an Admin Profile or a Child Profile, give a Profile its Initials, hand PinballY's own play history to one Profile (History Import), or start a Profile over (Profile Reset), alone or the whole household at once.
+- **Manage profiles**: mark an Admin Profile or a Child Profile, give a Profile its Initials, hand PinballY's own play history to one Profile (History Import), start a Profile over (Profile Reset), alone or the whole household at once, or remove a Profile from the cabinet (Profile Removal).
 - **Menu Cleanup**: leaner PinballY menus (see [Interface](interface.md#menu-cleanup)).
 
 Everything stays in one folder, with no change to PinballY itself.
@@ -48,7 +48,7 @@ Under "Wheel", **Wheel Guides** shows where you are on the wheel: the Wheel Rail
 While Wheel Guides is saved on, the "Wheel" page lists four more lines after its separator, above the Attract Order line, to keep only the guides you want; each applies when PinballY restarts:
 
 - **Wheel Rail** On or Off (`WHEEL_RAIL`);
-- **Rail by year**, shown while the Wheel Rail is saved on: **Decades only** (the default) or **Decades and years**, each decade's years under it when the wheel is by year (`WHEEL_RAIL_YEARS`; the letters of the alphabetical wheel stay as they are);
+- **Rail by year**, shown while the Wheel Rail is saved on: **Decades only** (the default) or **Decades and years**, each decade's years under it when the wheel is by year, and the Next Page and Previous Page buttons then jumping by year instead of by decade (`WHEEL_RAIL_YEARS`; the letters of the alphabetical wheel stay as they are);
 - **Wheel Position** On or Off: turned off, "Table n/total" comes back to the lower status line (`WHEEL_POSITION`);
 - **Favorite Heart** On or Off (`FAVORITE_HEART`).
 
@@ -141,13 +141,21 @@ From then on, that Profile marks the others from the cabinet: open **Manage prof
 
 ## Profile Reset
 
-An Admin Profile also finds **Manage profiles** in two places: in the Exit menu (Escape), right after "Change Player", above "Operator Menu"; and in the Operator Menu, right after **eXpansion Pack Settings**, in their own group below "Batch Capture". Other Profiles never see it, even when the coin door service button opens the Operator Menu. It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)), its **Initials** (see [Initials](#initials)), **Take over PinballY's history** (see [History Import](#history-import)) and **Reset**. With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
+An Admin Profile also finds **Manage profiles** in two places: in the Exit menu (Escape), right after "Change Player", above "Operator Menu"; and in the Operator Menu, right after **eXpansion Pack Settings**, in their own group below "Batch Capture". Other Profiles never see it, even when the coin door service button opens the Operator Menu. It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)), its **Initials** (see [Initials](#initials)), **Take over PinballY's history** (see [History Import](#history-import)), **Reset** and **Remove** (see [Profile Removal](#profile-removal)). With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
 
 - After one confirmation (the cursor starts on "No"), "Reset" or "Reset every profile" starts the Profile over: its plays, Streaks, session records, Random Games, Challenge progress, announced Achievements, Table Mastery, Collection Tier and Avatar Frames are erased, while its name, Avatar, marks and the High Scores it won stay. Only the scores won since the reset count for it, except the places its [Initials](#initials) took.
 - A message then tells whether it worked.
 - Its former files are kept next to them, as `profile.reset-<date>.json` and `play-log-<year>.reset-<date>.json`: to undo a reset, close PinballY and rename each copy back, without its `.reset-<date>` part.
 - If you disabled PinballY's Exit menu in its options, the coin door service button still opens the Operator Menu, and Manage profiles with it.
 - A Profile Reset also erases what the Profile took over from PinballY's history, and the History Import is not offered again.
+
+### Profile Removal
+
+**Remove**, under "Reset" in a Profile's own menu, takes a Profile off the cabinet: a test Profile, a mistyped name, someone who moved out. After one confirmation (the cursor starts on "No"), the cabinet forgets it at once, without restarting PinballY: it leaves the list, Change Player, the Household Stats, the Household Boards, the Rocket Board and the helpers line of the Welcome Screen. Its places on a table's own high score board stay, shown as Default Scores; a Profile created later under the same name gets its High Scores back. Its Initials are free for another Profile, and its games of the week still count for the Household Challenge.
+
+- Its files are not erased: its folder in `Scripts\ExpansionPack\profiles` is renamed `_<name> removed <date>`, which the pack ignores (see [Troubleshooting](troubleshooting.md) to bring it back).
+- Guest and the Profile in use are never removed: their "Remove" line is greyed, with its reason. There is no "remove every profile".
+- If the folder cannot be renamed (a file open in another program), a message says so, the cause goes to the log, and nothing changes.
 
 ### Initials
 

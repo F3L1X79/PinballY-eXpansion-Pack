@@ -253,6 +253,9 @@ export function createHouseholdChallenge(host, profileStore, { challenges, table
     profileStore.onUpdate(safeHandler(SCRIPT_NAME, (profileName, { isReset }) => {
         if (isReset) forgetHelper(profileName, null);
     }));
+    // Fires after a Profile was removed: like a reset one, it is never
+    // credited; the week's Plays it recorded still count.
+    profileStore.onRemove(safeHandler(SCRIPT_NAME, profileName => forgetHelper(profileName, null)));
 
     return {
         getCurrent, showUp, getActiveView, getContributors, getTablesToPlay,

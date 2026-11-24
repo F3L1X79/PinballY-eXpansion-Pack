@@ -56,7 +56,7 @@ test("Manage profiles opens the list, then the Profile's menu with its name as a
     chooseEntry(fake, "Bob");
 
     assert.equal(fake.currentMenu(), null, "no native menu");
-    assert.deepEqual(drawnMenuLines(fake), ["[BOB]", "---", TEXT.adminLine(false), TEXT.childLine(false), "---", TEXT.historyLine, TEXT.reset, TEXT.back]);
+    assert.deepEqual(drawnMenuLines(fake), ["[BOB]", "---", TEXT.adminLine(false), TEXT.childLine(false), "---", TEXT.historyLine, TEXT.reset, TEXT.remove, TEXT.back]);
     assert.equal(highlightedEntry(fake), TEXT.adminLine(false));
 });
 
@@ -67,7 +67,7 @@ test("choosing the Child line marks the Profile at once, the cursor staying on i
     assert.equal(readProfile("Bob").isChild, true);
     assert.equal(readProfile("Bob").randomGames, 3, "nothing else changes");
     assert.ok(isDrawnMenuShown(fake), "the menu stays");
-    assert.deepEqual(drawnMenuLines(fake), ["[BOB]", "---", TEXT.adminLine(false), TEXT.childLine(true), "---", TEXT.historyLine, TEXT.reset, TEXT.back]);
+    assert.deepEqual(drawnMenuLines(fake), ["[BOB]", "---", TEXT.adminLine(false), TEXT.childLine(true), "---", TEXT.historyLine, TEXT.reset, TEXT.remove, TEXT.back]);
     assert.equal(highlightedEntry(fake), TEXT.childLine(true));
 
     press(fake, "Select");

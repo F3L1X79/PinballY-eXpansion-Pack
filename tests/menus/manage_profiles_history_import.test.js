@@ -66,7 +66,7 @@ const historyRow = () => readDrawnMenu(fake).rows.find(row => row.title === TEXT
 
 test("the line sits just before Reset, greyed on Guest with its reason", () => {
     openProfileMenu(GUEST);
-    assert.deepEqual(drawnMenuLines(fake).slice(-3), [TEXT.historyLine, TEXT.reset, TEXT.back]);
+    assert.deepEqual(drawnMenuLines(fake).slice(-4), [TEXT.historyLine, TEXT.reset, TEXT.remove, TEXT.back]);
     assert.equal(historyRow().reason, TEXT.historyRefusals.guest);
     assert.ok(!drawnMenuLines(fake).includes(TEXT.initialsLine(null)), "no Initials line with the High Scores Add-on off");
     closeProfileMenu();

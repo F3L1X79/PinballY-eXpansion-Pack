@@ -300,6 +300,7 @@ export function createFakePinballYHost({
     let failingRestartCount = 0;
     let failingFolderCreationCount = 0;
     let failingCopyCount = 0;
+    let failingFolderRenameCount = 0;
     // Folders whose next listing throws; null for whichever folder comes next.
     const failingFolderListings = [];
     // Every Pack Update asked, in order: { zipUrl, sha256, packVersion },
@@ -972,6 +973,34 @@ export function createFakePinballYHost({
             modifiedDates.delete(fromPath);
             fileOperationList.push({ operation: "rename", path: fromPath, to: toPath });
         },
+        // The folder with everything in it; like renameFile, never overwrites
+        // (docs/research/file-system-object-moves.md).
+        renameFolder(fromPath, toPath) {
+            if (failingFolderRenameCount > 0) {
+                failingFolderRenameCount--;
+                throw new Error(`Permission denied: ${fromPath}`);
+            }
+            const from = withoutTrailingSlash(fromPath);
+            const to = withoutTrailingSlash(toPath);
+            if (!folders.has(from)) throw new Error(`Folder not found: ${fromPath}`);
+            requireParentFolder(to);
+            if (folders.has(to) || files.has(to)) throw new Error(`Folder already exists: ${toPath}`);
+            const isInside = path => path === from || path.startsWith(`${from}\\`);
+            const moved = path => `${to}${path.slice(from.length)}`;
+            for (const path of [...folders]) {
+                if (!isInside(path)) continue;
+                folders.delete(path);
+                folders.add(moved(path));
+            }
+            for (const path of [...files.keys()]) {
+                if (!isInside(path)) continue;
+                files.set(moved(path), files.get(path));
+                modifiedDates.set(moved(path), modifiedDates.get(path));
+                files.delete(path);
+                modifiedDates.delete(path);
+            }
+            fileOperationList.push({ operation: "renameFolder", path: fromPath, to: toPath });
+        },
         deleteFile(path) {
             requireFile(path);
             requireUnlocked(path);
@@ -1295,6 +1324,7 @@ export function createFakePinballYHost({
                 fileSystem.createFolder(path);
             },
             MoveFile: fileSystem.renameFile,
+            MoveFolder: fileSystem.renameFolder,
             DeleteFile: fileSystem.deleteFile,
             // Only with its overwrite flag, the one the pack passes.
             CopyFile: (fromPath, toPath, overwrite) => {
@@ -1756,6 +1786,8 @@ export function createFakePinballYHost({
         failNextFolderCreation() { failingFolderCreationCount++; },
         // The next file copied throws, as Windows does on a denied file.
         failNextCopy() { failingCopyCount++; },
+        // The next folder renamed throws, as Windows does on a folder in use.
+        failNextFolderRename() { failingFolderRenameCount++; },
         // The next listing (files or sub-folders) of this folder, or of any
         // folder when none is given, throws, as Windows does on a denied folder.
         failNextFolderListing(folderPath = null) { failingFolderListings.push(folderPath === null ? null : withoutTrailingSlash(folderPath)); },

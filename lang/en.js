@@ -640,6 +640,17 @@ export default {
         cancel: "Cancel",
         done: name => `${name} starts over.`,
         failed: name => `${name} could not be reset. See the log for details.`,
+        // Profile Removal: the Profile's folder set aside, the cabinet forgets it.
+        remove: "Remove",
+        // Why the line is greyed out.
+        removeRefusals: {
+            guest: "Guest is never removed",
+            active: "Active profile",
+        },
+        removeConfirm: name => `Remove ${name}? The cabinet forgets this profile; its files are kept aside in the profiles folder.`,
+        removeYes: "Yes, remove",
+        removeDone: name => `${name} was removed.`,
+        removeFailed: name => `${name} could not be removed. See the log for details.`,
         ok: "OK",
         everyProfile: "Reset every profile",
         confirmEvery: count => `Reset all ${count} profiles? All of their plays, streaks, Challenges and achievements will be erased.`,

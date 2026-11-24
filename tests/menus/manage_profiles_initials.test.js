@@ -86,7 +86,7 @@ function chooseOk() {
 
 test("the line sits between the marks and the History Import's line, greyed on Guest with its reason", () => {
     openProfileMenu("Bob");
-    assert.deepEqual(drawnMenuLines(fake).slice(-6), [TEXT.childLine(false), TEXT.initialsLine(null), "---", TEXT.historyLine, TEXT.reset, TEXT.back]);
+    assert.deepEqual(drawnMenuLines(fake).slice(-7), [TEXT.childLine(false), TEXT.initialsLine(null), "---", TEXT.historyLine, TEXT.reset, TEXT.remove, TEXT.back]);
     closeProfileMenu();
 
     openProfileMenu(GUEST);

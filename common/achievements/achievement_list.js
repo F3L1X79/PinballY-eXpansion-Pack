@@ -755,6 +755,11 @@ export function createAchievementList(host, { getAchievements, profileStore, dra
         if (profileName !== profileStore.getActiveProfile().name) household = null;
         markContentStale();
     }));
+    // Fires after a Profile was removed: its Notified Achievements no longer count in the Unlock Rate.
+    profileStore.onRemove(safeHandler(SCRIPT_NAME, () => {
+        household = null;
+        markContentStale();
+    }));
 
     return { open, isOpen: controls.isOpen, onClosed: controls.onClosed, countAll: () => countAll() };
 }

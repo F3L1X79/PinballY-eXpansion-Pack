@@ -1,9 +1,9 @@
 ﻿// ============================================================
 // Profile store: the only module that knows the Profiles folder (one sub-folder
 // per Profile: Avatar, profile.json, Play Log; cabinet.json for the household).
-// Decides which game is a Play (ADR 0007) and tells its listeners of each
-// switch, update, Avatar given and Play (onPlay, ADR 0008). Handles the Profile Reset and the History Import (ADR 0025).
-// Listens to "gamestarted" / "gameover"; tells of a Play it could not save or log (onPlayFailed).
+// Decides which game is a Play (ADR 0007) and tells its listeners of each switch, update,
+// removal, Avatar given and Play (onPlay, ADR 0008), and of a Play it could not save or log.
+// Handles the Profile Reset, the Profile Removal and the History Import (ADR 0025). Listens to "gamestarted" / "gameover".
 // - Every write is whole: tmp, backup, rename; a broken or newer file comes back from its backup, the recovery written to the Error Log.
 // - isAdmin and isChild: by hand or setMark, which writes true or removes the key (ADR 0020); a first Profile created gets isAdmin (ADR 0023).
 // - Other modules' files sit next to cabinet.json or in a Profile's folder; no Profile Reset touches them.
@@ -97,6 +97,7 @@ export function createProfileStore(host) {
     const playListeners = [];
     const playFailedListeners = [];
     const avatarListeners = [];
+    const removeListeners = [];
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
     // A file that could not be read, and what was kept aside or restored:
     // in the Error Log too, the file an owner attaches to a report.
@@ -439,6 +440,24 @@ export function createProfileStore(host) {
         if (sameName(profile.name, activeProfile.name)) activeData = freshData;
         log(`${profile.name} was reset${keptFiles.length ? `; its former files are kept as ${keptFiles.join(", ")}` : ""}.`);
         tellUpdateListeners(profile.name, { isReset: true });
+    }
+
+    // The Profile Removal: the named Profile's folder renamed to
+    // "_<name> removed <yyyy-mm-dd>" (numbered when taken), which the listing
+    // ignores, its files kept for the owner to bring back by hand. Throws,
+    // renaming nothing, for Guest or the active Profile; a failed rename throws.
+    function removeProfile(profileName) {
+        const profile = profileNamed(profileName);
+        if (profile.isGuest) throw new Error("Guest is never removed.");
+        if (sameName(profile.name, activeProfile.name)) throw new Error(`${profile.name} is the active Profile and cannot be removed.`);
+        const date = toLocalIsoString(host.now()).slice(0, "yyyy-mm-dd".length);
+        const baseName = `_${profile.name} removed ${date}`;
+        let removedName = baseName;
+        for (let copy = 2; files.folderExists(`${profilesFolder}\\${removedName}`); copy++) removedName = `${baseName}-${copy}`;
+        files.renameFolder(profile.folder, `${profilesFolder}\\${removedName}`);
+        forgetCachedRead(profile.name);
+        log(`${profile.name} was removed; its folder is kept as ${removedName}.`);
+        tellListeners(removeListeners, profile.name);
     }
 
     function logHandEditProblemOnce(problemLine) {
@@ -854,6 +873,8 @@ export function createProfileStore(host) {
         // Games, Challenge progress, World Tour, Surprises, Rocket Game scores
         // and Notified Achievements.
         resetProfile,
+        // Sets the named Profile's folder aside: the cabinet forgets it (never Guest nor the active one).
+        removeProfile,
         // Whether the named Profile (the active one by default) is an Admin Profile.
         isAdmin,
         // Whether any Profile is an Admin Profile; re-read on every call, so a hand edit shows up.
@@ -913,6 +934,9 @@ export function createProfileStore(host) {
         onUpdate: (listener) => { updateListeners.push(listener); },
         // listener(profileName): after the named Profile was given an Avatar.
         onAvatarChange: (listener) => { avatarListeners.push(listener); },
+        // listener(profileName): after the named Profile was removed; its data
+        // can no longer be read, so the listener only forgets what it kept of it.
+        onRemove: (listener) => { removeListeners.push(listener); },
         // listener(): after a Profile Reset of the active Profile is saved.
         onActiveProfileReset: (listener) => {
             updateListeners.push((profileName, { isReset }) => {

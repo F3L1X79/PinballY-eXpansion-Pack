@@ -87,6 +87,9 @@ export function createHouseholdStats(host, {
         kept.delete(profileName.toLowerCase());
         restartReadAhead();
     }));
+    // Fires after a Profile was removed: its column goes, and the next pass
+    // must not read it. Its places on the boards no longer count for anyone.
+    profileStore.onRemove(safeHandler(SCRIPT_NAME, forgetAll));
     // The active Profile's Achievements are counted live, the others' from their Notified ones.
     profileStore.onSwitch(safeHandler(SCRIPT_NAME, forgetAll));
     // Fires on table exit: the game may change anyone's boards or the active Profile's live count.

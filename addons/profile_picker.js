@@ -805,6 +805,8 @@ export default function init() {
         if (framePaths.has(profileName)
             && profileRewards.wornImageOf(profileName, FRAMED_AVATAR_SIDE) !== framePaths.get(profileName)) markAheadStale();
     }));
+    // Fires after a Profile was removed: the carousel drawn ahead leaves it out.
+    profileStore.onRemove(safeHandler(SCRIPT_NAME, markAheadStale));
     // Fires when a Profile was given an Avatar: the badge and carousel show it.
     profileStore.onAvatarChange(safeHandler(SCRIPT_NAME, profileName => {
         if (profileName === profileStore.getActiveProfile().name) drawBadge();

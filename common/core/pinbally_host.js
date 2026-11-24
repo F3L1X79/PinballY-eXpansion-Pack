@@ -279,6 +279,8 @@ function createFileSystem() {
         appendText: (path, text) => { writeText(path, (fso().FileExists(path) ? readText(path) : "") + text); },
         // Throws when the target already exists.
         renameFile: (fromPath, toPath) => { fso().MoveFile(fromPath, toPath); },
+        // The folder and everything in it; throws when the target already exists.
+        renameFolder: (fromPath, toPath) => { fso().MoveFolder(fromPath, toPath); },
         deleteFile: (path) => { fso().DeleteFile(path); },
         // Overwrites the target; its folder must exist.
         copyFile: (fromPath, toPath) => { fso().CopyFile(fromPath, toPath, true); },

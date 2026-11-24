@@ -54,14 +54,16 @@ export function compareByYear(a, b) {
 }
 
 // Next / Previous Page groups. Group 0 makes the wheel skip the table, so
-// none is 0: a decade is its first year, the tables without a year one last
-// group after every decade.
+// none is 0: a decade (or a year) is its first year, the tables without a
+// year one last group after every decade.
 const NO_YEAR_PAGE_GROUP = 100000;
 export const decadeOf = year => Math.floor(year / 10) * 10;
 
-export function pageGroupByYear(game) {
+// The by-year page group: the decade or, with yearPages, the year itself.
+function pageGroupByYear(game, yearPages) {
     const year = yearOf(game);
-    return year === null ? NO_YEAR_PAGE_GROUP : decadeOf(year);
+    if (year === null) return NO_YEAR_PAGE_GROUP;
+    return yearPages ? year : decadeOf(year);
 }
 
 const firstLetterOf = game => String(game.title ?? "").charAt(0);
@@ -73,16 +75,23 @@ function pageGroupByLetter(game) {
 }
 
 // The page group as the Info Log names it.
-function pageGroupLabel(game, isByYear) {
+function pageGroupLabel(game, isByYear, yearPages) {
     if (!isByYear) return `letter ${firstLetterOf(game)}`;
-    const group = pageGroupByYear(game);
-    return group === NO_YEAR_PAGE_GROUP ? "no year" : `the ${group}s`;
+    const group = pageGroupByYear(game, yearPages);
+    if (group === NO_YEAR_PAGE_GROUP) return "no year";
+    return yearPages ? String(group) : `the ${group}s`;
 }
 
 const PAGE_COMMANDS = Object.freeze({ NextPage: "Next Page", PrevPage: "Previous Page" });
 
-// isEnabled: whether the Wheel Order Add-on is on.
-export function createWheelOrder(host, profileStore, { isEnabled }) {
+// Whether the Magnasave buttons step by year: the Wheel Rail shows each
+// decade's years (Decades and years), a setting read at startup only.
+const isYearPagingOn = settings => settings.addOns.wheelGuides !== false && settings.wheelRail !== false && settings.wheelRailYears === true;
+
+// isEnabled: whether the Wheel Order Add-on is on. yearPages: by year, a
+// Next / Previous Page stop per year instead of per decade.
+export function createWheelOrder(host, profileStore, { isEnabled, yearPages = false }) {
+    const yearPageGroup = game => pageGroupByYear(game, yearPages);
     function readSavedOrder() {
         const saved = profileStore.getCabinetData()[CABINET_KEY];
         if (saved === undefined) return WHEEL_ORDERS.ALPHABETICAL;
@@ -235,7 +244,7 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
             const command = PAGE_COMMANDS[pressedPage];
             pressedPage = null;
             logInfo(SCRIPT_NAME, `${command} on ${getChosenFilterId()}, ${isByYear() ? "by year" : "alphabetical"}: `
-                + `${pageGroupLabel(ev.game, isByYear())}, "${ev.game.title}".`, host);
+                + `${pageGroupLabel(ev.game, isByYear(), yearPages)}, "${ev.game.title}".`, host);
         }));
     }
 
@@ -260,7 +269,7 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
             }),
             select: game => sourceTables.has(game.configId),
             compareForSort: compareByYear,
-            pageGroup: pageGroupByYear,
+            pageGroup: yearPageGroup,
         });
         listenToPageButtons(isPackFilterInWheelOrder);
         // Fires before a filter the player picked is applied: while by year,
@@ -371,8 +380,10 @@ export function createWheelOrder(host, profileStore, { isEnabled }) {
         // The compareForSort of the Pack Filters (spec #513): by year
         // or, like PinballY's default, by title.
         compareForSort: (a, b) => (isByYear() ? compareByYear(a, b) : compareTitles(a, b)),
-        // Their pageGroup: by decade or, like PinballY's default, by first letter.
-        pageGroup: game => (isByYear() ? pageGroupByYear(game) : pageGroupByLetter(game)),
+        // Their pageGroup: by decade (or year) or, like PinballY's default, by first letter.
+        pageGroup: game => (isByYear() ? yearPageGroup(game) : pageGroupByLetter(game)),
+        // The sorted copy's pageGroup, always by year.
+        yearPageGroup,
     };
 }
 
@@ -380,7 +391,10 @@ let sharedWheelOrder = null;
 
 export function getWheelOrder() {
     if (!sharedWheelOrder) {
-        sharedWheelOrder = createWheelOrder(createPinballYHost(), getProfileStore(), { isEnabled: config.addOns.wheelOrder !== false });
+        sharedWheelOrder = createWheelOrder(createPinballYHost(), getProfileStore(), {
+            isEnabled: config.addOns.wheelOrder !== false,
+            yearPages: isYearPagingOn(config),
+        });
     }
     return sharedWheelOrder;
 }

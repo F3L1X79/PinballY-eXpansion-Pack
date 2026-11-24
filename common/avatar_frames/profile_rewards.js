@@ -139,6 +139,7 @@ export function createProfileRewards(host, { profileStore, isEnabled = () => tru
     const holidayCounts = new Map();
     const forgetHolidays = () => holidayCounts.clear();
     profileStore.onUpdate(safeHandler(SCRIPT_NAME, forgetHolidays));
+    profileStore.onRemove(safeHandler(SCRIPT_NAME, forgetHolidays));
     profileStore.onPlay(safeHandler(SCRIPT_NAME, forgetHolidays));
 
     function holidayCountsOf(profileName) {

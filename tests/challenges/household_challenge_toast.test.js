@@ -207,3 +207,23 @@ test("a helper reset before its toast showed starts over: no toast and no credit
     assert.deepEqual(readJson(fake, CABINET_FILE).householdChallenge.current.games, games, "the week's Plays kept");
     assertNoErrorLogged(fake);
 });
+
+test("a helper removed before its toast showed is never credited, even brought back by hand; its Plays still count", () => {
+    const { fake, store } = setUp({ profiles: ["Alice", "Bob", "Carol"] });
+    play(fake, TABLES[0]);
+    arrive(fake, store, "Bob");
+    for (const game of TABLES.slice(1)) play(fake, game);
+    const current = () => readJson(fake, CABINET_FILE).householdChallenge.current;
+    const games = current().games;
+    assert.ok(current().toCredit.includes("Alice"), "Alice awaits her credit");
+
+    store.removeProfile("Alice");
+    assert.ok(!current().toCredit.includes("Alice"), "taken off the helpers awaiting credit");
+    assert.deepEqual(current().games, games, "the week's Plays kept");
+
+    fake.files.renameFolder(`${PROFILES}\\_Alice removed 2026-09-21`, `${PROFILES}\\Alice`);
+    arrive(fake, store, "Alice");
+    assert.equal(toastsDrawn(fake).length, 1, "Bob's only");
+    assert.equal(creditedCount(fake, "Alice"), 0);
+    assertNoErrorLogged(fake);
+});
