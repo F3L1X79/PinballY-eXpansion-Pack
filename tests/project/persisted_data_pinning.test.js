@@ -1,7 +1,7 @@
 ﻿// ============================================================
 // Pinning test: plays a scripted session through main.js and locks every
 // persisted key and Achievement ID (profile.json, cabinet.json, Challenges,
-// Play Log, World Tour, Avatar Frame, Table ROMs, High Scores, Wheel Order, Attract Order, .env.local's OFFER_VPXTOOL, Conflict answers).
+// Play Log, World Tour, Avatar Frame, Table ROMs, High Scores, Wheel Order, Attract Order, Hidden Guest, .env.local's OFFER_VPXTOOL, Conflict answers).
 // - These strings are players' saved progress: this test must keep passing unchanged.
 // - The Surprises part's keys are in persisted_data_pinning_surprises.test.js.
 // ============================================================
@@ -487,6 +487,19 @@ test("the Attract Order keeps PinballY's switch time under its key in cabinet.js
     saveAttractOrderSwitches(fake, createProfileStore(fake), "pinballY", "inOrder");
 
     assert.equal(JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\cabinet.json`)).attractOrderSwitchTime, 7);
+});
+
+test("Hidden Guest keeps its key in cabinet.json, written only while Guest is hidden", () => {
+    const fake = createFakePinballYHost({ now: NOW, tables: TABLES });
+    fake.addFolder(`${PROFILES_FOLDER}\\Alice`);
+    fake.addFile(`${PROFILES_FOLDER}\\cabinet.json`, JSON.stringify({ version: 1, activeProfile: "Alice" }));
+    const store = createProfileStore(fake);
+    const saved = () => JSON.parse(fake.readFile(`${PROFILES_FOLDER}\\cabinet.json`));
+
+    store.setGuestHidden(true);
+    assert.equal(saved().hiddenGuest, true);
+    store.setGuestHidden(false);
+    assert.ok(!("hiddenGuest" in saved()));
 });
 
 test("the Challenge template ids stay byte-identical", () => {

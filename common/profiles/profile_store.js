@@ -2,7 +2,7 @@
 // Profile store: the only module that knows the Profiles folder (one sub-folder
 // per Profile: Avatar, profile.json, Play Log; cabinet.json for the household).
 // Decides which game is a Play (ADR 0007) and tells its listeners of each switch, update,
-// removal, Avatar given and Play (onPlay, ADR 0008), and of a Play it could not save or log.
+// removal, Hidden Guest change, Avatar given and Play (onPlay, ADR 0008), and of a Play it could not save or log.
 // Handles the Profile Reset, the Profile Removal and the History Import (ADR 0025). Listens to "gamestarted" / "gameover".
 // - Every write is whole: tmp, backup, rename; a broken or newer file comes back from its backup, the recovery written to the Error Log.
 // - isAdmin and isChild: by hand or setMark, which writes true or removes the key (ADR 0020); a first Profile created gets isAdmin (ADR 0023).
@@ -78,6 +78,8 @@ const KEPT_THROUGH_RESET = [...MARK_NAMES, HISTORY_IMPORT_KEY, INITIALS_KEY];
 // Set by the History Import or a claim by Initials, until the Profile's next Achievements check
 // marks what it reached Notified without a toast; dropped by a Profile Reset.
 const UNANNOUNCED_CHECK_KEY = "unannouncedCheckDue";
+// In cabinet.json, true only while Guest is hidden: Guest itself is never marked.
+const HIDDEN_GUEST_KEY = "hiddenGuest";
 const NO_PLAY = Object.freeze({ count: 0, seconds: 0, lastPlayed: "" });
 
 // A shorter game is a launch by mistake, not a Play.
@@ -98,6 +100,7 @@ export function createProfileStore(host) {
     const playFailedListeners = [];
     const avatarListeners = [];
     const removeListeners = [];
+    const hiddenGuestListeners = [];
     const log = text => host.log(`[${SCRIPT_NAME}] ${text}`);
     // A file that could not be read, and what was kept aside or restored:
     // in the Error Log too, the file an owner attaches to a report.
@@ -458,6 +461,27 @@ export function createProfileStore(host) {
         forgetCachedRead(profile.name);
         log(`${profile.name} was removed; its folder is kept as ${removedName}.`);
         tellListeners(removeListeners, profile.name);
+    }
+
+    const isGuestHidden = () => cabinet[HIDDEN_GUEST_KEY] === true;
+
+    // Hidden Guest: written only while Guest is hidden. Throws, writing
+    // nothing, while Guest is active; a change that cannot be saved is undone.
+    function setGuestHidden(isHidden) {
+        if (activeProfile.isGuest) throw new Error("Guest is the active Profile and cannot be hidden or shown.");
+        if (isHidden === isGuestHidden()) return;
+        const before = cabinet[HIDDEN_GUEST_KEY];
+        if (isHidden) cabinet[HIDDEN_GUEST_KEY] = true;
+        else delete cabinet[HIDDEN_GUEST_KEY];
+        try {
+            saveCabinet();
+        } catch (error) {
+            if (before === undefined) delete cabinet[HIDDEN_GUEST_KEY];
+            else cabinet[HIDDEN_GUEST_KEY] = before;
+            throw error;
+        }
+        log(`Guest is ${isHidden ? "hidden from" : "shown in"} the Profile Picker.`);
+        tellListeners(hiddenGuestListeners, isHidden);
     }
 
     function logHandEditProblemOnce(problemLine) {
@@ -875,6 +899,12 @@ export function createProfileStore(host) {
         resetProfile,
         // Sets the named Profile's folder aside: the cabinet forgets it (never Guest nor the active one).
         removeProfile,
+        // Whether Guest is left out of the Profile Picker (Hidden Guest); re-read from cabinet.json's data.
+        isGuestHidden,
+        // Whether the screens show Guest: not hidden, or hidden but the active Profile.
+        isGuestShown: () => !isGuestHidden() || activeProfile.isGuest,
+        // Hides or shows Guest; throws while Guest is the active Profile.
+        setGuestHidden,
         // Whether the named Profile (the active one by default) is an Admin Profile.
         isAdmin,
         // Whether any Profile is an Admin Profile; re-read on every call, so a hand edit shows up.
@@ -937,6 +967,8 @@ export function createProfileStore(host) {
         // listener(profileName): after the named Profile was removed; its data
         // can no longer be read, so the listener only forgets what it kept of it.
         onRemove: (listener) => { removeListeners.push(listener); },
+        // listener(isHidden): after Guest was hidden or shown again.
+        onGuestHiddenChange: (listener) => { hiddenGuestListeners.push(listener); },
         // listener(): after a Profile Reset of the active Profile is saved.
         onActiveProfileReset: (listener) => {
             updateListeners.push((profileName, { isReset }) => {

@@ -710,6 +710,8 @@ export default {
         listTitle: "¿Qué perfil?",
         adminLine: isAdmin => `Admin: ${isAdmin ? "sí" : "no"}`,
         childLine: isChild => `Niño: ${isChild ? "sí" : "no"}`,
+        hiddenLine: isHidden => `Oculto: ${isHidden ? "sí" : "no"}`,
+        hiddenFailed: name => `No se pudo ocultar ni mostrar a ${name}. Consulta el registro para más detalles.`,
         reset: "Reiniciar",
         back: "Volver",
         becomeAdmin: "Hacerse admin",

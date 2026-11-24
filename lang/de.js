@@ -709,6 +709,8 @@ export default {
         listTitle: "Welches Profil?",
         adminLine: isAdmin => `Admin: ${isAdmin ? "ja" : "nein"}`,
         childLine: isChild => `Kind: ${isChild ? "ja" : "nein"}`,
+        hiddenLine: isHidden => `Ausgeblendet: ${isHidden ? "ja" : "nein"}`,
+        hiddenFailed: name => `${name} konnte nicht aus- oder eingeblendet werden. Details stehen im Log.`,
         reset: "Zurücksetzen",
         back: "Zurück",
         becomeAdmin: "Admin werden",

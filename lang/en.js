@@ -608,6 +608,9 @@ export default {
         listTitle: "Which profile?",
         adminLine: isAdmin => `Admin: ${isAdmin ? "yes" : "no"}`,
         childLine: isChild => `Child: ${isChild ? "yes" : "no"}`,
+        // Guest's menu only: whether Guest is left out of the Profile Picker; greyed with removeRefusals.active.
+        hiddenLine: isHidden => `Hidden: ${isHidden ? "yes" : "no"}`,
+        hiddenFailed: name => `${name} could not be hidden or shown. See the log for details.`,
         reset: "Reset",
         back: "Back",
         // The only line while the household has no Admin Profile.

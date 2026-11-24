@@ -711,6 +711,8 @@ export default {
         listTitle: "Quel profil ?",
         adminLine: isAdmin => `Admin : ${isAdmin ? "oui" : "non"}`,
         childLine: isChild => `Enfant : ${isChild ? "oui" : "non"}`,
+        hiddenLine: isHidden => `Masqué : ${isHidden ? "oui" : "non"}`,
+        hiddenFailed: name => `${name} n'a pas pu être masqué ou affiché. Voir le journal pour les détails.`,
         reset: "Réinitialiser",
         back: "Retour",
         becomeAdmin: "Devenir admin",

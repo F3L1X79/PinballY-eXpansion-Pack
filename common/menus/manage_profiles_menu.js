@@ -1,7 +1,7 @@
 // ============================================================
 // Manage profiles, opened from the Exit menu: the list of Profiles (and
-// "Every profile"), then a Profile's own menu: the mark lines, flipping the mark
-// at once, the Initials line (High Scores Add-on on), the History Import's
+// "Every profile"), then a Profile's own menu: the mark lines (and Guest's Hidden
+// line), flipping at once, the Initials line (High Scores Add-on on), the History Import's
 // line, "Reset" and "Remove"; while no Profile is marked, only "Become admin". Opens
 // directly through the Drawn Menu module. Listens to "command".
 // - A line the mark rules forbid stays, greyed with its reason (setup_entries.js, ADR 0020).
@@ -40,6 +40,7 @@ export function createManageProfilesMenu(host, profileStore, menus = createNativ
     const everyProfileCommand = host.allocateCommand("manageProfilesEveryProfile");
     const adminCommand = host.allocateCommand("manageProfilesAdmin");
     const childCommand = host.allocateCommand("manageProfilesChild");
+    const hiddenCommand = host.allocateCommand("manageProfilesHiddenGuest");
     const resetCommand = host.allocateCommand("manageProfilesReset");
     const becomeAdminCommand = host.allocateCommand("manageProfilesBecomeAdmin");
     const menuReturnCommand = host.getBuiltInCommand("MenuReturn");
@@ -108,6 +109,13 @@ export function createManageProfilesMenu(host, profileStore, menus = createNativ
         return losesAccess(profile, marks, markName) ? { title, cmd } : { title, cmd, stayOpen: true };
     }
 
+    // Guest's Hidden line, flipping like a mark line; greyed while Guest is active.
+    function hiddenLine(profile) {
+        const title = TEXT.hiddenLine(profileStore.isGuestHidden());
+        if (isActive(profile)) return { title, cmd: hiddenCommand, disabled: true, reason: TEXT.removeRefusals.active };
+        return { title, cmd: hiddenCommand, stayOpen: true };
+    }
+
     function openProfile(profile, selectedCmd = null) {
         shownProfile = profile;
         const marks = profileStore.getMarksOf(profile.name);
@@ -116,6 +124,7 @@ export function createManageProfilesMenu(host, profileStore, menus = createNativ
             SEPARATOR,
             markLine(profile, marks, "isAdmin", TEXT.adminLine(marks.isAdmin), adminCommand),
             markLine(profile, marks, "isChild", TEXT.childLine(marks.isChild), childCommand),
+            ...(profile.isGuest ? [hiddenLine(profile)] : []),
             ...(initials ? [initials.lineFor(profile)] : []),
             SEPARATOR,
             historyImport.lineFor(profile),
@@ -125,17 +134,17 @@ export function createManageProfilesMenu(host, profileStore, menus = createNativ
         ], selectedCmd), { onBack: () => backToList(profile) });
     }
 
-    // Runs the mark change; a failure is caught here, not by safeHandler, for
-    // the player to see it: its cause goes to the log, and OK runs onBack.
-    // Returns whether the mark changed.
-    function tryMarking(profile, change, onBack) {
+    // Runs a mark change or the Hidden Guest flip; a failure is caught here, not by
+    // safeHandler, for the player to see it (failedText): its cause goes to the log,
+    // and OK runs onBack. Returns whether the change was made.
+    function tryChanging(profile, change, onBack, failedText = TEXT.marksFailed) {
         try {
             change();
             return true;
         } catch (error) {
             logHandlerError(SCRIPT_NAME, error);
             menus.show(MARKS_FAILED_MENU_ID, [
-                { title: TEXT.marksFailed(displayNameOf(profile)), cmd: -1 },
+                { title: failedText(displayNameOf(profile)), cmd: -1 },
                 SEPARATOR,
                 { title: TEXT.ok, cmd: menuReturnCommand, selected: true },
             ], { dialogStyle: true, onBack });
@@ -147,22 +156,28 @@ export function createManageProfilesMenu(host, profileStore, menus = createNativ
     // the active Profile just lost access to it.
     function flipMark(profile, markName, lineCommand) {
         let marks;
-        const changed = tryMarking(profile, () => {
+        const changed = tryChanging(profile, () => {
             marks = profileStore.getMarksOf(profile.name);
             profileStore.setMark(profile.name, markName, !marks[markName]);
         }, () => openProfile(profile, lineCommand));
         if (changed && !losesAccess(profile, marks, markName)) openProfile(profile, lineCommand);
     }
 
+    // Hides or shows Guest, then shows its menu again on the Hidden line.
+    function flipHiddenGuest(profile) {
+        const showAgain = () => openProfile(profile, hiddenCommand);
+        if (tryChanging(profile, () => profileStore.setGuestHidden(!profileStore.isGuestHidden()), showAgain, TEXT.hiddenFailed)) showAgain();
+    }
+
     // The active Profile becomes the first Admin Profile, and gets the full list.
     function becomeAdmin() {
         const profile = profileStore.getActiveProfile();
-        if (tryMarking(profile, () => profileStore.setMark(profile.name, "isAdmin", true), openBecomeAdmin)) openList();
+        if (tryChanging(profile, () => profileStore.setMark(profile.name, "isAdmin", true), openBecomeAdmin)) openList();
     }
 
     // Fires on every command: a Profile of the list opens its menu, "Every
     // profile" and "Reset" ask to confirm the Profile Reset, a mark line flips
-    // its mark, "Become admin" marks the active Profile while no other is.
+    // its mark, Guest's Hidden line hides or shows it, "Become admin" marks the active Profile while no other is.
     host.on("command", safeHandler(SCRIPT_NAME, ev => {
         const index = profileCommands.indexOf(ev.id);
         if (index >= 0 && index < listedProfiles.length) openProfile(listedProfiles[index]);
@@ -170,6 +185,7 @@ export function createManageProfilesMenu(host, profileStore, menus = createNativ
         else if (ev.id === everyProfileCommand && offersEveryProfile()) profileReset.confirm(listedProfiles);
         else if (ev.id === adminCommand && shownProfile) flipMark(shownProfile, "isAdmin", adminCommand);
         else if (ev.id === childCommand && shownProfile) flipMark(shownProfile, "isChild", childCommand);
+        else if (ev.id === hiddenCommand && shownProfile && shownProfile.isGuest && !isActive(shownProfile)) flipHiddenGuest(shownProfile);
         else if (ev.id === resetCommand && shownProfile) profileReset.confirm([shownProfile]);
     }));
 

@@ -33,7 +33,7 @@ import { launchShownTable } from "../common/tables/table_launch.js";
 import { getChallenges, challengeTitleOf } from "../common/challenges/challenge.js";
 import { getHouseholdChallenge } from "../common/challenges/household_challenge.js";
 import { progressTextOf } from "../common/challenges/challenge_card.js";
-import { sameName } from "../common/profiles/profile_name_rules.js";
+import { GUEST_NAME, sameName } from "../common/profiles/profile_name_rules.js";
 import { householdInColumnOrder } from "../common/stats/household_stats.js";
 import { masteryOf, collectionMasteryOfProfile } from "../common/mastery/table_mastery.js";
 import { tablesVisibleTo } from "../common/tables/visible_tables.js";
@@ -180,9 +180,11 @@ export default function init() {
 
     // The Household Challenge Table card's helpers line: the helpers'
     // Avatars in the Household Stats' column order, Guest last; no Avatar
-    // when the active Profile helped alone.
+    // when the active Profile helped alone. A Hidden Guest is not shown, unless
+    // active, nor does it count as another helper.
     function readHelpers() {
-        const contributors = householdChallenge.getContributors();
+        const isGuestShown = store.isGuestShown();
+        const contributors = householdChallenge.getContributors().filter(name => isGuestShown || !sameName(name, GUEST_NAME));
         const active = store.getActiveProfile();
         const avatarPaths = !contributors.some(name => !sameName(name, active.name)) ? [] : householdInColumnOrder(store)
             .concat(store.listProfiles().filter(profile => profile.isGuest))

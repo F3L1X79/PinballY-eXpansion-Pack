@@ -14,7 +14,7 @@ With Change Player, each of you picks your own Profile and Avatar, and the Welco
 - Once the cabinet has two Profiles or more besides Guest, PinballY starts on Change Player so that everyone picks their Profile before playing; it can also start on the Welcome Screen or straight on the wheel (`STARTUP_SCREEN`, see [Settings](settings.md)).
 - While Change Player is open, the video sound of the table on the wheel is turned down, and comes back as it closes.
 
-Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. An Admin Profile keeps the setup entries for itself, a Child Profile hides the Adult Tables, and an Admin Profile's **Manage profiles**, in the Exit menu and the Operator Menu, marks a Child Profile, gives a Profile its Initials, hands PinballY's own play history to one Profile, starts a Profile over or removes it from the cabinet: see [Settings](settings.md).
+Each Profile's progress is saved in `Scripts\ExpansionPack\profiles`. An Admin Profile keeps the setup entries for itself, a Child Profile hides the Adult Tables, and an Admin Profile's **Manage profiles**, in the Exit menu and the Operator Menu, marks a Child Profile, gives a Profile its Initials, hands PinballY's own play history to one Profile, starts a Profile over, removes it from the cabinet or hides Guest from Change Player: see [Settings](settings.md).
 
 ## Ratings and Favorite Tables
 

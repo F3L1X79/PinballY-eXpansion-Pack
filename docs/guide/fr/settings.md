@@ -7,7 +7,7 @@ Pour le propriétaire de la borne :
 - **Réglages de l'eXpansion pack** : depuis le menu opérateur, activer ou désactiver chaque Add-on par catégorie, choisir l'écran de démarrage et la langue, puis redémarrer PinballY d'une pression.
 - **Profil admin** : les entrées de configuration pour vous seul.
 - **Profil enfant** : une roue sans tables pour adultes.
-- **Gérer les profils** : marquer un Profil admin ou un Profil enfant, donner ses initiales à un Profil, donner l'historique de jeu de PinballY à un Profil (reprise de l'historique), faire repartir de zéro un Profil ou toute la maison d'un coup, ou supprimer un Profil de la borne.
+- **Gérer les profils** : marquer un Profil admin ou un Profil enfant, donner ses initiales à un Profil, donner l'historique de jeu de PinballY à un Profil (reprise de l'historique), faire repartir de zéro un Profil ou toute la maison d'un coup, supprimer un Profil de la borne, ou masquer Invité dans « Changer de joueur ».
 - **Nettoyage des menus** : des menus PinballY allégés (voir [Interface](interface.md#nettoyage-des-menus)).
 
 Tout tient dans un seul dossier, sans modifier PinballY.
@@ -141,7 +141,7 @@ Ce Profil marque ensuite les autres depuis la borne : ouvrez **Gérer les profil
 
 ## Réinitialiser un profil
 
-Un Profil admin trouve aussi **Gérer les profils** à deux endroits : dans le menu de sortie (Échap), juste après « Changer de joueur », au-dessus de « Menu opérateur » ; et dans le menu opérateur, juste après **Réglages de l'eXpansion pack**, dans leur propre groupe sous « Capture par lot ». Les autres Profils ne le voient jamais, même quand le bouton de service de la porte du monnayeur ouvre le menu opérateur. Il liste tous les Profils, Invité et vous-même compris, plus « Réinitialiser tous les profils », dès qu'il y en a au moins deux, pour remettre toute la maison à zéro d'un coup. Choisir un Profil ouvre son propre menu : ses marques admin et enfant (voir [Profil admin](#profil-admin) et [Profil enfant](#profil-enfant)), ses **Initiales** (voir [Initiales](#initiales)), **Reprendre l'historique de PinballY** (voir [Reprise de l'historique](#reprise-de-lhistorique)), **Réinitialiser** et **Supprimer** (voir [Supprimer un profil](#supprimer-un-profil)). Avec les [menus dessinés](interface.md#menus-dessinés), Échap ou « Retour » y ramène à la liste ; sans eux, les deux ferment le menu.
+Un Profil admin trouve aussi **Gérer les profils** à deux endroits : dans le menu de sortie (Échap), juste après « Changer de joueur », au-dessus de « Menu opérateur » ; et dans le menu opérateur, juste après **Réglages de l'eXpansion pack**, dans leur propre groupe sous « Capture par lot ». Les autres Profils ne le voient jamais, même quand le bouton de service de la porte du monnayeur ouvre le menu opérateur. Il liste tous les Profils, Invité et vous-même compris, plus « Réinitialiser tous les profils », dès qu'il y en a au moins deux, pour remettre toute la maison à zéro d'un coup. Choisir un Profil ouvre son propre menu : ses marques admin et enfant (voir [Profil admin](#profil-admin) et [Profil enfant](#profil-enfant)), dans le menu d'Invité seulement sa ligne **Masqué** (voir [Invité masqué](#invité-masqué)), ses **Initiales** (voir [Initiales](#initiales)), **Reprendre l'historique de PinballY** (voir [Reprise de l'historique](#reprise-de-lhistorique)), **Réinitialiser** et **Supprimer** (voir [Supprimer un profil](#supprimer-un-profil)). Avec les [menus dessinés](interface.md#menus-dessinés), Échap ou « Retour » y ramène à la liste ; sans eux, les deux ferment le menu.
 
 - Après une confirmation (le curseur part sur « Non »), « Réinitialiser » ou « Réinitialiser tous les profils » fait repartir le Profil de zéro : ses parties, ses séries, ses records de session, ses parties aléatoires, sa progression aux défis, ses succès annoncés, sa maîtrise des tables, son palier de collection et ses cadres d'Avatar sont effacés, tandis que son nom, son avatar, ses marques et les meilleurs scores qu'il a gagnés restent. Seuls les scores gagnés depuis comptent pour lui, sauf les places que ses [initiales](#initiales) ont prises.
 - Un message indique ensuite si l'opération a réussi.
@@ -156,6 +156,12 @@ Un Profil admin trouve aussi **Gérer les profils** à deux endroits : dans le m
 - Ses fichiers ne sont pas effacés : son dossier dans `Scripts\ExpansionPack\profiles` est renommé `_<nom> removed <date>`, que le pack ignore (voir [Dépannage](troubleshooting.md) pour le faire revenir).
 - Invité et le Profil en cours ne sont jamais supprimés : leur ligne « Supprimer » est grisée, avec sa raison. Il n'y a pas de « supprimer tous les profils ».
 - Si le dossier ne peut pas être renommé (un fichier ouvert dans un autre programme), un message le dit, la cause va dans le journal, et rien ne change.
+
+### Invité masqué
+
+Une maison qui ne joue jamais en Invité peut le masquer : dans le menu d'Invité, choisissez « Masqué : non », qui passe aussitôt à « Masqué : oui ». Invité quitte alors « Changer de joueur » et la ligne des aides de l'écran d'accueil ; il reste dans « Gérer les profils », et ses parties comptent toujours pour le Défi de la maison et la reprise de l'historique. Choisissez de nouveau la ligne pour réafficher Invité.
+
+- Tant qu'Invité est le Profil en cours, la ligne est grisée (« Profil actif »), et un Invité masqué apparaît quand même dans « Changer de joueur » : vous voyez toujours qui joue.
 
 ### Initiales
 

@@ -7,7 +7,7 @@ For the cabinet owner:
 - **eXpansion Pack Settings**: from the Operator Menu, turn each Add-on on or off by category, pick the startup screen and the language, then restart PinballY in one press.
 - **Admin Profile**: the setup entries for you alone.
 - **Child Profile**: a wheel without Adult Tables for the kids.
-- **Manage profiles**: mark an Admin Profile or a Child Profile, give a Profile its Initials, hand PinballY's own play history to one Profile (History Import), start a Profile over (Profile Reset), alone or the whole household at once, or remove a Profile from the cabinet (Profile Removal).
+- **Manage profiles**: mark an Admin Profile or a Child Profile, give a Profile its Initials, hand PinballY's own play history to one Profile (History Import), start a Profile over (Profile Reset), alone or the whole household at once, remove a Profile from the cabinet (Profile Removal), or hide Guest from Change Player (Hidden Guest).
 - **Menu Cleanup**: leaner PinballY menus (see [Interface](interface.md#menu-cleanup)).
 
 Everything stays in one folder, with no change to PinballY itself.
@@ -141,7 +141,7 @@ From then on, that Profile marks the others from the cabinet: open **Manage prof
 
 ## Profile Reset
 
-An Admin Profile also finds **Manage profiles** in two places: in the Exit menu (Escape), right after "Change Player", above "Operator Menu"; and in the Operator Menu, right after **eXpansion Pack Settings**, in their own group below "Batch Capture". Other Profiles never see it, even when the coin door service button opens the Operator Menu. It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)), its **Initials** (see [Initials](#initials)), **Take over PinballY's history** (see [History Import](#history-import)), **Reset** and **Remove** (see [Profile Removal](#profile-removal)). With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
+An Admin Profile also finds **Manage profiles** in two places: in the Exit menu (Escape), right after "Change Player", above "Operator Menu"; and in the Operator Menu, right after **eXpansion Pack Settings**, in their own group below "Batch Capture". Other Profiles never see it, even when the coin door service button opens the Operator Menu. It lists every Profile, Guest and yourself included, plus "Reset every profile", once there are two or more, to reset the whole household at once. Picking a Profile opens its own menu: its Admin and Child marks (see [Admin Profile](#admin-profile) and [Child Profile](#child-profile)), on Guest's menu only its **Hidden** line (see [Hidden Guest](#hidden-guest)), its **Initials** (see [Initials](#initials)), **Take over PinballY's history** (see [History Import](#history-import)), **Reset** and **Remove** (see [Profile Removal](#profile-removal)). With the [drawn menus](interface.md#drawn-menus) on, Exit or "Back" there brings you back to the list; with them off, both close the menu.
 
 - After one confirmation (the cursor starts on "No"), "Reset" or "Reset every profile" starts the Profile over: its plays, Streaks, session records, Random Games, Challenge progress, announced Achievements, Table Mastery, Collection Tier and Avatar Frames are erased, while its name, Avatar, marks and the High Scores it won stay. Only the scores won since the reset count for it, except the places its [Initials](#initials) took.
 - A message then tells whether it worked.
@@ -156,6 +156,12 @@ An Admin Profile also finds **Manage profiles** in two places: in the Exit menu 
 - Its files are not erased: its folder in `Scripts\ExpansionPack\profiles` is renamed `_<name> removed <date>`, which the pack ignores (see [Troubleshooting](troubleshooting.md) to bring it back).
 - Guest and the Profile in use are never removed: their "Remove" line is greyed, with its reason. There is no "remove every profile".
 - If the folder cannot be renamed (a file open in another program), a message says so, the cause goes to the log, and nothing changes.
+
+### Hidden Guest
+
+A household that never plays as Guest can hide it: on Guest's own menu, choose "Hidden: no", which turns to "Hidden: yes" at once. Guest then leaves Change Player and the helpers line of the Welcome Screen; it stays in Manage profiles, and its games still count for the Household Challenge and the History Import. Choose the line again to show Guest again.
+
+- While Guest is the Profile in use, the line is greyed ("Active profile"), and a hidden Guest still shows in Change Player: you always see who is playing.
 
 ### Initials
 

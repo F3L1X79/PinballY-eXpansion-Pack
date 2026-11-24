@@ -217,8 +217,10 @@ export default function init() {
         if (config.profilePickerSoundFile) host.playSound(config.profilePickerSoundFile);
     });
 
+    // A Hidden Guest is left out, unless it is the active Profile: the carousel always shows who plays.
     function readProfiles() {
-        const listed = profileStore.listProfiles();
+        const isGuestShown = profileStore.isGuestShown();
+        const listed = profileStore.listProfiles().filter(profile => isGuestShown || !profile.isGuest);
         framePaths = new Map(listed.map(profile => [profile.name, profileRewards.wornImageOf(profile.name, FRAMED_AVATAR_SIDE)]));
         return listed;
     }
@@ -807,6 +809,8 @@ export default function init() {
     }));
     // Fires after a Profile was removed: the carousel drawn ahead leaves it out.
     profileStore.onRemove(safeHandler(SCRIPT_NAME, markAheadStale));
+    // Fires when Guest was hidden or shown again: the carousel drawn ahead follows.
+    profileStore.onGuestHiddenChange(safeHandler(SCRIPT_NAME, markAheadStale));
     // Fires when a Profile was given an Avatar: the badge and carousel show it.
     profileStore.onAvatarChange(safeHandler(SCRIPT_NAME, profileName => {
         if (profileName === profileStore.getActiveProfile().name) drawBadge();
