@@ -217,7 +217,6 @@
 
         <div class="ax row">Moyen</div>
         <div class="cell sweet">
-          <a class="chip tr-play" href="#wheel-arrival-sound"><b></b>Son d'arrivée sur la roue</a>
           <a class="chip tr-play" href="#talking-cabinet"><b></b>Borne qui parle</a>
           <a class="chip tr-profiles" href="#moments-log"><b></b>Journal des moments</a>
         </div>
@@ -285,30 +284,6 @@
     </div>
 
     <ol class="queue">
-
-      <li draggable="true" tabindex="0" class="item tr-play" id="wheel-arrival-sound" data-track="play" data-rank="bronze">
-        <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
-        <div class="emblem"></div>
-        <div class="content">
-          <div class="item-head">
-            <h3>Un son à l'arrivée sur la roue, après le Welcome Screen</h3>
-            <div class="tags"><span class="tag track">Jeu et succès</span><span class="tag">petit</span><span class="tag">son</span></div>
-          </div>
-          <p>À la Wheel Arrival (le Startup Screen rend la roue au joueur, une fois par démarrage), un son choisi par le propriétaire marque l'arrivée. Uniquement à ce moment-là : ni au retour d'une partie, ni à la fermeture d'un menu ou d'un autre écran.</p>
-          <div class="stepper"><span class="done">idée</span><i>›</i><span class="done">grill</span><i>›</i><span class="done">spec</span><i>›</i><span class="here">tickets</span><i>›</i><span>implement</span></div>
-          <div class="links">Flow Matt : spec #603 → <code>/to-tickets</code> → <code>/implement</code>. Part de <code>common/core/startup_screen.js</code> (<code>onWheelArrival</code>, déjà suivi par le Crow et la Wheel Rail, et qui suit Change Player depuis #604) et de <code>host.createSoundRotation</code> ; voisin du <a href="#sound-design">sound design (n° <span data-ref="sound-design"></span>)</a></div>
-          <details>
-            <summary>Décisions du grill</summary>
-            <ul>
-              <li>Le son joue sur Exit ou Stay du Welcome Screen de démarrage, ou à la fin du Profile Greeting quand le Welcome Screen est désactivé ; jamais sur un lancement, un écran rouvert ou la roue nue.</li>
-              <li>Change Player depuis le Welcome Screen de démarrage prolonge la chaîne : la Wheel Arrival vient à la fermeture du Welcome Screen qui suit, ou du Profile Picker si rien ne suit. Le Crow et la Wheel Rail en profitent.</li>
-              <li>Son propre lecteur : il se superpose au salut, aux toasts et au Crow, sans couper ni retarder.</li>
-              <li><code>WHEEL_ARRIVAL_SOUND_FILE</code> vide par défaut : aucun son fourni, pas de réglage de volume.</li>
-            </ul>
-            <p class="ctx">Idée de Félix du 22/11/2026, haute priorité ; grillée le 23/11/2026.</p>
-          </details>
-        </div>
-      </li>
 
       <li draggable="true" tabindex="0" class="item tr-play" id="closing-curtains" data-track="play" data-rank="silver">
         <div class="handle"><div class="num"></div><div class="move"><button type="button" data-move="-1" aria-label="Monter">▲</button><button type="button" data-move="1" aria-label="Descendre">▼</button></div></div>
