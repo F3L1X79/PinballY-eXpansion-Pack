@@ -1,6 +1,6 @@
 // ============================================================
-// Pinning test of the Easter Eggs: their flags' key in the Profile's
-// "surprises" part, their Achievement IDs and the daily file's name. These
+// Pinning test of the Easter Eggs: their flags' and days' keys in the
+// Profile's "surprises" part and their Achievement IDs. These
 // strings are players' saved progress: this test must keep passing
 // unchanged. In a file of its own: it installs the fake PinballY globals.
 // ============================================================
@@ -14,7 +14,7 @@ import { buildEasterEggAchievements } from "../../achievements/easter_eggs.js";
 
 const PROFILES = "C:\\PinballY\\Scripts\\ExpansionPack\\profiles";
 
-test("the Easter Eggs keep their flags' key, their Achievement IDs and the daily file's name", () => {
+test("the Easter Eggs keep their flags' and days' keys and their Achievement IDs", () => {
     const fake = createFakePinballYHost({ now: new Date(2026, 10, 9, 20, 0, 0) });
     // Never uninstalled: buildEasterEggAchievements reads the shared rules.
     fake.installGlobals();
@@ -25,8 +25,7 @@ test("the Easter Eggs keep their flags' key, their Achievement IDs and the daily
         random: () => 0,
     });
     assert.equal(rules.tryWin("crow"), true);
-    assert.equal(JSON.parse(fake.readFile(`${PROFILES}\\easter_egg_day.json`)).day, "2026-11-09");
-    // The next day: the cabinet's one a day is free again.
+    // The next day: the Profile's one a day is free again.
     fake.advanceTime(24 * 60 * 60 * 1000);
     assert.equal(rules.tryWin("menuGlitch"), true);
     fake.advanceTime(24 * 60 * 60 * 1000);
@@ -36,6 +35,10 @@ test("the Easter Eggs keep their flags' key, their Achievement IDs and the daily
     fake.advanceTime(24 * 60 * 60 * 1000);
     assert.equal(rules.tryWin("fakeBlueScreen"), true);
 
-    assert.deepEqual(JSON.parse(fake.readFile(`${PROFILES}\\guest\\profile.json`)).surprises, { easterEggs: { crow: true, menuGlitch: true, manekiNeko: true, rocket: true, fakeBlueScreen: true } });
+    assert.deepEqual(JSON.parse(fake.readFile(`${PROFILES}\\guest\\profile.json`)).surprises, {
+        easterEggs: { crow: true, menuGlitch: true, manekiNeko: true, rocket: true, fakeBlueScreen: true },
+        easterEggDraws: { crow: "2026-11-09", menuGlitch: "2026-11-10", manekiNeko: "2026-11-11", rocket: "2026-11-12", fakeBlueScreen: "2026-11-13" },
+        easterEggWonDay: "2026-11-13",
+    });
     assert.deepEqual(buildEasterEggAchievements().map(achievement => achievement.id), ["corvusExMachina", "ghostInTheMachine", "nekomancer", "unauthorizedTakeoff", "kernelPanic"]);
 });

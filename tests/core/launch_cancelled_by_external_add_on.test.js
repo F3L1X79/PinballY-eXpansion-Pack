@@ -89,6 +89,8 @@ test("a launch an External Add-on cancels before the pack is no launch for the p
     fake.gameStarted(afm);
     fake.gameOver(afm);
     await settle();
+    // The next day: the Rocket's draw of the day was lost on the launch let through.
+    fake.setNow(new Date(2026, 10, 18, 20, 0, 0));
     await winTheDrawOf("rocket");
     launchFromWheel(fake, afm);
     await settle();

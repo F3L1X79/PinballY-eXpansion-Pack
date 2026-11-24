@@ -1,9 +1,10 @@
 // ============================================================
 // Easter Eggs: rare events tied to their own moments, turned off like any
 // Add-on, under this name in the eXpansion Pack Settings.
-// The rules live in common/easter_eggs/easter_egg_rules.js.
+// The rules (one draw each and one win a day per Profile) live in
+// common/easter_eggs/easter_egg_rules.js.
 // - installFirstListeners() runs in main.js after the Launch Bracket, only when on: the Rocket's takeover.
-// - The Crow is drawn once per start, a tick after the Startup Screen has closed.
+// - The Crow is drawn a tick after the Startup Screen has closed, and once the wheel is idle after a Profile switch.
 // - The Menu Glitch is drawn at the main menu's "menuopen", after Drawn Menus' listener.
 // - The Maneki-neko is drawn at one "gameselect" of the session.
 // - The Fake Blue Screen is drawn back from a table, after the High Scores' read.
@@ -18,7 +19,7 @@ import config from "../common/core/config.js";
 import { getDrawnMenus } from "../common/drawn_menu/drawn_menu.js";
 import { displayNameOf } from "../common/profiles/profile_name.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
-import { getEasterEggRules } from "../common/easter_eggs/easter_egg_rules.js";
+import { getEasterEggRules, EASTER_EGG } from "../common/easter_eggs/easter_egg_rules.js";
 import { createCrow } from "../common/easter_eggs/crow.js";
 import { createMenuGlitch } from "../common/easter_eggs/menu_glitch.js";
 import { createManekiNeko } from "../common/easter_eggs/maneki_neko.js";
@@ -48,12 +49,41 @@ export default function init() {
     // For the wheel dialog queue: nothing shows over the game.
     if (rocketEngine) getWheelDialogs().waitFor(rocketEngine.screen);
     const rules = getEasterEggRules();
+    const store = getProfileStore();
     const crow = createCrow(host, { rules, quietWheel: getQuietWheel() });
     const tryFly = safeHandler(SCRIPT_NAME, crow.tryFly);
+    // Switches before the startup draw are covered by it.
+    let isStartupDrawReached = false;
+    let isSwitchDrawWaiting = false;
+    const tryFlyAtStartup = () => {
+        isStartupDrawReached = true;
+        tryFly();
+    };
+
+    // Draws for the Profile switched to as soon as the wheel is idle, until its
+    // Crow draw of the day is done or no longer due.
+    const tryFlyAfterSwitch = safeHandler(SCRIPT_NAME, () => {
+        if (!isSwitchDrawWaiting) return;
+        crow.tryFly();
+        if (!rules.isDrawDue(EASTER_EGG.CROW)) isSwitchDrawWaiting = false;
+    });
+    // A tick later: what the switch or the closing screen leads to has opened by then, and counts as busy.
+    const tryFlyAfterSwitchSoon = () => host.setTimeout(tryFlyAfterSwitch, 0);
+    store.onSwitch(safeHandler(SCRIPT_NAME, () => {
+        if (!isStartupDrawReached) return;
+        isSwitchDrawWaiting = true;
+        tryFlyAfterSwitchSoon();
+    }));
+    const wheelDialogs = getWheelDialogs();
+    wheelDialogs.onDrawnDialogClosed(tryFlyAfterSwitchSoon);
+    wheelDialogs.onOverlayClosed(tryFlyAfterSwitchSoon);
+    // Fires on every return to the wheel: a native dialog closed.
+    host.on("wheelmode", safeHandler(SCRIPT_NAME, tryFlyAfterSwitchSoon));
+    // A launch: the switch is long over, the Crow waits for the next start or switch.
+    getLaunchBracket().subscribe(SCRIPT_NAME, { onBegan: () => { isSwitchDrawWaiting = false; }, onEnded: () => {} });
 
     // Drawn Menus only: with the Add-on off, nothing to play on and nothing to load.
     if (config.addOns.drawnMenus !== false) {
-        const store = getProfileStore();
         const glitch = createMenuGlitch(host, {
             rules, quietWheel: getQuietWheel(), menus: getDrawnMenus(),
             shownProfileName: () => displayNameOf(store.getActiveProfile()),
@@ -74,11 +104,11 @@ export default function init() {
     getWheelDialogs().waitFor(blueScreen.screen);
 
     // A tick later: what the closing screen leads to has opened by then, and counts as busy.
-    onWheelArrival(safeHandler(SCRIPT_NAME, () => host.setTimeout(tryFly, 0)));
+    onWheelArrival(safeHandler(SCRIPT_NAME, () => host.setTimeout(tryFlyAtStartup, 0)));
 
     // The bare wheel with no Profile Greeting to wait for: no Wheel Arrival will come.
     if (!isWheelArrivalAhead()) {
         // A tick later, so what the other Add-ons submit at startup counts as busy.
-        host.setTimeout(safeHandler(SCRIPT_NAME, () => getWindowLayout().whenLaidOut(tryFly)), 0);
+        host.setTimeout(safeHandler(SCRIPT_NAME, () => getWindowLayout().whenLaidOut(tryFlyAtStartup)), 0);
     }
 }

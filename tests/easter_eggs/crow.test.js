@@ -13,7 +13,7 @@ import { layersBreakingTheRule } from "../support/hidden_layer_rule.js";
 import { toastDrawings } from "../achievements/achievement_toast_reader.js";
 import { WELCOME_SCREEN_OPEN_MS, press, isWelcomeScreenOpen, openFromMainMenu } from "../welcome_screen/welcome_screen_reader.js";
 import {
-    startCrowScenario, birds, dots, crowLayers, calls, profileFile, DAILY_FILE, FLIGHT_MS, CALL_MS, ALL_GONE_MS, TOAST_LIFE_MS,
+    startCrowScenario, birds, dots, crowLayers, calls, profileFile, FLIGHT_MS, CALL_MS, ALL_GONE_MS, TOAST_LIFE_MS,
 } from "./crow_scenario.js";
 
 const NEAR = 0.02;
@@ -38,7 +38,7 @@ test("the Crow crosses the wheel once, when the startup Welcome Screen closes", 
     assert.deepEqual(volumes(), [50, 0], "the table goes silent, without rising between the screens");
     assert.equal(calls(fake).length, 1, "the call starts with the flight");
     assert.equal(JSON.parse(fake.readFile(profileFile("Bob"))).surprises.easterEggs.crow, true, "recorded before it plays");
-    assert.equal(JSON.parse(fake.readFile(DAILY_FILE)).day, "2026-11-09");
+    assert.equal(JSON.parse(fake.readFile(profileFile("Bob"))).surprises.easterEggWonDay, "2026-11-09");
     assert.deepEqual(layersBreakingTheRule(fake), []);
 
     untilElapsed(FLIGHT_MS / 2);

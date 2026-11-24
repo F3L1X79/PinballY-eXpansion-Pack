@@ -3,6 +3,7 @@
 // raven's call and a trail of dots, on non-blocking layers. The selected
 // table is silent for the length of the call. A launch or attract mode
 // removes it at once; a sound already started plays to its end.
+// - Drawn at startup and after a Profile switch, at most once a day per Profile (easter_egg_rules.js).
 // - A missing image means no Crow and no win; a missing sound, a silent one.
 // - Its Achievement waits for rules.finish(), once every layer has gone.
 // ============================================================

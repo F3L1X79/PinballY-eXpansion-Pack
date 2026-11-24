@@ -1,6 +1,6 @@
 // ============================================================
-// One of the Maneki-neko's images is unreadable: logged, no cat, and nothing
-// is spent, neither the Profile's chance nor the cabinet's day.
+// One of the Maneki-neko's images is unreadable: logged, no cat, and the
+// Profile neither wins it nor uses up its day.
 // ============================================================
 
 import { test } from "node:test";
@@ -16,7 +16,7 @@ test("an unreadable image is logged, and the cat neither plays nor records itsel
     fake.advanceTime(100);
     assert.deepEqual(catLayers(fake), []);
     assert.deepEqual(horns(fake), []);
-    assert.equal(store.getProfileData().surprises, undefined);
+    assert.equal(store.getProfileData().surprises.easterEggs, undefined, "not won");
     assert.ok(fake.logLines().some(line => line.startsWith("[ManekiNeko]") && line.includes(LEFT_IMAGE)));
     assertNoErrorLogged(fake);
 });

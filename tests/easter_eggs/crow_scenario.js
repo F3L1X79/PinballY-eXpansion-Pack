@@ -15,7 +15,6 @@ export const WING_IMAGES = ["crow_wing_up.png", "crow_wing_mid.png", "crow_wing_
 export const DOT_IMAGE = `${IMAGES}\\crow_dot.png`;
 export const CALL = `${PACK}\\assets\\sounds\\easter_eggs\\raven_call.wav`;
 export const profileFile = name => `${PROFILES}\\${name}\\profile.json`;
-export const DAILY_FILE = `${PROFILES}\\easter_egg_day.json`;
 export const TABLE = {
     id: 1, configId: "Medieval Madness", title: "Medieval Madness", manufacturer: "", year: 0, categories: [],
     playCount: 0, playTime: 0, lastPlayed: null, rating: -1, isHidden: false, audioVolume: 100,

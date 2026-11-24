@@ -1,9 +1,10 @@
 // ============================================================
 // Easter Egg rules: may this Easter Egg be drawn now, and does it win? Owns
-// the 1 in 100, the cabinet's one a day (easter_egg_day.json), the active
-// Profile's memory ("surprises" part, so a Profile Reset gives it back) and
-// the busy checks. Each Easter Egg only says its moment and what it plays.
-// - A win is recorded before it plays: a crash never gives a second one.
+// the 1 in 200 (3 in 200 for a Child Profile's funny ones), one draw per
+// Easter Egg and one win a day per Profile, kept in its "surprises" part (a
+// Profile Reset gives them back), and the busy checks. Each Easter Egg only
+// says its moment and what it plays.
+// - The draw and the win are recorded before it plays: a crash never gives a second one.
 // - Only the draw wins one; the tests' scenarios replace it via setEasterEggDraw.
 // ============================================================
 
@@ -22,10 +23,10 @@ export const EASTER_EGG = Object.freeze({
     CROW: "crow", MENU_GLITCH: "menuGlitch", MANEKI_NEKO: "manekiNeko", ROCKET: "rocket", FAKE_BLUE_SCREEN: "fakeBlueScreen",
 });
 
-const CHANCE = 1 / 100;
-// Cabinet-level file of the Profile store: the local day of the last Easter Egg.
-const DAILY_FILE = "easter_egg_day";
-const DAILY_FILE_VERSION = 1;
+const CHANCE = 1 / 200;
+// A Child Profile's chance for the funny ones.
+const CHILD_CHANCE = 3 / 200;
+const FUNNY_ONES = [EASTER_EGG.CROW, EASTER_EGG.MANEKI_NEKO, EASTER_EGG.ROCKET];
 
 // wheelDialogs: { isIdle(), isOverlayOpen(except) }; achievementToasts: { hasToasts() };
 // random(name): the draw for that Easter Egg, the host's by default.
@@ -35,37 +36,42 @@ export function createEasterEggRules(host, { profileStore, wheelDialogs, achieve
     const finishedListeners = [];
 
     const easterEggsOf = data => surprisesOf(data).easterEggs || {};
-    const hasHad = name => easterEggsOf(profileStore.getProfileData())[name] === true;
+    const drawsOf = data => surprisesOf(data).easterEggDraws || {};
+    const active = () => profileStore.getProfileData();
     const today = () => formatDateKey(host.now());
+    const hasHad = name => easterEggsOf(active())[name] === true;
+    const isDayTaken = () => surprisesOf(active()).easterEggWonDay === today();
+    const hasDrawnToday = name => drawsOf(active())[name] === today();
+    const chanceOf = name => (FUNNY_ONES.includes(name) && profileStore.isChild() ? CHILD_CHANCE : CHANCE);
 
     const isBusy = over => host.getFullUIMode().runMode !== undefined
         || !wheelDialogs.isIdle()
         || wheelDialogs.isOverlayOpen(over)
         || achievementToasts.hasToasts();
 
-    // An unreadable file is logged and set aside by the store, and reads as null.
-    function isTodayTaken() {
-        const saved = profileStore.readCabinetFile(DAILY_FILE, DAILY_FILE_VERSION);
-        return saved !== null && saved.day === today();
-    }
+    const isDrawDue = name => !hasHad(name) && !isDayTaken() && !hasDrawnToday(name);
 
-    // The day first: a failed write then costs a free day, never an Easter Egg.
-    function record(name) {
-        profileStore.saveCabinetFile(DAILY_FILE, { version: DAILY_FILE_VERSION, day: today() });
+    // fieldsOf(data): the fields to merge into the active Profile's "surprises" part.
+    function mergeSurprises(fieldsOf) {
         profileStore.updateProfileData(data => {
-            data.surprises = { ...surprisesOf(data), easterEggs: { ...easterEggsOf(data), [name]: true } };
+            data.surprises = { ...surprisesOf(data), ...fieldsOf(data) };
         });
     }
 
-    // canPlay: asked once the draw is won, so an Easter Egg that cannot play costs
-    // nothing; over: the screen it plays on, which does not make the wheel busy.
+    // Recorded before the draw: a crash never gives a second one that day.
+    const recordDraw = (name, day) => mergeSurprises(data => ({ easterEggDraws: { ...drawsOf(data), [name]: day } }));
+    const recordWin = (name, day) => mergeSurprises(data => ({ easterEggs: { ...easterEggsOf(data), [name]: true }, easterEggWonDay: day }));
+
+    // canPlay: asked once the draw is won, so an Easter Egg that cannot play is
+    // not won; over: the screen it plays on, which does not make the wheel busy.
     function tryWin(name, { canPlay = () => true, over = null } = {}) {
         if (isBusy(over)) return false;
-        if (hasHad(name)) return false;
-        if (random(name) >= CHANCE) return false;
+        if (!isDrawDue(name)) return false;
+        const day = today();
+        recordDraw(name, day);
+        if (random(name) >= chanceOf(name)) return false;
         if (!canPlay()) return false;
-        if (isTodayTaken()) return false;
-        record(name);
+        recordWin(name, day);
         playing.add(name);
         return true;
     }
@@ -79,6 +85,8 @@ export function createEasterEggRules(host, { profileStore, wheelDialogs, achieve
     return {
         tryWin,
         finish,
+        // True while the active Profile may still draw that Easter Egg today.
+        isDrawDue,
         // True for the active Profile once the Easter Egg has finished playing.
         hasPlayed: name => hasHad(name) && !playing.has(name),
         // listener(name): runs, guarded, each time an Easter Egg finishes.

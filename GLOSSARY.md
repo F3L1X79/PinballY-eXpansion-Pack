@@ -23,7 +23,7 @@ The Dialog that tells an Admin Profile about a Conflict and offers to turn the p
 _Avoid_: Error Toast (not a failure of the pack), conflict warning, compatibility check
 
 **Easter Egg**:
-A rare, unannounced event of the cabinet, each tied to its own moment: at most one a day for the whole cabinet, and never twice the same for a Profile. Described nowhere for the player. Each one gives the active Profile a Secret Achievement of the Surprises family.
+A rare, unannounced event of the cabinet, each tied to its own moment: at most one a day for a Profile, and never twice the same for a Profile. Described nowhere for the player. Each one gives the active Profile a Secret Achievement of the Surprises family.
 _Avoid_: Surprise (Surprises is only the Achievement family, not to be mistaken for the Achievement Toasts' congratulations), hidden event, glitch
 
 **Rocket Game**:
