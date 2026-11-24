@@ -1096,6 +1096,11 @@ export default {
                 whenOn: "Une entrée de « Changer de filtre » permet aux joueurs de passer la roue en ordre chronologique, de la plus ancienne. Elle reste alphabétique jusque-là.",
                 whenOff: "La roue reste alphabétique.",
             },
+            wheelArrivalSound: {
+                name: "Son d'arrivée sur la roue",
+                whenOn: "Votre propre son, réglé dans WHEEL_ARRIVAL_SOUND_FILE, une fois par démarrage à l'arrivée sur la roue ; aucun n'est fourni avec le pack.",
+                whenOff: "Rien d'autre ne change.",
+            },
             menuCleanup: {
                 name: "Menus allégés",
                 whenOn: "Des menus plus courts, sans les entrées peu utilisées comme Aide, À propos ou Affiche.",

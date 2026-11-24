@@ -1091,6 +1091,11 @@ export default {
                 whenOn: "Una entrada de Cambiar filtro permite a los jugadores ordenar la rueda cronológicamente, de la más antigua. Hasta entonces sigue en orden alfabético.",
                 whenOff: "La rueda sigue en orden alfabético.",
             },
+            wheelArrivalSound: {
+                name: "Sonido de llegada a la rueda",
+                whenOn: "Tu propio sonido, indicado en WHEEL_ARRIVAL_SOUND_FILE, una vez por inicio al llegar a la rueda; el pack no incluye ninguno.",
+                whenOff: "No cambia nada más.",
+            },
             menuCleanup: {
                 name: "Menús limpios",
                 whenOn: "Menús más cortos, sin entradas poco usadas como Ayuda, Acerca de o Cartel.",

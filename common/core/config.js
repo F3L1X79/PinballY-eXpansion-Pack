@@ -32,6 +32,8 @@ const UNSHIPPED_SOUNDS = Object.freeze({
     profilePickerSoundFile: "",
     // Played once when Avatar Choice shows, after Name Entry.
     avatarChoiceSoundFile: "",
+    // Played once per start, at the Wheel Arrival.
+    wheelArrivalSoundFile: "",
 });
 const SOUND_SETTINGS = [...Object.keys(SHIPPED_SOUNDS), ...Object.keys(UNSHIPPED_SOUNDS)];
 const NO_SOUNDS = Object.fromEntries(SOUND_SETTINGS.map(key => [key, ""]));
@@ -156,6 +158,8 @@ export const DEFAULTS = {
         achievements: true,
         seamlessLaunchOverlay: true,
         playLaunchSound: true,
+        // The owner's sound when the player reaches the wheel after the Startup Screen.
+        wheelArrivalSound: true,
         ratingPrompt: true,
         profilePicker: true,
         // Each Profile's own Ratings and Favorite Tables in PinballY's columns while it is active.

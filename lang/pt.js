@@ -1090,6 +1090,11 @@ export default {
                 whenOn: "Uma entrada de Trocar filtro permite aos jogadores ordenar a roda cronologicamente, da mais antiga. Até lá fica em ordem alfabética.",
                 whenOff: "A roda fica em ordem alfabética.",
             },
+            wheelArrivalSound: {
+                name: "Som de chegada à roda",
+                whenOn: "O seu próprio som, definido em WHEEL_ARRIVAL_SOUND_FILE, uma vez por inicialização ao chegar à roda; o pack não inclui nenhum.",
+                whenOff: "Nada mais muda.",
+            },
             menuCleanup: {
                 name: "Menus enxutos",
                 whenOn: "Menus mais curtos, sem entradas pouco usadas como Ajuda, Sobre ou Cartaz.",

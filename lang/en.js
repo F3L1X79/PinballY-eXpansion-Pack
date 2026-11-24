@@ -1038,6 +1038,11 @@ export default {
                 whenOn: "An entry of Change Filter lets players switch the wheel to chronological, oldest first. It is alphabetical until they do.",
                 whenOff: "The wheel stays alphabetical.",
             },
+            wheelArrivalSound: {
+                name: "Wheel arrival sound",
+                whenOn: "Your own sound, set in WHEEL_ARRIVAL_SOUND_FILE, once per start when the wheel is reached; none ships with the pack.",
+                whenOff: "Nothing else changes.",
+            },
             menuCleanup: {
                 name: "Menu Cleanup",
                 whenOn: "Shorter menus, without rarely used entries such as Help, About or Flyer.",

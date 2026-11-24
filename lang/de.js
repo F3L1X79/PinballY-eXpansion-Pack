@@ -1090,6 +1090,11 @@ export default {
                 whenOn: "Mit einem Eintrag in Filter wechseln ordnen Spieler die Tische des Rads chronologisch, die ältesten zuerst. Bis dahin bleibt es alphabetisch.",
                 whenOff: "Das Rad bleibt alphabetisch.",
             },
+            wheelArrivalSound: {
+                name: "Ton bei Ankunft am Rad",
+                whenOn: "Ihr eigener Ton, in WHEEL_ARRIVAL_SOUND_FILE eingestellt, einmal pro Start, wenn das Rad erreicht ist; das Pack liefert keinen mit.",
+                whenOff: "Sonst ändert sich nichts.",
+            },
             menuCleanup: {
                 name: "Menüs aufräumen",
                 whenOn: "Kürzere Menüs, ohne selten genutzte Einträge wie Hilfe, Über oder Flyer.",

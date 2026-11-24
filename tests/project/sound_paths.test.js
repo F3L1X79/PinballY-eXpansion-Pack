@@ -8,7 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
-import { resolveSoundFiles, SHIPPED_SOUNDS } from "../../common/core/config.js";
+import { resolveSoundFiles, SHIPPED_SOUNDS, DEFAULTS } from "../../common/core/config.js";
 
 const PACK = "C:\\PinballY\\Scripts\\ExpansionPack";
 
@@ -48,9 +48,20 @@ test("absolute and network paths are kept, an empty one still means no sound", (
     });
 });
 
-test("a relative Profile picker sound is resolved too, though none ships with the pack", () => {
-    const resolved = resolveSoundFiles({ profilePickerSoundFile: "assets\\sounds\\local\\choose-your-character.mp3" }, PACK);
-    assert.deepEqual(resolved, { profilePickerSoundFile: `${PACK}\\assets\\sounds\\local\\choose-your-character.mp3` });
+test("a relative Profile picker or Wheel Arrival sound is resolved too, though none ships with the pack", () => {
+    const resolved = resolveSoundFiles({
+        profilePickerSoundFile: "assets\\sounds\\local\\choose-your-character.mp3",
+        wheelArrivalSoundFile: "assets/sounds/local/here-we-go.mp3",
+    }, PACK);
+    assert.deepEqual(resolved, {
+        profilePickerSoundFile: `${PACK}\\assets\\sounds\\local\\choose-your-character.mp3`,
+        wheelArrivalSoundFile: `${PACK}\\assets\\sounds\\local\\here-we-go.mp3`,
+    });
+});
+
+test("the Wheel Arrival sound is empty by default: none ships with the pack", () => {
+    assert.equal(DEFAULTS.wheelArrivalSoundFile, "");
+    assert.equal(resolveSoundFiles({ wheelArrivalSoundFile: "" }, PACK).wheelArrivalSoundFile, "");
 });
 
 test("the other settings are left untouched", () => {

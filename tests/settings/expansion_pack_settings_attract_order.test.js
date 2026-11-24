@@ -43,8 +43,8 @@ test("the Attract Order line is on the Wheel page, after its Add-ons, a separato
     assert.equal(drawnMenuLines(fake).some(line => line.startsWith("Attract Order")), false, "not on the list itself");
     choose("Wheel");
 
-    assert.deepEqual(drawnMenuLines(fake).slice(-9), [
-        "Wheel Order: On", "---",
+    assert.deepEqual(drawnMenuLines(fake).slice(-10), [
+        "Wheel Order: On", "Wheel arrival sound: On (on restart)", "---",
         "Wheel Rail: On", "Rail by year: Decades only", "Wheel Position: On", "Favorite Heart: On",
         "Attract Order: As PinballY", "---", "Back",
     ]);

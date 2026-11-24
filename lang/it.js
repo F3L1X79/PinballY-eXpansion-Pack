@@ -1089,6 +1089,11 @@ export default {
                 whenOn: "Una voce di Cambia filtro permette ai giocatori di ordinare la ruota in ordine cronologico, dal più vecchio. Fino ad allora resta in ordine alfabetico.",
                 whenOff: "La ruota resta in ordine alfabetico.",
             },
+            wheelArrivalSound: {
+                name: "Suono di arrivo sulla ruota",
+                whenOn: "Il tuo suono, indicato in WHEEL_ARRIVAL_SOUND_FILE, una volta per avvio all'arrivo sulla ruota; il pack non ne include nessuno.",
+                whenOff: "Nient'altro cambia.",
+            },
             menuCleanup: {
                 name: "Menu ripuliti",
                 whenOn: "Menu più corti, senza voci poco usate come Aiuto, Informazioni o Volantino.",
