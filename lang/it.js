@@ -1238,6 +1238,10 @@ export default {
         restarting: "Riavvio in corso",
     },
     releaseHighlights: {
+        "1.10.0": [
+            "Rimozione del profilo e Ospite nascosto, in Gestisci i profili: un profilo Admin toglie un profilo dalla macchina, o nasconde l'Ospite in Cambia giocatore.",
+            "Un suono può accogliere il giocatore alla ruota, una volta per avvio, da un file scelto dal proprietario.",
+        ],
         "1.9.0": [
             "La Sfida di casa: ogni lunedì, un secondo obiettivo che tutta la casa raggiunge insieme.",
             "Un profilo Admin dà le sue iniziali a un profilo, in Gestisci i profili: i vecchi punteggi che le portano diventano suoi.",

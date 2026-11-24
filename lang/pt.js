@@ -1239,6 +1239,10 @@ export default {
         restarting: "A reiniciar",
     },
     releaseHighlights: {
+        "1.10.0": [
+            "Remoção de perfil e Convidado oculto, em Gerenciar perfis: um perfil Admin tira um perfil do equipamento, ou oculta o Convidado em Trocar de jogador.",
+            "Um som pode receber o jogador na roda, uma vez por inicialização, a partir de um arquivo escolhido pelo dono.",
+        ],
         "1.9.0": [
             "O Desafio da casa: toda segunda-feira, um segundo objetivo que toda a casa alcança junta.",
             "Um perfil Admin dá as suas iniciais a um perfil, em Gerenciar perfis: as pontuações antigas que as trazem passam a ser dele.",

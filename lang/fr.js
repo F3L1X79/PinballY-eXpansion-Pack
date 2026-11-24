@@ -1245,6 +1245,10 @@ export default {
         restarting: "Redémarrage en cours",
     },
     releaseHighlights: {
+        "1.10.0": [
+            "Retrait de profil et Invité caché, dans Gérer les profils : un Profil Admin retire un profil du meuble, ou cache Invité dans Changer de joueur.",
+            "Un son peut accueillir le joueur à la roue, une fois par démarrage, depuis un fichier choisi par le propriétaire.",
+        ],
         "1.9.0": [
             "Le Défi de la maison : chaque lundi, un second objectif que toute la maison atteint ensemble.",
             "Un Profil Admin donne ses initiales à un Profil, dans Gérer les profils : les anciens scores qui les portent deviennent les siens.",

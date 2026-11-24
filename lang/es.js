@@ -1240,6 +1240,10 @@ export default {
         restarting: "Reiniciando",
     },
     releaseHighlights: {
+        "1.10.0": [
+            "Retirar perfil e Invitado oculto, en Gestionar perfiles: un perfil Admin quita un perfil de la máquina, u oculta al Invitado en Cambiar de jugador.",
+            "Un sonido puede recibir al jugador en la rueda, una vez por inicio, desde un archivo que elige el propietario.",
+        ],
         "1.9.0": [
             "El Reto de casa: cada lunes, un segundo objetivo que toda la casa alcanza junta.",
             "Un perfil Admin da sus iniciales a un perfil, en Gestionar perfiles: las puntuaciones antiguas que las llevan pasan a ser suyas.",

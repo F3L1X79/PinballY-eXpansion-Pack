@@ -1239,6 +1239,10 @@ export default {
         restarting: "Neustart läuft",
     },
     releaseHighlights: {
+        "1.10.0": [
+            "Profil entfernen und versteckter Gast, unter Profile verwalten: ein Admin-Profil entfernt ein Profil vom Automaten oder blendet den Gast unter Spieler wechseln aus.",
+            "Ein Ton kann den Spieler an der Rad-Ansicht begrüßen, einmal pro Start, aus einer Datei, die der Besitzer wählt.",
+        ],
         "1.9.0": [
             "Die Familien-Herausforderung: jeden Montag ein zweites Ziel, das der ganze Haushalt gemeinsam erreicht.",
             "Ein Admin-Profil gibt einem Profil unter Profile verwalten seine Initialen: die alten Punktzahlen mit diesen Initialen werden seine eigenen.",

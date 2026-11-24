@@ -2,6 +2,15 @@
 
 What changed in each Pack Version of the Expansion Pack, newest first. It starts at 1.0.0, the first public release; the 0.x trial releases are not listed.
 
+## v1.10.0 (2026-11-24)
+
+- **Profile Removal**: in **Manage profiles**, the **Remove** line takes a Profile off the cabinet at once, without a restart: it leaves the list, Change Player, the household stats and boards, and the Welcome Screen's helpers line. Its places on the tables' boards stay, as Default Scores, and a Profile created later under the same name gets its High Scores back. Its folder is set aside, not erased. Guest and the Profile in use cannot be removed.
+- **Hidden Guest**: on Guest's menu in **Manage profiles**, **Hidden** takes Guest out of Change Player. A hidden Guest still shows while it is the Profile in use.
+- **History Import**: once its Profile is removed, the history is offered again to the other Profiles.
+- **Wheel Arrival sound**: a sound can play once per start when the player reaches the wheel after the Startup Screen, from a file the owner chooses (`WHEEL_ARRIVAL_SOUND_FILE`). It never plays after a launch or on the return from a game, and `ADD_ON_WHEEL_ARRIVAL_SOUND=false` turns it off.
+- **Wheel Arrival after Change Player**: at startup, the Wheel Arrival also follows a Change Player made on the Startup Screen.
+- **Easter Eggs**: a few more surprises are kept in step with the Profile at the controls, and a switch of Profile can bring one.
+
 ## v1.9.0 (2026-11-23)
 
 - **Household Challenge**: once the cabinet has a month of games behind it, a second goal comes every Monday, which all the players reach together, Guest included. Its target asks more than a Challenge's, scaled by the number of players, and is calibrated on the household's past weeks. A pink card sits under the Challenge Card on the wheel. The game that completes it is celebrated for the player at the controls, then once for every other player who helped. A new Achievement family and Avatar Frame remember the house's wins, and the **Household Challenge Tables** wheel selection lists the tables that would move it forward. `ADD_ON_HOUSEHOLD_CHALLENGE` turns it off on its own.

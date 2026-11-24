@@ -1209,6 +1209,10 @@ export default {
     // The Release Highlights: one to three sentences for the Household per
     // Pack Version, under the success dialog of a Pack Update. Never pruned.
     releaseHighlights: {
+        "1.10.0": [
+            "Profile Removal and Hidden Guest, under Manage profiles: an Admin Profile takes a Profile off the cabinet, or hides Guest from Change Player.",
+            "A sound can greet the player at the wheel once per start, from a file the owner chooses.",
+        ],
         "1.9.0": [
             "The Household Challenge: every Monday, a second goal the whole household reaches together.",
             "An Admin Profile gives a Profile its Initials, under Manage profiles: the old scores bearing them become its own.",
