@@ -758,7 +758,7 @@ export default {
             nothingLeft: "Nichts mehr zu übernehmen",
         },
         historyConfirm: (name, games, hours, tables) => `PinballYs Verlauf an ${name} geben? Partien: ${games}, Stunden: ${hours}, Tische: ${tables}.`,
-        historyWarning: "Achtung: nur einmal auf diesem Automaten, und endgültig. Es wird nie wieder angeboten, auch nicht nach einem Zurücksetzen.",
+        historyWarning: "Achtung: nur einmal auf diesem Automaten. Es wird nur wieder angeboten, wenn dieses Profil entfernt wird, nie nach einem Zurücksetzen.",
         historyYes: "Ja, übernehmen",
         historyDone: (name, games, hours, tables) => `${name} hat übernommen: Partien: ${games}, Stunden: ${hours}, Tische: ${tables}. Die erreichten Erfolge werden ohne Ankündigung freigeschaltet.`,
         historyFailed: name => `${name} konnte PinballYs Verlauf nicht übernehmen. Details stehen im Log.`,

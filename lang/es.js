@@ -759,7 +759,7 @@ export default {
             nothingLeft: "Nada que recuperar",
         },
         historyConfirm: (name, games, hours, tables) => `¿Dar el historial de PinballY a ${name}? Partidas: ${games}, horas: ${hours}, mesas: ${tables}.`,
-        historyWarning: "Atención: solo una vez en esta máquina, y para siempre. No se vuelve a ofrecer, ni siquiera tras un reinicio.",
+        historyWarning: "Atención: solo una vez en esta máquina. Solo se vuelve a ofrecer si se elimina ese perfil, nunca tras un reinicio.",
         historyYes: "Sí, recuperarlo",
         historyDone: (name, games, hours, tables) => `${name} recuperó partidas: ${games}, horas: ${hours}, mesas: ${tables}. Los logros alcanzados se desbloquean sin anunciarse.`,
         historyFailed: name => `${name} no pudo recuperar el historial de PinballY. Consulta el registro para más detalles.`,

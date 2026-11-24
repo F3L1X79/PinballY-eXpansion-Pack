@@ -758,7 +758,7 @@ export default {
             nothingLeft: "Nada a assumir",
         },
         historyConfirm: (name, games, hours, tables) => `Dar o histórico do PinballY a ${name}? Partidas: ${games}, horas: ${hours}, mesas: ${tables}.`,
-        historyWarning: "Atenção: só uma vez nesta máquina, e para sempre. Nunca mais é oferecido, nem depois de uma redefinição.",
+        historyWarning: "Atenção: só uma vez nesta máquina. Só volta a ser oferecido se esse perfil for removido, nunca depois de uma redefinição.",
         historyYes: "Sim, assumir",
         historyDone: (name, games, hours, tables) => `${name} assumiu partidas: ${games}, horas: ${hours}, mesas: ${tables}. As conquistas alcançadas são desbloqueadas sem anúncio.`,
         historyFailed: name => `${name} não pôde assumir o histórico do PinballY. Consulte o log para mais detalhes.`,

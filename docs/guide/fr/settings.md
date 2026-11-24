@@ -175,7 +175,7 @@ Les **initiales** d'un Profil sont les trois lettres qui le désignent sur les t
 
 PinballY compte, pour chaque table, les parties jouées, le temps de jeu et la date de la dernière partie, depuis bien avant le pack, dans `GameStats.csv` de son dossier d'installation. **Reprendre l'historique de PinballY**, dans le propre menu d'un Profil juste avant « Réinitialiser », donne cet historique à ce Profil : choisissez le Profil qui a vraiment joué. Le pack ne fait que lire les stats de PinballY, il ne les modifie jamais.
 
-**Attention : une seule fois par borne, et pour de bon.** Une fois faite, la reprise de l'historique n'est plus jamais proposée, sur aucun Profil, même après une réinitialisation de celui qui l'a reçue.
+**Attention : une seule fois par borne.** Une fois faite, la reprise de l'historique n'est plus proposée, sur aucun Profil, même après une réinitialisation de celui qui l'a reçue. Seule la suppression de ce Profil (**Supprimer**) la propose de nouveau aux autres, avec ce qui reste : une reprise faite sur le mauvais Profil se refait en le supprimant, puis en reprenant l'historique sur le bon.
 
 - Une confirmation (le curseur part sur « Non ») indique combien de parties, d'heures et de tables seraient ajoutées ; un message dit ensuite ce qui a été repris, ou que l'opération a échoué (la cause est dans le journal), auquel cas rien n'a changé.
 - Ce que chaque Profil, Invité compris, a déjà joué avec le pack est retiré des comptes de PinballY : aucune partie ne compte deux fois. Les tables non suivies sont laissées de côté.

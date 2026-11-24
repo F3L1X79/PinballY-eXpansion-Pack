@@ -70,7 +70,7 @@ const emptyProfileData = () => ({
 });
 // Set by hand or from Manage profiles (ADR 0020): kept through a Profile Reset.
 const MARK_NAMES = ["isAdmin", "isChild"];
-// The History Import's record is kept too, for the import never to be offered again (ADR 0025).
+// The History Import's record is kept too: only the Profile's removal offers the import again (ADR 0025).
 const HISTORY_IMPORT_KEY = "historyImport";
 // The Profile's identity on tables' boards, like its name (ADR 0026).
 const INITIALS_KEY = "initials";

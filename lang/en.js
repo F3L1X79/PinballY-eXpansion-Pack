@@ -665,7 +665,7 @@ export default {
             nothingLeft: "Nothing left to take over",
         },
         historyConfirm: (name, games, hours, tables) => `Give PinballY's history to ${name}? Games: ${games}, hours: ${hours}, tables: ${tables}.`,
-        historyWarning: "Warning: only once on this cabinet, for good. It is never offered again, even after a Profile Reset.",
+        historyWarning: "Warning: only once on this cabinet. It is offered again only if that profile is removed, never after a Profile Reset.",
         historyYes: "Yes, take it over",
         historyDone: (name, games, hours, tables) => `${name} took over games: ${games}, hours: ${hours}, tables: ${tables}. The achievements reached are unlocked without being announced.`,
         historyFailed: name => `${name} could not take over PinballY's history. See the log for details.`,

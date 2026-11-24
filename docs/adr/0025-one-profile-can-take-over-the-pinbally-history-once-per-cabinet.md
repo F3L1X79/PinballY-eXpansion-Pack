@@ -18,3 +18,4 @@ Partly supersedes ADR 0004, which said existing progress is not carried over. A 
 - Achievements the import reaches (play time, Collection Tiers) are unlocked without a toast; the import's closing Dialog sums them up.
 - The imported count is slightly high, since PinballY also counts launches shorter than a minute; the play time is right.
 - A Profile Reset erases the import like everything else, and the import is not offered again.
+- A Profile Removal of the importer sets its record aside with its folder, so the import is offered again to the other Profiles, with what the listed Profiles have not counted: an import made on the wrong Profile is redone this way.

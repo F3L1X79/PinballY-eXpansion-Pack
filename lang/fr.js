@@ -760,7 +760,7 @@ export default {
             nothingLeft: "Rien à reprendre",
         },
         historyConfirm: (name, games, hours, tables) => `Donner l'historique de PinballY à ${name} ? Parties : ${games}, heures : ${hours}, tables : ${tables}.`,
-        historyWarning: "Attention : une seule fois sur cette borne, et pour de bon. Ce n'est plus jamais proposé, même après une réinitialisation.",
+        historyWarning: "Attention : une seule fois sur cette borne. Ce n'est de nouveau proposé que si ce profil est supprimé, jamais après une réinitialisation.",
         historyYes: "Oui, le reprendre",
         historyDone: (name, games, hours, tables) => `${name} a repris parties : ${games}, heures : ${hours}, tables : ${tables}. Les succès atteints sont débloqués sans être annoncés.`,
         historyFailed: name => `${name} n'a pas pu reprendre l'historique de PinballY. Voir le journal pour les détails.`,
