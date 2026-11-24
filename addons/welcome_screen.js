@@ -17,7 +17,10 @@ import { safeHandler } from "../common/core/safe_handler.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { getWheelDialogs, DIALOG_PRIORITY } from "../common/core/wheel_dialog.js";
 import { getDrawnScreenControls } from "../common/core/drawn_screen_controls.js";
-import { getStartupScreen, onStartupPickerDone, notifyStartupScreenClosed, STARTUP_SCREEN } from "../common/core/startup_screen.js";
+import {
+    getStartupScreen, onStartupPickerDone, notifyWheelArrival, STARTUP_SCREEN,
+    continueStartupChainInChangePlayer, takeStartupChainFromChangePlayer, endStartupChainInChangePlayer,
+} from "../common/core/startup_screen.js";
 import { getMainMenu, MAIN_MENU_POSITION } from "../common/menus/main_menu.js";
 import { getProfileStore } from "../common/profiles/profile_store.js";
 import { getProfileRewards } from "../common/avatar_frames/profile_rewards.js";
@@ -427,6 +430,8 @@ export default function init() {
     function open(close) {
         waiting = null;
         closeDialog = close;
+        // Taken at its turn, not on submission: attract mode meanwhile ends the chain.
+        if (takeStartupChainFromChangePlayer()) isStartupOpening = true;
         quietWheel.hold(SCRIPT_NAME);
         try {
             draw();
@@ -459,7 +464,10 @@ export default function init() {
         }
         quietWheel.release(SCRIPT_NAME, { atOnce });
         done();
-        if (wasStartupOpening && !atOnce && !isFollowed) notifyStartupScreenClosed();
+        // Only Change Player is followed: the Profile picker it opens carries the startup chain on.
+        if (!wasStartupOpening || atOnce) return;
+        if (isFollowed) continueStartupChainInChangePlayer();
+        else notifyWheelArrival();
     }
 
     // direction: 1 for Next, -1 for Prev; isRepeat: a held button's auto-repeat.
@@ -539,5 +547,6 @@ export default function init() {
         if (!waiting) return;
         waiting.isDropped = true;
         waiting = null;
+        endStartupChainInChangePlayer({ arrive: false });
     }));
 }

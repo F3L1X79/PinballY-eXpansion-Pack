@@ -21,6 +21,20 @@ export const WELCOME_SCREEN_FADE_IN_MS = 300;
 
 export const press = (fake, buttonCommand) => fake.fire("commandbuttondown", { command: buttonCommand, repeat: false });
 
+// Past the carousel's glide after a move.
+export const GLIDE_OVER_MS = 500;
+
+// In the Profile picker's carousel opened by Change Player: the Profile
+// beside the highlighted one, toward direction ("Prev" or "Next"), picked;
+// the Welcome Screen that welcomes it has opened.
+export async function pickProfileBeside(fake, direction) {
+    press(fake, direction);
+    fake.advanceTime(GLIDE_OVER_MS);
+    press(fake, "Select");
+    await settle();
+    fake.advanceTime(WELCOME_SCREEN_OPEN_MS);
+}
+
 // Picks the native main menu's Welcome Screen entry, titled entryTitle, and
 // lets the screen open.
 export async function openFromMainMenu(fake, entryTitle) {

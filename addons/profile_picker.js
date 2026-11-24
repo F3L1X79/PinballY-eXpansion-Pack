@@ -22,7 +22,9 @@ import { createAvatarChoice } from "../common/profiles/avatar_choice.js";
 import { getMainMenu, MAIN_MENU_POSITION } from "../common/menus/main_menu.js";
 import { addToPlayerGroup, PLAYER_GROUP_RANK } from "../common/menus/exit_menu.js";
 import { getWheelDialogs, DIALOG_PRIORITY } from "../common/core/wheel_dialog.js";
-import { getStartupScreen, notifyStartupPickerDone, notifyStartupScreenClosed, STARTUP_SCREEN } from "../common/core/startup_screen.js";
+import {
+    getStartupScreen, notifyStartupPickerDone, notifyWheelArrival, endStartupChainInChangePlayer, STARTUP_SCREEN,
+} from "../common/core/startup_screen.js";
 import { getStartupVeil } from "../common/drawing/startup_veil.js";
 import { getQuietWheel } from "../common/core/quiet_wheel.js";
 import { registerChangePlayer } from "../common/profiles/change_player.js";
@@ -567,7 +569,7 @@ export default function init() {
             const elapsed = host.now().getTime() - startMs;
             if (elapsed >= growMs + holdMs + fadeMs) {
                 stopGreeting();
-                if (atStartup) notifyStartupScreenClosed();
+                if (atStartup) notifyWheelArrival();
                 return;
             }
             const size = startSize + (grownSize - startSize) * Math.min(1, elapsed / growMs);
@@ -720,7 +722,18 @@ export default function init() {
             const isFollowed = isStartupPending || isSwitch;
             if (isStartupPending) notifyStartupPickerDone();
             close({ isFollowed });
-            if (isSwitch) profileStore.switchTo(chosen.name);
+            if (!isSwitch) {
+                endStartupChainInChangePlayer({ arrive: true });
+                return;
+            }
+            // The Welcome Screen that welcomes the new Profile carries the
+            // startup chain on; a switch that fails leaves the player on the wheel.
+            try {
+                profileStore.switchTo(chosen.name);
+            } catch (error) {
+                endStartupChainInChangePlayer({ arrive: true });
+                throw error;
+            }
             return;
         }
         const atStartup = isStartupPending;
@@ -751,6 +764,8 @@ export default function init() {
         if (atStartup && isWelcomeScreenOn) notifyStartupPickerDone();
         close({ isFollowed: atStartup && isWelcomeScreenOn });
         if (atStartup && !isWelcomeScreenOn) greetAfterPause({ atStartup });
+        // Opened by Change Player from the startup Welcome Screen: no Welcome Screen follows.
+        if (!atStartup) endStartupChainInChangePlayer({ arrive: true });
     }
 
     getMainMenu().add({ name: "profilePicker", label: TEXT.menuEntry, position: MAIN_MENU_POSITION.PROFILE_PICKER, action: open });
@@ -841,6 +856,8 @@ export default function init() {
     // the carousel must not stay drawn over attract mode or keep the buttons.
     host.on("attractmodestart", safeHandler(SCRIPT_NAME, () => {
         if (isStartupPending) dropStartup();
+        // Also while the Welcome Screen that follows the carousel waits its turn.
+        endStartupChainInChangePlayer({ arrive: false });
         close();
     }));
 

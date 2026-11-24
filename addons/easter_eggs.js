@@ -12,7 +12,7 @@
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { getQuietWheel } from "../common/core/quiet_wheel.js";
-import { onStartupScreenClosed, willStartupScreenClose } from "../common/core/startup_screen.js";
+import { onWheelArrival, isWheelArrivalAhead } from "../common/core/startup_screen.js";
 import { getWindowLayout } from "../common/core/window_layout.js";
 import config from "../common/core/config.js";
 import { getDrawnMenus } from "../common/drawn_menu/drawn_menu.js";
@@ -74,10 +74,10 @@ export default function init() {
     getWheelDialogs().waitFor(blueScreen.screen);
 
     // A tick later: what the closing screen leads to has opened by then, and counts as busy.
-    onStartupScreenClosed(safeHandler(SCRIPT_NAME, () => host.setTimeout(tryFly, 0)));
+    onWheelArrival(safeHandler(SCRIPT_NAME, () => host.setTimeout(tryFly, 0)));
 
-    // The bare wheel with no Profile Greeting to wait for: nothing will close.
-    if (!willStartupScreenClose()) {
+    // The bare wheel with no Profile Greeting to wait for: no Wheel Arrival will come.
+    if (!isWheelArrivalAhead()) {
         // A tick later, so what the other Add-ons submit at startup counts as busy.
         host.setTimeout(safeHandler(SCRIPT_NAME, () => getWindowLayout().whenLaidOut(tryFly)), 0);
     }

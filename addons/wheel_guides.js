@@ -13,7 +13,7 @@ import config from "../common/core/config.js";
 import { createPinballYHost } from "../common/core/pinbally_host.js";
 import { safeHandler } from "../common/core/safe_handler.js";
 import { logInfo } from "../common/core/info_log.js";
-import { onStartupScreenClosed, willStartupScreenClose } from "../common/core/startup_screen.js";
+import { onWheelArrival, isWheelArrivalAhead } from "../common/core/startup_screen.js";
 import { getWheelMarks } from "../common/core/wheel_marks.js";
 import { TOP_RIGHT_STACK } from "../common/drawing/top_right_stack.js";
 import { getWheelOrder } from "../common/tables/wheel_order.js";
@@ -125,11 +125,11 @@ export default function init() {
             + `(${flag === noted.isFavorite ? "the new value" : "still the old value"}).`, host);
     }
 
-    // The rail's rest starts once the player has the wheel: the Startup
-    // Screen closed, or a game or attract mode dropping it, which closes nothing.
-    if (rail && willStartupScreenClose()) {
+    // The rail's rest starts once the player has the wheel: the Wheel
+    // Arrival, or a game or attract mode dropping the Startup Screen.
+    if (rail && isWheelArrivalAhead()) {
         rail.hold();
-        onStartupScreenClosed(safeHandler(SCRIPT_NAME, rail.release));
+        onWheelArrival(safeHandler(SCRIPT_NAME, rail.release));
     }
     // Back on the wheel or after a Profile switch, the wheel is read again;
     // a switch can also re-run a Profile's filter, which then shows other tables.

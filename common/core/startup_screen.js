@@ -2,9 +2,10 @@
 // Startup Screen: turns the startupScreen setting, the Add-ons turned on
 // and the Household into the first screen PinballY shows, through the
 // chain Profile picker -> Welcome Screen -> wheel; the first read writes
-// each fallback to the PinballY log, once. Also relays the startup Profile
-// picker's close to the Welcome Screen, which follows it.
+// each fallback to the PinballY log, once. Relays the startup Profile
+// picker's close to the Welcome Screen, and signals the Wheel Arrival.
 // - A Household under two Profiles skips the Profile picker without being logged: it is no misconfiguration.
+// - Change Player from the startup Welcome Screen carries the chain on: the next Welcome Screen, or the picker's close.
 // ============================================================
 
 import config from "./config.js";
@@ -57,22 +58,48 @@ export function notifyStartupPickerDone() {
     for (const listener of pickerDoneListeners) listener();
 }
 
-const screenClosedListeners = [];
+const wheelArrivalListeners = [];
 
-// listener: runs when the Startup Screen hands the wheel over to the player:
-// the startup Welcome Screen closes on Exit or Stay, or the Profile Greeting
-// that replaces it ends. Never for a reopened screen, a launch or attract mode.
-export function onStartupScreenClosed(listener) {
-    screenClosedListeners.push(listener);
+// listener: runs at the Wheel Arrival, when the Startup Screen hands the wheel
+// over to the player: the startup Welcome Screen closes on Exit or Stay, the
+// Profile Greeting that replaces it ends, or the Profile picker opened from it
+// by Change Player closes with no Welcome Screen to follow. Never for a
+// reopened screen, a launch or attract mode.
+export function onWheelArrival(listener) {
+    wheelArrivalListeners.push(listener);
 }
 
-export function notifyStartupScreenClosed() {
-    for (const listener of screenClosedListeners) listener();
+export function notifyWheelArrival() {
+    for (const listener of wheelArrivalListeners) listener();
 }
 
-// False on the bare wheel with no Profile Greeting to wait for: nothing will
-// close, and onStartupScreenClosed never runs.
-export const willStartupScreenClose = () => getStartupScreen() !== STARTUP_SCREEN.WHEEL || config.addOns.profilePicker !== false;
+// False on the bare wheel with no Profile Greeting to wait for: no Wheel
+// Arrival will come, and onWheelArrival never runs.
+export const isWheelArrivalAhead = () => getStartupScreen() !== STARTUP_SCREEN.WHEEL || config.addOns.profilePicker !== false;
+
+// True from the startup Welcome Screen left for Change Player until the
+// chain ends, or the Welcome Screen that welcomes the Profile picked has its turn.
+let isChainInChangePlayer = false;
+
+// The startup Welcome Screen closed for Change Player: the chain goes on
+// through the Profile picker it opens.
+export function continueStartupChainInChangePlayer() {
+    isChainInChangePlayer = true;
+}
+
+// A Welcome Screen at its turn: true once, if it is the one that carries the
+// startup chain on after Change Player.
+export function takeStartupChainFromChangePlayer() {
+    const was = isChainInChangePlayer;
+    isChainInChangePlayer = false;
+    return was;
+}
+
+// Ends the startup chain gone through Change Player, if any: with the Wheel
+// Arrival when arrive (the wheel is the player's), without on a launch or attract mode.
+export function endStartupChainInChangePlayer({ arrive }) {
+    if (takeStartupChainFromChangePlayer() && arrive) notifyWheelArrival();
+}
 
 let sharedStartupScreen = null;
 
